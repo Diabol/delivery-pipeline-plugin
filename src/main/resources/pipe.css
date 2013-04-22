@@ -1,0 +1,66 @@
+body {
+    background: url("diabol.png") no-repeat right bottom;
+    font-family: sans-serif;
+}
+
+section.pipe {
+    display: block;
+    border-radius: 15px;
+    border: black solid 2px;
+    box-shadow: 5px 5px 5px grey;
+    padding: 10px;
+    margin: 20px;
+}
+
+section.pipe:nth-of-type(1) {
+    background-color: gold;
+}
+
+section.pipe:nth-of-type(2) {
+    background-color: goldenrod;
+}
+
+section.pipe:nth-of-type(3) {
+    background-color: darkgoldenrod;
+}
+
+section.pipe h1 {
+    font-size: large;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin-top: 0;
+}
+
+section.stage {
+    display: inline-block;
+    height: 150px;
+    min-width: 250px;
+    vertical-align: top;
+    background: navajowhite;
+    border-radius: 10px;
+    border: solid 2px black;
+    padding: 10px;
+    margin: 0 5px;
+}
+
+section.stage h1 {
+    font-size: medium;
+    border-bottom: black solid 2px;
+}
+
+section.stage ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+section.stage li.failed {
+    color: red;
+}
+
+section.stage li.passed {
+    color: green;
+}
+
+section.stage li.running {
+    background: url("running.gif") no-repeat right;
+}
