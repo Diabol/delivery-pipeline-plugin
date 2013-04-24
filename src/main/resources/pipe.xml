@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="pipe.xslt"?>
+<view>
+    <pipe name="Magic module" status="RUNNING" id="#3546" started="2013-04-28 01:02:03Z">
+        <stage name="Commit" status="RUNNING" started="2013-04-28 01:02:03Z">
+            <task name="Compile" status="PASSED" duration="1234"/>
+            <task name="Unit tests" status="RUNNING" started="2013-04-28 01:02:10Z"/>
+            <task name="Code analysis" status="RUNNING" duration="2013-04-28 01:02:11Z"/>
+        </stage>
+        <stage name="Acceptance test" status="IDLE">
+            <task name="Deploy to UAT"/>
+            <task name="Smoke tests"/>
+            <task name="Manual tests"/>
+        </stage>
+        <stage name="Deploy" status="IDLE">
+            <task name="Live deploy"/>
+        </stage>
+    </pipe>
+    <pipe name="Another module" status="IDLE">
+        <stage name="Commit" status="IDLE">
+            <task name="Compile" status="IDLE"/>
+            <task name="Unit tests" status="IDLE"/>
+            <task name="Code analysis" status="IDLE"/>
+        </stage>
+        <stage name="Acceptance test" status="IDLE">
+            <task name="Deploy to UAT"/>
+            <task name="Smoke tests"/>
+            <task name="Manual tests"/>
+        </stage>
+        <stage name="Deploy" status="IDLE">
+            <task name="Live deploy"/>
+        </stage>
+    </pipe>
+</view>
