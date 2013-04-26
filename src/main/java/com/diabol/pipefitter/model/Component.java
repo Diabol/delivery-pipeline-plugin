@@ -1,5 +1,7 @@
 package com.diabol.pipefitter.model;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 import static com.google.common.base.Objects.toStringHelper;
 
 /**
@@ -9,8 +11,10 @@ import static com.google.common.base.Objects.toStringHelper;
  */
 public abstract class Component
 {
+    @XmlAttribute
     private final String name;
 
+    @XmlAttribute
     private final Status status;
 
     protected Component(String name)
