@@ -39,7 +39,7 @@
                 <task name="Code analysis" status="RUNNING" duration="2013-04-28 01:02:11Z"/>
             </stage>
             <stage name="Acceptance test" status="IDLE">
-                <task name="Deploy to UAT"/>
+                <task name="Deploy to UAT" status="FAILED"/>
                 <task name="Smoke tests"/>
                 <task name="Manual tests"/>
             </stage>
