@@ -12,9 +12,12 @@ import java.io.IOException;
  */
 public class XmlModelRepository
 {
-    private final static ThreadLocal<JAXBContext> JAXB_CONTEXT = new ThreadLocal<JAXBContext>() {
-        @Override protected JAXBContext initialValue() {
-            try {
+    private final static ThreadLocal<JAXBContext> JAXB_CONTEXT = new ThreadLocal<JAXBContext>()
+    {
+        @Override protected JAXBContext initialValue()
+        {
+            try
+            {
                 return JAXBContext.newInstance(View.class);
             }
             catch (JAXBException e)

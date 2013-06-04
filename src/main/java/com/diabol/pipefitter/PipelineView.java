@@ -3,19 +3,17 @@ package com.diabol.pipefitter;
 import com.diabol.pipefitter.dashboard.View;
 import com.google.inject.Inject;
 import hudson.Extension;
-import hudson.Util;
-import hudson.model.*;
-import hudson.util.FormValidation;
+import hudson.model.Item;
+import hudson.model.TopLevelItem;
+import hudson.model.ViewDescriptor;
+import hudson.model.ViewGroup;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
 import static java.util.Collections.unmodifiableCollection;
@@ -77,7 +75,7 @@ public class PipelineView extends hudson.model.View
     {
         public String getDisplayName()
         {
-            return "Pipeline view";
+            return "Pipeline View";
         }
 
 
