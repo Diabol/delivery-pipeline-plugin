@@ -1,0 +1,9 @@
+# Intellij files
+
+*.iml
+.idea/*
+target/*
+
+# Jenkins workplace files
+
+work/*
