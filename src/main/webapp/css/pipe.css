@@ -1,5 +1,5 @@
 body {
-    background: url("../../resources/diabol.png") no-repeat right bottom;
+    background: url("../images/diabol.png") no-repeat right bottom;
     font-family: sans-serif;
 }
 
@@ -62,5 +62,5 @@ section.stage li.passed {
 }
 
 section.stage li.running {
-    background: url("../../resources/running.gif") no-repeat right;
+    background: url("../images/running.gif") no-repeat right;
 }

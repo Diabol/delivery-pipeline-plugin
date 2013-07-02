@@ -21,6 +21,6 @@ public class Product
 
     public Product(String name) {
         this.name = name;
-        pipelines = new ArrayList<>();
+        pipelines = new ArrayList<Pipeline>();
     }
 }
