@@ -5,7 +5,7 @@
     <xsl:template match="view">
         <html>
             <head>
-                <link rel="stylesheet" type="text/css" href="pipe.css"/>
+                <link rel="stylesheet" type="text/css" href="css/pipe.css"/>
             </head>
             <body>
                 <xsl:apply-templates select="product"/>
