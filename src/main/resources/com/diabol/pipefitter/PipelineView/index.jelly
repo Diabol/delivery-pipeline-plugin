@@ -1,0 +1,15 @@
+<j:jelly xmlns:x="jelly:xml" xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <!--<j:set var="title" type="String" value="${it.getTitle()}" />-->
+
+    <html>
+        <body>
+            <h1>${it.getTitle()}</h1>
+
+            <ol>
+                <li>tjoho</li>
+            </ol>
+        </body>
+    </html>
+
+</j:jelly>

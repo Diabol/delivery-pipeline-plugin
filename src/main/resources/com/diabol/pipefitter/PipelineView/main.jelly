@@ -1,12 +1,3 @@
-<!--
-  Edit View Page
--->
-<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-
-	<f:entry title="Pipeline View Title" field="title">
-		<f:textbox/>
-	</f:entry>
-
-
+    Main page...
 </j:jelly>
