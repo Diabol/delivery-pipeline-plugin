@@ -1,7 +1,8 @@
 package com.diabol.pipefitter;
 
 import com.diabol.pipefitter.model.Pipeline;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.diabol.pipefitter.model.Stage;
+import com.diabol.pipefitter.model.Task;
 import hudson.Extension;
 import hudson.model.*;
 import hudson.util.ListBoxModel;
@@ -14,10 +15,12 @@ import org.kohsuke.stapler.StaplerResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
 import static hudson.model.Descriptor.FormException;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableCollection;
 
 /**
@@ -90,14 +93,34 @@ public class PipelineView extends View
         this.firstJob = firstJob;
     }
 
-    public Pipeline getPipeline() {
-        Item first = Jenkins.getInstance().getItemByFullName(firstJob);
+    public Pipeline getPipeline()
+    {
+        AbstractProject first = Jenkins.getInstance().getItem(firstJob, Jenkins.getInstance(), AbstractProject.class);
 
+        List<Stage> stages = newArrayList();
+        for(AbstractProject job : getAllDownstreamJobs(first))
+        {
+            Task task = new Task("Task");
+            Stage stage = new Stage(job.getDisplayName(), singletonList(task));
+            stages.add(stage);
+        }
 
-        return new Pipeline("Hepp");
+        return new Pipeline("Hepp", stages);
     }
 
+    private List<AbstractProject> getAllDownstreamJobs(AbstractProject first)
+    {
+        List<AbstractProject> jobs = newArrayList();
+        jobs.add(first);
 
+        List<AbstractProject> sune = first.getDownstreamProjects();
+        for (AbstractProject project : sune)
+        {
+            jobs.addAll(getAllDownstreamJobs(project));
+        }
+
+        return jobs;
+    }
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor

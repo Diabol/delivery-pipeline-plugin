@@ -28,4 +28,14 @@ public abstract class Component
     {
         return toStringHelper(this).add("name", name).add("status", status).toString();
     }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public Status getStatus()
+    {
+        return status;
+    }
 }

@@ -1,5 +1,7 @@
 package com.diabol.pipefitter.model;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
@@ -14,5 +16,16 @@ public class Stage extends Component
     public Stage(String name)
     {
         super(name);
+    }
+
+    public Stage(String name, List<Task> tasks)
+    {
+        super(name);
+        this.tasks = ImmutableList.copyOf(tasks);
+    }
+
+    public List<Task> getTasks()
+    {
+        return tasks;
     }
 }

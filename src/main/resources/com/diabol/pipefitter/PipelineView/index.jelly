@@ -6,8 +6,12 @@
         <body>
             <h1>${it.getTitle()}</h1>
 
+            <j:set var="pipeline" value="${it.getPipeline()}"/>
+
             <ol>
-                <li>tjoho</li>
+            <j:forEach items="${pipeline.getStages()}" var="stage">
+                <li>${stage.getName()}</li>
+            </j:forEach>
             </ol>
         </body>
     </html>
