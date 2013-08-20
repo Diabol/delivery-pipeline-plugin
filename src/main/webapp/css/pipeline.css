@@ -1,0 +1,13 @@
+.stage {
+    float: left;
+    width: 200px;
+    border: black;
+    border-style: solid;
+    border-width: 1px;
+    padding: 10px;
+    margin-left: 10px;
+}
+
+.stage h1 {
+    font-size: 14px;
+}

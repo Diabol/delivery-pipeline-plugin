@@ -1,7 +1,5 @@
 <j:jelly xmlns:x="jelly:xml" xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-    <!--<j:set var="title" type="String" value="${it.getTitle()}" />-->
-
     <html>
         <head>
             <!-- Latest compiled and minified CSS -->
@@ -9,6 +7,8 @@
 
             <!-- Optional theme -->
             <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"/>
+
+            <link rel="stylesheet" href="/jenkins/plugin/pipefitter/css/pipeline.css"/>
 
             <!-- Latest compiled and minified JavaScript -->
             <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
@@ -25,11 +25,33 @@
             </j:forEach>
             </ol>
             <j:forEach items="${pipeline.getStages()}" var="stage">
-                <div style="float: left; padding: 20 20 20 20; border: 1px;">
+                <div class="stage">
                     <h1> ${stage.getName()}</h1>
                     <div>
                         <j:forEach items="${stage.getTasks()}" var="task">
-                            <div>${task.getName()} ${task.getStatus()}</div>
+                            <j:if test="${task.getStatus().isRunning()}">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
+                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    </div>
+                                </div>
+                            </j:if>
+                            <j:if test="${task.getStatus().isSuccess()}">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
+                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    </div>
+                                </div>
+                            </j:if>
+                            <j:if test="${task.getStatus().isFailed()}">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
+                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    </div>
+                                </div>
+                            </j:if>
+
+
                         </j:forEach>
                     </div>
                 </div>

@@ -88,31 +88,15 @@ public class PipelineView extends View {
 
         List<Stage> stages = newArrayList();
         for (AbstractProject job : getAllDownstreamJobs(first)) {
-            Status status = Status.UNKNOWN;
             AbstractBuild build = job.getLastBuild();
-            if (build != null) {
-                if (build.isBuilding()) {
-                    status = Status.RUNNING;
-                } else {
-                    if (build.getResult().equals(Result.ABORTED)) {
-                        status = Status.CANCELLED;
-                    }
-
-                    if (build.getResult().equals(Result.SUCCESS)) {
-                        status = Status.SUCCESS;
-                    }
-
-                    if (build.getResult().equals(Result.FAILURE)) {
-                        status = Status.FAILED;
-                    }
-
-                    if (build.getResult().equals(Result.UNSTABLE)) {
-                        status = Status.UNSTABLE;
-                    }
-                }
+            Status status = resolveStatus(build);
+            Task task;
+            if (status == Status.RUNNING) {
+                task = new Task(job.getDisplayName(), status, (int) Math.round((double) (System.currentTimeMillis() - build.getTimestamp().getTimeInMillis()) / build.getEstimatedDuration() * 100.0));
+            } else {
+                task = new Task(job.getDisplayName(), status, 100);
             }
 
-            Task task = new Task(job.getDisplayName(), status);
 
             Stage stage = new Stage(job.getDisplayName(), singletonList(task));
             stages.add(stage);
@@ -132,6 +116,35 @@ public class PipelineView extends View {
 
         return jobs;
     }
+
+
+    private Status resolveStatus(AbstractBuild build) {
+        Status status = Status.UNKNOWN;
+        if (build != null) {
+            if (build.isBuilding()) {
+                status = Status.RUNNING;
+            } else {
+                if (build.getResult().equals(Result.ABORTED)) {
+                    status = Status.CANCELLED;
+                }
+
+                if (build.getResult().equals(Result.SUCCESS)) {
+                    status = Status.SUCCESS;
+                }
+
+                if (build.getResult().equals(Result.FAILURE)) {
+                    status = Status.FAILED;
+                }
+
+                if (build.getResult().equals(Result.UNSTABLE)) {
+                    status = Status.UNSTABLE;
+                }
+            }
+
+        }
+        return status;
+    }
+
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
