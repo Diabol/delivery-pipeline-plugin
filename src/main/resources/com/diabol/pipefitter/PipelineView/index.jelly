@@ -30,7 +30,7 @@
                     <div>
                         <j:forEach items="${stage.getTasks()}" var="task">
                             <j:if test="${task.getStatus().isRunning()}">
-                                <div class="progress">
+                                <div class="progress progress-striped active">
                                     <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
                                         <span class="sr-only">${task.getPercentDone()}% Complete</span>
                                     </div>
