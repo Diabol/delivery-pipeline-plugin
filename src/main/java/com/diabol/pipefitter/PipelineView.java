@@ -1,8 +1,12 @@
 package com.diabol.pipefitter;
 
+import com.diabol.pipefitter.model.Pipeline;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import hudson.Extension;
 import hudson.model.*;
+import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -27,12 +31,15 @@ public class PipelineView extends View
     private String title;
     private String numberOfBuilds;
     private Collection<TopLevelItem> items = newArrayList();
+    private String firstJob;
+
 
     @DataBoundConstructor
-    public PipelineView(String name, String title, ViewGroup owner)
+    public PipelineView(String name, String title, String firstJob, ViewGroup owner)
     {
         super(name, owner);
         this.title = title;
+        this.firstJob = firstJob;
     }
 
     @Override
@@ -75,6 +82,23 @@ public class PipelineView extends View
         this.title = title;
     }
 
+    public String getFirstJob() {
+        return firstJob;
+    }
+
+    public void setFirstJob(String firstJob) {
+        this.firstJob = firstJob;
+    }
+
+    public Pipeline getPipeline() {
+        Item first = Jenkins.getInstance().getItemByFullName(firstJob);
+
+
+        return new Pipeline("Hepp");
+    }
+
+
+
     @Extension
     public static class DescriptorImpl extends ViewDescriptor
     {
@@ -82,5 +106,20 @@ public class PipelineView extends View
         {
             return "Pipeline View";
         }
+        /**
+         * Display Job List Item in the Edit View Page
+         *
+         * @param context What to resolve relative job names against?
+         * @return ListBoxModel
+         */
+        public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
+            final hudson.util.ListBoxModel options = new hudson.util.ListBoxModel();
+            for (final AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+                options.add(/* TODO 1.515: p.getRelativeDisplayNameFrom(context) */p.getFullDisplayName(),
+                        p.getRelativeNameFrom(context));
+            }
+            return options;
+        }
+
     }
 }

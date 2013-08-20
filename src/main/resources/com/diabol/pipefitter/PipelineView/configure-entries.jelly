@@ -7,6 +7,9 @@
 	<f:entry title="Pipeline View Title" field="title">
 		<f:textbox/>
 	</f:entry>
+    <f:entry title="${%Select Initial Job}" field="firstJob">
+        <f:select />
+    </f:entry>
 
 
 </j:jelly>
