@@ -2,6 +2,7 @@ package com.diabol.pipefitter;
 
 import com.diabol.pipefitter.model.Pipeline;
 import com.diabol.pipefitter.model.Stage;
+import com.diabol.pipefitter.model.Status;
 import com.diabol.pipefitter.model.Task;
 import hudson.Extension;
 import hudson.model.*;
@@ -26,62 +27,51 @@ import static java.util.Collections.unmodifiableCollection;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class PipelineView extends View
-{
+public class PipelineView extends View {
     private static final Logger LOGGER = Logger.getLogger(PipelineView.class.getName());
 
-    private int refreshFrequency;
     private String title;
-    private String numberOfBuilds;
     private Collection<TopLevelItem> items = newArrayList();
     private String firstJob;
 
 
     @DataBoundConstructor
-    public PipelineView(String name, String title, String firstJob, ViewGroup owner)
-    {
+    public PipelineView(String name, String title, String firstJob, ViewGroup owner) {
         super(name, owner);
         this.title = title;
         this.firstJob = firstJob;
     }
 
     @Override
-    public Collection<TopLevelItem> getItems()
-    {
+    public Collection<TopLevelItem> getItems() {
         return unmodifiableCollection(newArrayList(items));
     }
 
     @Override
-    public boolean contains(TopLevelItem item)
-    {
+    public boolean contains(TopLevelItem item) {
         return false;
     }
 
     @Override
-    public void onJobRenamed(Item item, String oldName, String newName)
-    {
+    public void onJobRenamed(Item item, String oldName, String newName) {
         // Replace in model
     }
 
     @Override
-    protected void submit(StaplerRequest req) throws IOException, ServletException, FormException
-    {
+    protected void submit(StaplerRequest req) throws IOException, ServletException, FormException {
         req.bindJSON(this, req.getSubmittedForm());
     }
 
     @Override
-    public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException
-    {
+    public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         return getOwner().getPrimaryView().doCreateItem(req, rsp);
     }
 
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -93,29 +83,50 @@ public class PipelineView extends View
         this.firstJob = firstJob;
     }
 
-    public Pipeline getPipeline()
-    {
+    public Pipeline getPipeline() {
         AbstractProject first = Jenkins.getInstance().getItem(firstJob, Jenkins.getInstance(), AbstractProject.class);
 
         List<Stage> stages = newArrayList();
-        for(AbstractProject job : getAllDownstreamJobs(first))
-        {
-            Task task = new Task("Task");
+        for (AbstractProject job : getAllDownstreamJobs(first)) {
+            Status status = Status.UNKNOWN;
+            AbstractBuild build = job.getLastBuild();
+            if (build != null) {
+                if (build.isBuilding()) {
+                    status = Status.RUNNING;
+                } else {
+                    if (build.getResult().equals(Result.ABORTED)) {
+                        status = Status.CANCELLED;
+                    }
+
+                    if (build.getResult().equals(Result.SUCCESS)) {
+                        status = Status.SUCCESS;
+                    }
+
+                    if (build.getResult().equals(Result.FAILURE)) {
+                        status = Status.FAILED;
+                    }
+
+                    if (build.getResult().equals(Result.UNSTABLE)) {
+                        status = Status.UNSTABLE;
+                    }
+                }
+            }
+
+            Task task = new Task(job.getDisplayName(), status);
+
             Stage stage = new Stage(job.getDisplayName(), singletonList(task));
             stages.add(stage);
         }
 
-        return new Pipeline("Hepp", stages);
+        return new Pipeline(title, stages);
     }
 
-    private List<AbstractProject> getAllDownstreamJobs(AbstractProject first)
-    {
+    private List<AbstractProject> getAllDownstreamJobs(AbstractProject first) {
         List<AbstractProject> jobs = newArrayList();
         jobs.add(first);
 
-        List<AbstractProject> sune = first.getDownstreamProjects();
-        for (AbstractProject project : sune)
-        {
+        List<AbstractProject> downstreamProjects = first.getDownstreamProjects();
+        for (AbstractProject project : downstreamProjects) {
             jobs.addAll(getAllDownstreamJobs(project));
         }
 
@@ -123,12 +134,11 @@ public class PipelineView extends View
     }
 
     @Extension
-    public static class DescriptorImpl extends ViewDescriptor
-    {
-        public String getDisplayName()
-        {
+    public static class DescriptorImpl extends ViewDescriptor {
+        public String getDisplayName() {
             return "Pipeline View";
         }
+
         /**
          * Display Job List Item in the Edit View Page
          *
@@ -138,11 +148,11 @@ public class PipelineView extends View
         public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
             final hudson.util.ListBoxModel options = new hudson.util.ListBoxModel();
             for (final AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                options.add(/* TODO 1.515: p.getRelativeDisplayNameFrom(context) */p.getFullDisplayName(),
-                        p.getRelativeNameFrom(context));
+                options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
             }
             return options;
         }
 
     }
+
 }

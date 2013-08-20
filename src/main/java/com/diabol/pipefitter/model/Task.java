@@ -5,8 +5,7 @@ package com.diabol.pipefitter.model;
  */
 public class Task extends Component
 {
-    public Task(String name)
-    {
-        super(name);
+    public Task(String name, Status status) {
+        super(name, status);
     }
 }

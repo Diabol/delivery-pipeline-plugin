@@ -20,7 +20,12 @@ public abstract class Component
     protected Component(String name)
     {
         this.name = name;
-        this.status = Status.createIdle();
+        this.status = Status.UNKNOWN;
+    }
+
+    protected Component(String name, Status status) {
+        this.name = name;
+        this.status = status;
     }
 
     @Override
