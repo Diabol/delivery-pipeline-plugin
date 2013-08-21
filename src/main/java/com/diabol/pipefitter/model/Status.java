@@ -18,4 +18,8 @@ public enum Status {
         return this == FAILED;
     }
 
+    public boolean isNotRunned() {
+        return this == NOTRUNNED;
+    }
+
 }

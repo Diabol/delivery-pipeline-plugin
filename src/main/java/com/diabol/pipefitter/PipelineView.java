@@ -85,21 +85,31 @@ public class PipelineView extends View {
 
     public Pipeline getPipeline() {
         AbstractProject first = Jenkins.getInstance().getItem(firstJob, Jenkins.getInstance(), AbstractProject.class);
+        AbstractBuild prevBuild = null;
 
         List<Stage> stages = newArrayList();
+        boolean isFirst = true;
         for (AbstractProject job : getAllDownstreamJobs(first)) {
             AbstractBuild build = job.getLastBuild();
-            Status status = resolveStatus(build);
             Task task;
-            if (status == Status.RUNNING) {
-                task = new Task(job.getDisplayName(), status, (int) Math.round((double) (System.currentTimeMillis() - build.getTimestamp().getTimeInMillis()) / build.getEstimatedDuration() * 100.0));
+            if (isFirst || build.equals(getDownstreamBuild(job, prevBuild))) {
+                Status status = resolveStatus(build);
+                if (status == Status.RUNNING) {
+                    task = new Task(job.getDisplayName(), status, (int) Math.round((double) (System.currentTimeMillis() - build.getTimestamp().getTimeInMillis()) / build.getEstimatedDuration() * 100.0));
+                } else {
+                    task = new Task(job.getDisplayName(), status, 100);
+                }
+                prevBuild = build;
             } else {
-                task = new Task(job.getDisplayName(), status, 100);
+                task = new Task(job.getDisplayName(), Status.NOTRUNNED, 0);
+                prevBuild = null;
             }
+
 
 
             Stage stage = new Stage(job.getDisplayName(), singletonList(task));
             stages.add(stage);
+            isFirst = false;
         }
 
         return new Pipeline(title, stages);
@@ -145,6 +155,26 @@ public class PipelineView extends View {
         return status;
     }
 
+    public static AbstractBuild<?, ?> getDownstreamBuild(final AbstractProject<?, ?> downstreamProject,
+                                                         final AbstractBuild<?, ?> upstreamBuild) {
+        if ((downstreamProject != null) && (upstreamBuild != null)) {
+            final List<AbstractBuild<?, ?>> downstreamBuilds = (List<AbstractBuild<?, ?>>) downstreamProject.getBuilds();
+            for (final AbstractBuild<?, ?> innerBuild : downstreamBuilds) {
+                for (final CauseAction action : innerBuild.getActions(CauseAction.class)) {
+                    for (final Cause cause : action.getCauses()) {
+                        if (cause instanceof Cause.UpstreamCause) {
+                            final Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
+                            if (upstreamCause.getUpstreamProject().equals(upstreamBuild.getProject().getFullName())
+                                    && (upstreamCause.getUpstreamBuild() == upstreamBuild.getNumber())) {
+                                return innerBuild;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
