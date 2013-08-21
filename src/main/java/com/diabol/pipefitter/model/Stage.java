@@ -14,6 +14,11 @@ public class Stage extends Component
     @XmlElement(name = "task")
     private List<Task> tasks;
 
+    private Stage()
+    {
+        super(null, null);
+    }
+
     public Stage(String name, List<Task> tasks)
     {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating
