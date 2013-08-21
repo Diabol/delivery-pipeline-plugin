@@ -2,8 +2,9 @@ package com.diabol.pipefitter;
 
 import com.diabol.pipefitter.model.Pipeline;
 import com.diabol.pipefitter.model.Stage;
-import com.diabol.pipefitter.model.Status;
+import com.diabol.pipefitter.model.status.Status;
 import com.diabol.pipefitter.model.Task;
+import com.diabol.pipefitter.model.status.StatusFactory;
 import hudson.Extension;
 import hudson.model.*;
 import hudson.util.ListBoxModel;
@@ -20,7 +21,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
+import static com.diabol.pipefitter.model.status.StatusFactory.idle;
+import static com.diabol.pipefitter.model.status.StatusFactory.running;
 import static hudson.model.Descriptor.FormException;
+import static hudson.model.Result.*;
+import static java.lang.Math.round;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableCollection;
 
@@ -88,28 +94,20 @@ public class PipelineView extends View {
         AbstractBuild prevBuild = null;
 
         List<Stage> stages = newArrayList();
-        boolean isFirst = true;
         for (AbstractProject job : getAllDownstreamJobs(first)) {
             AbstractBuild build = job.getLastBuild();
             Task task;
-            if (isFirst || build.equals(getDownstreamBuild(job, prevBuild))) {
-                Status status = resolveStatus(build);
-                if (status == Status.RUNNING) {
-                    task = new Task(job.getDisplayName(), status, (int) Math.round((double) (System.currentTimeMillis() - build.getTimestamp().getTimeInMillis()) / build.getEstimatedDuration() * 100.0));
-                } else {
-                    task = new Task(job.getDisplayName(), status, 100);
-                }
+            if (stages.isEmpty() || build != null && build.equals(getDownstreamBuild(job, prevBuild))) {
+                Status status = build != null? resolveStatus(build): idle();
+                task = new Task(job.getDisplayName(), status);
                 prevBuild = build;
             } else {
-                task = new Task(job.getDisplayName(), Status.NOTRUNNED, 0);
+                task = new Task(job.getDisplayName(), idle());
                 prevBuild = null;
             }
 
-
-
             Stage stage = new Stage(job.getDisplayName(), singletonList(task));
             stages.add(stage);
-            isFirst = false;
         }
 
         return new Pipeline(title, stages);
@@ -128,31 +126,23 @@ public class PipelineView extends View {
     }
 
 
-    private Status resolveStatus(AbstractBuild build) {
-        Status status = Status.UNKNOWN;
-        if (build != null) {
-            if (build.isBuilding()) {
-                status = Status.RUNNING;
-            } else {
-                if (build.getResult().equals(Result.ABORTED)) {
-                    status = Status.CANCELLED;
-                }
-
-                if (build.getResult().equals(Result.SUCCESS)) {
-                    status = Status.SUCCESS;
-                }
-
-                if (build.getResult().equals(Result.FAILURE)) {
-                    status = Status.FAILED;
-                }
-
-                if (build.getResult().equals(Result.UNSTABLE)) {
-                    status = Status.UNSTABLE;
-                }
-            }
-
+    private Status resolveStatus(AbstractBuild build)
+    {
+        if (build.isBuilding()) {
+            return running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
+                                       / build.getEstimatedDuration()));
         }
-        return status;
+
+        Result result = build.getResult();
+        if (ABORTED.equals(result))
+            return StatusFactory.cancelled();
+        else if (SUCCESS.equals(result))
+            return StatusFactory.success();
+        else if (FAILURE.equals(result))
+            return StatusFactory.failed();
+        else if (UNSTABLE.equals(result))
+            return StatusFactory.unstable();
+        throw new IllegalStateException("Result " + result + " not recognized.");
     }
 
     public static AbstractBuild<?, ?> getDownstreamBuild(final AbstractProject<?, ?> downstreamProject,
@@ -197,5 +187,4 @@ public class PipelineView extends View {
         }
 
     }
-
 }

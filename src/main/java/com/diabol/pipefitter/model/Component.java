@@ -1,5 +1,7 @@
 package com.diabol.pipefitter.model;
 
+import com.diabol.pipefitter.model.status.Status;
+
 import javax.xml.bind.annotation.XmlAttribute;
 
 import static com.google.common.base.Objects.toStringHelper;
@@ -17,13 +19,8 @@ public abstract class Component
     @XmlAttribute
     private final Status status;
 
-    protected Component(String name)
+    protected Component(String name, Status status)
     {
-        this.name = name;
-        this.status = Status.UNKNOWN;
-    }
-
-    protected Component(String name, Status status) {
         this.name = name;
         this.status = status;
     }

@@ -1,5 +1,6 @@
 package com.diabol.pipefitter.model;
 
+import com.diabol.pipefitter.model.status.StatusFactory;
 import com.google.common.collect.ImmutableList;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -13,14 +14,9 @@ public class Stage extends Component
     @XmlElement(name = "task")
     private List<Task> tasks;
 
-    public Stage(String name)
-    {
-        super(name);
-    }
-
     public Stage(String name, List<Task> tasks)
     {
-        super(name);
+        super(name, StatusFactory.idle()); // todo: IDLE is cheating
         this.tasks = ImmutableList.copyOf(tasks);
     }
 

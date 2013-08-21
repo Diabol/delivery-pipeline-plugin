@@ -30,30 +30,31 @@
                     <div>
                         <j:forEach items="${stage.getTasks()}" var="task">
                             <j:if test="${task.getStatus().isRunning()}">
+                                <j:set var="status" value="${task.getStatus()}"/>
                                 <div class="progress progress-striped active">
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
-                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${status.getPercentage()}" aria-valuemin="0" aria-valuemax="100" style="width: ${status.getPercentage()}%">
+                                        <span class="sr-only">${status.getPercentage()}% Complete</span>
                                     </div>
                                 </div>
                             </j:if>
                             <j:if test="${task.getStatus().isSuccess()}">
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
-                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only">100% Complete</span>
                                     </div>
                                 </div>
                             </j:if>
                             <j:if test="${task.getStatus().isFailed()}">
                                 <div class="progress">
-                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
-                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                        <span class="sr-only">100% Complete</span>
                                     </div>
                                 </div>
                             </j:if>
-                            <j:if test="${task.getStatus().isNotRunned()}">
+                            <j:if test="${task.getStatus().isIdle()}">
                                 <div class="progress progress-striped active">
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${task.getPercentDone()}" aria-valuemin="0" aria-valuemax="100" style="width: ${task.getPercentDone()}%">
-                                        <span class="sr-only">${task.getPercentDone()}% Complete</span>
+                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                        <span class="sr-only">0% Complete</span>
                                     </div>
                                 </div>
                             </j:if>
