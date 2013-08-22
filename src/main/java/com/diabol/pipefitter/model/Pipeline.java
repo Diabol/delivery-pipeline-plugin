@@ -1,18 +1,27 @@
 package com.diabol.pipefitter.model;
 
+import com.diabol.pipefitter.model.status.Status;
 import com.diabol.pipefitter.model.status.StatusFactory;
 import com.google.common.collect.ImmutableList;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
+@XmlRootElement
 public class Pipeline extends Component
 {
     @XmlElement(name = "stage")
     private List<Stage> stages;
+
+    private Pipeline()
+    {
+        super(null, null);
+    }
 
     public Pipeline(String name, List<Stage> stages)
     {
@@ -23,5 +32,22 @@ public class Pipeline extends Component
     public List<Stage> getStages()
     {
         return stages;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(super.hashCode(), stages);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return o == this || o instanceof Pipeline && equals((Pipeline) o);
+    }
+
+    private boolean equals(Pipeline o)
+    {
+        return super.equals(o) && Objects.equals(stages, o.stages);
     }
 }

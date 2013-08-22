@@ -1,5 +1,6 @@
 package com.diabol.pipefitter.model.status;
 
+
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */

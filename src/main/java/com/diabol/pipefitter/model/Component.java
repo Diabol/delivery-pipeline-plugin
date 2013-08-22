@@ -4,6 +4,8 @@ import com.diabol.pipefitter.model.status.Status;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import java.util.Objects;
+
 import static com.google.common.base.Objects.toStringHelper;
 
 /**
@@ -16,7 +18,7 @@ public abstract class Component
     @XmlAttribute
     private final String name;
 
-    @XmlAttribute
+    @XmlAttribute(required = false)
     private final Status status;
 
     protected Component(String name, Status status)
@@ -39,5 +41,22 @@ public abstract class Component
     public Status getStatus()
     {
         return status;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name, status);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return this == o || o instanceof Component && equals((Component) o);
+    }
+
+    private boolean equals(Component o)
+    {
+        return Objects.equals(name, o.name) && Objects.equals(status, o.status);
     }
 }

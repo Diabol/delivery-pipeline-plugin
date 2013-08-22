@@ -5,6 +5,13 @@ package com.diabol.pipefitter.model.status;
  */
 public class StatusFactory
 {
+    public static Status valueOf(String v)
+    {
+        if (v.startsWith("RUNNING "))
+            return running(25); // todo: Acutally parse percentage
+        else
+            return StatusEnum.valueOf(v);
+    }
 
     private enum StatusEnum implements Status
     {

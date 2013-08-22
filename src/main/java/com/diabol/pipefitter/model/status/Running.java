@@ -15,4 +15,10 @@ class Running implements Status
     @Override public boolean isFailed() { return false; }
     @Override public boolean isStarted() { return false; }
     @Override public boolean isIdle() { return false; }
+
+    @Override
+    public String toString()
+    {
+        return "RUNNING " + percentage + "%";
+    }
 }
