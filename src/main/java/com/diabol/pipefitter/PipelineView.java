@@ -89,41 +89,31 @@ public class PipelineView extends View {
         this.firstJob = firstJob;
     }
 
-    public Pipeline getPipeline() {
-        AbstractProject first = Jenkins.getInstance().getItem(firstJob, Jenkins.getInstance(), AbstractProject.class);
-        AbstractBuild prevBuild = null;
+    public Pipeline getPipeline()
+    {
+        AbstractProject firstJob = Jenkins.getInstance().getItem(this.firstJob, Jenkins.getInstance(), AbstractProject.class);
+        return PipelineFactory.extractPipeline(getDisplayName(), firstJob);
 
-        List<Stage> stages = newArrayList();
-        for (AbstractProject job : getAllDownstreamJobs(first)) {
-            PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
-            AbstractBuild build = job.getLastBuild();
-            Task task;
-            if (stages.isEmpty() || build != null && build.equals(getDownstreamBuild(job, prevBuild))) {
-                Status status = build != null? resolveStatus(build): idle();
-                task = new Task(job.getDisplayName(), status);
-                prevBuild = build;
-            } else {
-                task = new Task(job.getDisplayName(), idle());
-                prevBuild = null;
-            }
-
-            Stage stage = new Stage(job.getDisplayName(), singletonList(task));
-            stages.add(stage);
-        }
-
-        return new Pipeline(title, stages);
-    }
-
-    private List<AbstractProject> getAllDownstreamJobs(AbstractProject first) {
-        List<AbstractProject> jobs = newArrayList();
-        jobs.add(first);
-
-        List<AbstractProject> downstreamProjects = first.getDownstreamProjects();
-        for (AbstractProject project : downstreamProjects) {
-            jobs.addAll(getAllDownstreamJobs(project));
-        }
-
-        return jobs;
+//        AbstractBuild prevBuild = null;
+//        List<Stage> stages = newArrayList();
+//        for (AbstractProject job : PipelineFactory.getAllDownstreamJobs(first)) {
+//            PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
+//            AbstractBuild build = job.getLastBuild();
+//            Task task;
+//            if (stages.isEmpty() || build != null && build.equals(getDownstreamBuild(job, prevBuild))) {
+//                Status status = build != null? resolveStatus(build): idle();
+//                task = new Task(job.getDisplayName(), status);
+//                prevBuild = build;
+//            } else {
+//                task = new Task(job.getDisplayName(), idle());
+//                prevBuild = null;
+//            }
+//
+//            Stage stage = new Stage(job.getDisplayName(), singletonList(task));
+//            stages.add(stage);
+//        }
+//
+//        return new Pipeline(title, stages);
     }
 
 
