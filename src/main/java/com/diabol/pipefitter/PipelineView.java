@@ -95,7 +95,7 @@ public class PipelineView extends View {
 
         List<Stage> stages = newArrayList();
         for (AbstractProject job : getAllDownstreamJobs(first)) {
-            PipelinePlugin.PipelineProperty property = (PipelinePlugin.PipelineProperty) job.getProperty(PipelinePlugin.PipelineProperty.class);
+            PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             AbstractBuild build = job.getLastBuild();
             Task task;
             if (stages.isEmpty() || build != null && build.equals(getDownstreamBuild(job, prevBuild))) {
