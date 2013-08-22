@@ -1,4 +1,4 @@
-package com.diabol.pipefitter.model.status;
+package se.diabol.pipefitter.model.status;
 
 
 /**

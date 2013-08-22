@@ -1,6 +1,7 @@
-package com.diabol.pipefitter.model;
+package se.diabol.pipefitter.model;
 
-import com.diabol.pipefitter.model.status.Status;
+import se.diabol.pipefitter.model.status.Status;
+import se.diabol.pipefitter.model.status.Status;
 
 import javax.xml.bind.annotation.XmlAttribute;
 

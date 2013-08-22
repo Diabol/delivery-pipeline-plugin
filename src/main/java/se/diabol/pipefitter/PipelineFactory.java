@@ -1,17 +1,21 @@
-package com.diabol.pipefitter;
+package se.diabol.pipefitter;
 
-import com.diabol.pipefitter.model.Pipeline;
-import com.diabol.pipefitter.model.Stage;
-import com.diabol.pipefitter.model.Task;
+import se.diabol.pipefitter.model.Pipeline;
+import se.diabol.pipefitter.model.Stage;
+import se.diabol.pipefitter.model.Task;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import hudson.model.AbstractProject;
+import se.diabol.pipefitter.model.Pipeline;
+import se.diabol.pipefitter.model.Stage;
+import se.diabol.pipefitter.model.Task;
+import se.diabol.pipefitter.model.status.StatusFactory;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.diabol.pipefitter.model.status.StatusFactory.idle;
+import static se.diabol.pipefitter.model.status.StatusFactory.idle;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
@@ -40,7 +44,7 @@ public class PipelineFactory
         for (AbstractProject job : getAllDownstreamJobs(firstJob))
         {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
-            Task task = new Task(job.getDisplayName(), idle()); // todo: Null not idle
+            Task task = new Task(job.getDisplayName(), StatusFactory.idle()); // todo: Null not idle
             String stageName = property != null? property.getStageName(): job.getDisplayName();
             Stage stage = stages.get(stageName);
             if(stage == null)

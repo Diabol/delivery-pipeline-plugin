@@ -1,10 +1,10 @@
-package com.diabol.pipefitter;
+package se.diabol.pipefitter;
 
-import com.diabol.pipefitter.model.Pipeline;
-import com.diabol.pipefitter.model.Stage;
-import com.diabol.pipefitter.model.status.Status;
-import com.diabol.pipefitter.model.Task;
-import com.diabol.pipefitter.model.status.StatusFactory;
+import se.diabol.pipefitter.model.Pipeline;
+import se.diabol.pipefitter.model.Stage;
+import se.diabol.pipefitter.model.status.Status;
+import se.diabol.pipefitter.model.Task;
+import se.diabol.pipefitter.model.status.StatusFactory;
 import hudson.Extension;
 import hudson.model.*;
 import hudson.util.ListBoxModel;
@@ -13,6 +13,9 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import se.diabol.pipefitter.model.Pipeline;
+import se.diabol.pipefitter.model.status.Status;
+import se.diabol.pipefitter.model.status.StatusFactory;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -21,8 +24,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
-import static com.diabol.pipefitter.model.status.StatusFactory.idle;
-import static com.diabol.pipefitter.model.status.StatusFactory.running;
+import static se.diabol.pipefitter.model.status.StatusFactory.idle;
+import static se.diabol.pipefitter.model.status.StatusFactory.running;
 import static hudson.model.Descriptor.FormException;
 import static hudson.model.Result.*;
 import static java.lang.Math.round;
@@ -120,8 +123,8 @@ public class PipelineView extends View {
     private Status resolveStatus(AbstractBuild build)
     {
         if (build.isBuilding()) {
-            return running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
-                                       / build.getEstimatedDuration()));
+            return StatusFactory.running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
+                    / build.getEstimatedDuration()));
         }
 
         Result result = build.getResult();

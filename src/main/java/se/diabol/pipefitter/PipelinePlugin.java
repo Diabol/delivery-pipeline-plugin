@@ -1,4 +1,4 @@
-package com.diabol.pipefitter;
+package se.diabol.pipefitter;
 
 import hudson.Extension;
 import hudson.Plugin;

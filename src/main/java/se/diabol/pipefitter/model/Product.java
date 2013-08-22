@@ -1,4 +1,4 @@
-package com.diabol.pipefitter.model;
+package se.diabol.pipefitter.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

@@ -1,7 +1,8 @@
-package com.diabol.pipefitter.model;
+package se.diabol.pipefitter.model;
 
-import com.diabol.pipefitter.model.status.StatusFactory;
+import se.diabol.pipefitter.model.status.StatusFactory;
 import com.google.common.collect.ImmutableList;
+import se.diabol.pipefitter.model.status.StatusFactory;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
