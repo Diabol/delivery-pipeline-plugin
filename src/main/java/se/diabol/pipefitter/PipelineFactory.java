@@ -44,7 +44,7 @@ public class PipelineFactory
         for (AbstractProject job : getAllDownstreamJobs(firstJob))
         {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
-            Task task = new Task(job.getDisplayName(), StatusFactory.idle()); // todo: Null not idle
+            Task task = new Task(job.getName(), job.getDisplayName(), StatusFactory.idle()); // todo: Null not idle
             String stageName = property != null? property.getStageName(): job.getDisplayName();
             Stage stage = stages.get(stageName);
             if(stage == null)
