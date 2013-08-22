@@ -26,9 +26,11 @@ public class PipelineTest
                                                           asList(new Task("Compile", success())))));
 
         XmlMarshaller.getMarshaller().marshal(pipeline, buffer);
-        Pipeline pipelineCopy = XmlMarshaller.getUnmarshaller()
-                                             .unmarshal(new StreamSource(new StringReader(buffer.toString())),
-                                                        Pipeline.class).getValue();
+        String xml = buffer.toString();
+        Pipeline pipelineCopy
+                = XmlMarshaller.getUnmarshaller()
+                               .unmarshal(new StreamSource(new StringReader(xml)), Pipeline.class)
+                               .getValue();
         assertEquals(pipelineCopy, pipeline);
     }
 }

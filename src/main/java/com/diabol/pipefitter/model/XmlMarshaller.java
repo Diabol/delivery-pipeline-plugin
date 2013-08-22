@@ -22,7 +22,9 @@ public class XmlMarshaller
 
     public static Marshaller getMarshaller() throws JAXBException
     {
-        return context.createMarshaller();
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty("jaxb.formatted.output", true);
+        return marshaller;
     }
 
     static Unmarshaller getUnmarshaller() throws JAXBException
