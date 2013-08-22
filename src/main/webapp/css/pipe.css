@@ -13,7 +13,7 @@ section.pipe {
 }
 
 section.pipe:nth-of-type(1) {
-    background-color: gold;
+    background-color: #fafafa;
 }
 
 section.pipe:nth-of-type(2) {
@@ -34,9 +34,9 @@ section.pipe h1 {
 section.stage {
     display: inline-block;
     height: 150px;
-    min-width: 250px;
+    min-width: 200px;
     vertical-align: top;
-    background: navajowhite;
+    background: white;
     border-radius: 10px;
     border: solid 2px black;
     padding: 10px;

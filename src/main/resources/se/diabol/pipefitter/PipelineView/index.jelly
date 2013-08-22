@@ -1,70 +1,26 @@
 <j:jelly xmlns:x="jelly:xml" xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-
     <html>
         <head>
-            <!-- Latest compiled and minified CSS -->
-            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
-
-            <!-- Optional theme -->
-            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css"/>
-
-            <link rel="stylesheet" href="/jenkins/plugin/pipefitter/css/pipeline.css"/>
-
-            <!-- Latest compiled and minified JavaScript -->
-            <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+            <link rel="stylesheet" href="/jenkins/plugin/pipefitter/css/pipe.css"/>
         </head>
+        <j:set var="pipeline" value="${it.getPipeline()}"/>
 
         <body>
-            <h1>${it.getTitle()}</h1>
-
-            <j:set var="pipeline" value="${it.getPipeline()}"/>
-
-            <ol>
-            <j:forEach items="${pipeline.getStages()}" var="stage">
-                <li>${stage.getName()}</li>
-            </j:forEach>
-            </ol>
-            <j:forEach items="${pipeline.getStages()}" var="stage">
-                <div class="stage">
-                    <h1> ${stage.getName()}</h1>
-                    <div>
-                        <j:forEach items="${stage.getTasks()}" var="task">
-                            <j:if test="${task.getStatus().isRunning()}">
-                                <j:set var="status" value="${task.getStatus()}"/>
-                                <div class="progress progress-striped active">
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="${status.getPercentage()}" aria-valuemin="0" aria-valuemax="100" style="width: ${status.getPercentage()}%">
-                                        <span class="sr-only">${status.getPercentage()}% Complete</span>
-                                    </div>
-                                </div>
-                            </j:if>
-                            <j:if test="${task.getStatus().isSuccess()}">
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                                        <span class="sr-only">100% Complete</span>
-                                    </div>
-                                </div>
-                            </j:if>
-                            <j:if test="${task.getStatus().isFailed()}">
-                                <div class="progress">
-                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                                        <span class="sr-only">100% Complete</span>
-                                    </div>
-                                </div>
-                            </j:if>
-                            <j:if test="${task.getStatus().isIdle()}">
-                                <div class="progress progress-striped active">
-                                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                                        <span class="sr-only">0% Complete</span>
-                                    </div>
-                                </div>
-                            </j:if>
-                        </j:forEach>
-                    </div>
-                </div>
-            </j:forEach>
-
-
+            <section class="pipe">
+                <h1>${it.getTitle()}</h1>
+                <j:forEach items="${pipeline.getStages()}" var="stage">
+                    <section class="stage">
+                        <h1>${stage.getName()}</h1>
+                        <ul>
+                            <j:forEach items="${stage.getTasks()}" var="task">
+                                <li class="${task.getStatus()}">${task.getName()}</li>
+                            </j:forEach>
+                        </ul>
+                    </section>
+                </j:forEach>
+            </section>
         </body>
     </html>
-
 </j:jelly>
+
+
