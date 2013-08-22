@@ -27,7 +27,7 @@ public class XmlMarshaller
         return marshaller;
     }
 
-    static Unmarshaller getUnmarshaller() throws JAXBException
+    public static Unmarshaller getUnmarshaller() throws JAXBException
     {
         return context.createUnmarshaller();
     }
