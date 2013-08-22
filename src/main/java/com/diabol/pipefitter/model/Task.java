@@ -15,4 +15,10 @@ public class Task extends Component
     public Task(String name, Status status) {
         super(name, status);
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return this == obj || obj instanceof Task && super.equals(obj);
+    }
 }
