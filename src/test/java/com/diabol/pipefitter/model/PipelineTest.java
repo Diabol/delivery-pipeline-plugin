@@ -19,17 +19,16 @@ public class PipelineTest
     @Test
     public void testXmlMarshalling() throws Exception
     {
-        JAXBContext context = JAXBContext.newInstance(Pipeline.class);
         StringWriter buffer = new StringWriter();
 
         Pipeline pipeline = new Pipeline("Test pipeline",
                                          asList(new Stage("Build",
                                                           asList(new Task("Compile", success())))));
 
-        context.createMarshaller().marshal(pipeline, buffer);
-        Pipeline pipelineCopy = context.createUnmarshaller()
-                                       .unmarshal(new StreamSource(new StringReader(buffer.toString())),
-                                                  Pipeline.class).getValue();
+        XmlMarshaller.getMarshaller().marshal(pipeline, buffer);
+        Pipeline pipelineCopy = XmlMarshaller.getUnmarshaller()
+                                             .unmarshal(new StreamSource(new StringReader(buffer.toString())),
+                                                        Pipeline.class).getValue();
         assertEquals(pipelineCopy, pipeline);
     }
 }
