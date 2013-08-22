@@ -6,7 +6,7 @@
         </f:entry>
 
         <f:entry title="Task Name">
-            <f:textbox name="taskDescription" value="${instance.getTaskName}"/>
+            <f:textbox name="taskName" value="${instance.getTaskName()}"/>
         </f:entry>
 
     </f:section>
