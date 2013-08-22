@@ -45,7 +45,7 @@ public class PipelineFactory
         {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             String taskName = property != null && !property.getTaskName().equals("") ? property.getTaskName(): job.getDisplayName();
-            Task task = new Task(taskName, StatusFactory.idle()); // todo: Null not idle
+            Task task = new Task(job.getName(), taskName, StatusFactory.idle()); // todo: Null not idle
             String stageName = property != null && !property.getStageName().equals("")? property.getStageName(): job.getDisplayName();
             Stage stage = stages.get(stageName);
             if(stage == null)
