@@ -2,11 +2,11 @@
 
     <f:section title="Pipeline">
         <f:entry title="Stage Name">
-            <f:textbox name="stageName" value="${instance.getStageName()}"/>
+            <f:textbox name="stageName" field="stageName" value="${instance.getStageName()}"/>
         </f:entry>
 
         <f:entry title="Task Name">
-            <f:textbox name="taskName" value="${instance.getTaskName()}"/>
+            <f:textbox name="taskName" field="taskName" value="${instance.getTaskName()}"/>
         </f:entry>
 
     </f:section>
