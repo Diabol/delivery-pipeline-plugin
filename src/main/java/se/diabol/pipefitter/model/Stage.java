@@ -1,6 +1,5 @@
 package se.diabol.pipefitter.model;
 
-import se.diabol.pipefitter.model.status.StatusFactory;
 import com.google.common.collect.ImmutableList;
 import se.diabol.pipefitter.model.status.StatusFactory;
 
@@ -16,9 +15,17 @@ public class Stage extends Component
     @XmlElement(name = "task")
     private List<Task> tasks;
 
+    private String version = null;
+
     private Stage()
     {
         super(null, null);
+    }
+
+    public Stage(String name, List<Task> tasks, String version) {
+        super(name, StatusFactory.idle()); // todo: IDLE is cheating
+        this.tasks = tasks;
+        this.version = version;
     }
 
     public Stage(String name, List<Task> tasks)
@@ -30,6 +37,10 @@ public class Stage extends Component
     public List<Task> getTasks()
     {
         return tasks;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     @Override

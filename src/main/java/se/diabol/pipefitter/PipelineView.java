@@ -95,7 +95,7 @@ public class PipelineView extends View {
     public Pipeline getPipeline()
     {
         AbstractProject firstJob = Jenkins.getInstance().getItem(this.firstJob, Jenkins.getInstance(), AbstractProject.class);
-        return PipelineFactory.extractPipeline(getDisplayName(), firstJob);
+        return PipelineFactory.createPipelineLatest(PipelineFactory.extractPipeline(getDisplayName(), firstJob));
 
 //        AbstractBuild prevBuild = null;
 //        List<Stage> stages = newArrayList();
@@ -120,45 +120,7 @@ public class PipelineView extends View {
     }
 
 
-    private Status resolveStatus(AbstractBuild build)
-    {
-        if (build.isBuilding()) {
-            return StatusFactory.running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
-                    / build.getEstimatedDuration()));
-        }
 
-        Result result = build.getResult();
-        if (ABORTED.equals(result))
-            return StatusFactory.cancelled();
-        else if (SUCCESS.equals(result))
-            return StatusFactory.success();
-        else if (FAILURE.equals(result))
-            return StatusFactory.failed();
-        else if (UNSTABLE.equals(result))
-            return StatusFactory.unstable();
-        throw new IllegalStateException("Result " + result + " not recognized.");
-    }
-
-    public static AbstractBuild<?, ?> getDownstreamBuild(final AbstractProject<?, ?> downstreamProject,
-                                                         final AbstractBuild<?, ?> upstreamBuild) {
-        if ((downstreamProject != null) && (upstreamBuild != null)) {
-            final List<AbstractBuild<?, ?>> downstreamBuilds = (List<AbstractBuild<?, ?>>) downstreamProject.getBuilds();
-            for (final AbstractBuild<?, ?> innerBuild : downstreamBuilds) {
-                for (final CauseAction action : innerBuild.getActions(CauseAction.class)) {
-                    for (final Cause cause : action.getCauses()) {
-                        if (cause instanceof Cause.UpstreamCause) {
-                            final Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                            if (upstreamCause.getUpstreamProject().equals(upstreamBuild.getProject().getFullName())
-                                    && (upstreamCause.getUpstreamBuild() == upstreamBuild.getNumber())) {
-                                return innerBuild;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {

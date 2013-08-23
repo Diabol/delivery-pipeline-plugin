@@ -57,7 +57,7 @@ section.stage li.failed {
     color: red;
 }
 
-section.stage li.passed {
+section.stage li.SUCCESS {
     color: green;
 }
 
