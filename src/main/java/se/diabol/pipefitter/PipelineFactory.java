@@ -26,9 +26,10 @@ import static java.util.Collections.singleton;
  */
 public class PipelineFactory
 {
-    public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstJob) {
+    public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstJob)
+    {
         Map<String, Stage> stages = newLinkedHashMap();
-        for (AbstractProject job : getAllDownstreamJobs(firstJob)) {
+        for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             String taskName = property != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
             Task task = new Task(job.getName(), taskName, StatusFactory.idle()); // todo: Null not idle
@@ -43,15 +44,12 @@ public class PipelineFactory
         return new Pipeline(name, newArrayList(stages.values()));
     }
 
-    private List<AbstractProject> getAllDownstreamJobs(AbstractProject first)
+    private Map<String, AbstractProject> getAllDownstreamJobs(AbstractProject first)
     {
-        List<AbstractProject> jobs = newArrayList();
-        jobs.add(first);
-
-        for (AbstractProject project : getDownstreamProjects(first)) {
-            jobs.addAll(getAllDownstreamJobs(project));
-        }
-
+        Map<String, AbstractProject> jobs = newLinkedHashMap();
+        jobs.put(first.getName(), first);
+        for (AbstractProject project : getDownstreamProjects(first))
+            jobs.putAll(getAllDownstreamJobs(project));
         return jobs;
     }
 
