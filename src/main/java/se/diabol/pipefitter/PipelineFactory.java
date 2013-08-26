@@ -24,20 +24,9 @@ import static java.util.Collections.singleton;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class PipelineFactory {
-    static List<AbstractProject> getAllDownstreamJobs(AbstractProject first) {
-        List<AbstractProject> jobs = newArrayList();
-        jobs.add(first);
-
-        List<AbstractProject> downstreamProjects = first.getDownstreamProjects();
-        for (AbstractProject project : downstreamProjects) {
-            jobs.addAll(getAllDownstreamJobs(project));
-        }
-
-        return jobs;
-    }
-
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstJob) {
+public class PipelineFactory
+{
+    public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstJob) {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject job : getAllDownstreamJobs(firstJob)) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
@@ -54,8 +43,27 @@ public class PipelineFactory {
         return new Pipeline(name, newArrayList(stages.values()));
     }
 
+    private List<AbstractProject> getAllDownstreamJobs(AbstractProject first)
+    {
+        List<AbstractProject> jobs = newArrayList();
+        jobs.add(first);
 
-    public static Pipeline createPipelineLatest(final Pipeline pipeline) {
+        for (AbstractProject project : getDownstreamProjects(first)) {
+            jobs.addAll(getAllDownstreamJobs(project));
+        }
+
+        return jobs;
+    }
+
+    /** Opens up for testing and mocking, since Jenkins has getDownstreamProjects() final */
+    List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project)
+    {
+        //noinspection unchecked
+        return project.getDownstreamProjects();
+    }
+
+
+    public Pipeline createPipelineLatest(Pipeline pipeline) {
         AbstractBuild prevBuild = null;
         List<AbstractBuild> builds = new ArrayList<>();
         List<Stage> stages = new ArrayList<>();

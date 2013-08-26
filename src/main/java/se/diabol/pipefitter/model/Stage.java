@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 import java.util.Objects;
 
+import static com.google.common.base.Objects.toStringHelper;
+
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
@@ -58,5 +60,15 @@ public class Stage extends Component
     private boolean equals(Stage o)
     {
         return Objects.equals(tasks, o.tasks) && super.equals(o);
+    }
+
+    @Override
+    public String toString()
+    {
+        return toStringHelper(this)
+                .add("name", getName())
+                .add("status", getStatus())
+                .add("tasks", getTasks())
+                .toString();
     }
 }

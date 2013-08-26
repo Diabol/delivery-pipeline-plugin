@@ -1,9 +1,7 @@
 package se.diabol.pipefitter;
 
 import se.diabol.pipefitter.model.Pipeline;
-import se.diabol.pipefitter.model.Stage;
 import se.diabol.pipefitter.model.status.Status;
-import se.diabol.pipefitter.model.Task;
 import se.diabol.pipefitter.model.status.StatusFactory;
 import hudson.Extension;
 import hudson.model.*;
@@ -13,9 +11,6 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-import se.diabol.pipefitter.model.Pipeline;
-import se.diabol.pipefitter.model.status.Status;
-import se.diabol.pipefitter.model.status.StatusFactory;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -23,14 +18,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static com.beust.jcommander.internal.Lists.newArrayList;
-import static se.diabol.pipefitter.model.status.StatusFactory.idle;
-import static se.diabol.pipefitter.model.status.StatusFactory.running;
+import static com.google.common.collect.Lists.newArrayList;
 import static hudson.model.Descriptor.FormException;
 import static hudson.model.Result.*;
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableCollection;
 
 /**
@@ -94,8 +86,9 @@ public class PipelineView extends View {
 
     public Pipeline getPipeline()
     {
+        PipelineFactory pipelineFactory = new PipelineFactory();
         AbstractProject firstJob = Jenkins.getInstance().getItem(this.firstJob, Jenkins.getInstance(), AbstractProject.class);
-        return PipelineFactory.createPipelineLatest(PipelineFactory.extractPipeline(getDisplayName(), firstJob));
+        return pipelineFactory.createPipelineLatest(pipelineFactory.extractPipeline(getDisplayName(), firstJob));
 
 //        AbstractBuild prevBuild = null;
 //        List<Stage> stages = newArrayList();

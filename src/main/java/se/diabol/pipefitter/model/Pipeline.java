@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
 
+import static com.google.common.base.Objects.toStringHelper;
+
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
@@ -50,5 +52,15 @@ public class Pipeline extends Component
     private boolean equals(Pipeline o)
     {
         return super.equals(o) && Objects.equals(stages, o.stages);
+    }
+
+    @Override
+    public String toString()
+    {
+        return toStringHelper(this)
+                .add("name", getName())
+                .add("status", getStatus())
+                .add("stages", getStages())
+                .toString();
     }
 }

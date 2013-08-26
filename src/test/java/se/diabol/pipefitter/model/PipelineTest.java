@@ -27,7 +27,7 @@ public class PipelineTest
 
         Pipeline pipeline = new Pipeline("Test pipeline",
                                          asList(new Stage("Build",
-                                                          asList(new Task("Compile", success())))));
+                                                          asList(new Task("comp", "Compile", success())))));
 
         XmlMarshaller.getMarshaller().marshal(pipeline, buffer);
         String xml = buffer.toString();
