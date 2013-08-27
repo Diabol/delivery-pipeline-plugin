@@ -1,7 +1,5 @@
 package se.diabol.pipefitter.model;
 
-import se.diabol.pipefitter.model.status.Status;
-import se.diabol.pipefitter.model.status.StatusFactory;
 import com.google.common.collect.ImmutableList;
 import se.diabol.pipefitter.model.status.StatusFactory;
 
@@ -21,20 +19,28 @@ public class Pipeline extends Component
     @XmlElement(name = "stage")
     private List<Stage> stages;
 
+    private Object version;
+
     private Pipeline()
     {
         super(null, null);
     }
 
-    public Pipeline(String name, List<Stage> stages)
+    public Pipeline(String name, Object version, List<Stage> stages)
     {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating
+        this.version = version;
         this.stages = ImmutableList.copyOf(stages);
     }
 
     public List<Stage> getStages()
     {
         return stages;
+    }
+
+    public Object getVersion()
+    {
+        return version;
     }
 
     @Override
@@ -51,7 +57,7 @@ public class Pipeline extends Component
 
     private boolean equals(Pipeline o)
     {
-        return super.equals(o) && Objects.equals(stages, o.stages);
+        return super.equals(o) && Objects.equals(stages, o.stages) && Objects.equals(version, o.version);
     }
 
     @Override
@@ -59,6 +65,7 @@ public class Pipeline extends Component
     {
         return toStringHelper(this)
                 .add("name", getName())
+                .add("version", getVersion())
                 .add("status", getStatus())
                 .add("stages", getStages())
                 .toString();

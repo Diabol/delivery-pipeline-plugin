@@ -9,7 +9,7 @@
         <body>
             <j:forEach items="${pipelines}" var="pipeline">
                 <section class="pipe">
-                    <h1>${pipeline.getName()}</h1>
+                    <h1>${pipeline.getName()} - ${pipeline.getVersion()}</h1>
                     <j:forEach items="${pipeline.getStages()}" var="stage">
                         <section class="stage">
                             <h1>${stage.getName()}</h1>
