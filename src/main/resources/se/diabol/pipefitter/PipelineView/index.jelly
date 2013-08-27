@@ -1,7 +1,7 @@
 <j:jelly xmlns:x="jelly:xml" xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
     <html>
         <head>
-            <link rel="stylesheet" href="/jenkins/plugin/pipefitter/css/pipe.css"/>
+            <link rel="stylesheet" href="${it.getRootUrl()}/plugin/pipefitter/css/pipe.css"/>
         </head>
         <j:set var="pipeline" value="${it.getPipeline()}"/>
 

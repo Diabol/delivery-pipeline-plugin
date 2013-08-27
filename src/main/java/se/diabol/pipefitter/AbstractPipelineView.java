@@ -1,6 +1,7 @@
 package se.diabol.pipefitter;
 
 import hudson.model.*;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -14,6 +15,11 @@ import static java.util.Collections.unmodifiableCollection;
 public abstract class AbstractPipelineView extends View {
 
     protected transient Collection<TopLevelItem> items = newArrayList();
+
+    public String getRootUrl() {
+        return Jenkins.getInstance().getRootUrl();
+    }
+
 
     protected AbstractPipelineView(String name) {
         super(name);
