@@ -1,0 +1,3 @@
+- Versionsnummer i pipelinetiteln
+- Multi-produkt-vy (ny vy)
+- X-stream-taggning för framtida möjligheter till paket/klassbyten
