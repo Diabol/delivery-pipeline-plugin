@@ -117,14 +117,21 @@ public class PipelineFactory
      * @param build the build to find the first upstream for
      * @return the first upstream build for the given build
      */
-    private AbstractBuild getFirstUpstreamBuild(AbstractBuild<?, ?> build)
-    {
-        Cause.UpstreamCause cause = build.getCause(Cause.UpstreamCause.class);
-        if(cause != null) {
-            AbstractProject upstreamJob = JENKINS.getItem(cause.getUpstreamProject(), JENKINS, AbstractProject.class);
-            return getFirstUpstreamBuild(upstreamJob.getBuildByNumber(cause.getUpstreamBuild()));
+    private static AbstractBuild getFirstUpstreamBuild(AbstractBuild build) {
+        //build.getCause do not return the correct Causes sometimes
+        List<CauseAction> actions = build.getActions(CauseAction.class);
+        for (CauseAction action : actions) {
+            List<Cause> causes = action.getCauses();
+            for (Cause cause : causes) {
+                if (cause instanceof Cause.UpstreamCause) {
+                    Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
+                    AbstractProject upstreamProject = Jenkins.getInstance().getItem(upstreamCause.getUpstreamProject(), Jenkins.getInstance(), AbstractProject.class);
+                    AbstractBuild upstreamBuild = upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
+                    return getFirstUpstreamBuild(upstreamBuild);
         }
-        else
+            }
+        }
             return build;
     }
+
 }
