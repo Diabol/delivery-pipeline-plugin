@@ -5,15 +5,13 @@ body {
 
 section.pipe {
     display: block;
-    border-radius: 15px;
-    border: black solid 2px;
-    box-shadow: 5px 5px 5px grey;
+    border-radius: 20px;
     padding: 10px;
     margin: 20px;
 }
 
 section.pipe:nth-of-type(1) {
-    background-color: #fafafa;
+    background-color: #f0f0f0;
 }
 
 section.pipe:nth-of-type(2) {
@@ -33,32 +31,49 @@ section.pipe h1 {
 
 section.stage {
     display: inline-block;
-    height: 150px;
+    min-height: 100px;
     min-width: 180px;
     vertical-align: top;
     background: white;
     border-radius: 10px;
     border: solid 2px black;
-    padding: 10px;
+    padding: 0;
     margin: 0 5px;
 }
 
 section.stage h1 {
     font-size: medium;
     border-bottom: black solid 2px;
+    margin: 0;
+    padding: 5px 10px;
 }
 
 section.stage ul {
     list-style-type: none;
+    margin: 5px 5px;
     padding-left: 0;
 }
 
-section.stage li.failed {
-    color: red;
+section.stage li {
+    border-radius: 3px;
+    margin-bottom: 1px;
+    padding-left: 5px;
 }
 
-section.stage li.SUCCESS {
-    color: green;
+section.stage li.failed {
+    background-color: tomato;
+}
+
+section.stage li.success {
+    background-color: lightgreen;
+}
+
+section.stage li.unstable {
+    background-color: orange;
+}
+
+section.stage li.disabled {
+    color: gray;
 }
 
 section.stage li.running {
