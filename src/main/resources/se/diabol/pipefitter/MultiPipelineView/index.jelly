@@ -15,7 +15,7 @@
                             <h1>${stage.getName()}</h1>
                             <ul>
                                 <j:forEach items="${stage.getTasks()}" var="task">
-                                    <li class="${task.getStatus()}">${task.getName()}</li>
+                                    <li class="${task.getStatus()}"><a href="${task.getLink()}">${task.getName()}</a></li>
                                 </j:forEach>
                             </ul>
                         </section>

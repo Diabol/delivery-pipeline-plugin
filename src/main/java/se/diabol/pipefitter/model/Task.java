@@ -11,21 +11,28 @@ import java.util.Objects;
 public class Task extends Component
 {
     private final Object id;
+    private final String link;
 
     private Task()
     {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
-    public Task(Object id, String name, Status status)
+    public Task(Object id, String name, Status status, String link)
     {
         super(name, status);
         this.id = id;
+        this.link = link;
     }
 
     public Object getId()
     {
         return id;
+    }
+
+    public String getLink()
+    {
+        return link;
     }
 
     @Override

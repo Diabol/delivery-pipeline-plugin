@@ -35,7 +35,7 @@ public class PipelineFactory
         for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             String taskName = property != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
-            Task task = new Task(job.getName(), taskName, idle()); // todo: Null not idle
+            Task task = new Task(job.getName(), taskName, idle(), job.getUrl()); // todo: Null not idle
             String stageName = property != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
@@ -79,7 +79,7 @@ public class PipelineFactory
                 Status status = build != null && lastBuild.equals(getFirstUpstreamBuild(build))
                                 ? resolveStatus(build)
                                 : idle();
-                tasks.add(new Task(task.getId(), task.getName(), status));
+                tasks.add(new Task(task.getId(), task.getName(), status, task.getLink()));
             }
             stages.add(new Stage(stage.getName(), tasks));
         }

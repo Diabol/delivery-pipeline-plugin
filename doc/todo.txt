@@ -1,4 +1,2 @@
-- Versionsnummer i pipelinetiteln
-- Multi-produkt-vy (ny vy)
 - Mer enhetstester för pipeline-extraktionen... Nu eller aldrig...
 - X-stream-taggning för framtida möjligheter till paket/klassbyten
