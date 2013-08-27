@@ -11,6 +11,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import se.diabol.pipefitter.model.Pipeline;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -46,11 +47,11 @@ public class PipelineView extends AbstractPipelineView {
         this.firstJob = firstJob;
     }
 
-    public Pipeline getPipeline()
+    public List<Pipeline> getPipelines()
     {
         PipelineFactory pipelineFactory = new PipelineFactory();
         AbstractProject firstJob = Jenkins.getInstance().getItem(this.firstJob, Jenkins.getInstance(), AbstractProject.class);
-        return pipelineFactory.createPipelineLatest(pipelineFactory.extractPipeline(getDisplayName(), firstJob));
+        return pipelineFactory.createPipelineLatest(pipelineFactory.extractPipeline(getDisplayName(), firstJob), 3);
     }
 
 
