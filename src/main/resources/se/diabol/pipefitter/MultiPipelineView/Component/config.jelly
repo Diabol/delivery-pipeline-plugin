@@ -1,9 +1,9 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-    <f:entry title="Pipeline View Title" field="name">
+    <f:entry title="Title" field="name">
         <f:textbox/>
     </f:entry>
-    <f:entry title="${%Select Initial Job}" field="firstJob">
+    <f:entry title="Initial Job" field="firstJob">
         <f:select />
     </f:entry>
     <f:repeatableDeleteButton />
