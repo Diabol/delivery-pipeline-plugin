@@ -1,17 +1,12 @@
-package se.diabol.pipefitter.model;
+package se.diabol.jenkins.pipeline.model;
 
 import org.testng.annotations.Test;
-import se.diabol.pipefitter.model.Pipeline;
-import se.diabol.pipefitter.model.Stage;
-import se.diabol.pipefitter.model.Task;
-import se.diabol.pipefitter.model.XmlMarshaller;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import static se.diabol.pipefitter.model.status.StatusFactory.success;
+import static se.diabol.jenkins.pipeline.model.status.StatusFactory.success;
 import static java.util.Arrays.asList;
 import static org.testng.Assert.assertEquals;
 

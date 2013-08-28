@@ -1,4 +1,4 @@
-package se.diabol.pipefitter;
+package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
@@ -9,7 +9,7 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
-import se.diabol.pipefitter.model.Pipeline;
+import se.diabol.jenkins.pipeline.model.Pipeline;
 
 import java.util.List;
 import java.util.logging.Logger;

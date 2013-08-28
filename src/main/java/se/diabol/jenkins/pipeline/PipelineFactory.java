@@ -1,13 +1,13 @@
-package se.diabol.pipefitter;
+package se.diabol.jenkins.pipeline;
 
 import hudson.model.*;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
-import se.diabol.pipefitter.model.Pipeline;
-import se.diabol.pipefitter.model.Stage;
-import se.diabol.pipefitter.model.Task;
-import se.diabol.pipefitter.model.status.Status;
-import se.diabol.pipefitter.model.status.StatusFactory;
+import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.model.Stage;
+import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.model.status.Status;
+import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
 import java.util.*;
 
@@ -18,7 +18,7 @@ import static hudson.model.Result.*;
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
-import static se.diabol.pipefitter.model.status.StatusFactory.idle;
+import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
@@ -74,7 +74,7 @@ public class PipelineFactory {
     /**
      * Helper method
      *
-     * @see PipelineFactory#createPipelineLatest(se.diabol.pipefitter.model.Pipeline, int)
+     * @see PipelineFactory#createPipelineLatest(se.diabol.jenkins.pipeline.model.Pipeline, int)
      */
 
     public Pipeline createPipelineLatest(Pipeline pipeline) {

@@ -1,4 +1,4 @@
-package se.diabol.pipefitter.model.status;
+package se.diabol.jenkins.pipeline.model.status;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 

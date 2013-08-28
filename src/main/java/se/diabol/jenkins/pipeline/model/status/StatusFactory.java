@@ -1,4 +1,4 @@
-package se.diabol.pipefitter.model.status;
+package se.diabol.jenkins.pipeline.model.status;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>

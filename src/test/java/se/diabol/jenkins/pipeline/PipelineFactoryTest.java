@@ -1,11 +1,11 @@
-package se.diabol.pipefitter;
+package se.diabol.jenkins.pipeline;
 
 import com.google.common.collect.ImmutableMap;
 import hudson.model.AbstractProject;
 import org.testng.annotations.Test;
-import se.diabol.pipefitter.model.Pipeline;
-import se.diabol.pipefitter.model.Stage;
-import se.diabol.pipefitter.model.Task;
+import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.model.Stage;
+import se.diabol.jenkins.pipeline.model.Task;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
-import static se.diabol.pipefitter.model.status.StatusFactory.idle;
+import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>

@@ -1,4 +1,4 @@
-package se.diabol.pipefitter;
+package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;

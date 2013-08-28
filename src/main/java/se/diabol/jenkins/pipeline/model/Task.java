@@ -1,7 +1,6 @@
-package se.diabol.pipefitter.model;
+package se.diabol.jenkins.pipeline.model;
 
-import se.diabol.pipefitter.model.status.Status;
-import se.diabol.pipefitter.model.status.Status;
+import se.diabol.jenkins.pipeline.model.status.Status;
 
 import java.util.Objects;
 

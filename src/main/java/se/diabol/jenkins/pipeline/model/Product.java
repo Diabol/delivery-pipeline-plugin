@@ -1,4 +1,4 @@
-package se.diabol.pipefitter.model;
+package se.diabol.jenkins.pipeline.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

@@ -1,4 +1,4 @@
-package se.diabol.pipefitter;
+package se.diabol.jenkins.pipeline;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import hudson.model.*;
