@@ -34,9 +34,9 @@ public class PipelineFactory {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
-            String taskName = property != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
+            String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
             Task task = new Task(job.getName(), taskName, idle(), getUrl(job)); // todo: Null not idle
-            String stageName = property != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
+            String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
                 stage = new Stage(stageName, Collections.<Task>emptyList());
