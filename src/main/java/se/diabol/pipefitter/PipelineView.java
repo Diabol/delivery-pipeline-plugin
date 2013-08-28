@@ -22,13 +22,14 @@ public class PipelineView extends AbstractPipelineView {
 
     private String title;
     private String firstJob;
-
+    private int noOfPipelines = 1;
 
     @DataBoundConstructor
-    public PipelineView(String name, String title, String firstJob, ViewGroup owner) {
+    public PipelineView(String name, String title, String firstJob,int noOfPipelines, ViewGroup owner) {
         super(name, owner);
         this.title = title;
         this.firstJob = firstJob;
+        this.noOfPipelines = noOfPipelines;
     }
 
     public String getTitle() {
@@ -47,11 +48,19 @@ public class PipelineView extends AbstractPipelineView {
         this.firstJob = firstJob;
     }
 
+    public int getNoOfPipelines() {
+        return noOfPipelines;
+    }
+
+    public void setNoOfPipelines(int noOfPipelines) {
+        this.noOfPipelines = noOfPipelines;
+    }
+
     public List<Pipeline> getPipelines()
     {
         PipelineFactory pipelineFactory = new PipelineFactory();
         AbstractProject firstJob = Jenkins.getInstance().getItem(this.firstJob, Jenkins.getInstance(), AbstractProject.class);
-        return pipelineFactory.createPipelineLatest(pipelineFactory.extractPipeline(getDisplayName(), firstJob), 3);
+        return pipelineFactory.createPipelineLatest(pipelineFactory.extractPipeline(getDisplayName(), firstJob), noOfPipelines);
     }
 
 
@@ -70,10 +79,19 @@ public class PipelineView extends AbstractPipelineView {
          * @return ListBoxModel
          */
         public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
-            final hudson.util.ListBoxModel options = new hudson.util.ListBoxModel();
-            for (final AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+            ListBoxModel options = new ListBoxModel();
+            for (AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
                 options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
             }
+            return options;
+        }
+
+        public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
+            ListBoxModel options = new ListBoxModel();
+            options.add("1", "1");
+            options.add("3", "3");
+            options.add("5", "5");
+            options.add("10", "10");
             return options;
         }
 

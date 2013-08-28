@@ -7,6 +7,9 @@
     <f:entry title="Initial Job" field="firstJob">
         <f:select />
     </f:entry>
+    <f:entry title="Show number of pipelines" field="noOfPipelines">
+        <f:select />
+    </f:entry>
 
 
 </j:jelly>
