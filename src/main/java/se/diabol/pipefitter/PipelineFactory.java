@@ -31,7 +31,7 @@ public class PipelineFactory {
         for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             String taskName = property != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
-            Task task = new Task(job.getName(), taskName, idle(), job.getUrl()); // todo: Null not idle
+            Task task = new Task(job.getName(), taskName, idle(), getUrl(job)); // todo: Null not idle
             String stageName = property != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
@@ -40,7 +40,7 @@ public class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, "Pipeline spec", newArrayList(stages.values()));
+        return new Pipeline(name, null, newArrayList(stages.values()));
     }
 
     private Map<String, AbstractProject> getAllDownstreamJobs(AbstractProject first) {
@@ -57,6 +57,16 @@ public class PipelineFactory {
     List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
         //noinspection unchecked
         return project.getDownstreamProjects();
+    }
+
+    /**
+     * Opens up for testing and mocking, since Jenkins has getUrl() method final
+     * @param job
+     * @return
+     */
+    String getUrl(AbstractProject job)
+    {
+        return job.getUrl();
     }
 
 

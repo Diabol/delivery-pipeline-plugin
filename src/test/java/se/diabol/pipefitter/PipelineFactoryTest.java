@@ -42,7 +42,7 @@ public class PipelineFactoryTest
         Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper", "1.0",
+                     new Pipeline("Piper", null,
                                   asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), ""),
                                                                    new Task("anal", "Analyze", idle(), ""))),
                                          new Stage("Test", asList(new Task("test", "Test", idle(), ""))))));
@@ -62,7 +62,7 @@ public class PipelineFactoryTest
         Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper", "1.0",
+                     new Pipeline("Piper", null,
                                   asList(new Stage("Build", asList(new Task("comp", "Compile", idle(),""))),
                                          new Stage("Test", asList(new Task("test", "Test", idle(),""),
                                                                   new Task("test2", "Test fnutt", idle(),""))),
@@ -77,10 +77,12 @@ public class PipelineFactoryTest
                 List<AbstractProject> downstreamProjects = jobGraph.get(project);
                 return (List<AbstractProject<?,?>>) ((downstreamProjects != null) ? downstreamProjects : emptyList());
             }
+
+            @Override String getUrl(AbstractProject job) { return ""; }
         };
     }
 
-    private static AbstractProject createMockJob(String name, String displayName, String stageName)
+    private AbstractProject createMockJob(String name, String displayName, String stageName)
     {
         PipelineProperty property = displayName != null || stageName != null
                                     ? new PipelineProperty(nullToEmpty(displayName), nullToEmpty(stageName))
@@ -90,7 +92,6 @@ public class PipelineFactoryTest
         when(project.getProperty(PipelineProperty.class)).thenReturn(property);
         when(project.getName()).thenReturn(name);
         when(project.getDisplayName()).thenReturn(displayName);
-        when(project.getUrl()).thenReturn("");
         return project;
     }
 }
