@@ -31,4 +31,5 @@ public class StatusFactory
     public static Status failed() { return StatusEnum.FAILED; }
     public static Status unstable() { return StatusEnum.UNSTABLE; }
     public static Status idle() { return StatusEnum.IDLE; }
+    public static Status disabled() { return StatusEnum.DISABLED; }
 }

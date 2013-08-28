@@ -50,12 +50,11 @@ section.stage li {
 
 section.stage a {
     text-decoration: none;
-    color: #000000;
+    color: inherit;
 }
 
 section.stage a:visited {
-    text-decoration: none;
-    color: #000000;
+    color: inherit;
 }
 
 section.stage a:hover {
@@ -75,7 +74,7 @@ section.stage li.unstable {
 }
 
 section.stage li.disabled {
-    color: gray;
+    color: lightgray;
 }
 
 section.stage li.running {

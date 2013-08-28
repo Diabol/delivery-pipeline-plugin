@@ -18,6 +18,7 @@ import static hudson.model.Result.*;
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
+import static se.diabol.jenkins.pipeline.model.status.StatusFactory.disabled;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 /**
@@ -35,7 +36,8 @@ public class PipelineFactory {
         for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
-            Task task = new Task(job.getName(), taskName, idle(), getUrl(job)); // todo: Null not idle
+            Status status = job.isDisabled()? disabled(): idle();
+            Task task = new Task(job.getName(), taskName, status, getUrl(job)); // todo: Null not idle
             String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
@@ -103,8 +105,7 @@ public class PipelineFactory {
                 for (Task task : stage.getTasks()) {
                     AbstractProject job = getJenkinsJob(task);
                     AbstractBuild currentBuild = match(job.getBuilds(), lastBuild);
-
-                    Status status = currentBuild != null ? resolveStatus(currentBuild) : idle();
+                    Status status = currentBuild != null ? resolveStatus(currentBuild) : task.getStatus();
                     tasks.add(new Task(task.getId(), task.getName(), status, task.getLink()));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
