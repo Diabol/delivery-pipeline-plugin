@@ -72,12 +72,6 @@ public class PipelineView extends AbstractPipelineView {
             return "Pipeline View";
         }
 
-        /**
-         * Display Job List Item in the Edit View Page
-         *
-         * @param context What to resolve relative job names against?
-         * @return ListBoxModel
-         */
         public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
             for (AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {

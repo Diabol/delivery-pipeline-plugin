@@ -26,6 +26,10 @@ import static se.diabol.pipefitter.model.status.StatusFactory.idle;
 public class PipelineFactory {
     private static final Jenkins JENKINS = Jenkins.getInstance();
 
+
+    /**
+     * Created a pipeline prototype for the supplied first project
+     */
     public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstJob) {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
@@ -61,20 +65,29 @@ public class PipelineFactory {
 
     /**
      * Opens up for testing and mocking, since Jenkins has getUrl() method final
-     * @param job
-     * @return
      */
     String getUrl(AbstractProject job)
     {
         return job.getUrl();
     }
 
+    /**
+     * Helper method
+     *
+     * @see PipelineFactory#createPipelineLatest(se.diabol.pipefitter.model.Pipeline, int)
+     */
 
     public Pipeline createPipelineLatest(Pipeline pipeline) {
         List<Pipeline> pipelines = createPipelineLatest(pipeline, 1);
         return pipelines.size() > 0 ? pipelines.get(0) : null;
     }
 
+    /**
+     * Populates and return pipelines for the supplied pipeline prototype with the current status.
+     *
+     * @param pipeline the pipeline prototype
+     * @param noOfPipelines number of pipeline instances
+     */
     public List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getJenkinsJob(firstTask);
@@ -103,6 +116,10 @@ public class PipelineFactory {
         return result;
     }
 
+
+    /**
+     * Returns the build for a projects that has been triggered by the supplied upstream project.
+     */
     private AbstractBuild match(RunList runList, AbstractBuild firstJob) {
         Iterator it = runList.iterator();
         while (it.hasNext()) {
