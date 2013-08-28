@@ -74,7 +74,7 @@ section.stage li.unstable {
 }
 
 section.stage li.disabled {
-    color: lightgray;
+    background-color: lightgray;
 }
 
 section.stage li.running {
