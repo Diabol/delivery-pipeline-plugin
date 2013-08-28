@@ -42,10 +42,10 @@ public class PipelineFactoryTest
         Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper",
-                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle()),
-                                                                   new Task("anal", "Analyze", idle()))),
-                                         new Stage("Test", asList(new Task("test", "Test", idle()))))));
+                     new Pipeline("Piper", "1.0",
+                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), ""),
+                                                                   new Task("anal", "Analyze", idle(), ""))),
+                                         new Stage("Test", asList(new Task("test", "Test", idle(), ""))))));
     }
 
     @Test
@@ -62,11 +62,11 @@ public class PipelineFactoryTest
         Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper",
-                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle()))),
-                                         new Stage("Test", asList(new Task("test", "Test", idle()),
-                                                                  new Task("test2", "Test fnutt", idle()))),
-                                         new Stage("Deploy", asList(new Task("deploy", "Deploy", idle()))))));
+                     new Pipeline("Piper", "1.0",
+                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(),""))),
+                                         new Stage("Test", asList(new Task("test", "Test", idle(),""),
+                                                                  new Task("test2", "Test fnutt", idle(),""))),
+                                         new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(),""))))));
     }
 
     private PipelineFactory createPipelineFactory(final Map<AbstractProject, List<AbstractProject>> jobGraph)
@@ -90,6 +90,7 @@ public class PipelineFactoryTest
         when(project.getProperty(PipelineProperty.class)).thenReturn(property);
         when(project.getName()).thenReturn(name);
         when(project.getDisplayName()).thenReturn(displayName);
+        when(project.getUrl()).thenReturn("");
         return project;
     }
 }
