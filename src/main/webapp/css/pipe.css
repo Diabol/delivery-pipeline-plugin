@@ -59,6 +59,9 @@ section.stage a:visited {
     color: #000000;
 }
 
+section.stage a:hover {
+    text-decoration: underline;
+}
 
 section.stage li.failed {
     background-color: tomato;
