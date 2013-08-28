@@ -47,7 +47,7 @@ public class MultiPipelineView extends AbstractPipelineView {
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
         public String getDisplayName() {
-            return "Pipeline View";
+            return "Delivery Pipeline View";
         }
 
     }

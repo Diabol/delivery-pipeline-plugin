@@ -69,7 +69,7 @@ public class PipelineView extends AbstractPipelineView {
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
         public String getDisplayName() {
-            return "Pipeline View";
+            return "Delivery Pipeline View";
         }
 
         public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
