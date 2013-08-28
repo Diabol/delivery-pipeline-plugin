@@ -1,5 +1,6 @@
 package se.diabol.pipefitter;
 
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 import hudson.model.*;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerRequest;
@@ -8,13 +9,15 @@ import org.kohsuke.stapler.StaplerResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.emptySet;
 
 public abstract class AbstractPipelineView extends View {
 
-    protected transient Collection<TopLevelItem> items = newArrayList();
+    // Prevent xstream from trying to read items property (which it gets from inherited getItems())
+    @XStreamOmitField
+    private List<TopLevelItem> items;
 
     public String getRootUrl() {
         return Jenkins.getInstance().getRootUrl();
@@ -31,7 +34,7 @@ public abstract class AbstractPipelineView extends View {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        return unmodifiableCollection(newArrayList(items));
+        return emptySet(); // Not using the getItems functionality.
     }
 
     @Override
@@ -53,6 +56,4 @@ public abstract class AbstractPipelineView extends View {
     public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         return getOwner().getPrimaryView().doCreateItem(req, rsp);
     }
-
-
 }
