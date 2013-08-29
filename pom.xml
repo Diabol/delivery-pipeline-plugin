@@ -22,7 +22,7 @@
     <scm>
         <connection>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</connection>
         <url>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</url>
-        <developerConnection>scm:git:git://github.com:Diabol/delivery-pipeline-plugin.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/Diabol/delivery-pipeline-plugin.git</developerConnection>
     </scm>
 
 
