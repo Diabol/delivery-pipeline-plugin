@@ -197,6 +197,10 @@ public class PipelineFactory {
                 if (cause instanceof Cause.UpstreamCause) {
                     Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
                     AbstractProject upstreamProject = Jenkins.getInstance().getItem(upstreamCause.getUpstreamProject(), Jenkins.getInstance(), AbstractProject.class);
+                    //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
+                    if (upstreamProject == null) {
+                        return null;
+                    }
                     AbstractBuild upstreamBuild = upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
                     return getFirstUpstreamBuild(upstreamBuild);
                 }
