@@ -19,14 +19,15 @@ public class Pipeline extends Component
     @XmlElement(name = "stage")
     private List<Stage> stages;
 
-    private Object version;
+    @XmlElement(name = "version")
+    private String version;
 
     private Pipeline()
     {
         super(null, null);
     }
 
-    public Pipeline(String name, Object version, List<Stage> stages)
+    public Pipeline(String name, String version, List<Stage> stages)
     {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating
         this.version = version;
@@ -38,7 +39,7 @@ public class Pipeline extends Component
         return stages;
     }
 
-    public Object getVersion()
+    public String getVersion()
     {
         return version;
     }

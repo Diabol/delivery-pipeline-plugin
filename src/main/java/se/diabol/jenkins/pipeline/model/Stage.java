@@ -17,6 +17,7 @@ public class Stage extends Component
     @XmlElement(name = "task")
     private List<Task> tasks;
 
+    @XmlElement(name = "version")
     private String version = null;
 
     private Stage()
@@ -59,7 +60,7 @@ public class Stage extends Component
 
     private boolean equals(Stage o)
     {
-        return Objects.equals(tasks, o.tasks) && super.equals(o);
+        return Objects.equals(tasks, o.tasks) && Objects.equals(version, o.version) && super.equals(o) ;
     }
 
     @Override
@@ -67,6 +68,7 @@ public class Stage extends Component
     {
         return toStringHelper(this)
                 .add("name", getName())
+                .add("version", getVersion())
                 .add("status", getStatus())
                 .add("tasks", getTasks())
                 .toString();

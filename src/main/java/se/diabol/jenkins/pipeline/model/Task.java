@@ -2,14 +2,19 @@ package se.diabol.jenkins.pipeline.model;
 
 import se.diabol.jenkins.pipeline.model.status.Status;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
+
+import static com.google.common.base.Objects.toStringHelper;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
 public class Task extends Component
 {
-    private final Object id;
+    @XmlAttribute
+    private final String id;
+    @XmlAttribute
     private final String link;
 
     private Task()
@@ -17,14 +22,14 @@ public class Task extends Component
         this(null, null, null, null);
     }
 
-    public Task(Object id, String name, Status status, String link)
+    public Task(String id, String name, Status status, String link)
     {
         super(name, status);
         this.id = id;
         this.link = link;
     }
 
-    public Object getId()
+    public String getId()
     {
         return id;
     }
@@ -48,7 +53,16 @@ public class Task extends Component
 
     private boolean equals(Task o)
     {
-        return Objects.equals(id, o.id) && super.equals(o);
+        return Objects.equals(id, o.id) && Objects.equals(link, o.link) && super.equals(o);
+    }
+    @Override
+    public String toString()
+    {
+        return toStringHelper(this)
+                .add("name", getName())
+                .add("status", getStatus())
+                .add("link", getLink())
+                .toString();
     }
 
 
