@@ -1,4 +1,5 @@
-pipefitter
+Delivery Pipeline Plugin
 ==========
 
-Plugin to jenkins for pipeline visualization
+Plugin to jenkins for pipeline visualization.
+
