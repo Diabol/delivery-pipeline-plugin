@@ -43,11 +43,6 @@ public abstract class AbstractPipelineView extends View {
     }
 
     @Override
-    public void onJobRenamed(Item item, String oldName, String newName) {
-        // Replace in model
-    }
-
-    @Override
     protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
         req.bindJSON(this, req.getSubmittedForm());
     }

@@ -1,10 +1,7 @@
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.ItemGroup;
-import hudson.model.ViewDescriptor;
-import hudson.model.ViewGroup;
+import hudson.model.*;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
@@ -63,8 +60,12 @@ public class PipelineView extends AbstractPipelineView {
         return pipelineFactory.createPipelineLatest(pipelineFactory.extractPipeline(getDisplayName(), firstJob), noOfPipelines);
     }
 
-
-
+    @Override
+    public void onJobRenamed(Item item, String oldName, String newName) {
+        if (oldName.equals(firstJob)) {
+            firstJob = newName;
+        }
+    }
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {

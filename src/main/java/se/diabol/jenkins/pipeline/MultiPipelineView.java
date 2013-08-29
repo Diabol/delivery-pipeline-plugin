@@ -29,6 +29,14 @@ public class MultiPipelineView extends AbstractPipelineView {
         this.components = components;
     }
 
+    @Override
+    public void onJobRenamed(Item item, String oldName, String newName) {
+        for (Component component : components) {
+            if (component.getFirstJob().equals(oldName)) {
+                component.setFirstJob(newName);
+            }
+        }
+    }
 
     public List<Pipeline> getPipelines()
     {
@@ -69,6 +77,14 @@ public class MultiPipelineView extends AbstractPipelineView {
 
         public String getFirstJob() {
             return firstJob;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setFirstJob(String firstJob) {
+            this.firstJob = firstJob;
         }
 
         @Extension

@@ -84,6 +84,31 @@ public class PipelineFactory {
         return pipelines.size() > 0 ? pipelines.get(0) : null;
     }
 
+    public Pipeline createPipelineAggregated(Pipeline pipeline) {
+
+        List<Stage> stages = new ArrayList<>();
+        for (Stage stage : pipeline.getStages()) {
+            String version = null;
+            List<Task> tasks = new ArrayList<>();
+            for (Task task : stage.getTasks()) {
+                AbstractProject job = getJenkinsJob(task);
+                AbstractBuild currentBuild = job.getLastBuild();
+                AbstractBuild firstBuild = getFirstUpstreamBuild(currentBuild);
+                if (firstBuild != null && version == null) {
+                    version = firstBuild.getDisplayName();
+                }
+                Status status = currentBuild != null ? resolveStatus(currentBuild) : task.getStatus();
+                tasks.add(new Task(task.getId(), task.getName(), status, task.getLink()));
+            }
+            stages.add(new Stage(stage.getName(), tasks, version));
+        }
+        return new Pipeline(pipeline.getName(), null, stages);
+
+
+
+    }
+
+
     /**
      * Populates and return pipelines for the supplied pipeline prototype with the current status.
      *
@@ -161,6 +186,9 @@ public class PipelineFactory {
      * @return the first upstream build for the given build
      */
     private static AbstractBuild getFirstUpstreamBuild(AbstractBuild build) {
+        if (build == null) {
+            return null;
+        }
         //build.getCause do not return the correct Causes sometimes
         List<CauseAction> actions = build.getActions(CauseAction.class);
         for (CauseAction action : actions) {
