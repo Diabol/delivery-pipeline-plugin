@@ -19,6 +19,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <scm>
+        <connection>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</connection>
+        <url>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</url>
+        <developerConnection>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</developerConnection>
+    </scm>
+
+
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
