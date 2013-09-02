@@ -9,6 +9,8 @@ import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;

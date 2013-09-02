@@ -1,29 +1,19 @@
 <j:jelly xmlns:x="jelly:xml" xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-    <html>
-        <head>
-            <link rel="stylesheet" href="${it.getRootUrl()}/plugin/delivery-pipeline-plugin/css/pipe.css"/>
-        </head>
-        <j:set var="pipelines" value="${it.getPipelines()}"/>
 
-        <body>
-            <j:forEach items="${pipelines}" var="pipeline">
-                <section class="pipe">
-                    <h1>${pipeline.getName()} - ${pipeline.getVersion()}</h1>
-                    <j:forEach items="${pipeline.getStages()}" var="stage">
-                        <section class="stage">
-                            <h1>${stage.getName()}</h1>
-                            <ul>
-                                <j:forEach items="${stage.getTasks()}" var="task">
-                                    <li class="${task.getStatus()}"><a href="${task.getLink()}">${task.getName()}</a></li>
-                                </j:forEach>
-                            </ul>
-                        </section>
-                    </j:forEach>
-                </section>
-            </j:forEach>
-        </body>
-    </html>
+    <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+
+    <j:switch on="${fullscreen}">
+        <j:case value="true">
+            <html>
+                <st:include page="main.jelly"/>
+            </html>
+        </j:case>
+        <j:default>
+            <st:include page="index.jelly" class="hudson.model.View"/>
+        </j:default>
+    </j:switch>
+
 </j:jelly>
 
 
