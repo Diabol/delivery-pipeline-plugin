@@ -10,7 +10,7 @@
     </div>
 
     <script type="text/javascript">
-        renderPipelines("pipelines", false);
-        setInterval(function() {renderPipelines("pipelines", false);}, 2000);
+        renderPipelines("pipelines", true);
+        setInterval(function() {renderPipelines("pipelines", true);}, 2000);
     </script>
 </j:jelly>
