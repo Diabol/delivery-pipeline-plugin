@@ -42,41 +42,41 @@ section.stage ul {
     padding-left: 0;
 }
 
-section.stage li {
+section.stage ul li {
     border-radius: 3px;
     margin-bottom: 1px;
     padding-left: 5px;
 }
 
-section.stage a {
+section.stage ul li a {
     text-decoration: none;
     color: inherit;
 }
 
-section.stage a:visited {
+section.stage ul li a:visited {
     color: inherit;
 }
 
-section.stage a:hover {
+section.stage ul li a:hover {
     text-decoration: underline;
 }
 
-section.stage li.failed {
+section.stage ul li.FAILED {
     background-color: tomato;
 }
 
-section.stage li.success {
+section.stage ul li.SUCCESS {
     background-color: lightgreen;
 }
 
-section.stage li.unstable {
+section.stage ul li.UNSTABLE {
     background-color: orange;
 }
 
-section.stage li.disabled {
+section.stage ul li.DISABLED {
     background-color: lightgray;
 }
 
-section.stage li.running {
+section.stage ul li.RUNNING {
     background: url("../images/running.gif") no-repeat right;
 }
