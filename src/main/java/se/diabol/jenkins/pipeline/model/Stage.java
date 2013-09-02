@@ -1,6 +1,8 @@
 package se.diabol.jenkins.pipeline.model;
 
 import com.google.common.collect.ImmutableList;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -12,6 +14,7 @@ import static com.google.common.base.Objects.toStringHelper;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
+@ExportedBean
 public class Stage extends Component
 {
     @XmlElement(name = "task")
@@ -37,11 +40,13 @@ public class Stage extends Component
         this.tasks = ImmutableList.copyOf(tasks);
     }
 
+    @Exported(inline=true)
     public List<Task> getTasks()
     {
         return tasks;
     }
 
+    @Exported
     public String getVersion() {
         return version;
     }

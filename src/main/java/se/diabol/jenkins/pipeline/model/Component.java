@@ -1,5 +1,7 @@
 package se.diabol.jenkins.pipeline.model;
 
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -13,6 +15,7 @@ import static com.google.common.base.Objects.toStringHelper;
  *
  * @author Per Huss <mr.per.huss@gmail.com>
  */
+@ExportedBean
 public abstract class Component
 {
     @XmlAttribute
@@ -33,11 +36,13 @@ public abstract class Component
         return toStringHelper(this).add("name", name).add("status", status).toString();
     }
 
+    @Exported
     public String getName()
     {
         return name;
     }
 
+    @Exported
     public Status getStatus()
     {
         return status;

@@ -1,5 +1,6 @@
 package se.diabol.jenkins.pipeline.model;
 
+import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -29,11 +30,13 @@ public class Task extends Component
         this.link = link;
     }
 
+    @Exported
     public String getId()
     {
         return id;
     }
 
+    @Exported
     public String getLink()
     {
         return link;

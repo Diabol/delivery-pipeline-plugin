@@ -5,6 +5,8 @@ import hudson.model.*;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.pipeline.model.Pipeline;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -32,6 +34,10 @@ public abstract class AbstractPipelineView extends View {
         super(name, owner);
     }
 
+    @Exported(inline=true)
+    public abstract List<Pipeline> getPipelines();
+
+
     @Override
     public Collection<TopLevelItem> getItems() {
         return emptySet(); // Not using the getItems functionality.
@@ -51,4 +57,5 @@ public abstract class AbstractPipelineView extends View {
     public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         return getOwner().getPrimaryView().doCreateItem(req, rsp);
     }
+
 }
