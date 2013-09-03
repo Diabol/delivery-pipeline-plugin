@@ -14,14 +14,12 @@ import static com.google.common.base.Objects.toStringHelper;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-@ExportedBean
+@ExportedBean(defaultVisibility = 100)
 public class Stage extends Component
 {
-    @XmlElement(name = "task")
     private List<Task> tasks;
 
-    @XmlElement(name = "version")
-    private String version = null;
+    private String version;
 
     private Stage()
     {
@@ -40,7 +38,7 @@ public class Stage extends Component
         this.tasks = ImmutableList.copyOf(tasks);
     }
 
-    @Exported(inline=true)
+    @Exported
     public List<Task> getTasks()
     {
         return tasks;

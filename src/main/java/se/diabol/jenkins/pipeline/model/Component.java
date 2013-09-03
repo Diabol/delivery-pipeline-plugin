@@ -15,13 +15,11 @@ import static com.google.common.base.Objects.toStringHelper;
  *
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-@ExportedBean
+@ExportedBean(defaultVisibility = 100)
 public abstract class Component
 {
-    @XmlAttribute
     private final String name;
 
-    @XmlAttribute(required = false)
     private final Status status;
 
     protected Component(String name, Status status)

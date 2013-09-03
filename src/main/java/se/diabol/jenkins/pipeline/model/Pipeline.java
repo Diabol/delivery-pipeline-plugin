@@ -16,13 +16,11 @@ import static com.google.common.base.Objects.toStringHelper;
  * @author Per Huss <mr.per.huss@gmail.com>
  */
 @XmlRootElement
-@ExportedBean
+@ExportedBean(defaultVisibility = 100)
 public class Pipeline extends Component
 {
-    @XmlElement(name = "stage")
     private List<Stage> stages;
 
-    @XmlElement(name = "version")
     private String version;
 
     private Pipeline()
@@ -37,7 +35,7 @@ public class Pipeline extends Component
         this.stages = ImmutableList.copyOf(stages);
     }
 
-    @Exported(inline=true)
+    @Exported
     public List<Stage> getStages()
     {
         return stages;

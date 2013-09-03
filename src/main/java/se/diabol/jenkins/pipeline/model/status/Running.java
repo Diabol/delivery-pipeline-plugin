@@ -1,23 +1,27 @@
 package se.diabol.jenkins.pipeline.model.status;
 
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**
 * @author Per Huss <mr.per.huss@gmail.com>
 */
-@ExportedBean
-class Running implements Status
+@ExportedBean(defaultVisibility = 100)
+public class Running extends SimpleStatus
 {
     private final int percentage;
 
-    Running(int percentage) { this.percentage = percentage; }
+    Running(int percentage)
+    {
+        super(StatusType.RUNNING);
+        this.percentage = percentage;
+    }
 
-    @Override public int getPercentage() { return percentage; }
-    @Override public boolean isRunning() { return true; }
-    @Override public boolean isSuccess() { return false; }
-    @Override public boolean isFailed() { return false; }
-    @Override public boolean isStarted() { return false; }
-    @Override public boolean isIdle() { return false; }
+    @Exported
+    public int getPercentage() { return percentage; }
+
+    @Override
+    public boolean isRunning() { return true; }
 
     @Override
     public String toString()
