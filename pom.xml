@@ -7,6 +7,7 @@
     <version>0.2-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>Delivery Pipeline Plugin</name>
+    <url>https://github.com/Diabol/delivery-pipeline-plugin/wiki</url>
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
