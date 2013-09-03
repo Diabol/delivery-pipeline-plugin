@@ -42,7 +42,7 @@ public class PipelineFactoryTest
         Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper", null,
+                     new Pipeline("Piper", null, null,
                                   asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), ""),
                                                                    new Task("anal", "Analyze", idle(), ""))),
                                          new Stage("Test", asList(new Task("test", "Test", idle(), ""))))));
@@ -62,7 +62,7 @@ public class PipelineFactoryTest
         Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper", null,
+                     new Pipeline("Piper", null, null,
                                   asList(new Stage("Build", asList(new Task("comp", "Compile", idle(),""))),
                                          new Stage("Test", asList(new Task("test", "Test", idle(),""),
                                                                   new Task("test2", "Test fnutt", idle(),""))),
