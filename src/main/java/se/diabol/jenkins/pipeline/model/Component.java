@@ -4,8 +4,6 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 import java.util.Objects;
 
 import static com.google.common.base.Objects.toStringHelper;
