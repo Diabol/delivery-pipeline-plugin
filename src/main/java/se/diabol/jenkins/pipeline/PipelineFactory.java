@@ -151,12 +151,12 @@ public class PipelineFactory {
             triggeredBy.add(user.getDisplayName());
         }
 
-        Cause.UserIdCause cause = (Cause.UserIdCause) build.getCause(Cause.UserIdCause.class);
         if (triggeredBy.size() > 0) {
             return StringUtils.join(triggeredBy, ", ");
         }
 
-        if (cause.getUserName() != null) {
+        Cause.UserIdCause cause = (Cause.UserIdCause) build.getCause(Cause.UserIdCause.class);
+        if (cause != null && cause.getUserName() != null) {
             return cause.getUserName();
         } else {
             return "anonymous";
