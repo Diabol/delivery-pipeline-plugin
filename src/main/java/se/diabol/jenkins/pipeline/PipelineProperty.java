@@ -1,14 +1,15 @@
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.Job;
-import hudson.model.JobProperty;
-import hudson.model.JobPropertyDescriptor;
+import hudson.model.*;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+import java.util.Set;
 
 public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
@@ -41,6 +42,20 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         @Override
         public boolean isApplicable(Class<? extends Job> jobType) {
             return true;
+        }
+
+        public AutoCompletionCandidates doAutoCompleteStageName(@QueryParameter String value) {
+            if (value != null) {
+                AutoCompletionCandidates c = new AutoCompletionCandidates();
+                Set<String> stages = ProjectUtil.getStageNames();
+
+                for (String stage : stages)
+                    if (stage.toLowerCase().startsWith(value.toLowerCase()))
+                        c.add(stage);
+                return c;
+            } else {
+                return new AutoCompletionCandidates();
+            }
         }
 
         @Override

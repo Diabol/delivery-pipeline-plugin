@@ -71,7 +71,7 @@ public class PipelineFactory {
      */
     String getUrl(AbstractProject job)
     {
-        return job.getUrl();
+        return Jenkins.getInstance().getRootUrl() + job.getUrl();
     }
 
     /**

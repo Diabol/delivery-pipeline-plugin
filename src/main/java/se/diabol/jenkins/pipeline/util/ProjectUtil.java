@@ -4,6 +4,11 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import se.diabol.jenkins.pipeline.PipelineProperty;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class ProjectUtil {
 
@@ -13,6 +18,19 @@ public abstract class ProjectUtil {
             options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
         }
         return options;
+    }
+
+    public static Set<String> getStageNames() {
+        List<AbstractProject> projects =  Jenkins.getInstance().getAllItems(AbstractProject.class);
+        Set<String> result = new HashSet<>();
+        for (AbstractProject project : projects) {
+            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            if (property != null && property.getStageName() != null) {
+                result.add(property.getStageName());
+            }
+
+        }
+        return result;
     }
 
 
