@@ -8,6 +8,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +55,7 @@ public class MultiPipelineView extends AbstractPipelineView {
 
 
     @Extension
-    public static class DescriptorImpl extends ViewDescriptor {
-        public String getDisplayName() {
-            return "Delivery Pipeline View";
-        }
+    public static class DescriptorImpl extends PipelineViewDescriptor {
 
     }
 
@@ -96,14 +94,8 @@ public class MultiPipelineView extends AbstractPipelineView {
             }
 
             public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
-                final hudson.util.ListBoxModel options = new hudson.util.ListBoxModel();
-                for (final AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                    options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
-                }
-                return options;
+                return ProjectUtil.fillAllProjects(context);
             }
-
-
 
         }
     }

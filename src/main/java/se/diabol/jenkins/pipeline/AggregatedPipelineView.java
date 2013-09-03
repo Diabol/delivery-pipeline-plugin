@@ -32,11 +32,7 @@ public class AggregatedPipelineView extends MultiPipelineView {
 
 
     @Extension
-    public static class DescriptorImpl extends ViewDescriptor {
-        public String getDisplayName() {
-            return "Delivery Pipeline View";
-        }
-
+    public static class DescriptorImpl extends PipelineViewDescriptor {
     }
 
 

@@ -1,12 +1,16 @@
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.AbstractProject;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.ViewGroup;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -68,17 +72,10 @@ public class PipelineView extends AbstractPipelineView {
     }
 
     @Extension
-    public static class DescriptorImpl extends ViewDescriptor {
-        public String getDisplayName() {
-            return "Delivery Pipeline View";
-        }
+    public static class DescriptorImpl extends PipelineViewDescriptor {
 
         public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
-            ListBoxModel options = new ListBoxModel();
-            for (AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
-            }
-            return options;
+            return ProjectUtil.fillAllProjects(context);
         }
 
         public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
