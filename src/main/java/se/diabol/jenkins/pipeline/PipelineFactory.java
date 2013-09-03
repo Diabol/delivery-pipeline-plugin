@@ -94,11 +94,9 @@ public class PipelineFactory {
                 AbstractProject job = getJenkinsJob(task);
                 AbstractBuild currentBuild = job.getLastBuild();
                 AbstractBuild firstBuild = getFirstUpstreamBuild(currentBuild);
-                if (firstBuild != null && version == null) {
+                if (firstBuild != null && version == null)
                     version = firstBuild.getDisplayName();
-                }
-                Status status = currentBuild != null ? resolveStatus(currentBuild) : task.getStatus();
-                tasks.add(new Task(task.getId(), task.getName(), status, task.getLink()));
+                tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
@@ -130,8 +128,7 @@ public class PipelineFactory {
                 for (Task task : stage.getTasks()) {
                     AbstractProject job = getJenkinsJob(task);
                     AbstractBuild currentBuild = match(job.getBuilds(), lastBuild);
-                    Status status = currentBuild != null ? resolveStatus(currentBuild) : task.getStatus();
-                    tasks.add(new Task(task.getId(), task.getName(), status, task.getLink()));
+                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
@@ -146,10 +143,10 @@ public class PipelineFactory {
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
-    private AbstractBuild match(RunList runList, AbstractBuild firstJob) {
-        Iterator it = runList.iterator();
-        while (it.hasNext()) {
-            AbstractBuild currentBuild = (AbstractBuild) it.next();
+    private AbstractBuild match(RunList runList, AbstractBuild firstJob)
+    {
+        for (Object aRunList : runList) {
+            AbstractBuild currentBuild = (AbstractBuild) aRunList;
             if (firstJob.equals(getFirstUpstreamBuild(currentBuild))) {
                 return currentBuild;
             }
@@ -158,10 +155,21 @@ public class PipelineFactory {
     }
 
     private AbstractProject getJenkinsJob(Task task) {
-        return JENKINS.getItem(task.getId().toString(), JENKINS, AbstractProject.class);
+        return JENKINS.getItem(task.getId(), JENKINS, AbstractProject.class);
     }
 
-    private Status resolveStatus(AbstractBuild build) {
+    private Status resolveStatus(AbstractProject job, AbstractBuild build)
+    {
+        if (build == null)
+        {
+            if(job.isInQueue())
+                return StatusFactory.queued();
+            else if(job.isDisabled())
+                return StatusFactory.disabled();
+            else
+                return StatusFactory.idle();
+        }
+
         if (build.isBuilding()) {
             return StatusFactory.running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
                     / build.getEstimatedDuration()));
@@ -176,7 +184,10 @@ public class PipelineFactory {
             return StatusFactory.failed();
         else if (UNSTABLE.equals(result))
             return StatusFactory.unstable();
-        throw new IllegalStateException("Result " + result + " not recognized.");
+        else if (Result.ABORTED.equals(result))
+            return StatusFactory.cancelled();
+        else
+            throw new IllegalStateException("Result " + result + " not recognized.");
     }
 
     /**
