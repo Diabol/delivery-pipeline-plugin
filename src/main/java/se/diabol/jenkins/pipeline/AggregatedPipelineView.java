@@ -2,7 +2,6 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.model.AbstractProject;
-import hudson.model.ViewDescriptor;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundConstructor;
 import se.diabol.jenkins.pipeline.model.Pipeline;
