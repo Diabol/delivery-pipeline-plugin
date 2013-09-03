@@ -13,42 +13,42 @@ import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
 @ExportedBean(defaultVisibility = 100)
 public class SimpleStatus implements Status
 {
-    private final StatusType statusType;
+    private final StatusType type;
 
-    public SimpleStatus(StatusType statusType)
+    public SimpleStatus(StatusType type)
     {
-        this.statusType = statusType;
+        this.type = type;
     }
 
     @Exported
-    public StatusType getStatusType()
+    public StatusType getType()
     {
-        return statusType;
+        return type;
     }
 
-    @Override public boolean isIdle() { return IDLE.equals(statusType); }
-    @Override public boolean isQueued() { return QUEUED.equals(statusType); }
-    @Override public boolean isRunning() { return RUNNING.equals(statusType); }
-    @Override public boolean isSuccess() { return SUCCESS.equals(statusType); }
-    @Override public boolean isFailed() { return FAILED.equals(statusType); }
-    @Override public boolean isUnstable() { return UNSTABLE.equals(statusType); }
-    @Override public boolean isCancelled() { return CANCELLED.equals(statusType); }
+    @Override public boolean isIdle() { return IDLE.equals(type); }
+    @Override public boolean isQueued() { return QUEUED.equals(type); }
+    @Override public boolean isRunning() { return RUNNING.equals(type); }
+    @Override public boolean isSuccess() { return SUCCESS.equals(type); }
+    @Override public boolean isFailed() { return FAILED.equals(type); }
+    @Override public boolean isUnstable() { return UNSTABLE.equals(type); }
+    @Override public boolean isCancelled() { return CANCELLED.equals(type); }
 
     @Override
     public int hashCode()
     {
-        return statusType.hashCode();
+        return type.hashCode();
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        return this == obj || obj instanceof SimpleStatus && Objects.equals(((SimpleStatus) obj).statusType, statusType);
+        return this == obj || obj instanceof SimpleStatus && Objects.equals(((SimpleStatus) obj).type, type);
     }
 
     @Override
     public String toString()
     {
-        return String.valueOf(statusType);
+        return String.valueOf(type);
     }
 }

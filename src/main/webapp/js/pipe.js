@@ -28,7 +28,7 @@ function renderPipelines(divName, aggregated) {
                         html = html + "<ul>"
                         for (var k = 0; k < stage.tasks.length; k++) {
                             var task = stage.tasks[k]
-                            html = html + "<li class=\"" + task.status  +"\"><a href=\"" + task.link +"\">"+ task.name + "</a></li>"
+                            html = html + "<li class=\"" + task.status.type  +"\"><a href=\"" + task.link +"\">"+ task.name + "</a></li>"
                         }
 
                         html = html + "</ul>"
