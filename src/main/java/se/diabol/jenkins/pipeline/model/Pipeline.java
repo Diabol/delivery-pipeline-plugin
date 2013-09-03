@@ -5,8 +5,6 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +13,6 @@ import static com.google.common.base.Objects.toStringHelper;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-@XmlRootElement
 @ExportedBean(defaultVisibility = 100)
 public class Pipeline extends Component
 {
@@ -23,15 +20,18 @@ public class Pipeline extends Component
 
     private String version;
 
+    private String triggeredBy;
+
     private Pipeline()
     {
         super(null, null);
     }
 
-    public Pipeline(String name, String version, List<Stage> stages)
+    public Pipeline(String name, String version, String triggeredBy, List<Stage> stages)
     {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating
         this.version = version;
+        this.triggeredBy = triggeredBy;
         this.stages = ImmutableList.copyOf(stages);
     }
 
@@ -45,6 +45,11 @@ public class Pipeline extends Component
     public String getVersion()
     {
         return version;
+    }
+
+    @Exported
+    public String getTriggeredBy() {
+        return triggeredBy;
     }
 
     @Override

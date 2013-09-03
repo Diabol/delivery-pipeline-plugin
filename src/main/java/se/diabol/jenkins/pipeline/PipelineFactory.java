@@ -3,6 +3,7 @@ package se.diabol.jenkins.pipeline;
 import hudson.model.*;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.model.Stage;
 import se.diabol.jenkins.pipeline.model.Task;
@@ -46,7 +47,7 @@ public class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, null, newArrayList(stages.values()));
+        return new Pipeline(name, null,null, newArrayList(stages.values()));
     }
 
     private Map<String, AbstractProject> getAllDownstreamJobs(AbstractProject first) {
@@ -100,7 +101,8 @@ public class PipelineFactory {
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
-        return new Pipeline(pipeline.getName(), null, stages);
+        //TODO add triggeredBy
+        return new Pipeline(pipeline.getName(), null, null, stages);
 
 
 
@@ -117,28 +119,50 @@ public class PipelineFactory {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getJenkinsJob(firstTask);
 
+
         List<Pipeline> result = new ArrayList<>();
 
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
-            AbstractBuild lastBuild = (AbstractBuild) it.next();
+            AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Stage> stages = new ArrayList<>();
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<>();
                 for (Task task : stage.getTasks()) {
                     AbstractProject job = getJenkinsJob(task);
-                    AbstractBuild currentBuild = match(job.getBuilds(), lastBuild);
+                    AbstractBuild currentBuild = match(job.getBuilds(), firstBuild);
                     tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
-            result.add(new Pipeline(pipeline.getName(), lastBuild.getDisplayName(), stages));
+
+            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), getTriggeredBy(firstBuild), stages));
 
 
         }
         return result;
     }
 
+    private String getTriggeredBy(AbstractBuild build) {
+        Set<User> users = build.getCulprits();
+        List<String> triggeredBy = new ArrayList<>();
+
+        for (User user : users) {
+            triggeredBy.add(user.getDisplayName());
+        }
+
+        Cause.UserIdCause cause = (Cause.UserIdCause) build.getCause(Cause.UserIdCause.class);
+        if (triggeredBy.size() > 0) {
+            return StringUtils.join(triggeredBy, ", ");
+        }
+
+        if (cause.getUserName() != null) {
+            return cause.getUserName();
+        } else {
+            return "anonymous";
+        }
+
+    }
 
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.

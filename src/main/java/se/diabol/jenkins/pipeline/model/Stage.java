@@ -5,7 +5,6 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
-import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 import java.util.Objects;
 

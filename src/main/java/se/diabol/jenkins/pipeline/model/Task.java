@@ -3,7 +3,6 @@ package se.diabol.jenkins.pipeline.model;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
 
 import static com.google.common.base.Objects.toStringHelper;
@@ -13,9 +12,8 @@ import static com.google.common.base.Objects.toStringHelper;
  */
 public class Task extends Component
 {
-    @XmlAttribute
     private final String id;
-    @XmlAttribute
+
     private final String link;
 
     private Task()
