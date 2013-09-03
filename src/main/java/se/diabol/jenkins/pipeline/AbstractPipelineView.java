@@ -19,10 +19,6 @@ import static java.util.Collections.emptySet;
 
 public abstract class AbstractPipelineView extends View {
 
-    // Prevent xstream from trying to read items property (which it gets from inherited getItems())
-    @XStreamOmitField
-    private List<TopLevelItem> items;
-
     public String getRootUrl() {
         return Jenkins.getInstance().getRootUrl();
     }
