@@ -61,6 +61,10 @@ section.stage ul li a:hover {
     text-decoration: underline;
 }
 
+section.stage ul li.QUEUED {
+    background-color: lightgray;
+}
+
 section.stage ul li.FAILED {
     background-color: tomato;
 }
@@ -73,8 +77,12 @@ section.stage ul li.UNSTABLE {
     background-color: orange;
 }
 
+section.stage ul li.CANCELLED {
+    background-color: yellow;
+}
+
 section.stage ul li.DISABLED {
-    background-color: lightgray;
+    color: lightgray;
 }
 
 section.stage ul li.RUNNING {
