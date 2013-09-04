@@ -8,6 +8,7 @@
     <div id="pipelines">
 
     </div>
+    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"></script>
 
     <script type="text/javascript">
         renderPipelines("pipelines", false);

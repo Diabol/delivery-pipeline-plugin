@@ -7,7 +7,6 @@
     <!-- instead of JSP functions -->
     ${h.initPageVariables(context)}
 
-    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"></script>
 
 
     <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
