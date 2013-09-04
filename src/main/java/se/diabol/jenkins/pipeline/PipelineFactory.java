@@ -90,14 +90,21 @@ public class PipelineFactory {
         List<Stage> stages = new ArrayList<>();
         for (Stage stage : pipeline.getStages()) {
             String version = null;
+            AbstractBuild versionBuild = null;
             List<Task> tasks = new ArrayList<>();
             for (Task task : stage.getTasks()) {
                 AbstractProject job = getJenkinsJob(task);
                 AbstractBuild currentBuild = job.getLastBuild();
                 AbstractBuild firstBuild = getFirstUpstreamBuild(currentBuild);
-                if (firstBuild != null && version == null)
+                if (firstBuild != null && version == null) {
                     version = firstBuild.getDisplayName();
-                tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
+                    versionBuild = firstBuild;
+                }
+                if (firstBuild != null && firstBuild.equals(versionBuild)) {
+                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
+                } else {
+                    tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink()));
+                }
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
