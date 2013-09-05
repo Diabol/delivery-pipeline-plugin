@@ -25,13 +25,10 @@ function renderPipelines(divName, aggregated) {
                         } else {
                             html = html + '<h1>' + stage.name + ' - ' + stage.version + '</h1>'
                         }
-                        html = html + "<ul>";
                         for (var k = 0; k < stage.tasks.length; k++) {
                             var task = stage.tasks[k];
-                            html = html + "<li class=\"" + task.status.type  +"\"><a href=\"" + task.link +"\">"+ task.name + "</a></li>"
+                            html = html + "<span class=\"" + task.status.type  +"\"><a href=\"" + task.link +"\">"+ task.name + "</a></span>"
                         }
-
-                        html = html + "</ul>";
 
                         html = html + "</section>";
                     }

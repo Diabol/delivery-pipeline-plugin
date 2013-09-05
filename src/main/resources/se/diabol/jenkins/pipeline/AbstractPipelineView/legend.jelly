@@ -1,0 +1,16 @@
+<j:jelly xmlns:x="jelly:xml" xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <section class="legend">
+        <h1>Legend:</h1>
+        <span class="IDLE">Idle</span>
+        <span class="QUEUED">Queued</span>
+        <span class="RUNNING">Running</span>
+        <span class="SUCCESS">Success</span>
+        <span class="UNSTABLE">Unstable</span>
+        <span class="FAILED">Failed</span>
+        <span class="CANCELLED">Cancelled</span>
+        <span class="DISABLED">Disabled</span>
+    </section>
+
+</j:jelly>
