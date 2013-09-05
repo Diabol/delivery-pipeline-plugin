@@ -104,3 +104,15 @@ section.legend span {
     padding: 1px 5px;
     min-width: 75px;
 }
+
+div.left {
+    float: left;
+}
+
+div.right {
+    float: right;
+}
+
+div.clear {
+    clear: both;
+}

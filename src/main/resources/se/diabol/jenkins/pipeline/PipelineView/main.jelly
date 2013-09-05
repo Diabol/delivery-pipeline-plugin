@@ -5,13 +5,12 @@
     <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/css/pipe.css"/>
 
 
-    <div id="pipelines">
+    <div id="pipelines"></div>
 
-    </div>
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines("pipelines", false);
+        renderPipelines(["pipelines"], false);
         setInterval(function() {renderPipelines("pipelines", false);}, 2000);
     </script>
 </j:jelly>

@@ -4,14 +4,22 @@
 
     <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/css/pipe.css"/>
 
+    <script type="text/javascript">
+        var pipelineContainers = new Array(${it.noOfColumns})    ;
+    </script>
 
-    <div id="pipelines">
+    <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+        <script type="text/javascript">
+            pipelineContainers[${i-1}] = 'pipelines-${i}';
+        </script>
+        <div id="pipelines-${i}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
+    </j:forEach>
+    <div class="clear"></div>
 
-    </div>
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines("pipelines", false);
+        renderPipelines(pipelineContainers, true);
         setInterval(function() {renderPipelines("pipelines",false);}, 2000);
     </script>
 

@@ -15,11 +15,13 @@ import java.util.List;
 public class MultiPipelineView extends AbstractPipelineView {
 
     private List<Component> components;
+    private int noOfColumns = 1;
 
     @DataBoundConstructor
-    public MultiPipelineView(String name, List<Component> components ) {
+    public MultiPipelineView(String name, int noOfColumns, List<Component> components) {
         super(name);
         this.components = components;
+        this.noOfColumns = noOfColumns;
     }
 
     public List<Component> getComponents() {
@@ -28,6 +30,14 @@ public class MultiPipelineView extends AbstractPipelineView {
 
     public void setComponents(List<Component> components) {
         this.components = components;
+    }
+
+    public int getNoOfColumns() {
+        return noOfColumns;
+    }
+
+    public void setNoOfColumns(int noOfColumns) {
+        this.noOfColumns = noOfColumns;
     }
 
     @Override
@@ -55,7 +65,13 @@ public class MultiPipelineView extends AbstractPipelineView {
 
     @Extension
     public static class DescriptorImpl extends PipelineViewDescriptor {
-
+        public ListBoxModel doFillNoOfColumnsItems(@AncestorInPath ItemGroup<?> context) {
+            ListBoxModel options = new ListBoxModel();
+            options.add("1", "1");
+            options.add("2", "2");
+            options.add("3", "3");
+            return options;
+        }
     }
 
 
@@ -95,7 +111,6 @@ public class MultiPipelineView extends AbstractPipelineView {
             public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
                 return ProjectUtil.fillAllProjects(context);
             }
-
         }
     }
 }

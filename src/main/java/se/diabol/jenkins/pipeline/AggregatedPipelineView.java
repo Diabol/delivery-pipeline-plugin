@@ -12,8 +12,8 @@ import java.util.List;
 public class AggregatedPipelineView extends MultiPipelineView {
 
     @DataBoundConstructor
-    public AggregatedPipelineView(String name, List<Component> components) {
-        super(name, components);
+    public AggregatedPipelineView(String name, int noOfColumns, List<Component> components) {
+        super(name, noOfColumns, components);
     }
 
     public List<Pipeline> getPipelines()
@@ -31,7 +31,8 @@ public class AggregatedPipelineView extends MultiPipelineView {
 
 
     @Extension
-    public static class DescriptorImpl extends PipelineViewDescriptor {
+    public static class DescriptorImpl extends MultiPipelineView.DescriptorImpl {
+
     }
 
 

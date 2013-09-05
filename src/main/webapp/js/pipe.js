@@ -1,11 +1,13 @@
-function renderPipelines(divName, aggregated) {
+function renderPipelines(divNames, aggregated) {
 
     Q.ajax({
         url: 'api/json',
         dataType: 'json',
         success: function (data)
         {
-            Q("#" + divName).html('');
+            for (var i = 0; i < divNames.length ;i++) {
+                Q("#" + divNames[i]).html('');
+            }
 
             for (var i = 0; i < data.pipelines.length ;i++) {
                 var pipeline = data.pipelines[i];
@@ -36,7 +38,7 @@ function renderPipelines(divName, aggregated) {
 
                 html = html + "</section>";
 
-                Q("#" + divName).append(html);
+                Q("#" + divNames[i%divNames.length]).append(html);
 
             }
         }
