@@ -1,12 +1,14 @@
 package se.diabol.jenkins.pipeline;
 
 import hudson.model.*;
+import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.model.Stage;
 import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.model.TestResult;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
@@ -37,8 +39,8 @@ public class PipelineFactory {
         for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
             PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
             String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
-            Status status = job.isDisabled()? disabled(): idle();
-            Task task = new Task(job.getName(), taskName, status, getUrl(job)); // todo: Null not idle
+            Status status = job.isDisabled() ? disabled() : idle();
+            Task task = new Task(job.getName(), taskName, status, getUrl(job), null); // todo: Null not idle
             String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
@@ -47,7 +49,7 @@ public class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, null,null, newArrayList(stages.values()));
+        return new Pipeline(name, null, null, newArrayList(stages.values()));
     }
 
     private Map<String, AbstractProject> getAllDownstreamJobs(AbstractProject first) {
@@ -69,8 +71,7 @@ public class PipelineFactory {
     /**
      * Opens up for testing and mocking, since Jenkins has getUrl() method final
      */
-    String getUrl(AbstractProject job)
-    {
+    String getUrl(AbstractProject job) {
         return Jenkins.getInstance().getRootUrl() + job.getUrl();
     }
 
@@ -101,9 +102,9 @@ public class PipelineFactory {
                     versionBuild = firstBuild;
                 }
                 if (firstBuild != null && firstBuild.equals(versionBuild)) {
-                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
+                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink(), getTestResult(currentBuild)));
                 } else {
-                    tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink()));
+                    tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink(), null));
                 }
             }
             stages.add(new Stage(stage.getName(), tasks, version));
@@ -112,14 +113,13 @@ public class PipelineFactory {
         return new Pipeline(pipeline.getName(), null, null, stages);
 
 
-
     }
 
 
     /**
      * Populates and return pipelines for the supplied pipeline prototype with the current status.
      *
-     * @param pipeline the pipeline prototype
+     * @param pipeline      the pipeline prototype
      * @param noOfPipelines number of pipeline instances
      */
     public List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
@@ -138,7 +138,7 @@ public class PipelineFactory {
                 for (Task task : stage.getTasks()) {
                     AbstractProject job = getJenkinsJob(task);
                     AbstractBuild currentBuild = match(job.getBuilds(), firstBuild);
-                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink()));
+                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink(), getTestResult(currentBuild)));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
@@ -148,6 +148,21 @@ public class PipelineFactory {
 
         }
         return result;
+    }
+
+    private TestResult getTestResult(AbstractBuild build) {
+        if (build != null) {
+            AggregatedTestResultAction tests = build.getAction(AggregatedTestResultAction.class);
+            if (tests != null) {
+                return new TestResult(tests.getFailCount(), tests.getSkipCount(), tests.getTotalCount(),
+                        Jenkins.getInstance().getRootUrl() + build.getUrl() + tests.getUrlName());
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
     }
 
     private String getTriggeredBy(AbstractBuild build) {
@@ -174,8 +189,7 @@ public class PipelineFactory {
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
-    private AbstractBuild match(RunList runList, AbstractBuild firstJob)
-    {
+    private AbstractBuild match(RunList runList, AbstractBuild firstJob) {
         for (Object aRunList : runList) {
             AbstractBuild currentBuild = (AbstractBuild) aRunList;
             if (firstJob.equals(getFirstUpstreamBuild(currentBuild))) {
@@ -189,13 +203,11 @@ public class PipelineFactory {
         return JENKINS.getItem(task.getId(), JENKINS, AbstractProject.class);
     }
 
-    private Status resolveStatus(AbstractProject job, AbstractBuild build)
-    {
-        if (build == null)
-        {
-            if(job.isInQueue())
+    private Status resolveStatus(AbstractProject job, AbstractBuild build) {
+        if (build == null) {
+            if (job.isInQueue())
                 return StatusFactory.queued();
-            else if(job.isDisabled())
+            else if (job.isDisabled())
                 return StatusFactory.disabled();
             else
                 return StatusFactory.idle();

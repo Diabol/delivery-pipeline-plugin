@@ -43,9 +43,9 @@ public class PipelineFactoryTest
 
         assertEquals(pipeline,
                      new Pipeline("Piper", null, null,
-                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), ""),
-                                                                   new Task("anal", "Analyze", idle(), ""))),
-                                         new Stage("Test", asList(new Task("test", "Test", idle(), ""))))));
+                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), "", null),
+                                                                   new Task("anal", "Analyze", idle(), "", null))),
+                                         new Stage("Test", asList(new Task("test", "Test", idle(), "", null))))));
     }
 
     @Test
@@ -63,10 +63,10 @@ public class PipelineFactoryTest
 
         assertEquals(pipeline,
                      new Pipeline("Piper", null, null,
-                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(),""))),
-                                         new Stage("Test", asList(new Task("test", "Test", idle(),""),
-                                                                  new Task("test2", "Test fnutt", idle(),""))),
-                                         new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(),""))))));
+                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(),"", null))),
+                                         new Stage("Test", asList(new Task("test", "Test", idle(),"", null),
+                                                                  new Task("test2", "Test fnutt", idle(),"", null))),
+                                         new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(),"", null))))));
     }
 
     private PipelineFactory createPipelineFactory(final Map<AbstractProject, List<AbstractProject>> jobGraph)

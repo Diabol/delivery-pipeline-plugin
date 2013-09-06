@@ -10,55 +10,55 @@ import static com.google.common.base.Objects.toStringHelper;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class Task extends Component
-{
+public class Task extends Component {
     private final String id;
 
     private final String link;
+    private final TestResult testResult;
 
-    private Task()
-    {
-        this(null, null, null, null);
+    private Task() {
+        this(null, null, null, null, null);
     }
 
-    public Task(String id, String name, Status status, String link)
-    {
+    public Task(String id, String name, Status status, String link, TestResult testResult) {
         super(name, status);
         this.id = id;
         this.link = link;
+        this.testResult = testResult;
+
     }
 
     @Exported
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
     @Exported
-    public String getLink()
-    {
+    public String getLink() {
         return link;
     }
 
+    @Exported
+    public TestResult getTestResult() {
+        return testResult;
+    }
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(id, super.hashCode());
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         return this == obj || obj instanceof Task && equals((Task) obj);
     }
 
-    private boolean equals(Task o)
-    {
+    private boolean equals(Task o) {
         return Objects.equals(id, o.id) && Objects.equals(link, o.link) && super.equals(o);
     }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toStringHelper(this)
                 .add("name", getName())
                 .add("status", getStatus())
