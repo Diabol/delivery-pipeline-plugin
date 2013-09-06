@@ -16,10 +16,6 @@ public class Task extends Component {
     private final String link;
     private final TestResult testResult;
 
-    private Task() {
-        this(null, null, null, null, null);
-    }
-
     public Task(String id, String name, Status status, String link, TestResult testResult) {
         super(name, status);
         this.id = id;
@@ -39,6 +35,7 @@ public class Task extends Component {
     }
 
     @Exported
+    @SuppressWarnings("unused")
     public TestResult getTestResult() {
         return testResult;
     }

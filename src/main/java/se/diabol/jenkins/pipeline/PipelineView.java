@@ -13,13 +13,11 @@ import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
 public class PipelineView extends AbstractPipelineView {
-    private static final Logger LOGGER = Logger.getLogger(PipelineView.class.getName());
 
     private String title;
     private String firstJob;
@@ -33,26 +31,32 @@ public class PipelineView extends AbstractPipelineView {
         this.noOfPipelines = noOfPipelines;
     }
 
+    @SuppressWarnings("unused")
     public String getTitle() {
         return title;
     }
 
+    @SuppressWarnings("unused")
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @SuppressWarnings("unused")
     public String getFirstJob() {
         return firstJob;
     }
 
+    @SuppressWarnings("unused")
     public void setFirstJob(String firstJob) {
         this.firstJob = firstJob;
     }
 
+    @SuppressWarnings("unused")
     public int getNoOfPipelines() {
         return noOfPipelines;
     }
 
+    @SuppressWarnings("unused")
     public void setNoOfPipelines(int noOfPipelines) {
         this.noOfPipelines = noOfPipelines;
     }
@@ -74,10 +78,12 @@ public class PipelineView extends AbstractPipelineView {
     @Extension
     public static class DescriptorImpl extends PipelineViewDescriptor {
 
+        @SuppressWarnings("unused")
         public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
             return ProjectUtil.fillAllProjects(context);
         }
 
+        @SuppressWarnings("unused")
         public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
             options.add("1", "1");

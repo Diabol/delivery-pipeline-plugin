@@ -20,10 +20,6 @@ public class Stage extends Component
 
     private String version;
 
-    private Stage()
-    {
-        super(null, null);
-    }
 
     public Stage(String name, List<Task> tasks, String version) {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating

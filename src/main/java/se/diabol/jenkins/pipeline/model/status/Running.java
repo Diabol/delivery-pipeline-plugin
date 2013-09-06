@@ -18,6 +18,7 @@ public class Running extends SimpleStatus
     }
 
     @Exported
+    @SuppressWarnings("unused")
     public int getPercentage() { return percentage; }
 
     @Override

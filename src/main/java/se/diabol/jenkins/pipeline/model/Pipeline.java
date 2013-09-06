@@ -22,11 +22,6 @@ public class Pipeline extends Component
 
     private String triggeredBy;
 
-    private Pipeline()
-    {
-        super(null, null);
-    }
-
     public Pipeline(String name, String version, String triggeredBy, List<Stage> stages)
     {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating
@@ -48,6 +43,7 @@ public class Pipeline extends Component
     }
 
     @Exported
+    @SuppressWarnings("unused")
     public String getTriggeredBy() {
         return triggeredBy;
     }

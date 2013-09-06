@@ -44,6 +44,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             return true;
         }
 
+        @SuppressWarnings("unused")
         public AutoCompletionCandidates doAutoCompleteStageName(@QueryParameter String value) {
             if (value != null) {
                 AutoCompletionCandidates c = new AutoCompletionCandidates();

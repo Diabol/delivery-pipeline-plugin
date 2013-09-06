@@ -1,11 +1,14 @@
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
+import hudson.RelativePath;
 import hudson.model.*;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -111,6 +114,15 @@ public class MultiPipelineView extends AbstractPipelineView {
             public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
                 return ProjectUtil.fillAllProjects(context);
             }
+
+            public FormValidation doCheckName(@QueryParameter String value) {
+                if (value != null && !value.trim().equals("")) {
+                    return FormValidation.ok();
+                } else {
+                    return FormValidation.error("Please supply a title!");
+                }
+            }
+
         }
     }
 }

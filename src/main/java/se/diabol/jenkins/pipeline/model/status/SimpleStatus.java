@@ -21,6 +21,7 @@ public class SimpleStatus implements Status
     }
 
     @Exported
+    @SuppressWarnings("unused")
     public StatusType getType()
     {
         return type;

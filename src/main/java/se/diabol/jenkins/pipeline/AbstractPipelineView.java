@@ -30,6 +30,7 @@ public abstract class AbstractPipelineView extends View {
     }
 
     @Exported(inline=true)
+    @SuppressWarnings("unused")
     public abstract List<Pipeline> getPipelines();
 
 
