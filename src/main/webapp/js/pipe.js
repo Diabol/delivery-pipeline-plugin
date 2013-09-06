@@ -25,7 +25,11 @@ function renderPipelines(divNames, aggregated) {
                         if (!aggregated) {
                             html = html + '<h1>' + stage.name + '</h1>'
                         } else {
-                            html = html + '<h1>' + stage.name + ' - ' + stage.version + '</h1>'
+                            if (stage.version) {
+                                html = html + '<h1>' + stage.name + ' - ' + stage.version + '</h1>'
+                            } else {
+                                html = html + '<h1>' + stage.name + ' - N/A</h1>'
+                            }
                         }
                         for (var k = 0; k < stage.tasks.length; k++) {
                             var task = stage.tasks[k];

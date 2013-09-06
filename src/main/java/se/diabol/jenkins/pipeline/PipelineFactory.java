@@ -95,7 +95,10 @@ public class PipelineFactory {
             List<Task> tasks = new ArrayList<>();
             AbstractBuild firstTask = getJenkinsJob(stage.getTasks().get(0)).getLastBuild();
             AbstractBuild versionBuild = getFirstUpstreamBuild(firstTask);
-            String version = versionBuild.getDisplayName();
+            String version = null;
+            if (versionBuild != null) {
+                version = versionBuild.getDisplayName();
+            }
             for (Task task : stage.getTasks()) {
                 AbstractProject job = getJenkinsJob(task);
                 AbstractBuild currentBuild = match(job.getBuilds(), versionBuild);
@@ -189,10 +192,12 @@ public class PipelineFactory {
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
     private AbstractBuild match(RunList runList, AbstractBuild firstJob) {
-        for (Object aRunList : runList) {
-            AbstractBuild currentBuild = (AbstractBuild) aRunList;
-            if (firstJob.equals(getFirstUpstreamBuild(currentBuild))) {
-                return currentBuild;
+        if (firstJob != null) {
+            for (Object aRunList : runList) {
+                AbstractBuild currentBuild = (AbstractBuild) aRunList;
+                if (firstJob.equals(getFirstUpstreamBuild(currentBuild))) {
+                    return currentBuild;
+                }
             }
         }
         return null;
