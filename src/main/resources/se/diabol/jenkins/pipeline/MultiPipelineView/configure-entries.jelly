@@ -6,6 +6,6 @@
     </f:entry>
 
     <f:entry>
-        <f:repeatableProperty field="components"/>
+        <f:repeatableProperty minimum="1" field="components"/>
     </f:entry>
 </j:jelly>
