@@ -19,7 +19,7 @@
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines(pipelineContainers, true);
+        renderPipelines(pipelineContainers, false);
         setInterval(function() {renderPipelines("pipelines",false);}, 2000);
     </script>
 
