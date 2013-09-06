@@ -3,10 +3,12 @@ function renderPipelines(divNames, aggregated) {
     Q.ajax({
         url: 'api/json',
         dataType: 'json',
+        async: false,
+        cache: false,
         success: function (data)
         {
-            for (var i = 0; i < divNames.length ;i++) {
-                Q("#" + divNames[i]).html('');
+            for (var z = 0; z < divNames.length ;z++) {
+                Q("#" + divNames[z]).html('');
             }
 
             for (var i = 0; i < data.pipelines.length ;i++) {
@@ -45,6 +47,9 @@ function renderPipelines(divNames, aggregated) {
                 Q("#" + divNames[i%divNames.length]).append(html);
 
             }
+        },
+        error: function (xhr, status, error) {
+
         }
     });
 
