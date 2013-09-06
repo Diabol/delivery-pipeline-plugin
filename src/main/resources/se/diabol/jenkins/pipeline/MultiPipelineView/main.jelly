@@ -20,7 +20,7 @@
 
     <script type="text/javascript">
         renderPipelines(pipelineContainers, false);
-        setInterval(function() {renderPipelines("pipelines",false);}, 2000);
+        setInterval(function() {renderPipelines(pipelineContainers,false);}, 2000);
     </script>
 
     <!--<st:include page="legend.jelly"/>-->

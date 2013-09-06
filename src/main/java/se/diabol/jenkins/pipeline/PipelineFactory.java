@@ -90,19 +90,18 @@ public class PipelineFactory {
 
         List<Stage> stages = new ArrayList<>();
         for (Stage stage : pipeline.getStages()) {
-            String version = null;
-            AbstractBuild versionBuild = null;
+
+
             List<Task> tasks = new ArrayList<>();
+            AbstractBuild firstTask = getJenkinsJob(stage.getTasks().get(0)).getLastBuild();
+            AbstractBuild versionBuild = getFirstUpstreamBuild(firstTask);
+            String version = versionBuild.getDisplayName();
             for (Task task : stage.getTasks()) {
                 AbstractProject job = getJenkinsJob(task);
-                AbstractBuild currentBuild = job.getLastBuild();
-                AbstractBuild firstBuild = getFirstUpstreamBuild(currentBuild);
-                if (firstBuild != null && version == null) {
-                    version = firstBuild.getDisplayName();
-                    versionBuild = firstBuild;
-                }
-                if (firstBuild != null && firstBuild.equals(versionBuild)) {
-                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink(), getTestResult(currentBuild)));
+                AbstractBuild currentBuild = match(job.getBuilds(), versionBuild);
+
+                if (currentBuild != null) {
+                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), Jenkins.getInstance().getRootUrl() + currentBuild.getUrl(), getTestResult(currentBuild)));
                 } else {
                     tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink(), null));
                 }
