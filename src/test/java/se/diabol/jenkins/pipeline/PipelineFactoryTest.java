@@ -17,14 +17,14 @@ import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class PipelineFactoryTest  {
+public class PipelineFactoryTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
     public void testExtractPipelineWithJoin() throws Exception {
-        FreeStyleProject compile =  jenkins.createFreeStyleProject("comp");
+        FreeStyleProject compile = jenkins.createFreeStyleProject("comp");
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
         FreeStyleProject test = jenkins.createFreeStyleProject("test");
 
@@ -40,7 +40,6 @@ public class PipelineFactoryTest  {
         test.getPublishersList().add(new BuildTrigger("deploy", false));
 
         jenkins.getInstance().rebuildDependencyGraph();
-
 
 
         PipelineFactory pipelineFactory = new PipelineFactory();
@@ -75,17 +74,24 @@ public class PipelineFactoryTest  {
         PipelineFactory factory = new PipelineFactory();
         final Pipeline pipe1 = factory.extractPipeline("pipe1", build1);
         final Pipeline pipe2 = factory.extractPipeline("pipe2", build2);
-        assertEquals(pipe1.getStages().size(),2);
-        assertEquals(pipe2.getStages().size(),2);
+        assertEquals(pipe1.getStages().size(), 2);
+        assertEquals(pipe2.getStages().size(), 2);
         assertNotNull(sonar.getBuild("1"));
 
         Pipeline aggregated1 = factory.createPipelineAggregated(pipe1);
         Pipeline aggregated2 = factory.createPipelineAggregated(pipe2);
 
-        assertEquals(aggregated1.getStages().get(0).getVersion(), "#1");
-        assertEquals(aggregated2.getStages().get(0).getStatus().isIdle(), true);
+        assertEquals("#1", aggregated1.getStages().get(1).getVersion());
+        assertEquals(true, aggregated2.getStages().get(1).getStatus().isIdle());
 
+        jenkins.buildAndAssertSuccess(build2);
+        jenkins.waitUntilNoActivity();
 
+        Pipeline aggregated3 = factory.createPipelineAggregated(pipe1);
+        Pipeline aggregated4 = factory.createPipelineAggregated(pipe2);
+
+        assertEquals("#1", aggregated3.getStages().get(1).getVersion());
+        assertEquals("#1", aggregated4.getStages().get(1).getVersion());
 
 
     }
