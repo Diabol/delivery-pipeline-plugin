@@ -11,6 +11,6 @@
 
     <script type="text/javascript">
         renderPipelines(["pipelines"], false);
-        setInterval(function() {renderPipelines("pipelines", false);}, 2000);
+        setInterval(function() {renderPipelines(["pipelines"], false);}, 2000);
     </script>
 </j:jelly>
