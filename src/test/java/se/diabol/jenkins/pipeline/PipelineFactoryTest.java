@@ -1,97 +1,92 @@
 package se.diabol.jenkins.pipeline;
 
-import com.google.common.collect.ImmutableMap;
-import hudson.model.AbstractProject;
-import org.testng.annotations.Test;
+import hudson.model.FreeStyleProject;
+import hudson.tasks.BuildTrigger;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.model.Stage;
 import se.diabol.jenkins.pipeline.model.Task;
 
-import java.util.List;
-import java.util.Map;
-
-import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class PipelineFactoryTest
-{
-    final AbstractProject compileJob = createMockJob("comp", "Compile", "Build");
-    final AbstractProject analyzeJob = createMockJob("anal", "Analyze", "Build");
-    final AbstractProject testJob = createMockJob("test", "Test", null);
-    final AbstractProject altTestJob = createMockJob("test2", "Test fnutt", "Test");
-    final AbstractProject deployJob = createMockJob("deploy", "Deploy", null);
+public class PipelineFactoryTest  {
+
+    @Rule
+    public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    public void testExtractPipeline() throws Exception
-    {
-        Map<AbstractProject, List<AbstractProject>> jobGraph
-                = ImmutableMap.<AbstractProject, List<AbstractProject>>builder()
-                              .put(compileJob, asList(analyzeJob, testJob))
-                              .build();
+    public void testExtractPipelineWithJoin() throws Exception {
+        FreeStyleProject compile =  jenkins.createFreeStyleProject("comp");
+        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+        FreeStyleProject test = jenkins.createFreeStyleProject("test");
 
-        PipelineFactory pipelineFactory = createPipelineFactory(jobGraph);
-        Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
+        compile.addProperty(new PipelineProperty("Compile", "Build"));
+        compile.save();
+
+        deploy.addProperty(new PipelineProperty("Deploy", "Deploy"));
+        deploy.save();
+        test.addProperty(new PipelineProperty("Test", "Test"));
+        test.save();
+
+        compile.getPublishersList().add(new BuildTrigger("test", false));
+        test.getPublishersList().add(new BuildTrigger("deploy", false));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+
+
+        PipelineFactory pipelineFactory = new PipelineFactory();
+        Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compile);
 
         assertEquals(pipeline,
-                     new Pipeline("Piper", null, null,
-                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), "", null),
-                                                                   new Task("anal", "Analyze", idle(), "", null))),
-                                         new Stage("Test", asList(new Task("test", "Test", idle(), "", null))))));
+                new Pipeline("Piper", null, null,
+                        asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), "", null))),
+                                new Stage("Test", asList(new Task("test", "Test", idle(), "", null))),
+                                new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(), "", null))))));
+
+
     }
+
 
     @Test
-    public void testExtractPipelineWithJoin() throws Exception
-    {
-        Map<AbstractProject, List<AbstractProject>> jobGraph
-                = ImmutableMap.<AbstractProject, List<AbstractProject>>builder()
-                              .put(compileJob, asList(testJob, altTestJob))
-                              .put(testJob, singletonList(deployJob))
-                              .put(altTestJob, singletonList(deployJob))
-                              .build();
+    public void testCreatePipelineAggregated() throws Exception {
+        FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
+        FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
+        FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar1");
+        build1.getPublishersList().add(new BuildTrigger("sonar1", true));
+        build2.getPublishersList().add(new BuildTrigger("sonar1", true));
+        build1.save();
+        build2.save();
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
 
-        PipelineFactory pipelineFactory = createPipelineFactory(jobGraph);
-        Pipeline pipeline = pipelineFactory.extractPipeline("Piper", compileJob);
+        jenkins.buildAndAssertSuccess(build1);
+        jenkins.waitUntilNoActivity();
+        assertNotNull(sonar.getLastBuild());
 
-        assertEquals(pipeline,
-                     new Pipeline("Piper", null, null,
-                                  asList(new Stage("Build", asList(new Task("comp", "Compile", idle(),"", null))),
-                                         new Stage("Test", asList(new Task("test", "Test", idle(),"", null),
-                                                                  new Task("test2", "Test fnutt", idle(),"", null))),
-                                         new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(),"", null))))));
-    }
+        PipelineFactory factory = new PipelineFactory();
+        final Pipeline pipe1 = factory.extractPipeline("pipe1", build1);
+        final Pipeline pipe2 = factory.extractPipeline("pipe2", build2);
+        assertEquals(pipe1.getStages().size(),2);
+        assertEquals(pipe2.getStages().size(),2);
+        assertNotNull(sonar.getBuild("1"));
 
-    private PipelineFactory createPipelineFactory(final Map<AbstractProject, List<AbstractProject>> jobGraph)
-    {
-        return new PipelineFactory() {
-            @SuppressWarnings("unchecked") @Override
-            List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
-                List<AbstractProject> downstreamProjects = jobGraph.get(project);
-                return (List<AbstractProject<?,?>>) ((downstreamProjects != null) ? downstreamProjects : emptyList());
-            }
+        Pipeline aggregated1 = factory.createPipelineAggregated(pipe1);
+        Pipeline aggregated2 = factory.createPipelineAggregated(pipe2);
 
-            @Override String getUrl(AbstractProject job) { return ""; }
-        };
-    }
+        assertEquals(aggregated1.getStages().get(0).getVersion(), "#1");
+        assertEquals(aggregated2.getStages().get(0).getStatus().isIdle(), true);
 
-    private AbstractProject createMockJob(String name, String displayName, String stageName)
-    {
-        PipelineProperty property = displayName != null || stageName != null
-                                    ? new PipelineProperty(nullToEmpty(displayName), nullToEmpty(stageName))
-                                    : null;
 
-        AbstractProject project = mock(AbstractProject.class);
-        when(project.getProperty(PipelineProperty.class)).thenReturn(property);
-        when(project.getName()).thenReturn(name);
-        when(project.getDisplayName()).thenReturn(displayName);
-        return project;
+
+
     }
 }

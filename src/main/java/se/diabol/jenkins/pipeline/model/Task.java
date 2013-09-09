@@ -51,15 +51,14 @@ public class Task extends Component {
     }
 
     private boolean equals(Task o) {
-        return Objects.equals(id, o.id) && Objects.equals(link, o.link) && super.equals(o);
+        return Objects.equals(id, o.id) && super.equals(o);
     }
 
     @Override
     public String toString() {
         return toStringHelper(this)
-                .add("name", getName())
+                .add("id", getId())
                 .add("status", getStatus())
-                .add("link", getLink())
                 .toString();
     }
 

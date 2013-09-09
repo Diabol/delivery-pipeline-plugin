@@ -61,12 +61,12 @@
             <artifactId>jenkins-test-harness</artifactId>
             <scope>test</scope>
             <version>1.521</version>
-            <exclusions>
+            <!--exclusions>
                 <exclusion>
                     <groupId>xalan</groupId>
                     <artifactId>xalan</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions-->
         </dependency>
 
         <dependency>
@@ -82,12 +82,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.8.1</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 

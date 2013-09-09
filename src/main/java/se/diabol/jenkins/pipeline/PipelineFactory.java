@@ -28,7 +28,6 @@ import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
  * @author Per Huss <mr.per.huss@gmail.com>
  */
 public class PipelineFactory {
-    private static final Jenkins JENKINS = Jenkins.getInstance();
 
 
     /**
@@ -204,7 +203,7 @@ public class PipelineFactory {
     }
 
     private AbstractProject getJenkinsJob(Task task) {
-        return JENKINS.getItem(task.getId(), JENKINS, AbstractProject.class);
+        return Jenkins.getInstance().getItem(task.getId(), Jenkins.getInstance().getItemGroup(), AbstractProject.class);
     }
 
     private Status resolveStatus(AbstractProject job, AbstractBuild build) {
