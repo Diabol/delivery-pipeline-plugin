@@ -33,14 +33,14 @@ public class PipelineFactory {
     /**
      * Created a pipeline prototype for the supplied first project
      */
-    public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstJob) {
+    public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
         Map<String, Stage> stages = newLinkedHashMap();
-        for (AbstractProject job : getAllDownstreamJobs(firstJob).values()) {
-            PipelineProperty property = (PipelineProperty) job.getProperty(PipelineProperty.class);
-            String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : job.getDisplayName();
-            Status status = job.isDisabled() ? disabled() : idle();
-            Task task = new Task(job.getName(), taskName, status, getUrl(job), null); // todo: Null not idle
-            String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : job.getDisplayName();
+        for (AbstractProject project : getAllDownstreamProjects(firstProject).values()) {
+            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : project.getDisplayName();
+            Status status = project.isDisabled() ? disabled() : idle();
+            Task task = new Task(project.getName(), taskName, status, getUrl(project), null); // todo: Null not idle
+            String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
                 stage = new Stage(stageName, Collections.<Task>emptyList());
@@ -51,12 +51,12 @@ public class PipelineFactory {
         return new Pipeline(name, null, null, newArrayList(stages.values()));
     }
 
-    private Map<String, AbstractProject> getAllDownstreamJobs(AbstractProject first) {
-        Map<String, AbstractProject> jobs = newLinkedHashMap();
-        jobs.put(first.getName(), first);
+    private Map<String, AbstractProject> getAllDownstreamProjects(AbstractProject first) {
+        Map<String, AbstractProject> projects = newLinkedHashMap();
+        projects.put(first.getName(), first);
         for (AbstractProject project : getDownstreamProjects(first))
-            jobs.putAll(getAllDownstreamJobs(project));
-        return jobs;
+            projects.putAll(getAllDownstreamProjects(project));
+        return projects;
     }
 
     /**
@@ -70,8 +70,8 @@ public class PipelineFactory {
     /**
      * Opens up for testing and mocking, since Jenkins has getUrl() method final
      */
-    String getUrl(AbstractProject job) {
-        return Jenkins.getInstance().getRootUrl() + job.getUrl();
+    String getUrl(AbstractProject project) {
+        return Jenkins.getInstance().getRootUrl() + project.getUrl();
     }
 
     /**
@@ -87,23 +87,29 @@ public class PipelineFactory {
 
     public Pipeline createPipelineAggregated(Pipeline pipeline) {
 
+        AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
+
         List<Stage> stages = new ArrayList<>();
         for (Stage stage : pipeline.getStages()) {
-
+            AbstractProject project = getProject(stage.getTasks().get(0));
 
             List<Task> tasks = new ArrayList<>();
-            AbstractBuild firstTask = getJenkinsJob(stage.getTasks().get(0)).getLastBuild();
-            AbstractBuild versionBuild = getFirstUpstreamBuild(firstTask);
+            AbstractBuild versionBuild = getFirstUpstreamBuild(project, firstProject);
             String version = null;
             if (versionBuild != null) {
                 version = versionBuild.getDisplayName();
             }
             for (Task task : stage.getTasks()) {
-                AbstractProject job = getJenkinsJob(task);
-                AbstractBuild currentBuild = match(job.getBuilds(), versionBuild);
+                AbstractProject taskProject = getProject(task);
+                AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
 
                 if (currentBuild != null) {
-                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), Jenkins.getInstance().getRootUrl() + currentBuild.getUrl(), getTestResult(currentBuild)));
+                    Status status = resolveStatus(taskProject, currentBuild);
+                    if (!status.isIdle()) {
+                        tasks.add(new Task(task.getId(), task.getName(), status, Jenkins.getInstance().getRootUrl() + currentBuild.getUrl(), getTestResult(currentBuild)));
+                    } else {
+                        tasks.add(new Task(task.getId(), task.getName(), status, task.getLink(), getTestResult(currentBuild)));
+                    }
                 } else {
                     tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink(), null));
                 }
@@ -125,7 +131,7 @@ public class PipelineFactory {
      */
     public List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
-        AbstractProject firstProject = getJenkinsJob(firstTask);
+        AbstractProject firstProject = getProject(firstTask);
 
 
         List<Pipeline> result = new ArrayList<>();
@@ -137,9 +143,14 @@ public class PipelineFactory {
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<>();
                 for (Task task : stage.getTasks()) {
-                    AbstractProject job = getJenkinsJob(task);
-                    AbstractBuild currentBuild = match(job.getBuilds(), firstBuild);
-                    tasks.add(new Task(task.getId(), task.getName(), resolveStatus(job, currentBuild), task.getLink(), getTestResult(currentBuild)));
+                    AbstractProject taskProject = getProject(task);
+                    AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
+                    Status status = resolveStatus(taskProject, currentBuild);
+                    if (status.isIdle()) {
+                        tasks.add(new Task(task.getId(), task.getName(), status, task.getLink(), getTestResult(currentBuild)));
+                    } else {
+                        tasks.add(new Task(task.getId(), task.getName(), status, Jenkins.getInstance().getRootUrl() + currentBuild.getUrl(), getTestResult(currentBuild)));
+                    }
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
@@ -190,11 +201,11 @@ public class PipelineFactory {
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
-    private AbstractBuild match(RunList runList, AbstractBuild firstJob) {
-        if (firstJob != null) {
+    private AbstractBuild match(RunList runList, AbstractBuild firstBuild) {
+        if (firstBuild != null) {
             for (Object aRunList : runList) {
                 AbstractBuild currentBuild = (AbstractBuild) aRunList;
-                if (firstJob.equals(getFirstUpstreamBuild(currentBuild))) {
+                if (firstBuild.equals(getFirstUpstreamBuild(currentBuild))) {
                     return currentBuild;
                 }
             }
@@ -202,15 +213,15 @@ public class PipelineFactory {
         return null;
     }
 
-    private AbstractProject getJenkinsJob(Task task) {
+    private AbstractProject getProject(Task task) {
         return Jenkins.getInstance().getItem(task.getId(), Jenkins.getInstance().getItemGroup(), AbstractProject.class);
     }
 
-    private Status resolveStatus(AbstractProject job, AbstractBuild build) {
+    private Status resolveStatus(AbstractProject project, AbstractBuild build) {
         if (build == null) {
-            if (job.isInQueue())
+            if (project.isInQueue())
                 return StatusFactory.queued();
-            else if (job.isDisabled())
+            else if (project.isDisabled())
                 return StatusFactory.disabled();
             else
                 return StatusFactory.idle();
@@ -237,7 +248,7 @@ public class PipelineFactory {
     }
 
     /**
-     * Finds the first upstream job in the chain of triggered jobs.
+     * Finds the first upstream build in the chain of triggered builds.
      *
      * @param build the build to find the first upstream for
      * @return the first upstream build for the given build
@@ -265,5 +276,20 @@ public class PipelineFactory {
         }
         return build;
     }
+
+
+    private static AbstractBuild getFirstUpstreamBuild(AbstractProject project, AbstractProject first) {
+        RunList builds = project.getBuilds();
+        for (Object build1 : builds) {
+            AbstractBuild b = (AbstractBuild) build1;
+            AbstractBuild upstream = getFirstUpstreamBuild(b);
+            if (upstream != null && upstream.getProject().equals(first)) {
+                return upstream;
+            }
+
+        }
+        return null;
+    }
+
 
 }
