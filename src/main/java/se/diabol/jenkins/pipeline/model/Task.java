@@ -58,6 +58,7 @@ public class Task extends Component {
     public String toString() {
         return toStringHelper(this)
                 .add("id", getId())
+                .add("name", getName())
                 .add("status", getStatus())
                 .toString();
     }

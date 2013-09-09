@@ -12,6 +12,7 @@ import se.diabol.jenkins.pipeline.model.Task;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 /**
@@ -56,7 +57,7 @@ public class PipelineFactoryTest {
 
 
     @Test
-    public void testCreatePipelineAggregated() throws Exception {
+    public void testCreatePipelineAggregatedSharedTask() throws Exception {
         FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar1");
@@ -92,6 +93,41 @@ public class PipelineFactoryTest {
 
         assertEquals("#1", aggregated3.getStages().get(1).getVersion());
         assertEquals("#1", aggregated4.getStages().get(1).getVersion());
+    }
+
+    @Test
+    public void testCreatePipelineLatest() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        build.addProperty(new PipelineProperty("", "Build"));
+        FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
+        sonar.addProperty(new PipelineProperty("Sonar", "Build"));
+        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+        deploy.addProperty(new PipelineProperty("Deploy", "CI"));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+
+        PipelineFactory factory = new PipelineFactory();
+        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null)))) ), factory.extractPipeline("Pipeline", build));
+
+
+        build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline pipeline = factory.extractPipeline("Pipeline", build);
+
+        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null), new Task("sonar", "Sonar", idle(), null, null))), new Stage("CI", asList(new Task("deploy", "Deploy", idle(), null, null))))), pipeline);
+        jenkins.buildAndAssertSuccess(build);
+        jenkins.waitUntilNoActivity();
+
+        Pipeline latest = factory.createPipelineLatest(pipeline);
+
+        assertNotNull(latest);
+
+        assertTrue(latest.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
+        assertTrue(latest.getStages().get(0).getTasks().get(1).getStatus().isSuccess());
+        assertTrue(latest.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
+
+
 
 
     }
