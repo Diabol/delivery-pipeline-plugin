@@ -22,11 +22,14 @@ public class Pipeline extends Component
 
     private String triggeredBy;
 
-    public Pipeline(String name, String version, String triggeredBy, List<Stage> stages)
+    private boolean aggregated;
+
+    public Pipeline(String name, String version, String triggeredBy, List<Stage> stages, boolean aggregated)
     {
         super(name, StatusFactory.idle()); // todo: IDLE is cheating
         this.version = version;
         this.triggeredBy = triggeredBy;
+        this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
     }
 
@@ -40,6 +43,12 @@ public class Pipeline extends Component
     public String getVersion()
     {
         return version;
+    }
+
+    @Exported
+    public boolean isAggregated()
+    {
+        return aggregated;
     }
 
     @Exported

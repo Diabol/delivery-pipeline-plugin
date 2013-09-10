@@ -1,0 +1,28 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/css/pipe.css"/>
+
+    <script type="text/javascript">
+        var pipelineContainers = new Array(${it.noOfColumns});
+    </script>
+
+    <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+        <script type="text/javascript">
+            pipelineContainers[${i-1}] = 'pipelines-${i}';
+        </script>
+        <div id="pipelines-${i}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
+    </j:forEach>
+    <div class="clear"></div>
+
+    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"/>
+
+    <script type="text/javascript">
+        renderPipelines(pipelineContainers);
+        setInterval(function() {renderPipelines(pipelineContainers);}, 2000);
+    </script>
+
+    <!--<st:include page="legend.jelly"/>-->
+
+</j:jelly>

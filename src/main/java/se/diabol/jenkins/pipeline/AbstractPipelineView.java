@@ -29,7 +29,7 @@ public abstract class AbstractPipelineView extends View {
         super(name, owner);
     }
 
-    @Exported(inline=true)
+    @Exported
     @SuppressWarnings("unused")
     public abstract List<Pipeline> getPipelines();
 

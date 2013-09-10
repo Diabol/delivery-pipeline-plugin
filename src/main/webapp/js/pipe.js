@@ -1,4 +1,4 @@
-function renderPipelines(divNames, aggregated) {
+function renderPipelines(divNames) {
 
     Q.ajax({
         url: 'api/json',
@@ -15,16 +15,16 @@ function renderPipelines(divNames, aggregated) {
                 var pipeline = data.pipelines[i];
                 var html = "<section class=\"pipe\">";
 
-                if (!aggregated) {
+                if (!pipeline.aggregated) {
                     html = html + '<h1>' + pipeline.name + ' - ' + pipeline.version + ' (' + pipeline.triggeredBy + ')</h1>'
                 } else {
-                    html = html + '<h1>' + pipeline.name + '</h1>'
+                    html = html + '<h1>' + pipeline.name + ' (aggregated)</h1>'
                 }
 
                 for (var j = 0; j < pipeline.stages.length; j++) {
                     var stage = pipeline.stages[j];
                         html = html + "<section class=\"stage\">";
-                        if (!aggregated) {
+                        if (!pipeline.aggregated) {
                             html = html + '<h1>' + stage.name + '</h1>'
                         } else {
                             if (stage.version) {

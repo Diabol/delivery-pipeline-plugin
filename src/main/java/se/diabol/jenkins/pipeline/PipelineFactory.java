@@ -48,7 +48,7 @@ public class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, null, null, newArrayList(stages.values()));
+        return new Pipeline(name, null, null, newArrayList(stages.values()), false);
     }
 
     private Map<String, AbstractProject> getAllDownstreamProjects(AbstractProject first) {
@@ -117,7 +117,7 @@ public class PipelineFactory {
             stages.add(new Stage(stage.getName(), tasks, version));
         }
         //TODO add triggeredBy
-        return new Pipeline(pipeline.getName(), null, null, stages);
+        return new Pipeline(pipeline.getName(), null, null, stages, true);
 
 
     }
@@ -155,7 +155,7 @@ public class PipelineFactory {
                 stages.add(new Stage(stage.getName(), tasks));
             }
 
-            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), getTriggeredBy(firstBuild), stages));
+            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), getTriggeredBy(firstBuild), stages, false));
 
 
         }

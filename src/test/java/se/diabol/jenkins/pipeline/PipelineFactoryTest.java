@@ -54,7 +54,7 @@ public class PipelineFactoryTest {
                 new Pipeline("Piper", null, null,
                         asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), "", null))),
                                 new Stage("Test", asList(new Task("test", "Test", idle(), "", null))),
-                                new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(), "", null))))));
+                                new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(), "", null)))), false));
 
 
     }
@@ -169,7 +169,7 @@ public class PipelineFactoryTest {
         jenkins.setQuietPeriod(0);
 
         PipelineFactory factory = new PipelineFactory();
-        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null)))) ), factory.extractPipeline("Pipeline", build));
+        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null)))), false), factory.extractPipeline("Pipeline", build));
 
 
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
@@ -177,7 +177,7 @@ public class PipelineFactoryTest {
 
         Pipeline pipeline = factory.extractPipeline("Pipeline", build);
 
-        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null), new Task("sonar", "Sonar", idle(), null, null))), new Stage("CI", asList(new Task("deploy", "Deploy", idle(), null, null))))), pipeline);
+        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null), new Task("sonar", "Sonar", idle(), null, null))), new Stage("CI", asList(new Task("deploy", "Deploy", idle(), null, null)))), false), pipeline);
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
