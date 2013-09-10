@@ -69,6 +69,18 @@
             <version>14.0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>build-pipeline-plugin</artifactId>
+            <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
+        <!--dependency>
+            <groupId>org.kohsuke.stapler</groupId>
+            <artifactId>stapler</artifactId>
+            <scope>test</scope>
+        </dependency-->
+
     </dependencies>
 
 </project>

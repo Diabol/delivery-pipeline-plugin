@@ -1,5 +1,8 @@
 package se.diabol.jenkins.pipeline;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
@@ -62,10 +65,12 @@ public class PipelineFactoryTest {
         FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar1");
-        build1.getPublishersList().add(new BuildTrigger("sonar1", true));
+        FreeStyleProject test = jenkins.createFreeStyleProject("test");
+        FreeStyleProject prod = jenkins.createFreeStyleProject("prod");
+        build1.getPublishersList().add(new BuildTrigger("sonar1,test", true));
         build2.getPublishersList().add(new BuildTrigger("sonar1", true));
-        build1.save();
-        build2.save();
+        test.getPublishersList().add(new BuildPipelineTrigger("prod", null));
+
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
         PipelineFactory factory = new PipelineFactory();
@@ -81,14 +86,15 @@ public class PipelineFactoryTest {
         assertTrue(aggregated1.getStages().get(0).getTasks().get(0).getStatus().isIdle());
         assertTrue(aggregated2.getStages().get(0).getTasks().get(0).getStatus().isIdle());
 
+        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
 
 
         jenkins.buildAndAssertSuccess(build1);
         jenkins.waitUntilNoActivity();
         assertNotNull(sonar.getLastBuild());
 
-        assertEquals(pipe1.getStages().size(), 2);
-        assertEquals(pipe2.getStages().size(), 2);
+        assertEquals(4,pipe1.getStages().size());
+        assertEquals(2, pipe2.getStages().size());
         assertNotNull(sonar.getBuild("1"));
 
         aggregated1 = factory.createPipelineAggregated(pipe1);
@@ -97,8 +103,12 @@ public class PipelineFactoryTest {
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
         assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
 
+        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
+
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isIdle());
         assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+
+        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
 
         jenkins.buildAndAssertSuccess(build2);
         jenkins.waitUntilNoActivity();
@@ -125,6 +135,24 @@ public class PipelineFactoryTest {
 
         assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/3/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
         assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+
+
+        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
+
+        jenkins.buildAndAssertSuccess(build1);
+        jenkins.waitUntilNoActivity();
+        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
+        assertEquals("#2", aggregated1.getStages().get(2).getVersion());
+        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
+
+
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null );
+        view.triggerManualBuild(1, "prod", "test");
+        jenkins.waitUntilNoActivity();
+        aggregated1 = factory.createPipelineAggregated(pipe1);
+        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isSuccess());
+        assertEquals("#1", aggregated1.getStages().get(3).getVersion());
+
 
 
     }
