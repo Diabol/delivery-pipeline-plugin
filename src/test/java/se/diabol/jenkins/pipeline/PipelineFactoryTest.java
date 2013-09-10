@@ -101,12 +101,12 @@ public class PipelineFactoryTest {
         aggregated2 = factory.createPipelineAggregated(pipe2);
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
-        assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1/1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
 
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
 
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isIdle());
-        assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1", aggregated2.getStages().get(1).getTasks().get(0).getLink());
 
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
 
@@ -120,7 +120,7 @@ public class PipelineFactoryTest {
         assertEquals("#1", aggregated2.getStages().get(1).getVersion());
 
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-        assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
 
 
         jenkins.buildAndAssertSuccess(build1);
@@ -133,8 +133,8 @@ public class PipelineFactoryTest {
         assertEquals("#2", aggregated1.getStages().get(1).getVersion());
         assertEquals("#1", aggregated2.getStages().get(1).getVersion());
 
-        assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/3/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
-        assertEquals(jenkins.getInstance().getRootUrl() + "job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1/3/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
 
 
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
@@ -188,7 +188,7 @@ public class PipelineFactoryTest {
         assertTrue(latest.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(latest.getStages().get(0).getTasks().get(1).getStatus().isSuccess());
         assertTrue(latest.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-        assertEquals(jenkins.getInstance().getRootUrl() + "job/build/1/", latest.getStages().get(0).getTasks().get(0).getLink());
+        assertEquals("job/build/1/", latest.getStages().get(0).getTasks().get(0).getLink());
 
 
 
