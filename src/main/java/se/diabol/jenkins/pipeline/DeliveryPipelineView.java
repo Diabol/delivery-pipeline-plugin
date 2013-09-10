@@ -5,17 +5,21 @@ import hudson.model.*;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import javax.servlet.ServletException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
+
 @SuppressWarnings("UnusedDeclaration")
-public class DeliveryPipelineView extends AbstractPipelineView {
+public class DeliveryPipelineView extends View {
 
     private List<Component> components;
     private int noOfPipelines = 1;
@@ -73,6 +77,7 @@ public class DeliveryPipelineView extends AbstractPipelineView {
         }
     }
 
+    @Exported
     public List<Pipeline> getPipelines()
     {
         PipelineFactory pipelineFactory = new PipelineFactory();
@@ -88,9 +93,33 @@ public class DeliveryPipelineView extends AbstractPipelineView {
         return result;
     }
 
+    public String getRootUrl() {
+        return Jenkins.getInstance().getRootUrl();
+    }
+
+    @Override
+    public Collection<TopLevelItem> getItems() {
+        return emptySet(); // Not using the getItems functionality.
+    }
+
+    @Override
+    public boolean contains(TopLevelItem item) {
+        return false;
+    }
+
+    @Override
+    protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
+        req.bindJSON(this, req.getSubmittedForm());
+    }
+
+    @Override
+    public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+        return getOwner().getPrimaryView().doCreateItem(req, rsp);
+    }
+
 
     @Extension
-    public static class DescriptorImpl extends PipelineViewDescriptor
+    public static class DescriptorImpl extends ViewDescriptor
     {
         public ListBoxModel doFillNoOfColumnsItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
@@ -106,6 +135,11 @@ public class DeliveryPipelineView extends AbstractPipelineView {
                 options.add(opt, opt);
             }
             return options;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "Delivery Pipeline View";
         }
     }
 
