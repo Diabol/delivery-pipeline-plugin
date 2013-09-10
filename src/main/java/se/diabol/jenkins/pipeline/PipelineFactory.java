@@ -39,7 +39,7 @@ public class PipelineFactory {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : project.getDisplayName();
             Status status = project.isDisabled() ? disabled() : idle();
-            Task task = new Task(project.getName(), taskName, status, getUrl(project), null); // todo: Null not idle
+            Task task = new Task(project.getName(), taskName, status, getJobUrl(project), null); // todo: Null not idle
             String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
@@ -70,8 +70,8 @@ public class PipelineFactory {
     /**
      * Opens up for testing and mocking, since Jenkins has getUrl() method final
      */
-    String getUrl(AbstractProject project) {
-        return Jenkins.getInstance().getRootUrl() + project.getUrl();
+    String getJobUrl(AbstractProject project) {
+        return "job/" + project.getName();
     }
 
     /**
@@ -106,7 +106,7 @@ public class PipelineFactory {
                 if (currentBuild != null) {
                     Status status = resolveStatus(taskProject, currentBuild);
                     if (!status.isIdle()) {
-                        tasks.add(new Task(task.getId(), task.getName(), status, Jenkins.getInstance().getRootUrl() + currentBuild.getUrl(), getTestResult(currentBuild)));
+                        tasks.add(new Task(task.getId(), task.getName(), status, currentBuild.getUrl(), getTestResult(currentBuild)));
                     } else {
                         tasks.add(new Task(task.getId(), task.getName(), status, task.getLink(), getTestResult(currentBuild)));
                     }
@@ -149,7 +149,7 @@ public class PipelineFactory {
                     if (status.isIdle()) {
                         tasks.add(new Task(task.getId(), task.getName(), status, task.getLink(), getTestResult(currentBuild)));
                     } else {
-                        tasks.add(new Task(task.getId(), task.getName(), status, Jenkins.getInstance().getRootUrl() + currentBuild.getUrl(), getTestResult(currentBuild)));
+                        tasks.add(new Task(task.getId(), task.getName(), status, currentBuild.getUrl(), getTestResult(currentBuild)));
                     }
                 }
                 stages.add(new Stage(stage.getName(), tasks));

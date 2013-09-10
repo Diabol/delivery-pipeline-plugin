@@ -98,13 +98,15 @@ public class DeliveryPipelineView extends View {
     }
 
     @Override
-    public Collection<TopLevelItem> getItems() {
-        return emptySet(); // Not using the getItems functionality.
+    public Collection<TopLevelItem> getItems()
+    {
+        return Jenkins.getInstance().getItems();
     }
 
     @Override
-    public boolean contains(TopLevelItem item) {
-        return false;
+    public boolean contains(TopLevelItem item)
+    {
+        return getItems().contains(item);
     }
 
     @Override
