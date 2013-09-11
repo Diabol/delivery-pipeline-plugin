@@ -1,5 +1,6 @@
 package se.diabol.jenkins.pipeline;
 
+import com.google.common.base.Strings;
 import hudson.model.*;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
@@ -14,6 +15,7 @@ import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
 import java.util.*;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newLinkedHashMap;
@@ -37,10 +39,12 @@ public class PipelineFactory {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject project : getAllDownstreamProjects(firstProject).values()) {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
-            String taskName = property != null && property.getTaskName() != null && !property.getTaskName().equals("") ? property.getTaskName() : project.getDisplayName();
+            String taskName = property != null && !isNullOrEmpty(property.getTaskName())
+                    ? property.getTaskName() : project.getDisplayName();
             Status status = project.isDisabled() ? disabled() : idle();
-            Task task = new Task(project.getName(), taskName, status, getJobUrl(project), null); // todo: Null not idle
-            String stageName = property != null && property.getStageName() != null && !property.getStageName().equals("") ? property.getStageName() : project.getDisplayName();
+            Task task = new Task(project.getName(), taskName, status, getJobUrl(project), null);
+            String stageName = property != null && !isNullOrEmpty(property.getStageName())
+                    ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null)
                 stage = new Stage(stageName, Collections.<Task>emptyList());
@@ -158,13 +162,9 @@ public class PipelineFactory {
             if (tests != null) {
                 return new TestResult(tests.getFailCount(), tests.getSkipCount(), tests.getTotalCount(),
                         Jenkins.getInstance().getRootUrl() + build.getUrl() + tests.getUrlName());
-            } else {
-                return null;
             }
-        } else {
-            return null;
         }
-
+        return null;
     }
 
     private String getTriggeredBy(AbstractBuild build) {
@@ -231,8 +231,6 @@ public class PipelineFactory {
             return StatusFactory.failed();
         else if (UNSTABLE.equals(result))
             return StatusFactory.unstable();
-        else if (Result.ABORTED.equals(result))
-            return StatusFactory.cancelled();
         else
             throw new IllegalStateException("Result " + result + " not recognized.");
     }
