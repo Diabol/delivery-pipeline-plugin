@@ -1,63 +1,54 @@
 package se.diabol.jenkins.pipeline.model;
 
+import com.google.common.collect.ImmutableList;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.model.status.Status;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.google.common.base.Objects.toStringHelper;
 
 /**
- * This is the common abstraction for all the entities that makes a pipeline.
- *
  * @author Per Huss <mr.per.huss@gmail.com>
  */
 @ExportedBean(defaultVisibility = 100)
-public abstract class Component
+public class Component extends AbstractItem
 {
-    private final String name;
+    private final List<Pipeline> pipelines;
 
-    private final Status status;
-
-    protected Component(String name, Status status)
+    public Component(String name, List<Pipeline> pipelines)
     {
-        this.name = name;
-        this.status = status;
+        super(name);
+        this.pipelines = ImmutableList.copyOf(pipelines);
+    }
+
+    @Exported
+    public List<Pipeline> getPipelines()
+    {
+        return pipelines;
     }
 
     @Override
     public String toString()
     {
-        return toStringHelper(this).add("name", name).add("status", status).toString();
-    }
-
-    @Exported
-    public String getName()
-    {
-        return name;
-    }
-
-    @Exported
-    public Status getStatus()
-    {
-        return status;
+        return toStringHelper(this).add("name", getName()).add("pipelines", pipelines).toString();
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(name, status);
+        return Objects.hash(super.hashCode(), pipelines);
     }
 
     @Override
     public boolean equals(Object o)
     {
-        return this == o || o instanceof Component && equals((Component) o);
+        return this == o || o instanceof Component && equals((Component)o);
     }
 
     private boolean equals(Component o)
     {
-        return Objects.equals(name, o.name) && Objects.equals(status, o.status);
+        return super.equals(o) && Objects.equals(pipelines, o.pipelines);
     }
 }

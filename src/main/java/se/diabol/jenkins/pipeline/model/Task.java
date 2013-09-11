@@ -10,18 +10,20 @@ import static com.google.common.base.Objects.toStringHelper;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class Task extends Component {
+public class Task extends AbstractItem
+{
     private final String id;
-
     private final String link;
     private final TestResult testResult;
+    private final Status status;
 
-    public Task(String id, String name, Status status, String link, TestResult testResult) {
-        super(name, status);
+    public Task(String id, String name, Status status, String link, TestResult testResult)
+    {
+        super(name);
         this.id = id;
         this.link = link;
         this.testResult = testResult;
-
+        this.status = status;
     }
 
     @Exported
@@ -40,9 +42,15 @@ public class Task extends Component {
         return testResult;
     }
 
+    @Exported
+    public Status getStatus()
+    {
+        return status;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, super.hashCode());
+        return Objects.hash(id, status, super.hashCode());
     }
 
     @Override
@@ -51,7 +59,7 @@ public class Task extends Component {
     }
 
     private boolean equals(Task o) {
-        return Objects.equals(id, o.id) && super.equals(o);
+        return Objects.equals(id, o.id) && Objects.equals(status, o.status) && super.equals(o);
     }
 
     @Override
@@ -62,6 +70,4 @@ public class Task extends Component {
                 .add("status", getStatus())
                 .toString();
     }
-
-
 }

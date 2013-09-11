@@ -3,7 +3,7 @@ package se.diabol.jenkins.pipeline.model;
 import com.google.common.collect.ImmutableList;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.model.status.StatusFactory;
+import se.diabol.jenkins.pipeline.model.status.Status;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,22 +14,22 @@ import static com.google.common.base.Objects.toStringHelper;
  * @author Per Huss <mr.per.huss@gmail.com>
  */
 @ExportedBean(defaultVisibility = 100)
-public class Stage extends Component
+public class Stage extends AbstractItem
 {
     private List<Task> tasks;
 
     private String version;
 
-
-    public Stage(String name, List<Task> tasks, String version) {
-        super(name, StatusFactory.idle()); // todo: IDLE is cheating
+    public Stage(String name, List<Task> tasks, String version)
+    {
+        super(name);
         this.tasks = tasks;
         this.version = version;
     }
 
     public Stage(String name, List<Task> tasks)
     {
-        super(name, StatusFactory.idle()); // todo: IDLE is cheating
+        super(name);
         this.tasks = ImmutableList.copyOf(tasks);
     }
 
@@ -67,7 +67,6 @@ public class Stage extends Component
         return toStringHelper(this)
                 .add("name", getName())
                 .add("version", getVersion())
-                .add("status", getStatus())
                 .add("tasks", getTasks())
                 .toString();
     }
