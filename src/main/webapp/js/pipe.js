@@ -13,16 +13,17 @@ function renderPipelines(divNames, errorDiv) {
 
             for (var c = 0; c < data.pipelines.length; c++)
             {
-                var html = "<section class='component'>";
                 var component = data.pipelines[c];
+                var html = "<section class='component'>";
+                html = html + "<h1>" + component.name + "</h1>";
                 for (var i = 0; i < component.pipelines.length ;i++) {
                     var pipeline = component.pipelines[i];
                     html = html + "<section class=\"pipe\">";
 
                     if (!pipeline.aggregated) {
-                        html = html + '<h1>' + pipeline.name + ' - ' + pipeline.version + ' (' + pipeline.triggeredBy + ')</h1>'
+                        html = html + '<h1>' + pipeline.version + ' (' + pipeline.triggeredBy + ')</h1>'
                     } else {
-                        html = html + '<h1>' + pipeline.name + ' (aggregated)</h1>'
+                        html = html + '<h1>Aggregated view</h1>'
                     }
 
                     for (var j = 0; j < pipeline.stages.length; j++) {
