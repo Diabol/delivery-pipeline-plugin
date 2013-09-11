@@ -105,11 +105,8 @@ public class PipelineFactory {
 
                 if (currentBuild != null) {
                     Status status = resolveStatus(taskProject, currentBuild);
-                    if (!status.isIdle()) {
-                        tasks.add(new Task(task.getId(), task.getName(), status, currentBuild.getUrl(), getTestResult(currentBuild)));
-                    } else {
-                        tasks.add(new Task(task.getId(), task.getName(), status, task.getLink(), getTestResult(currentBuild)));
-                    }
+                    String link = status.isIdle() ? task.getLink() : currentBuild.getUrl();
+                    tasks.add(new Task(task.getId(), task.getName(), status, link, getTestResult(currentBuild)));
                 } else {
                     tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink(), null));
                 }
@@ -118,8 +115,6 @@ public class PipelineFactory {
         }
         //TODO add triggeredBy
         return new Pipeline(pipeline.getName(), null, null, stages, true);
-
-
     }
 
 
@@ -129,10 +124,10 @@ public class PipelineFactory {
      * @param pipeline      the pipeline prototype
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
+    public List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines)
+    {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getProject(firstTask);
-
 
         List<Pipeline> result = new ArrayList<>();
 
@@ -146,18 +141,13 @@ public class PipelineFactory {
                     AbstractProject taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     Status status = resolveStatus(taskProject, currentBuild);
-                    if (status.isIdle()) {
-                        tasks.add(new Task(task.getId(), task.getName(), status, task.getLink(), getTestResult(currentBuild)));
-                    } else {
-                        tasks.add(new Task(task.getId(), task.getName(), status, currentBuild.getUrl(), getTestResult(currentBuild)));
-                    }
+                    String link = status.isIdle()? task.getLink() : currentBuild.getUrl();
+                    tasks.add(new Task(task.getId(), task.getName(), status, link, getTestResult(currentBuild)));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
 
             result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), getTriggeredBy(firstBuild), stages, false));
-
-
         }
         return result;
     }

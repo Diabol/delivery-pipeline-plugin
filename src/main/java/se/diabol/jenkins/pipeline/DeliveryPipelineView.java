@@ -7,6 +7,7 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.pipeline.model.Component;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -16,32 +17,30 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static java.util.Collections.emptySet;
-
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
 
-    private List<Component> components;
+    private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = 1;
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
 
     @DataBoundConstructor
-    public DeliveryPipelineView(String name, int noOfColumns, List<Component> components,
+    public DeliveryPipelineView(String name, int noOfColumns, List<ComponentSpec> componentSpecs,
                                 int noOfPipelines, boolean showAggregatedPipeline) {
         super(name);
-        this.components = components;
+        this.componentSpecs = componentSpecs;
         this.noOfColumns = noOfColumns;
         this.noOfPipelines = noOfPipelines;
         this.showAggregatedPipeline = showAggregatedPipeline;
     }
 
-    public List<Component> getComponents() {
-        return components;
+    public List<ComponentSpec> getComponentSpecs() {
+        return componentSpecs;
     }
 
-    public void setComponents(List<Component> components) {
-        this.components = components;
+    public void setComponentSpecs(List<ComponentSpec> componentSpecs) {
+        this.componentSpecs = componentSpecs;
     }
 
     public int getNoOfPipelines() {
@@ -70,27 +69,29 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public void onJobRenamed(Item item, String oldName, String newName) {
-        for (Component component : components) {
-            if (component.getFirstJob().equals(oldName)) {
-                component.setFirstJob(newName);
+        for (ComponentSpec componentSpec : componentSpecs) {
+            if (componentSpec.getFirstJob().equals(oldName)) {
+                componentSpec.setFirstJob(newName);
             }
         }
     }
 
     @Exported
-    public List<Pipeline> getPipelines()
+    public List<Component> getPipelines()
     {
         PipelineFactory pipelineFactory = new PipelineFactory();
-        List<Pipeline> result = new ArrayList<>();
-        for (Component component : components) {
+        List<Component> components = new ArrayList<>();
+        for (ComponentSpec componentSpec : componentSpecs) {
             Jenkins jenkins = Jenkins.getInstance();
-            AbstractProject firstJob = jenkins.getItem(component.getFirstJob(), jenkins, AbstractProject.class);
-            Pipeline prototype = pipelineFactory.extractPipeline(component.getName(), firstJob);
+            AbstractProject firstJob = jenkins.getItem(componentSpec.getFirstJob(), jenkins, AbstractProject.class);
+            Pipeline prototype = pipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
+            List<Pipeline> pipelines = new ArrayList<>();
             if(showAggregatedPipeline)
-                result.add(pipelineFactory.createPipelineAggregated(prototype));
-            result.addAll(pipelineFactory.createPipelineLatest(prototype, noOfPipelines));
+                pipelines.add(pipelineFactory.createPipelineAggregated(prototype));
+            pipelines.addAll(pipelineFactory.createPipelineLatest(prototype, noOfPipelines));
+            components.add(new Component(componentSpec.getName(), pipelines));
         }
-        return result;
+        return components;
     }
 
     public String getRootUrl() {
@@ -146,12 +147,13 @@ public class DeliveryPipelineView extends View {
     }
 
 
-    public static class Component extends AbstractDescribableImpl<Component> {
+    public static class ComponentSpec extends AbstractDescribableImpl<ComponentSpec>
+    {
         private String name;
         private String firstJob;
 
         @DataBoundConstructor
-        public Component(String name, String firstJob) {
+        public ComponentSpec(String name, String firstJob) {
             this.name = name;
             this.firstJob = firstJob;
         }
@@ -173,7 +175,7 @@ public class DeliveryPipelineView extends View {
         }
 
         @Extension
-        public static class DescriptorImpl extends Descriptor<Component> {
+        public static class DescriptorImpl extends Descriptor<ComponentSpec> {
             @Override
             public String getDisplayName() {
                 return "";
