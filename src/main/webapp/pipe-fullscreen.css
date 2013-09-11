@@ -1,0 +1,138 @@
+body {
+    font-family: sans-serif;
+    background: lightblue;
+}
+
+section.component {
+    display: block;
+    background-color: #f0f0f0;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 20px;
+}
+
+section.component h1 {
+    font-size: large;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin-top: 0;
+}
+
+section.pipe {
+    display: block;
+    background-color: #f0f0f0;
+    margin: 10px;
+}
+
+section.pipe h1 {
+    font-size: large;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin-top: 0;
+}
+
+section.stage {
+    display: inline-block;
+    min-height: 100px;
+    min-width: 180px;
+    vertical-align: top;
+    background: white;
+    border-radius: 10px;
+    border: solid 2px black;
+    padding: 0;
+    margin: 0 5px;
+}
+
+section.stage h1 {
+    font-size: medium;
+    border-bottom: black solid 2px;
+    margin: 0;
+    margin-bottom: 3px;
+    padding: 5px 10px;
+}
+
+section.stage span {
+    display: block;
+    border-radius: 3px;
+    margin: 0 5px 1px 5px;
+    padding-left: 5px;
+}
+
+section.stage a {
+    text-decoration: none;
+    color: inherit;
+}
+
+section.stage a:visited {
+    color: inherit;
+}
+
+section.stage a:hover {
+    text-decoration: underline;
+}
+
+span.QUEUED {
+    background-color: lightgray;
+}
+
+span.FAILED {
+    background-color: tomato;
+}
+
+span.SUCCESS {
+    background-color: lightgreen;
+}
+
+span.UNSTABLE {
+    background-color: orange;
+}
+
+span.CANCELLED {
+    background-color: yellow;
+}
+
+span.DISABLED {
+    color: lightgray;
+}
+
+span.RUNNING {
+    background: url("../images/running.gif") no-repeat right;
+}
+
+section.legend {
+    display: block;
+    margin-left: 30px;
+}
+
+section.legend h1 {
+    display: inline;
+    font-size: medium;
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+section.legend span {
+    display: inline-block;
+    border-radius: 3px;
+    margin: 0 5px;
+    padding: 1px 5px;
+    min-width: 75px;
+}
+
+div.pipelineerror {
+    background-color: red;
+    font-size: 22px;
+    color: #ffffff;
+}
+
+div.left {
+    float: left;
+}
+
+div.right {
+    float: right;
+}
+
+div.clear {
+    clear: both;
+}

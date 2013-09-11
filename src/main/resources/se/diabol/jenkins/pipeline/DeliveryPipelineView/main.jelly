@@ -2,7 +2,17 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-    <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/css/pipe.css"/>
+    <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+    <j:switch on="${fullscreen}">
+        <j:case value="true">
+            <j:set var="cssfile" value='pipe-fullscreen.css'/>
+        </j:case>
+        <j:default>
+            <j:set var="cssfile" value='pipe.css'/>
+        </j:default>
+    </j:switch>
+
+    <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/${cssfile}"/>
 
     <script type="text/javascript">
         var pipelineContainers = new Array(${it.noOfColumns});
@@ -18,7 +28,7 @@
     </j:forEach>
     <div class="clear"></div>
 
-    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"/>
+    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.js"/>
 
     <script type="text/javascript">
         renderPipelines(pipelineContainers, "pipelineerror");
