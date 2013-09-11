@@ -105,6 +105,12 @@ section.legend span {
     min-width: 75px;
 }
 
+div.pipelineerror {
+    background-color: red;
+    font-size: 22px;
+    color: #ffffff;
+}
+
 div.left {
     float: left;
 }

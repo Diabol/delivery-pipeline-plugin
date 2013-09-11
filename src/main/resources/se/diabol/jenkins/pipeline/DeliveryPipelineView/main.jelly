@@ -8,6 +8,8 @@
         var pipelineContainers = new Array(${it.noOfColumns});
     </script>
 
+    <div id="pipelineerror" class="pipelineerror"/>
+
     <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
         <script type="text/javascript">
             pipelineContainers[${i-1}] = 'pipelines-${i}';
@@ -19,8 +21,8 @@
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/js/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines(pipelineContainers);
-        setInterval(function() {renderPipelines(pipelineContainers);}, 2000);
+        renderPipelines(pipelineContainers, "pipelineerror");
+        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror");}, 2000);
     </script>
 
     <!--<st:include page="legend.jelly"/>-->

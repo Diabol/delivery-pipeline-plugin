@@ -1,5 +1,5 @@
-function renderPipelines(divNames) {
-
+function renderPipelines(divNames, errorDiv) {
+    Q("#" + errorDiv).html('');
     Q.ajax({
         url: 'api/json',
         dataType: 'json',
@@ -49,7 +49,8 @@ function renderPipelines(divNames) {
             }
         },
         error: function (xhr, status, error) {
-
+            //window.alert("Error!")
+            Q("#" + errorDiv).html('Error communicating to server!');
         }
     });
 
