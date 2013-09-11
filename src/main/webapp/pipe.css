@@ -95,7 +95,7 @@ span.DISABLED {
 }
 
 span.RUNNING {
-    background: url("../images/running.gif") no-repeat right;
+    background: url("running.gif") no-repeat right;
 }
 
 section.legend {
