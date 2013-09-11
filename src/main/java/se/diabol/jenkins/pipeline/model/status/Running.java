@@ -11,9 +11,9 @@ public class Running extends SimpleStatus
 {
     private final int percentage;
 
-    Running(int percentage)
+    Running(int percentage, long lastActivity)
     {
-        super(StatusType.RUNNING);
+        super(StatusType.RUNNING, lastActivity);
         this.percentage = percentage;
     }
 

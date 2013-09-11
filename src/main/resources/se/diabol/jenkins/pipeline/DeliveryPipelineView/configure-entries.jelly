@@ -13,6 +13,11 @@
         <f:select />
     </f:entry>
 
+    <f:entry title="Sorting" field="sorting">
+        <f:select />
+    </f:entry>
+
+
     <f:entry>
         <f:repeatableProperty minimum="1" field="componentSpecs"/>
     </f:entry>

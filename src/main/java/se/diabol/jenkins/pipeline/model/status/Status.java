@@ -28,4 +28,6 @@ public interface Status
 
     @SuppressWarnings("unused")
     public boolean isCancelled();
+
+    long getLastActivity();
 }

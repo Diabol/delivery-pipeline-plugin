@@ -14,10 +14,12 @@ import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
 public class SimpleStatus implements Status
 {
     private final StatusType type;
+    private final long lastActivity;
 
-    public SimpleStatus(StatusType type)
+    public SimpleStatus(StatusType type, long lastActivity)
     {
         this.type = type;
+        this.lastActivity = lastActivity;
     }
 
     @Exported
@@ -25,6 +27,11 @@ public class SimpleStatus implements Status
     public StatusType getType()
     {
         return type;
+    }
+
+    @Override
+    public long getLastActivity() {
+        return lastActivity;
     }
 
     @Override public boolean isIdle() { return IDLE.equals(type); }

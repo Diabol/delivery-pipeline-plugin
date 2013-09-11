@@ -210,7 +210,7 @@ public class PipelineFactory {
     private Status resolveStatus(AbstractProject project, AbstractBuild build) {
         if (build == null) {
             if (project.isInQueue())
-                return StatusFactory.queued();
+                return StatusFactory.queued(project.getQueueItem().getInQueueSince());
             else if (project.isDisabled())
                 return StatusFactory.disabled();
             else
@@ -219,18 +219,20 @@ public class PipelineFactory {
 
         if (build.isBuilding()) {
             return StatusFactory.running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
-                    / build.getEstimatedDuration()));
+                    / build.getEstimatedDuration()), build.getTimeInMillis());
         }
 
         Result result = build.getResult();
         if (ABORTED.equals(result))
-            return StatusFactory.cancelled();
+            return StatusFactory.cancelled(build.getTimeInMillis());
         else if (SUCCESS.equals(result))
-            return StatusFactory.success();
+            return StatusFactory.success(build.getTimeInMillis());
         else if (FAILURE.equals(result))
-            return StatusFactory.failed();
+            return StatusFactory.failed(build.getTimeInMillis());
         else if (UNSTABLE.equals(result))
-            return StatusFactory.unstable();
+            return StatusFactory.unstable(build.getTimeInMillis());
+        else if (Result.ABORTED.equals(result))
+            return StatusFactory.cancelled(build.getTimeInMillis());
         else
             throw new IllegalStateException("Result " + result + " not recognized.");
     }

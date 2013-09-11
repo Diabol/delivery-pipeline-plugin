@@ -1,5 +1,6 @@
 package se.diabol.jenkins.pipeline;
 
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.*;
 import hudson.util.FormValidation;
@@ -15,6 +16,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -24,6 +26,7 @@ public class DeliveryPipelineView extends View {
     private int noOfPipelines = 1;
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
+    private String sorting = NoOpComparator.class.getName();
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name, int noOfColumns, List<ComponentSpec> componentSpecs,
@@ -33,6 +36,14 @@ public class DeliveryPipelineView extends View {
         this.noOfColumns = noOfColumns;
         this.noOfPipelines = noOfPipelines;
         this.showAggregatedPipeline = showAggregatedPipeline;
+    }
+
+    public String getSorting() {
+        return sorting;
+    }
+
+    public void setSorting(String sorting) {
+        this.sorting = sorting;
     }
 
     public List<ComponentSpec> getComponentSpecs() {
@@ -91,6 +102,13 @@ public class DeliveryPipelineView extends View {
             pipelines.addAll(pipelineFactory.createPipelineLatest(prototype, noOfPipelines));
             components.add(new Component(componentSpec.getName(), pipelines));
         }
+        if (sorting != null) {
+            ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
+            if (comparatorDescriptor != null) {
+                Collections.sort(components, comparatorDescriptor.createInstance());
+            }
+        }
+
         return components;
     }
 
@@ -140,6 +158,15 @@ public class DeliveryPipelineView extends View {
             return options;
         }
 
+        public ListBoxModel doFillSortingItems() {
+            DescriptorExtensionList<ComponentComparator,ComponentComparatorDescriptor> descriptors =  ComponentComparator.all();
+            ListBoxModel options = new ListBoxModel();
+            for (ComponentComparatorDescriptor descriptor : descriptors) {
+                options.add(descriptor.getDisplayName(), descriptor.getId());
+            }
+            return options;
+        }
+
         @Override
         public String getDisplayName() {
             return "Delivery Pipeline View";
@@ -176,6 +203,7 @@ public class DeliveryPipelineView extends View {
 
         @Extension
         public static class DescriptorImpl extends Descriptor<ComponentSpec> {
+
             @Override
             public String getDisplayName() {
                 return "";
