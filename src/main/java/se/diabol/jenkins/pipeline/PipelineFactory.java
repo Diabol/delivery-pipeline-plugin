@@ -145,7 +145,7 @@ public class PipelineFactory {
                     AbstractProject taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     Status status = resolveStatus(taskProject, currentBuild);
-                    String link = status.isIdle()? task.getLink() : currentBuild.getUrl();
+                    String link = status.isIdle() || status.isQueued()? task.getLink() : currentBuild.getUrl();
                     tasks.add(new Task(task.getId(), task.getName(), status, link, getTestResult(currentBuild)));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
