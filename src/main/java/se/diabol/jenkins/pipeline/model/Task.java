@@ -9,21 +9,34 @@ import static com.google.common.base.Objects.toStringHelper;
 
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
+ * @author Patrik Boström <patrik@diabol.se>
  */
-public class Task extends AbstractItem
-{
+public class Task extends AbstractItem {
     private final String id;
     private final String link;
     private final TestResult testResult;
     private final Status status;
+    private final boolean manual;
+    private final String buildId;
 
-    public Task(String id, String name, Status status, String link, TestResult testResult)
-    {
+    public Task(String id, String name, String buildId, Status status, String link, boolean manual, TestResult testResult) {
         super(name);
         this.id = id;
         this.link = link;
         this.testResult = testResult;
         this.status = status;
+        this.manual = manual;
+        this.buildId = buildId;
+    }
+
+    @Exported
+    public boolean isManual() {
+        return manual;
+    }
+
+    @Exported
+    public String getBuildId() {
+        return buildId;
     }
 
     @Exported
@@ -43,8 +56,7 @@ public class Task extends AbstractItem
     }
 
     @Exported
-    public Status getStatus()
-    {
+    public Status getStatus() {
         return status;
     }
 

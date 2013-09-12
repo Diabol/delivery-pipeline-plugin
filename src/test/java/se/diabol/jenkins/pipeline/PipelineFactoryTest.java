@@ -9,7 +9,6 @@ import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.tasks.BuildTrigger;
-import hudson.tasks.Builder;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,9 +59,9 @@ public class PipelineFactoryTest {
 
         assertEquals(pipeline,
                 new Pipeline("Piper", null, null,
-                        asList(new Stage("Build", asList(new Task("comp", "Compile", idle(), "", null))),
-                                new Stage("Test", asList(new Task("test", "Test", idle(), "", null))),
-                                new Stage("Deploy", asList(new Task("deploy", "Deploy", idle(), "", null)))), false));
+                        asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null))),
+                                new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null))),
+                                new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null)))), false));
 
 
     }
@@ -100,7 +99,7 @@ public class PipelineFactoryTest {
         jenkins.waitUntilNoActivity();
         assertNotNull(sonar.getLastBuild());
 
-        assertEquals(4,pipe1.getStages().size());
+        assertEquals(4, pipe1.getStages().size());
         assertEquals(2, pipe2.getStages().size());
         assertNotNull(sonar.getBuild("1"));
 
@@ -109,11 +108,14 @@ public class PipelineFactoryTest {
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
         assertEquals("job/sonar1/1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("1", aggregated1.getStages().get(1).getTasks().get(0).getBuildId());
 
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
 
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isIdle());
         assertEquals("job/sonar1", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+        assertNull(aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
+
 
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
 
@@ -128,7 +130,7 @@ public class PipelineFactoryTest {
 
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
         assertEquals("job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
-
+        assertEquals("2", aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
 
         jenkins.buildAndAssertSuccess(build1);
         jenkins.waitUntilNoActivity();
@@ -141,7 +143,10 @@ public class PipelineFactoryTest {
         assertEquals("#1", aggregated2.getStages().get(1).getVersion());
 
         assertEquals("job/sonar1/3/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("3", aggregated1.getStages().get(1).getTasks().get(0).getBuildId());
+
         assertEquals("job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("2", aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
 
 
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
@@ -153,13 +158,12 @@ public class PipelineFactoryTest {
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
 
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null );
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
         view.triggerManualBuild(1, "prod", "test");
         jenkins.waitUntilNoActivity();
         aggregated1 = PipelineFactory.createPipelineAggregated(pipe1);
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isSuccess());
         assertEquals("#1", aggregated1.getStages().get(3).getVersion());
-
 
 
     }
@@ -175,7 +179,7 @@ public class PipelineFactoryTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
+        assertEquals(new Pipeline("Pipeline", null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
 
 
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
@@ -183,7 +187,7 @@ public class PipelineFactoryTest {
 
         Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
 
-        assertEquals(new Pipeline("Pipeline", null, null,asList(new Stage("Build", asList(new Task("build", "build", idle(), null, null), new Task("sonar", "Sonar", idle(), null, null))), new Stage("CI", asList(new Task("deploy", "Deploy", idle(), null, null)))), false), pipeline);
+        assertEquals(new Pipeline("Pipeline", null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 

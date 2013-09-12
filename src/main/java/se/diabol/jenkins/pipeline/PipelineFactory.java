@@ -40,7 +40,8 @@ public abstract class PipelineFactory {
             String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                     ? property.getTaskName() : project.getDisplayName();
             Status status = project.isDisabled() ? disabled() : idle();
-            Task task = new Task(project.getName(), taskName, status, getJobUrl(project), null);
+            //TODO add if manual triggered
+            Task task = new Task(project.getName(), taskName, null, status, getJobUrl(project),false, null);
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
@@ -108,9 +109,9 @@ public abstract class PipelineFactory {
                 if (currentBuild != null) {
                     Status status = resolveStatus(taskProject, currentBuild);
                     String link = status.isIdle() ? task.getLink() : currentBuild.getUrl();
-                    tasks.add(new Task(task.getId(), task.getName(), status, link, getTestResult(currentBuild)));
+                    tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), getTestResult(currentBuild)));
                 } else {
-                    tasks.add(new Task(task.getId(), task.getName(), StatusFactory.idle(), task.getLink(), null));
+                    tasks.add(new Task(task.getId(), task.getName(),null, StatusFactory.idle(), task.getLink(), task.isManual(), null));
                 }
             }
             stages.add(new Stage(stage.getName(), tasks, version));
@@ -144,7 +145,8 @@ public abstract class PipelineFactory {
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     Status status = resolveStatus(taskProject, currentBuild);
                     String link = status.isIdle() || status.isQueued()? task.getLink() : currentBuild.getUrl();
-                    tasks.add(new Task(task.getId(), task.getName(), status, link, getTestResult(currentBuild)));
+                    String buildId = status.isIdle() || status.isQueued()? null : String.valueOf(currentBuild.getNumber());
+                    tasks.add(new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(currentBuild)));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
