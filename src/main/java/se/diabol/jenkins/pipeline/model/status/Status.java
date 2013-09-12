@@ -29,5 +29,9 @@ public interface Status
     @SuppressWarnings("unused")
     public boolean isCancelled();
 
+    @SuppressWarnings("unused")
+    public boolean isDisabled();
+
+
     long getLastActivity();
 }

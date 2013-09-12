@@ -90,16 +90,15 @@ public class DeliveryPipelineView extends View {
     @Exported
     public List<Component> getPipelines()
     {
-        PipelineFactory pipelineFactory = new PipelineFactory();
         List<Component> components = new ArrayList<>();
         for (ComponentSpec componentSpec : componentSpecs) {
             Jenkins jenkins = Jenkins.getInstance();
             AbstractProject firstJob = jenkins.getItem(componentSpec.getFirstJob(), jenkins, AbstractProject.class);
-            Pipeline prototype = pipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
+            Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
             List<Pipeline> pipelines = new ArrayList<>();
             if(showAggregatedPipeline)
-                pipelines.add(pipelineFactory.createPipelineAggregated(prototype));
-            pipelines.addAll(pipelineFactory.createPipelineLatest(prototype, noOfPipelines));
+                pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
+            pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
             components.add(new Component(componentSpec.getName(), pipelines));
         }
         if (sorting != null) {

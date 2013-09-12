@@ -1,6 +1,5 @@
 package se.diabol.jenkins.pipeline;
 
-import com.google.common.base.Strings;
 import hudson.model.*;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
@@ -29,13 +28,12 @@ import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 /**
  * @author Per Huss <mr.per.huss@gmail.com>
  */
-public class PipelineFactory {
-
+public abstract class PipelineFactory {
 
     /**
      * Created a pipeline prototype for the supplied first project
      */
-    public Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject project : getAllDownstreamProjects(firstProject).values()) {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
@@ -55,7 +53,7 @@ public class PipelineFactory {
         return new Pipeline(name, null, null, newArrayList(stages.values()), false);
     }
 
-    private Map<String, AbstractProject> getAllDownstreamProjects(AbstractProject first) {
+    private static Map<String, AbstractProject> getAllDownstreamProjects(AbstractProject first) {
         Map<String, AbstractProject> projects = newLinkedHashMap();
         projects.put(first.getName(), first);
         for (AbstractProject project : getDownstreamProjects(first))
@@ -66,7 +64,7 @@ public class PipelineFactory {
     /**
      * Opens up for testing and mocking, since Jenkins has getDownstreamProjects() final
      */
-    List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
+    static List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
         //noinspection unchecked
         return project.getDownstreamProjects();
     }
@@ -74,7 +72,7 @@ public class PipelineFactory {
     /**
      * Opens up for testing and mocking, since Jenkins has getUrl() method final
      */
-    String getJobUrl(AbstractProject project) {
+    static String getJobUrl(AbstractProject project) {
         return "job/" + project.getName();
     }
 
@@ -84,12 +82,12 @@ public class PipelineFactory {
      * @see PipelineFactory#createPipelineLatest(se.diabol.jenkins.pipeline.model.Pipeline, int)
      */
 
-    public Pipeline createPipelineLatest(Pipeline pipeline) {
+    public static Pipeline createPipelineLatest(Pipeline pipeline) {
         List<Pipeline> pipelines = createPipelineLatest(pipeline, 1);
         return pipelines.size() > 0 ? pipelines.get(0) : null;
     }
 
-    public Pipeline createPipelineAggregated(Pipeline pipeline) {
+    public static Pipeline createPipelineAggregated(Pipeline pipeline) {
 
         AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
 
@@ -128,7 +126,7 @@ public class PipelineFactory {
      * @param pipeline      the pipeline prototype
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines)
+    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines)
     {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getProject(firstTask);
@@ -156,7 +154,7 @@ public class PipelineFactory {
         return result;
     }
 
-    private TestResult getTestResult(AbstractBuild build) {
+    private static TestResult getTestResult(AbstractBuild build) {
         if (build != null) {
             AggregatedTestResultAction tests = build.getAction(AggregatedTestResultAction.class);
             if (tests != null) {
@@ -167,7 +165,7 @@ public class PipelineFactory {
         return null;
     }
 
-    private String getTriggeredBy(AbstractBuild build) {
+    private static String getTriggeredBy(AbstractBuild build) {
         Set<User> users = build.getCulprits();
         List<String> triggeredBy = new ArrayList<>();
 
@@ -191,7 +189,7 @@ public class PipelineFactory {
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
-    private AbstractBuild match(RunList runList, AbstractBuild firstBuild) {
+    private static AbstractBuild match(RunList runList, AbstractBuild firstBuild) {
         if (firstBuild != null) {
             for (Object aRunList : runList) {
                 AbstractBuild currentBuild = (AbstractBuild) aRunList;
@@ -203,11 +201,11 @@ public class PipelineFactory {
         return null;
     }
 
-    private AbstractProject getProject(Task task) {
+    private static AbstractProject getProject(Task task) {
         return Jenkins.getInstance().getItem(task.getId(), Jenkins.getInstance().getItemGroup(), AbstractProject.class);
     }
 
-    private Status resolveStatus(AbstractProject project, AbstractBuild build) {
+    protected static Status resolveStatus(AbstractProject project, AbstractBuild build) {
         if (build == null) {
             if (project.isInQueue())
                 return StatusFactory.queued(project.getQueueItem().getInQueueSince());
@@ -231,8 +229,6 @@ public class PipelineFactory {
             return StatusFactory.failed(build.getTimeInMillis());
         else if (UNSTABLE.equals(result))
             return StatusFactory.unstable(build.getTimeInMillis());
-        else if (Result.ABORTED.equals(result))
-            return StatusFactory.cancelled(build.getTimeInMillis());
         else
             throw new IllegalStateException("Result " + result + " not recognized.");
     }
