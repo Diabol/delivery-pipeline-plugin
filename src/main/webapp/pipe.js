@@ -40,7 +40,7 @@ function renderPipelines(divNames, errorDiv) {
                             }
                             for (var k = 0; k < stage.tasks.length; k++) {
                                 var task = stage.tasks[k];
-                                html = html + "<div class=\"" + task.status.type  +
+                                html = html + "<div class=\"task " + task.status.type  +
                                     "\"><div class=\"taskname\"><a href=\"" + task.link +"\">"+ task.name + "</a></div>" +
                                     "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + "</div></div>"
                             }
@@ -66,8 +66,8 @@ function renderPipelines(divNames, errorDiv) {
 
 function formatDate(date) {
     if (date != null) {
-        return moment(date).fromNow()
-        //return moment(date).format("YYYY-MM-DD HH:mm:ss")
+        return moment(date, "YYYY-MM-DDTHH:mm:ss").fromNow()
+        //return moment(date, "YYYY-MM-DDTHH:mm:ss").format("YYYY-MM-DD HH:mm:ss")
     } else {
         return "";
     }
