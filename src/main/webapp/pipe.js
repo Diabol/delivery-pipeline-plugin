@@ -40,7 +40,9 @@ function renderPipelines(divNames, errorDiv) {
                             }
                             for (var k = 0; k < stage.tasks.length; k++) {
                                 var task = stage.tasks[k];
-                                html = html + "<span class=\"" + task.status.type  +"\"><a href=\"" + task.link +"\">"+ task.name + "</a></span>"
+                                html = html + "<div class=\"" + task.status.type  +
+                                    "\"><div class=\"taskname\"><a href=\"" + task.link +"\">"+ task.name + "</a></div>" +
+                                    "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + "</div></div>"
                             }
 
                             html = html + "</section>";
@@ -60,4 +62,13 @@ function renderPipelines(divNames, errorDiv) {
         }
     });
 
+}
+
+function formatDate(date) {
+    if (date != null) {
+        return moment(date).fromNow()
+        //return moment(date).format("YYYY-MM-DD HH:mm:ss")
+    } else {
+        return "";
+    }
 }

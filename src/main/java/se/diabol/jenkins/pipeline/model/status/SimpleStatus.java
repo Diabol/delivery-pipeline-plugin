@@ -1,8 +1,12 @@
 package se.diabol.jenkins.pipeline.model.status;
 
+import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
@@ -29,6 +33,17 @@ public class SimpleStatus implements Status {
     @Override
     public long getLastActivity() {
         return lastActivity;
+    }
+
+    @Exported
+    @SuppressWarnings("unused")
+    public String getTimestamp() {
+        if (lastActivity != -1) {
+        DateFormat f = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'");
+        return f.format(new Date(lastActivity));
+        } else {
+            return null;
+        }
     }
 
     @Override

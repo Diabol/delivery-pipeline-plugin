@@ -50,7 +50,7 @@ section.stage h1 {
     padding: 5px 10px;
 }
 
-section.stage span {
+.stage div {
     display: block;
     border-radius: 3px;
     margin: 0 5px 1px 5px;
@@ -70,32 +70,36 @@ section.stage a:hover {
     text-decoration: underline;
 }
 
-span.QUEUED {
+.QUEUED {
     background-color: lightgray;
 }
 
-span.FAILED {
+.FAILED {
     background-color: tomato;
 }
 
-span.SUCCESS {
+.SUCCESS {
     background-color: lightgreen;
 }
 
-span.UNSTABLE {
+.UNSTABLE {
     background-color: orange;
 }
 
-span.CANCELLED {
+.CANCELLED {
     background-color: yellow;
 }
 
-span.DISABLED {
+.DISABLED {
     color: lightgray;
 }
 
-span.RUNNING {
+.RUNNING {
     background: url("running.gif") no-repeat right;
+}
+
+.timestamp {
+    font-size: 10px;
 }
 
 section.legend {

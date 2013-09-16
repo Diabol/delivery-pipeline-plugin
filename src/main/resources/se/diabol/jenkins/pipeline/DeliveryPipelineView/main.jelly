@@ -28,6 +28,7 @@
     </j:forEach>
     <div class="clear"></div>
 
+    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/moment.min.js"/>
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.js"/>
 
     <script type="text/javascript">

@@ -33,5 +33,9 @@ public interface Status
     public boolean isDisabled();
 
 
+    @SuppressWarnings("unused")
     long getLastActivity();
+
+    @SuppressWarnings("unused")
+    String getTimestamp();
 }
