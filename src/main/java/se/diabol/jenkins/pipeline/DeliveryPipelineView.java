@@ -33,6 +33,8 @@ public class DeliveryPipelineView extends View {
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
     private String sorting = NoOpComparator.class.getName();
+    private String fullScreenCss = null;
+    private String embeddedCss = null;
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name, int noOfColumns, List<ComponentSpec> componentSpecs,
@@ -82,6 +84,30 @@ public class DeliveryPipelineView extends View {
 
     public void setNoOfColumns(int noOfColumns) {
         this.noOfColumns = noOfColumns;
+    }
+
+    public String getFullScreenCss() {
+        return fullScreenCss;
+    }
+
+    public void setFullScreenCss(String fullScreenCss) {
+        if (fullScreenCss != null && fullScreenCss.trim().equals("")) {
+            this.fullScreenCss = null;
+        } else {
+            this.fullScreenCss = fullScreenCss;
+        }
+    }
+
+    public String getEmbeddedCss() {
+        return embeddedCss;
+    }
+
+    public void setEmbeddedCss(String embeddedCss) {
+        if (embeddedCss != null && embeddedCss.trim().equals("")) {
+            this.embeddedCss = null;
+        } else {
+            this.embeddedCss = embeddedCss;
+        }
     }
 
     @Override

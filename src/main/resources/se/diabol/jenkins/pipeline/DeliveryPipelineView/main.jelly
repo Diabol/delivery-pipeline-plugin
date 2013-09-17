@@ -10,14 +10,18 @@
     <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
     <j:switch on="${fullscreen}">
         <j:case value="true">
-            <j:set var="cssfile" value='pipe-fullscreen.css'/>
+            <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe-fullscreen.css"/>
+            <j:if test="${it.fullScreenCss != null}">
+                <link rel="stylesheet" href="${it.fullScreenCss}"/>
+            </j:if>
         </j:case>
         <j:default>
-            <j:set var="cssfile" value='pipe.css'/>
+            <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.css"/>
+            <j:if test="${it.embeddedCss != null}">
+                <link rel="stylesheet" href="${it.embeddedCss}"/>
+            </j:if>
         </j:default>
     </j:switch>
-
-    <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/${cssfile}"/>
 
     <script type="text/javascript">
         var pipelineContainers = new Array(${it.noOfColumns});

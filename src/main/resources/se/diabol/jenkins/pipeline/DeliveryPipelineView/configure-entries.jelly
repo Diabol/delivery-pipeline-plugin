@@ -21,4 +21,14 @@
     <f:entry>
         <f:repeatableProperty minimum="1" field="componentSpecs"/>
     </f:entry>
+
+
+    <f:entry title="URL for custom CSS file" field="embeddedCss">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="URL for custom CSS file (fullscreen)" field="fullScreenCss">
+        <f:textbox/>
+    </f:entry>
+
 </j:jelly>
