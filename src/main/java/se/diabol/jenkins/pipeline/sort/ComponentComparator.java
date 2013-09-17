@@ -1,4 +1,4 @@
-package se.diabol.jenkins.pipeline;
+package se.diabol.jenkins.pipeline.sort;
 
 import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;

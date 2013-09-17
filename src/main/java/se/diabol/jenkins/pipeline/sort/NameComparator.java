@@ -1,13 +1,13 @@
-package se.diabol.jenkins.pipeline;
+package se.diabol.jenkins.pipeline.sort;
 
 import hudson.Extension;
 import se.diabol.jenkins.pipeline.model.Component;
 
-public class NoOpComparator extends ComponentComparator {
+public class NameComparator extends ComponentComparator {
 
     @Override
     public int compare(Component o1, Component o2) {
-        return 0;
+        return o1.getName().compareTo(o2.getName());
     }
 
     @Extension
@@ -15,7 +15,7 @@ public class NoOpComparator extends ComponentComparator {
     {
         @Override
         public String getDisplayName() {
-            return "No sorting";
+            return "Sort by title";
         }
 
         @Override
@@ -23,5 +23,6 @@ public class NoOpComparator extends ComponentComparator {
             return new LatestActivityComparator();
         }
     }
+
 
 }

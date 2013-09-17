@@ -96,7 +96,7 @@ function renderPipelines(divNames, errorDiv, view) {
         },
         error: function (xhr, status, error) {
             //window.alert("Error!")
-            Q("#" + errorDiv).html('Error communicating to server!' + error);
+            Q("#" + errorDiv).html('Error communicating to server! ' + error);
         }
     });
 
