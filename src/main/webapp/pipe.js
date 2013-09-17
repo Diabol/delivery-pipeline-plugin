@@ -67,7 +67,6 @@ function renderPipelines(divNames, errorDiv) {
 function formatDate(date) {
     if (date != null) {
         return moment(date, "YYYY-MM-DDTHH:mm:ss").fromNow()
-        //return moment(date, "YYYY-MM-DDTHH:mm:ss").format("YYYY-MM-DD HH:mm:ss")
     } else {
         return "";
     }
