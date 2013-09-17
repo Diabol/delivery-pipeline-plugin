@@ -2,6 +2,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
+    <div id="taskDetails" class="popover">
+    </div>
+
+    <st:bind var="view" value="${it}"/>
+
     <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
     <j:switch on="${fullscreen}">
         <j:case value="true">
@@ -32,8 +37,8 @@
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines(pipelineContainers, "pipelineerror");
-        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror");}, 2000);
+        renderPipelines(pipelineContainers, "pipelineerror", view);
+        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror", view);}, 2000);
     </script>
 
     <!--<st:include page="legend.jelly"/>-->
