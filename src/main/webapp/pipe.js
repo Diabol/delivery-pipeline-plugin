@@ -1,4 +1,5 @@
 function renderPipelines(divNames, errorDiv, view) {
+    //Simple feature switch for task details
     var popover = false;
     Q("#" + errorDiv).html('');
     Q.ajax({
