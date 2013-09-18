@@ -56,7 +56,6 @@ function renderPipelines(divNames, errorDiv, view) {
                                 "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>" +
                                 "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + "</div></div>"
 
-                            //tasks.push([task.id +"-" + task.buildId]);
                         }
 
                         html = html + "</section>";
@@ -70,14 +69,12 @@ function renderPipelines(divNames, errorDiv, view) {
                 Q("#" + divNames[c % divNames.length]).append(html);
                 if (popover) {
                     for (var x = 0; x < tasks.length; x++) {
-                        //console.log(tasks[x].id);
                         var taskId = tasks[x].taskId;
                         var buildId = tasks[x].buildId;
                         Q('#' + tasks[x].id).on("mouseenter mouseleave", {taskId: taskId, buildId: buildId}, function (e) {
                             if (e.type == "mouseenter") {
                                 Q('#taskDetails').html('');
                                 view.getTask(e.data.taskId, e.data.buildId, function(call) {
-                                    //console.log(stage.responseObject().id);
                                     var stage = call.responseObject();
 
                                     Q('#taskDetails').html(stage.id);
@@ -96,7 +93,6 @@ function renderPipelines(divNames, errorDiv, view) {
             }
         },
         error: function (xhr, status, error) {
-            //window.alert("Error!")
             Q("#" + errorDiv).html('Error communicating to server! ' + error);
         }
     });

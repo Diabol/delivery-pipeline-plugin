@@ -1,14 +1,13 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
     <f:section title="Delivery Pipeline configuration">
-        <f:entry title="Stage Name" field="stageName">
-            <f:textbox name="stageName" value="${instance.getStageName()}"/>
-        </f:entry>
+            <f:entry title="Stage Name" field="stageName">
+                <f:textbox name="stageName" value="${instance.getStageName()}"/>
+            </f:entry>
 
-        <f:entry title="Task Name" field="taskName">
-            <f:textbox name="taskName" value="${instance.getTaskName()}"/>
-        </f:entry>
-
+            <f:entry title="Task Name" field="taskName">
+                <f:textbox name="taskName" value="${instance.getTaskName()}"/>
+            </f:entry>
     </f:section>
-
 </j:jelly>

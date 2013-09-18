@@ -245,23 +245,11 @@ public abstract class PipelineFactory {
         if (build == null) {
             return null;
         }
-        //build.getCause do not return the correct Causes sometimes
-        List<CauseAction> actions = build.getActions(CauseAction.class);
-        for (CauseAction action : actions) {
-            List<Cause> causes = action.getCauses();
-            for (Cause cause : causes) {
-                if (cause instanceof Cause.UpstreamCause) {
-                    Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                    AbstractProject upstreamProject = Jenkins.getInstance().getItem(upstreamCause.getUpstreamProject(), Jenkins.getInstance(), AbstractProject.class);
-                    //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
-                    if (upstreamProject == null) {
-                        return null;
-                    }
-                    AbstractBuild upstreamBuild = upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
-                    return getFirstUpstreamBuild(upstreamBuild);
-                }
-            }
+        AbstractBuild upstreamBuild = getUpstreamBuild(build);
+        if (upstreamBuild != null) {
+            return getFirstUpstreamBuild(upstreamBuild);
         }
+
         return build;
     }
 
@@ -277,6 +265,27 @@ public abstract class PipelineFactory {
 
         }
         return null;
+    }
+
+
+    public static AbstractBuild getUpstreamBuild(AbstractBuild build) {
+        List<CauseAction> actions = build.getActions(CauseAction.class);
+        for (CauseAction action : actions) {
+            List<Cause> causes = action.getCauses();
+            for (Cause cause : causes) {
+                if (cause instanceof Cause.UpstreamCause) {
+                    Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
+                    AbstractProject upstreamProject = Jenkins.getInstance().getItem(upstreamCause.getUpstreamProject(), Jenkins.getInstance(), AbstractProject.class);
+                    //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
+                    if (upstreamProject == null) {
+                        return null;
+                    }
+                    return upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
+                }
+            }
+        }
+        return null;
+
     }
 
 

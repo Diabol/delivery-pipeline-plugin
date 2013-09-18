@@ -1,0 +1,19 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:section title="Delivery Pipeline version configuration">
+            <f:optionalBlock name="createVersion"
+                             title="Generate version in this build"
+                             inline="true"
+                             checked="${instance.createVersion}">
+                <f:entry title="Template"
+                         field="versionTemplate">
+                    <f:textbox/>
+                </f:entry>
+                <f:entry title="Set build displayname"
+                         field="updateDisplayName">
+                    <f:checkbox/>
+                </f:entry>
+            </f:optionalBlock>
+    </f:section>
+</j:jelly>
