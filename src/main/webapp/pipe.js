@@ -23,10 +23,10 @@ function renderPipelines(divNames, errorDiv, view) {
                     var pipeline = component.pipelines[i];
                     html = html + "<section class=\"pipe\">";
 
-                    if (!pipeline.aggregated) {
-                        html = html + '<h1>' + pipeline.version + ' (' + pipeline.triggeredBy + ')</h1>'
-                    } else {
+                    if (pipeline.aggregated) {
                         html = html + '<h1>Aggregated view</h1>'
+                    } else {
+                        html = html + '<h1>' + pipeline.version + ' by ' + pipeline.triggeredBy + ', started ' + formatDate(pipeline.timestamp) + '</h1>'
                     }
 
                     for (var j = 0; j < pipeline.stages.length; j++) {
@@ -54,7 +54,8 @@ function renderPipelines(divNames, errorDiv, view) {
 
                             html = html + "<div id=\"" + id + "\"  class=\"task " + task.status.type +
                                 "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>" +
-                                "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + "</div></div>"
+                                "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + ", " + formatMilliSeconds(task.status.duration) + "</div>" +
+                                "</div>"
 
                         }
 
@@ -74,12 +75,11 @@ function renderPipelines(divNames, errorDiv, view) {
                         Q('#' + tasks[x].id).on("mouseenter mouseleave", {taskId: taskId, buildId: buildId}, function (e) {
                             if (e.type == "mouseenter") {
                                 Q('#taskDetails').html('');
-                                view.getTask(e.data.taskId, e.data.buildId, function(call) {
+                                view.getTask(e.data.taskId, e.data.buildId, function (call) {
                                     var stage = call.responseObject();
 
                                     Q('#taskDetails').html(stage.id);
                                 });
-
 
 
                                 Q('#taskDetails').show().css('top', e.pageY)
@@ -102,6 +102,43 @@ function renderPipelines(divNames, errorDiv, view) {
 function formatDate(date) {
     if (date != null) {
         return moment(date, "YYYY-MM-DDTHH:mm:ss").fromNow()
+    } else {
+        return "";
+    }
+}
+
+function formatMilliSeconds(millis) {
+    if (millis > 0) {
+        var date = new Date(millis);
+        var hh = date.getUTCHours();
+        var mm = date.getUTCMinutes();
+        var ss = date.getSeconds();
+        var ms =  date.getMilliseconds();
+// These lines ensure you have two-digits
+        if (mm < 10) {
+            mm = "0" + mm;
+        }
+        if (ss < 10) {
+            ss = "0" + ss;
+        }
+
+        if (ms < 10) {
+            ms = "0" + ms;
+        }
+        if (ms < 100) {
+            ms = "0" + ms;
+        }
+
+// This formats your string to HH:MM:SS
+        if (hh == 0 && mm == "00") {
+            return ss + ":" + ms;
+        }
+
+        if (hh == 0) {
+            return mm + ":" + ss + ":" + ms;
+        } else {
+            return hh + ":" + mm + ":" + ss + ":" + ms;
+        }
     } else {
         return "";
     }

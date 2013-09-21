@@ -58,7 +58,7 @@ public class PipelineFactoryTest {
         Pipeline pipeline = PipelineFactory.extractPipeline("Piper", compile);
 
         assertEquals(pipeline,
-                new Pipeline("Piper", null, null,
+                new Pipeline("Piper", null, null, null,
                         asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null))),
                                 new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null))),
                                 new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null)))), false));
@@ -179,7 +179,7 @@ public class PipelineFactoryTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        assertEquals(new Pipeline("Pipeline", null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
+        assertEquals(new Pipeline("Pipeline", null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
 
 
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
@@ -187,7 +187,7 @@ public class PipelineFactoryTest {
 
         Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
 
-        assertEquals(new Pipeline("Pipeline", null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
+        assertEquals(new Pipeline("Pipeline", null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
@@ -208,6 +208,7 @@ public class PipelineFactoryTest {
         assertTrue(status.isIdle());
         assertEquals("IDLE", status.toString());
         assertEquals(-1, status.getLastActivity());
+        assertEquals(-1, status.getDuration());
 
     }
 
@@ -219,6 +220,7 @@ public class PipelineFactoryTest {
         assertTrue(status.isDisabled());
         assertEquals("DISABLED", status.toString());
         assertEquals(-1, status.getLastActivity());
+        assertEquals(-1, status.getDuration());
 
     }
 
@@ -231,6 +233,7 @@ public class PipelineFactoryTest {
         assertTrue(status.isSuccess());
         assertEquals("SUCCESS", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
+        assertEquals(project.getLastBuild().getDuration(), status.getDuration());
 
     }
 
@@ -244,6 +247,7 @@ public class PipelineFactoryTest {
         assertTrue(status.isFailed());
         assertEquals("FAILED", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
+        assertEquals(project.getLastBuild().getDuration(), status.getDuration());
     }
 
 
@@ -257,6 +261,7 @@ public class PipelineFactoryTest {
         assertTrue(status.isUnstable());
         assertEquals("UNSTABLE", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
+        assertEquals(project.getLastBuild().getDuration(), status.getDuration());
     }
 
 
@@ -270,6 +275,7 @@ public class PipelineFactoryTest {
         assertTrue(status.isCancelled());
         assertEquals("CANCELLED", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
+        assertEquals(project.getLastBuild().getDuration(), status.getDuration());
     }
 
 
@@ -283,6 +289,7 @@ public class PipelineFactoryTest {
         jenkins.waitUntilNoActivity();
         status = PipelineFactory.resolveStatus(project, project.getLastBuild());
         assertTrue(status.isSuccess());
+        assertEquals(project.getLastBuild().getDuration(), status.getDuration());
     }
 
     @Test

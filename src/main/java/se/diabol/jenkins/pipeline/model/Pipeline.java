@@ -3,7 +3,6 @@ package se.diabol.jenkins.pipeline.model;
 import com.google.common.collect.ImmutableList;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.model.status.Status;
 
 import java.util.List;
 import java.util.Objects;
@@ -24,13 +23,16 @@ public class Pipeline extends AbstractItem
 
     private boolean aggregated;
 
-    public Pipeline(String name, String version, String triggeredBy, List<Stage> stages, boolean aggregated)
+    private String timestamp;
+
+    public Pipeline(String name, String version, String timestamp,  String triggeredBy, List<Stage> stages, boolean aggregated)
     {
-        super(name); // todo: IDLE is cheating
+        super(name);
         this.version = version;
         this.triggeredBy = triggeredBy;
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
+        this.timestamp = timestamp;
     }
 
     @Exported
@@ -46,6 +48,13 @@ public class Pipeline extends AbstractItem
     }
 
     @Exported
+    @SuppressWarnings("unused")
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    @Exported
+    @SuppressWarnings("unused")
     public boolean isAggregated()
     {
         return aggregated;

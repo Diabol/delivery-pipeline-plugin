@@ -38,4 +38,7 @@ public interface Status
 
     @SuppressWarnings("unused")
     String getTimestamp();
+
+    @SuppressWarnings("unused")
+    long getDuration();
 }

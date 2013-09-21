@@ -11,6 +11,7 @@ import se.diabol.jenkins.pipeline.model.Task;
 import se.diabol.jenkins.pipeline.model.TestResult;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
+import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.*;
 
@@ -41,7 +42,7 @@ public abstract class PipelineFactory {
                     ? property.getTaskName() : project.getDisplayName();
             Status status = project.isDisabled() ? disabled() : idle();
             //TODO add if manual triggered
-            Task task = new Task(project.getName(), taskName, null, status, getJobUrl(project),false, null);
+            Task task = new Task(project.getName(), taskName, null, status, getJobUrl(project), false, null);
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
@@ -51,7 +52,7 @@ public abstract class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, null, null, newArrayList(stages.values()), false);
+        return new Pipeline(name, null, null, null, newArrayList(stages.values()), false);
     }
 
     private static Map<String, AbstractProject> getAllDownstreamProjects(AbstractProject first) {
@@ -91,7 +92,6 @@ public abstract class PipelineFactory {
     public static Pipeline createPipelineAggregated(Pipeline pipeline) {
 
         AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
-
         List<Stage> stages = new ArrayList<>();
         for (Stage stage : pipeline.getStages()) {
             AbstractProject project = getProject(stage.getTasks().get(0));
@@ -111,13 +111,13 @@ public abstract class PipelineFactory {
                     String link = status.isIdle() ? task.getLink() : currentBuild.getUrl();
                     tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), getTestResult(currentBuild)));
                 } else {
-                    tasks.add(new Task(task.getId(), task.getName(),null, StatusFactory.idle(), task.getLink(), task.isManual(), null));
+                    tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null));
                 }
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
         //TODO add triggeredBy
-        return new Pipeline(pipeline.getName(), null, null, stages, true);
+        return new Pipeline(pipeline.getName(), null, null, null, stages, true);
     }
 
 
@@ -127,8 +127,7 @@ public abstract class PipelineFactory {
      * @param pipeline      the pipeline prototype
      * @param noOfPipelines number of pipeline instances
      */
-    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines)
-    {
+    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getProject(firstTask);
 
@@ -137,6 +136,7 @@ public abstract class PipelineFactory {
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
+            String timestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
             List<Stage> stages = new ArrayList<>();
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<>();
@@ -144,14 +144,14 @@ public abstract class PipelineFactory {
                     AbstractProject taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     Status status = resolveStatus(taskProject, currentBuild);
-                    String link = status.isIdle() || status.isQueued()? task.getLink() : currentBuild.getUrl();
-                    String buildId = status.isIdle() || status.isQueued()? null : String.valueOf(currentBuild.getNumber());
+                    String link = status.isIdle() || status.isQueued() ? task.getLink() : currentBuild.getUrl();
+                    String buildId = status.isIdle() || status.isQueued() ? null : String.valueOf(currentBuild.getNumber());
                     tasks.add(new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(currentBuild)));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
 
-            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), getTriggeredBy(firstBuild), stages, false));
+            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), timestamp, getTriggeredBy(firstBuild), stages, false));
         }
         return result;
     }
@@ -176,7 +176,7 @@ public abstract class PipelineFactory {
         }
 
         if (triggeredBy.size() > 0) {
-            return StringUtils.join(triggeredBy, ", ");
+            return StringUtils.join(triggeredBy.toArray(), ", ");
         }
 
         Cause.UserIdCause cause = (Cause.UserIdCause) build.getCause(Cause.UserIdCause.class);
@@ -219,18 +219,18 @@ public abstract class PipelineFactory {
 
         if (build.isBuilding()) {
             return StatusFactory.running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
-                    / build.getEstimatedDuration()), build.getTimeInMillis());
+                    / build.getEstimatedDuration()), build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
         }
 
         Result result = build.getResult();
         if (ABORTED.equals(result))
-            return StatusFactory.cancelled(build.getTimeInMillis());
+            return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
         else if (SUCCESS.equals(result))
-            return StatusFactory.success(build.getTimeInMillis());
+            return StatusFactory.success(build.getTimeInMillis(), build.getDuration());
         else if (FAILURE.equals(result))
-            return StatusFactory.failed(build.getTimeInMillis());
+            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration());
         else if (UNSTABLE.equals(result))
-            return StatusFactory.unstable(build.getTimeInMillis());
+            return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
         else
             throw new IllegalStateException("Result " + result + " not recognized.");
     }
