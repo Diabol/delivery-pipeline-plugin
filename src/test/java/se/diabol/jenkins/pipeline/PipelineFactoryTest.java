@@ -182,6 +182,65 @@ public class PipelineFactoryTest {
 
     }
 
+
+    @Test
+    public void testAggregatedStageWithTwoManualTasks() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject ci1 = jenkins.createFreeStyleProject("ci1");
+        FreeStyleProject ci2 = jenkins.createFreeStyleProject("ci2");
+        ci1.addProperty(new PipelineProperty("ci1", "CI1"));
+        ci2.addProperty(new PipelineProperty("ci2", "CI1"));
+        build.getPublishersList().add(new BuildPipelineTrigger("ci1", null));
+        build.getPublishersList().add(new BuildPipelineTrigger("ci2", null));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+        jenkins.buildAndAssertSuccess(build);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(build.getLastBuild());
+
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build"), "1", false, null);
+        view.triggerManualBuild(1, "ci1", "build");
+
+        jenkins.waitUntilNoActivity();
+        assertNotNull(ci1.getLastBuild());
+        assertNull(ci2.getLastBuild());
+
+        Pipeline pipeline = PipelineFactory.extractPipeline("test", build);
+        Pipeline aggregated = PipelineFactory.createPipelineAggregated(pipeline);
+        assertNotNull(aggregated);
+        assertEquals("ci1", aggregated.getStages().get(1).getTasks().get(0).getName());
+        assertEquals("ci2", aggregated.getStages().get(1).getTasks().get(1).getName());
+        assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
+        assertEquals("IDLE", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
+        assertEquals("#1", aggregated.getStages().get(1).getVersion());
+
+        jenkins.buildAndAssertSuccess(build);
+        jenkins.waitUntilNoActivity();
+
+        aggregated = PipelineFactory.createPipelineAggregated(pipeline);
+        assertNotNull(aggregated);
+        assertEquals("#2", build.getLastBuild().getDisplayName());
+        assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
+        assertEquals("IDLE", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
+        assertEquals("#1", aggregated.getStages().get(1).getVersion());
+
+        view.triggerManualBuild(2, "ci2", "build");
+        jenkins.waitUntilNoActivity();
+        aggregated = PipelineFactory.createPipelineAggregated(pipeline);
+        assertNotNull(aggregated);
+        assertEquals("IDLE", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
+        assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
+        assertEquals("#2", aggregated.getStages().get(1).getVersion());
+
+
+
+
+
+
+
+    }
+
     @Test
     public void testCreatePipelineLatest() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");

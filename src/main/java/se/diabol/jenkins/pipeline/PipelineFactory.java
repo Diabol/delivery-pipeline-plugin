@@ -108,10 +108,14 @@ public abstract class PipelineFactory {
         AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
         List<Stage> stages = new ArrayList<>();
         for (Stage stage : pipeline.getStages()) {
+
+
             AbstractProject project = getProject(stage.getTasks().get(0));
 
             List<Task> tasks = new ArrayList<>();
-            AbstractBuild versionBuild = getFirstUpstreamBuild(project, firstProject);
+
+            AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject);
+
             String version = null;
             if (versionBuild != null) {
                 version = versionBuild.getDisplayName();
@@ -132,6 +136,23 @@ public abstract class PipelineFactory {
         }
         //TODO add triggeredBy
         return new Pipeline(pipeline.getName(), null, null, null, stages, true);
+    }
+
+    private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject) {
+        int highest = -1;
+        for (Task task : tasks) {
+            AbstractProject project = getProject(task);
+            AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject);
+            if (firstBuild != null && firstBuild.getNumber() > highest) {
+                highest = firstBuild.getNumber();
+            }
+        }
+
+        if (highest > 0) {
+            return firstProject.getBuildByNumber(highest);
+        } else {
+            return null;
+        }
     }
 
 
