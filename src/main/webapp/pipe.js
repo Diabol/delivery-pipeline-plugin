@@ -72,6 +72,7 @@ function renderPipelines(divNames, errorDiv, view) {
 
                 }
                 html = html + "</section>";
+
                 Q("#" + divNames[c % divNames.length]).append(html);
                 if (popover) {
                     for (var x = 0; x < tasks.length; x++) {
@@ -96,6 +97,7 @@ function renderPipelines(divNames, errorDiv, view) {
                     }
                 }
             }
+            equalheight(".stage");
         },
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + error);
@@ -147,4 +149,35 @@ function formatMilliSeconds(millis) {
     } else {
         return "";
     }
+}
+
+function equalheight(container){
+
+    var currentTallest = 0,
+        currentRowStart = 0,
+        rowDivs = new Array(),
+        $el,
+        topPosition = 0;
+    Q(container).each(function() {
+
+        $el = Q(this);
+        Q($el).height('auto')
+        topPostion = $el.position().top;
+
+        if (currentRowStart != topPostion) {
+            for (currentDiv = 0 ; currentDiv < rowDivs.length ; currentDiv++) {
+                rowDivs[currentDiv].height(currentTallest);
+            }
+            rowDivs.length = 0; // empty the array
+            currentRowStart = topPostion;
+            currentTallest = $el.height();
+            rowDivs.push($el);
+        } else {
+            rowDivs.push($el);
+            currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
+        }
+        for (currentDiv = 0 ; currentDiv < rowDivs.length ; currentDiv++) {
+            rowDivs[currentDiv].height(currentTallest);
+        }
+    });
 }
