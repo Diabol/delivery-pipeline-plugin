@@ -37,10 +37,7 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
@@ -129,9 +126,15 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public void onJobRenamed(Item item, String oldName, String newName) {
-        for (ComponentSpec componentSpec : componentSpecs) {
+        Iterator<ComponentSpec> it = componentSpecs.iterator();
+        while (it.hasNext()) {
+            ComponentSpec componentSpec = it.next();
             if (componentSpec.getFirstJob().equals(oldName)) {
-                componentSpec.setFirstJob(newName);
+                if (newName == null) {
+                    it.remove();
+                } else {
+                    componentSpec.setFirstJob(newName);
+                }
             }
         }
     }
