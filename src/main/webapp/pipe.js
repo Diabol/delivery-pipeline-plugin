@@ -50,12 +50,17 @@ function renderPipelines(divNames, errorDiv, view) {
                                 id = "aggregated-task-" + task.id.replace(re, '_') + "_" + task.buildId;
                             }
 
+                            var timestamp = formatDate(task.status.timestamp);
+
                             tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
                             html = html + "<div id=\"" + id + "\"  class=\"task " + task.status.type +
-                                "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>" +
-                                "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + ", " + formatMilliSeconds(task.status.duration) + "</div>" +
-                                "</div>"
+                                "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
+
+                            if (timestamp != "") {
+                                html = html + "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + ", " + formatMilliSeconds(task.status.duration) + "</div>";
+                            }
+                            html = html + "</div>"
 
                         }
 
