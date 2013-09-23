@@ -109,11 +109,9 @@ public abstract class PipelineFactory {
         List<Stage> stages = new ArrayList<>();
         for (Stage stage : pipeline.getStages()) {
 
-
-            AbstractProject project = getProject(stage.getTasks().get(0));
-
             List<Task> tasks = new ArrayList<>();
 
+            //The version build for this stage is the highest first task build
             AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject);
 
             String version = null;
