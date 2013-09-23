@@ -11,4 +11,4 @@ libsrc/*
 
 # Jenkins workplace files
 
-work/*
+work*
