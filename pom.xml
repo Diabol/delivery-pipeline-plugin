@@ -8,6 +8,14 @@
     <packaging>hpi</packaging>
     <name>Delivery Pipeline Plugin</name>
     <url>https://github.com/Diabol/delivery-pipeline-plugin/wiki</url>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL)</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+        </license>
+    </licenses>
+
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
@@ -19,11 +27,32 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</connection>
-        <url>scm:git:git://github.com/Diabol/delivery-pipeline-plugin.git</url>
-        <developerConnection>scm:git:https://github.com/Diabol/delivery-pipeline-plugin.git</developerConnection>
+        <connection>scm:git:https://github.com/Diabol/delivery-pipeline-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/Diabol/delivery-pipeline-plugin.git</developerConnection>
     </scm>
 
+    <developers>
+        <developer>
+            <id>patbos</id>
+            <name>Patrik Boström</name>
+            <organization>Diabol AB</organization>
+            <organizationUrl>http://diabol.se</organizationUrl>
+        </developer>
+        <developer>
+            <id>perhuss</id>
+            <name>Per Huss</name>
+            <organization>Diabol AB</organization>
+            <organizationUrl>http://diabol.se</organizationUrl>
+        </developer>
+    </developers>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray</id>
+            <name>diabol-jenkins-delivery-pipeline-plugin</name>
+            <url>https://api.bintray.com/maven/diabol/jenkins/delivery-pipeline-plugin</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
         <repository>

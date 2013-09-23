@@ -1,20 +1,30 @@
+/*
+This file is part of Delivery Pipeline Plugin.
+
+Delivery Pipeline Plugin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Delivery Pipeline Plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Delivery Pipeline Plugin.
+If not, see <http://www.gnu.org/licenses/>.
+*/
 package se.diabol.jenkins.pipeline.model.status;
 
-import org.apache.log4j.helpers.ISO8601DateFormat;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 
 import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
 
-/**
- * @author Per Huss <mr.per.huss@gmail.com>
- */
 @ExportedBean(defaultVisibility = 100)
 public class SimpleStatus implements Status {
     private final StatusType type;
