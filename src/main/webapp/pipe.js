@@ -58,8 +58,12 @@ function renderPipelines(divNames, errorDiv, view) {
                                 "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
 
                             if (timestamp != "") {
-                                html = html + "<div class=\"timestamp\">" + formatDate(task.status.timestamp) + ", " + formatMilliSeconds(task.status.duration) + "</div>";
+                                html = html + "<span class='timestamp'>" + timestamp + "</span>"
                             }
+
+                            if (task.status.duration >= 0)
+                                html = html + "<span class='duration'>"+ formatDuration(task.status.duration) + "</span>";
+
                             html = html + "</div>"
 
                         }
@@ -114,40 +118,21 @@ function formatDate(date) {
     }
 }
 
-function formatMilliSeconds(millis) {
+function formatDuration(millis) {
     if (millis > 0) {
-        var date = new Date(millis);
-        var hh = date.getUTCHours();
-        var mm = date.getUTCMinutes();
-        var ss = date.getSeconds();
-        var ms =  date.getMilliseconds();
-// These lines ensure you have two-digits
-        if (mm < 10) {
-            mm = "0" + mm;
-        }
-        if (ss < 10) {
-            ss = "0" + ss;
-        }
+        var seconds = Math.floor(millis / 1000);
+        var minutes = Math.floor(seconds / 60);
+        seconds = seconds % 60;
 
-        if (ms < 10) {
-            ms = "0" + ms;
-        }
-        if (ms < 100) {
-            ms = "0" + ms;
-        }
+        var minstr;
+        if(minutes == 0)
+            minstr = "";
+        else
+            minstr = minutes + " min ";
 
-// This formats your string to HH:MM:SS
-        if (hh == 0 && mm == "00") {
-            return ss + ":" + ms;
-        }
+        var secstr = "" + seconds + " sec";
 
-        if (hh == 0) {
-            return mm + ":" + ss + ":" + ms;
-        } else {
-            return hh + ":" + mm + ":" + ss + ":" + ms;
-        }
-    } else {
-        return "";
+        return minstr + secstr;
     }
 }
 
