@@ -5,7 +5,7 @@
         <f:select/>
     </f:entry>
 
-    <f:entry title="Display aggregated pipeline for each product" field="showAggregatedPipeline">
+    <f:entry title="Display aggregated pipeline for each pipeline" field="showAggregatedPipeline">
         <f:checkbox/>
     </f:entry>
 
@@ -15,6 +15,10 @@
 
     <f:entry title="Sorting" field="sorting">
         <f:select />
+    </f:entry>
+
+    <f:entry title="Show avatars" field="showAvatars">
+        <f:checkbox />
     </f:entry>
 
 

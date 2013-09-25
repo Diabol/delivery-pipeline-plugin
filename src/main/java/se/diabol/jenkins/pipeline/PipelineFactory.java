@@ -17,15 +17,13 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import hudson.ExtensionList;
 import hudson.model.*;
+import hudson.tasks.UserAvatarResolver;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
-import se.diabol.jenkins.pipeline.model.Pipeline;
-import se.diabol.jenkins.pipeline.model.Stage;
-import se.diabol.jenkins.pipeline.model.Task;
-import se.diabol.jenkins.pipeline.model.TestResult;
+import se.diabol.jenkins.pipeline.model.*;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -200,26 +198,39 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    private static String getTriggeredBy(AbstractBuild build) {
+    private static List<UserInfo> getTriggeredBy(AbstractBuild build) {
         Set<User> users = build.getCulprits();
-        List<String> triggeredBy = new ArrayList<>();
+        List<UserInfo> triggeredBy = new ArrayList<>();
 
         for (User user : users) {
-            triggeredBy.add(user.getDisplayName());
-        }
-
-        if (triggeredBy.size() > 0) {
-            return StringUtils.join(triggeredBy.toArray(), ", ");
+            triggeredBy.add(getUser(user));
         }
 
         Cause.UserIdCause cause = (Cause.UserIdCause) build.getCause(Cause.UserIdCause.class);
         if (cause != null && cause.getUserName() != null) {
-            return cause.getUserName();
+            UserInfo user = getUser(Jenkins.getInstance().getUser(cause.getUserName()));
+            triggeredBy.add(user);
         } else {
-            return "anonymous";
+            triggeredBy.add(new UserInfo("anonymous"));
         }
-
+        return triggeredBy;
     }
+
+    private static UserInfo getUser(User user) {
+        return new UserInfo(user.getDisplayName(), user.getUrl(), getAvatarUrl(user));
+    }
+
+    private static String getAvatarUrl(User user) {
+        ExtensionList<UserAvatarResolver> resolvers = UserAvatarResolver.all();
+        for (UserAvatarResolver resolver : resolvers) {
+            String avatarUrl = resolver.findAvatarFor(user, 16, 16);
+            if (avatarUrl != null) {
+                return avatarUrl;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.

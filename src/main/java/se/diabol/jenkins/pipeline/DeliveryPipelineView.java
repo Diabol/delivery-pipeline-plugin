@@ -49,6 +49,7 @@ public class DeliveryPipelineView extends View {
     private String sorting = NoOpComparator.class.getName();
     private String fullScreenCss = null;
     private String embeddedCss = null;
+    private boolean showAvatars = false;
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name, int noOfColumns, List<ComponentSpec> componentSpecs,
@@ -58,6 +59,14 @@ public class DeliveryPipelineView extends View {
         this.noOfColumns = noOfColumns;
         this.noOfPipelines = noOfPipelines;
         this.showAggregatedPipeline = showAggregatedPipeline;
+    }
+
+    public boolean getShowAvatars() {
+        return showAvatars;
+    }
+
+    public void setShowAvatars(boolean showAvatars) {
+        this.showAvatars = showAvatars;
     }
 
     public String getSorting() {

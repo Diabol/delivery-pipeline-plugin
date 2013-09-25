@@ -24,6 +24,7 @@
     </j:switch>
 
     <script type="text/javascript">
+        var lastResponse = null;
         var pipelineContainers = new Array(${it.noOfColumns});
     </script>
 
@@ -41,8 +42,8 @@
     <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines(pipelineContainers, "pipelineerror", view);
-        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror", view);}, 2000);
+        renderPipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars});
+        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars});}, 2000);
     </script>
 
     <!--<st:include page="legend.jelly"/>-->

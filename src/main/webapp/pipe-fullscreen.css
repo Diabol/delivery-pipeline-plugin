@@ -1,11 +1,12 @@
 body {
     font-family: sans-serif;
-    background: lightblue;
+    background: #000000;
+    color: white;
 }
 
 section.component {
     display: block;
-    background-color: #f0f0f0;
+    background-color: #353839;
     border-radius: 20px;
     padding: 10px;
     margin: 20px;
@@ -20,12 +21,16 @@ section.component h1 {
 
 section.pipe {
     display: block;
-    background-color: #f0f0f0;
     margin: 10px;
 }
 
+section.pipe img {
+    height: 18px;
+}
+
+
 section.pipe h1 {
-    font-size: large;
+    font-size: 18px;
     font-weight: bold;
     font-stretch: expanded;
     margin-top: 0;
@@ -36,9 +41,9 @@ section.stage {
     min-height: 100px;
     min-width: 180px;
     vertical-align: top;
-    background: white;
+    background: #000000;
     border-radius: 10px;
-    border: solid 2px black;
+    border: solid 2px white;
     padding: 0;
     margin: 0 5px;
 }

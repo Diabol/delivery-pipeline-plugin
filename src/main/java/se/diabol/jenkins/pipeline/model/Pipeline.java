@@ -33,13 +33,13 @@ public class Pipeline extends AbstractItem
 
     private String version;
 
-    private String triggeredBy;
+    private List<UserInfo> triggeredBy;
 
     private boolean aggregated;
 
     private String timestamp;
 
-    public Pipeline(String name, String version, String timestamp,  String triggeredBy, List<Stage> stages, boolean aggregated)
+    public Pipeline(String name, String version, String timestamp,  List<UserInfo> triggeredBy, List<Stage> stages, boolean aggregated)
     {
         super(name);
         this.version = version;
@@ -76,7 +76,7 @@ public class Pipeline extends AbstractItem
 
     @Exported
     @SuppressWarnings("unused")
-    public String getTriggeredBy() {
+    public List<UserInfo> getTriggeredBy() {
         return triggeredBy;
     }
 

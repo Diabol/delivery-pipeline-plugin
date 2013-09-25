@@ -23,8 +23,12 @@ section.pipe {
     margin: 10px;
 }
 
+section.pipe img {
+    height: 18px;
+}
+
 section.pipe h1 {
-    font-size: large;
+    font-size: 18px;
     font-weight: bold;
     font-stretch: expanded;
     margin-top: 0;
