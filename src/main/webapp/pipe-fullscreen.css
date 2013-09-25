@@ -56,7 +56,7 @@ section.stage h1 {
     padding: 5px 10px;
 }
 
-.stage div {
+section.stage div.task {
     display: block;
     border-radius: 3px;
     margin: 0 5px 1px 5px;
@@ -104,8 +104,15 @@ section.stage a:hover {
     background: url("running.gif") no-repeat right;
 }
 
-.timestamp {
+span.timestamp {
+    display: inline-block;
     font-size: 10px;
+}
+
+span.duration {
+    display: inline-block;
+    font-size: 10px;
+    margin-left: 15px;
 }
 
 section.legend {

@@ -1,41 +1,51 @@
-function renderPipelines(divNames, errorDiv, view, avatar) {
+function renderPipelines(divNames, errorDiv, view) {
     //Simple feature switch for task details
     var popover = false;
     Q("#" + errorDiv).html('');
     Q.ajax({
-            url: 'api/json',
-            dataType: 'json',
-            async: false,
-            cache: false,
-            success: function (data) {
-                if (JSON.stringify(data) != JSON.stringify(lastResponse)) {
+        url: 'api/json',
+        dataType: 'json',
+        async: false,
+        cache: false,
+        success: function (data) {
 
-                    for (var z = 0; z < divNames.length; z++) {
-                        Q("#" + divNames[z]).html('');
+            for (var z = 0; z < divNames.length; z++) {
+                Q("#" + divNames[z]).html('');
+            }
+
+            var tasks = [];
+
+            for (var c = 0; c < data.pipelines.length; c++) {
+                var component = data.pipelines[c];
+                var html = "<section class='component'>";
+                html = html + "<h1>" + component.name + "</h1>";
+                for (var i = 0; i < component.pipelines.length; i++) {
+                    var pipeline = component.pipelines[i];
+                    html = html + "<section class=\"pipe\">";
+
+                    if (pipeline.aggregated) {
+                        html = html + '<h1>Aggregated view</h1>'
+                    } else {
+                        html = html + '<h1>' + pipeline.version + ' by ' + pipeline.triggeredBy + ', started ' + formatDate(pipeline.timestamp) + '</h1>'
                     }
 
-                    var tasks = [];
-
-                    for (var c = 0; c < data.pipelines.length; c++) {
-                        var component = data.pipelines[c];
-                        var html = "<section class='component'>";
-                        html = html + "<h1>" + component.name + "</h1>";
-                        for (var i = 0; i < component.pipelines.length; i++) {
-                            var pipeline = component.pipelines[i];
-                            html = html + "<section class=\"pipe\">";
-
-                            var triggered = "";
-                            if (pipeline.triggeredBy) {
-                                for (var t = 0; t < pipeline.triggeredBy.length; t++) {
-                                    var user = pipeline.triggeredBy[t];
-                                    if (user.avatarUrl && avatar) {
-                                        triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/>"
-                                    } else {
-                                        triggered = triggered + user.name;
-                                    }
-                                }
+                    for (var j = 0; j < pipeline.stages.length; j++) {
+                        var stage = pipeline.stages[j];
+                        html = html + "<section class=\"stage\">";
+                        if (!pipeline.aggregated) {
+                            html = html + '<h1>' + stage.name + '</h1>'
+                        } else {
+                            if (stage.version) {
+                                html = html + '<h1>' + stage.name + ' - ' + stage.version + '</h1>'
+                            } else {
+                                html = html + '<h1>' + stage.name + ' - N/A</h1>'
                             }
+                        }
+                        for (var k = 0; k < stage.tasks.length; k++) {
+                            var task = stage.tasks[k];
+                            var re = new RegExp(' ', 'g');
 
+                            var id = "task-" + task.id.replace(re, '_') + "_" + task.buildId;
                             if (pipeline.aggregated) {
                                 html = html + '<h1>Aggregated view</h1>'
                             } else {
@@ -65,6 +75,14 @@ function renderPipelines(divNames, errorDiv, view, avatar) {
 
                                     var timestamp = formatDate(task.status.timestamp);
 
+                            if (timestamp != "") {
+                                html = html + "<span class='timestamp'>" + timestamp + "</span>"
+                            }
+
+                            if (task.status.duration >= 0)
+                                html = html + "<span class='duration'>"+ formatDuration(task.status.duration) + "</span>";
+
+                            html = html + "</div>"
                                     tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
                                     html = html + "<div id=\"" + id + "\" class=\"task " + task.status.type +
@@ -133,40 +151,21 @@ function formatDate(date) {
     }
 }
 
-function formatMilliSeconds(millis) {
+function formatDuration(millis) {
     if (millis > 0) {
-        var date = new Date(millis);
-        var hh = date.getUTCHours();
-        var mm = date.getUTCMinutes();
-        var ss = date.getSeconds();
-        var ms = date.getMilliseconds();
-// These lines ensure you have two-digits
-        if (mm < 10) {
-            mm = "0" + mm;
-        }
-        if (ss < 10) {
-            ss = "0" + ss;
-        }
+        var seconds = Math.floor(millis / 1000);
+        var minutes = Math.floor(seconds / 60);
+        seconds = seconds % 60;
 
-        if (ms < 10) {
-            ms = "0" + ms;
-        }
-        if (ms < 100) {
-            ms = "0" + ms;
-        }
+        var minstr;
+        if(minutes == 0)
+            minstr = "";
+        else
+            minstr = minutes + " min ";
 
-// This formats your string to HH:MM:SS
-        if (hh == 0 && mm == "00") {
-            return ss + ":" + ms;
-        }
+        var secstr = "" + seconds + " sec";
 
-        if (hh == 0) {
-            return mm + ":" + ss + ":" + ms;
-        } else {
-            return hh + ":" + mm + ":" + ss + ":" + ms;
-        }
-    } else {
-        return "";
+        return minstr + secstr;
     }
 }
 
