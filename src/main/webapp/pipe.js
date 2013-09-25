@@ -1,40 +1,40 @@
-function renderPipelines(divNames, errorDiv, view) {
+function renderPipelines(divNames, errorDiv, view, showAvatars) {
     //Simple feature switch for task details
     var popover = false;
     Q("#" + errorDiv).html('');
     Q.ajax({
-        url: 'api/json',
-        dataType: 'json',
-        async: false,
-        cache: false,
-        success: function (data) {
+            url: 'api/json',
+            dataType: 'json',
+            async: false,
+            cache: false,
+            success: function (data) {
                 if (JSON.stringify(data) != JSON.stringify(lastResponse)) {
 
-            for (var z = 0; z < divNames.length; z++) {
-                Q("#" + divNames[z]).html('');
-            }
+                    for (var z = 0; z < divNames.length; z++) {
+                        Q("#" + divNames[z]).html('');
+                    }
 
-            var tasks = [];
+                    var tasks = [];
 
-            for (var c = 0; c < data.pipelines.length; c++) {
-                var component = data.pipelines[c];
-                var html = "<section class='component'>";
-                html = html + "<h1>" + component.name + "</h1>";
-                for (var i = 0; i < component.pipelines.length; i++) {
-                    var pipeline = component.pipelines[i];
-                    html = html + "<section class=\"pipe\">";
+                    for (var c = 0; c < data.pipelines.length; c++) {
+                        var component = data.pipelines[c];
+                        var html = "<section class='component'>";
+                        html = html + "<h1>" + component.name + "</h1>";
+                        for (var i = 0; i < component.pipelines.length; i++) {
+                            var pipeline = component.pipelines[i];
+                            html = html + "<section class=\"pipe\">";
 
                             var triggered = "";
                             if (pipeline.triggeredBy) {
                                 for (var t = 0; t < pipeline.triggeredBy.length; t++) {
                                     var user = pipeline.triggeredBy[t];
-                                    if (user.avatarUrl) {
+                                    if (user.avatarUrl && showAvatars) {
                                         triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/>"
-                    } else {
+                                    } else {
                                         triggered = triggered + user.name;
-                    }
+                                    }
+                                }
                             }
-                        }
 
                             if (pipeline.aggregated) {
                                 html = html + '<h1>Aggregated view</h1>'
@@ -71,11 +71,11 @@ function renderPipelines(divNames, errorDiv, view) {
                                         "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
 
                                     if (timestamp != "") {
-                                html = html + "<span class='timestamp'>" + timestamp + "</span>"
+                                        html = html + "<span class='timestamp'>" + timestamp + "</span>"
                                     }
 
-                            if (task.status.duration >= 0)
-                                html = html + "<span class='duration'>"+ formatDuration(task.status.duration) + "</span>";
+                                    if (task.status.duration >= 0)
+                                        html = html + "<span class='duration'>" + formatDuration(task.status.duration) + "</span>";
 
                                     html = html + "</div>"
 
@@ -91,41 +91,39 @@ function renderPipelines(divNames, errorDiv, view) {
                         html = html + "</section>";
 
                         Q("#" + divNames[c % divNames.length]).append(html);
-                    if (popover) {
-                        for (var x = 0; x < tasks.length; x++) {
-                            var taskId = tasks[x].taskId;
-                            var buildId = tasks[x].buildId;
-                            Q('#' + tasks[x].id).on("mouseenter mouseleave", {taskId: taskId, buildId: buildId}, function (e) {
-                                if (e.type == "mouseenter") {
-                                    Q('#taskDetails').html('');
-                                    view.getTask(e.data.taskId, e.data.buildId, function (call) {
-                                        var stage = call.responseObject();
+                        if (popover) {
+                            for (var x = 0; x < tasks.length; x++) {
+                                var taskId = tasks[x].taskId;
+                                var buildId = tasks[x].buildId;
+                                Q('#' + tasks[x].id).on("mouseenter mouseleave", {taskId: taskId, buildId: buildId}, function (e) {
+                                    if (e.type == "mouseenter") {
+                                        Q('#taskDetails').html('');
+                                        view.getTask(e.data.taskId, e.data.buildId, function (call) {
+                                            var stage = call.responseObject();
 
-                                        Q('#taskDetails').html(stage.id);
-                                    });
+                                            Q('#taskDetails').html(stage.id);
+                                        });
 
 
-                                    Q('#taskDetails').show().css('top', e.pageY)
-                                        .css('left', e.pageX);
-                                } else {
-                                    Q('#taskDetails').hide();
-                                }
-                            });
+                                        Q('#taskDetails').show().css('top', e.pageY)
+                                            .css('left', e.pageX);
+                                    } else {
+                                        Q('#taskDetails').hide();
+                                    }
+                                });
+                            }
                         }
                     }
+                    lastResponse = data;
+                    equalheight(".stage");
                 }
-                lastResponse = data;
-                equalheight(".stage");
+            },
+            error: function (xhr, status, error) {
+                Q("#" + errorDiv).html('Error communicating to server! ' + error);
             }
-        },
-        error
-:
-    function (xhr, status, error) {
-        Q("#" + errorDiv).html('Error communicating to server! ' + error);
-    }
-}
-)
-;
+        }
+    )
+    ;
 
 }
 
@@ -144,7 +142,7 @@ function formatDuration(millis) {
         seconds = seconds % 60;
 
         var minstr;
-        if(minutes == 0)
+        if (minutes == 0)
             minstr = "";
         else
             minstr = minutes + " min ";
