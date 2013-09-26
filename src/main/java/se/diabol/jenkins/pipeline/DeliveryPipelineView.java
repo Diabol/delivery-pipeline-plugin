@@ -149,15 +149,13 @@ public class DeliveryPipelineView extends View {
     }
 
     @Exported
-    public List<Component> getPipelines()
-    {
+    public List<Component> getPipelines() {
         List<Component> components = new ArrayList<>();
         for (ComponentSpec componentSpec : componentSpecs) {
-            Jenkins jenkins = Jenkins.getInstance();
-            AbstractProject firstJob = jenkins.getItem(componentSpec.getFirstJob(), jenkins, AbstractProject.class);
+            AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
             Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
             List<Pipeline> pipelines = new ArrayList<>();
-            if(showAggregatedPipeline)
+            if (showAggregatedPipeline)
                 pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
             pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
             components.add(new Component(componentSpec.getName(), pipelines));
@@ -183,14 +181,22 @@ public class DeliveryPipelineView extends View {
     }
 
     @Override
-    public Collection<TopLevelItem> getItems()
-    {
-        return Jenkins.getInstance().getItems();
+    public Collection<TopLevelItem> getItems() {
+        List<TopLevelItem> result = new ArrayList<>();
+        for (ComponentSpec componentSpec : componentSpecs) {
+
+            AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob());
+            List<AbstractProject<?,?>> projects = ProjectUtil.getAllDownstreamProjects(project);
+            for (AbstractProject<?, ?> abstractProject : projects) {
+                result.add(getItem(abstractProject.getName()));
+            }
+
+        }
+        return result;
     }
 
     @Override
-    public boolean contains(TopLevelItem item)
-    {
+    public boolean contains(TopLevelItem item) {
         return getItems().contains(item);
     }
 
@@ -206,8 +212,7 @@ public class DeliveryPipelineView extends View {
 
 
     @Extension
-    public static class DescriptorImpl extends ViewDescriptor
-    {
+    public static class DescriptorImpl extends ViewDescriptor {
         public ListBoxModel doFillNoOfColumnsItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
             options.add("1", "1");
@@ -215,9 +220,10 @@ public class DeliveryPipelineView extends View {
             options.add("3", "3");
             return options;
         }
+
         public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
-            for(int i = 0; i <= 10; i++) {
+            for (int i = 0; i <= 10; i++) {
                 String opt = String.valueOf(i);
                 options.add(opt, opt);
             }
@@ -225,7 +231,7 @@ public class DeliveryPipelineView extends View {
         }
 
         public ListBoxModel doFillSortingItems() {
-            DescriptorExtensionList<ComponentComparator,ComponentComparatorDescriptor> descriptors =  ComponentComparator.all();
+            DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors = ComponentComparator.all();
             ListBoxModel options = new ListBoxModel();
             for (ComponentComparatorDescriptor descriptor : descriptors) {
                 options.add(descriptor.getDisplayName(), descriptor.getId());
@@ -240,8 +246,7 @@ public class DeliveryPipelineView extends View {
     }
 
 
-    public static class ComponentSpec extends AbstractDescribableImpl<ComponentSpec>
-    {
+    public static class ComponentSpec extends AbstractDescribableImpl<ComponentSpec> {
         private String name;
         private String firstJob;
 

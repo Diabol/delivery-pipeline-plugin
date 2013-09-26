@@ -27,6 +27,7 @@ import se.diabol.jenkins.pipeline.model.*;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.*;
 
@@ -48,7 +49,7 @@ public abstract class PipelineFactory {
      */
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
         Map<String, Stage> stages = newLinkedHashMap();
-        for (AbstractProject project : getAllDownstreamProjects(firstProject).values()) {
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject)) {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                     ? property.getTaskName() : project.getDisplayName();
@@ -67,21 +68,6 @@ public abstract class PipelineFactory {
         return new Pipeline(name, null, null, null, newArrayList(stages.values()), false);
     }
 
-    private static Map<String, AbstractProject> getAllDownstreamProjects(AbstractProject first) {
-        Map<String, AbstractProject> projects = newLinkedHashMap();
-        projects.put(first.getName(), first);
-        for (AbstractProject project : getDownstreamProjects(first))
-            projects.putAll(getAllDownstreamProjects(project));
-        return projects;
-    }
-
-    /**
-     * Opens up for testing and mocking, since Jenkins has getDownstreamProjects() final
-     */
-    static List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
-        //noinspection unchecked
-        return project.getDownstreamProjects();
-    }
 
     /**
      * Opens up for testing and mocking, since Jenkins has getUrl() method final
@@ -192,7 +178,7 @@ public abstract class PipelineFactory {
             AggregatedTestResultAction tests = build.getAction(AggregatedTestResultAction.class);
             if (tests != null) {
                 return new TestResult(tests.getFailCount(), tests.getSkipCount(), tests.getTotalCount(),
-                        Jenkins.getInstance().getRootUrl() + build.getUrl() + tests.getUrlName());
+                        build.getUrl() + tests.getUrlName());
             }
         }
         return null;

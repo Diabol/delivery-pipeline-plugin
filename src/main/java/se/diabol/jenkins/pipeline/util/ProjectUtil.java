@@ -23,6 +23,7 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +50,27 @@ public abstract class ProjectUtil {
         }
         return result;
     }
+
+    public static List<AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first) {
+        List<AbstractProject<?, ?>> projects = new ArrayList<>();
+        projects.add(first);
+        for (AbstractProject project : getDownstreamProjects(first))
+            projects.addAll(getAllDownstreamProjects(project));
+        return projects;
+    }
+
+    /**
+     * Opens up for testing and mocking, since Jenkins has getDownstreamProjects() final
+     */
+    public static List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
+        //noinspection unchecked
+        return project.getDownstreamProjects();
+    }
+
+    public static AbstractProject<?, ?> getProject(String name) {
+        return Jenkins.getInstance().getItem(name, Jenkins.getInstance(), AbstractProject.class);
+    }
+
 
 
 
