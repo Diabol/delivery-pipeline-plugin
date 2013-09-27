@@ -8,7 +8,9 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
             async: false,
             cache: false,
             success: function (data) {
-                if (JSON.stringify(data) != JSON.stringify(lastResponse)) {
+                if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
+
+                    var lastUpdate = data.lastUpdated;
 
                     for (var z = 0; z < divNames.length; z++) {
                         Q("#" + divNames[z]).html('');
@@ -29,17 +31,18 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                                 for (var t = 0; t < pipeline.triggeredBy.length; t++) {
                                     var user = pipeline.triggeredBy[t];
                                     if (user.avatarUrl && showAvatars) {
-                                        triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/>"
+                                        triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/> "
                                     } else {
                                         triggered = triggered + user.name;
                                     }
+                                    triggered = triggered + " ";
                                 }
                             }
 
                             if (pipeline.aggregated) {
                                 html = html + '<h1>Aggregated view</h1>'
                             } else {
-                                html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started ' + formatDate(pipeline.timestamp) + '</h1>'
+                                html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started ' + formatDate(pipeline.timestamp, lastUpdate) + '</h1>'
                             }
 
                             for (var j = 0; j < pipeline.stages.length; j++) {
@@ -63,7 +66,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                                         id = "aggregated-task-" + task.id.replace(re, '_') + "_" + task.buildId;
                                     }
 
-                                    var timestamp = formatDate(task.status.timestamp);
+                                    var timestamp = formatDate(task.status.timestamp, lastUpdate);
 
                                     tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
@@ -127,9 +130,9 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
 
 }
 
-function formatDate(date) {
+function formatDate(date, currentTime) {
     if (date != null) {
-        return moment(date, "YYYY-MM-DDTHH:mm:ss").fromNow()
+        return moment(date, "YYYY-MM-DDTHH:mm:ss").from(moment(currentTime, "YYYY-MM-DDTHH:mm:ss"))
     } else {
         return "";
     }

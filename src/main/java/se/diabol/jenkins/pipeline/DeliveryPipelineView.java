@@ -33,6 +33,7 @@ import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.sort.NoOpComparator;
+import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import javax.servlet.ServletException;
@@ -147,6 +148,12 @@ public class DeliveryPipelineView extends View {
             }
         }
     }
+
+    @Exported
+    public String getLastUpdated() {
+        return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+    }
+
 
     @Exported
     public List<Component> getPipelines() {
