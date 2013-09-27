@@ -274,6 +274,26 @@ public class PipelineFactoryTest {
         assertEquals("job/build/1/", latest.getStages().get(0).getTasks().get(0).getLink());
     }
 
+
+    @Test
+    public void testPipelineLatestDownstreamIsDisabled() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject disabled = jenkins.createFreeStyleProject("disabled");
+        disabled.makeDisabled(true);
+        build.getPublishersList().add(new BuildTrigger("disabled", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(build);
+        jenkins.waitUntilNoActivity();
+        Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
+        Pipeline latest = PipelineFactory.createPipelineLatest(pipeline);
+        assertNotNull(latest);
+        assertEquals(2, latest.getStages().size());
+        assertEquals("SUCCESS", latest.getStages().get(0).getTasks().get(0).getStatus().toString());
+        assertEquals("DISABLED", latest.getStages().get(1).getTasks().get(0).getStatus().toString());
+
+
+    }
+
     @Test
     public void testResolveStatusIdle() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
