@@ -8,7 +8,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
             async: false,
             cache: false,
             success: function (data) {
-                if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
+                //if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
 
                     var lastUpdate = data.lastUpdated;
 
@@ -30,12 +30,10 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                             if (pipeline.triggeredBy) {
                                 for (var t = 0; t < pipeline.triggeredBy.length; t++) {
                                     var user = pipeline.triggeredBy[t];
-                                    if (user.avatarUrl && showAvatars) {
-                                        triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/> "
-                                    } else {
-                                        triggered = triggered + user.name;
+                                    triggered = triggered + user.name;
+                                    if (t < pipeline.triggeredBy.length - 1) {
+                                        triggered = triggered + ", ";
                                     }
-                                    triggered = triggered + " ";
                                 }
                             }
 
@@ -119,12 +117,12 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                     }
                     lastResponse = data;
                     equalheight(".stage");
-                }
+               // }
             },
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + error);
             }
-        }
+       }
     )
     ;
 
