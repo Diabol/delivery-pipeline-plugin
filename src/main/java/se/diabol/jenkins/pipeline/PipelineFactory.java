@@ -161,8 +161,8 @@ public abstract class PipelineFactory {
                     AbstractProject taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     Status status = resolveStatus(taskProject, currentBuild);
-                    String link = status.isIdle() || status.isQueued() ? task.getLink() : currentBuild.getUrl();
-                    String buildId = status.isIdle() || status.isQueued() ? null : String.valueOf(currentBuild.getNumber());
+                    String link = currentBuild == null || status.isIdle() || status.isQueued() ? task.getLink() : currentBuild.getUrl();
+                    String buildId =  currentBuild == null || status.isIdle() || status.isQueued() ? null : String.valueOf(currentBuild.getNumber());
                     tasks.add(new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(currentBuild)));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
