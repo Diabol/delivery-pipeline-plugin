@@ -80,10 +80,17 @@ public class Pipeline extends AbstractItem
         return triggeredBy;
     }
 
+    @Exported
+    @SuppressWarnings("unused")
+    public int getId() {
+        return hashCode();
+    }
+
+
     @Override
     public int hashCode()
     {
-        return Objects.hash(super.hashCode(), stages);
+        return Objects.hash(super.hashCode(), version, stages);
     }
 
     @Override

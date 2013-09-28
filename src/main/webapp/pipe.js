@@ -8,9 +8,9 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
             async: false,
             cache: false,
             success: function (data) {
-                //if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
+                var lastUpdate = data.lastUpdated;
+                if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
 
-                    var lastUpdate = data.lastUpdated;
 
                     for (var z = 0; z < divNames.length; z++) {
                         Q("#" + divNames[z]).html('');
@@ -30,7 +30,11 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                             if (pipeline.triggeredBy) {
                                 for (var t = 0; t < pipeline.triggeredBy.length; t++) {
                                     var user = pipeline.triggeredBy[t];
-                                    triggered = triggered + user.name;
+                                    if (user.avatarUrl && showAvatars) {
+                                        triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/>"
+                                    } else {
+                                        triggered = triggered + user.name;
+                                    }
                                     if (t < pipeline.triggeredBy.length - 1) {
                                         triggered = triggered + ", ";
                                     }
@@ -40,7 +44,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                             if (pipeline.aggregated) {
                                 html = html + '<h1>Aggregated view</h1>'
                             } else {
-                                html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started ' + formatDate(pipeline.timestamp, lastUpdate) + '</h1>'
+                                html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>'
                             }
 
                             for (var j = 0; j < pipeline.stages.length; j++) {
@@ -57,12 +61,8 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                                 }
                                 for (var k = 0; k < stage.tasks.length; k++) {
                                     var task = stage.tasks[k];
-                                    var re = new RegExp(' ', 'g');
 
-                                    var id = "task-" + task.id.replace(re, '_') + "_" + task.buildId;
-                                    if (pipeline.aggregated) {
-                                        id = "aggregated-task-" + task.id.replace(re, '_') + "_" + task.buildId;
-                                    }
+                                    var id = getTaskId(pipeline, task);
 
                                     var timestamp = formatDate(task.status.timestamp, lastUpdate);
 
@@ -72,7 +72,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                                         "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
 
                                     if (timestamp != "") {
-                                        html = html + "<span class='timestamp'>" + timestamp + "</span>"
+                                        html = html + "<span id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</span>"
                                     }
 
                                     if (task.status.duration >= 0)
@@ -117,15 +117,46 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                     }
                     lastResponse = data;
                     equalheight(".stage");
-               // }
+                } else {
+                    for (var p = 0; p < data.pipelines.length; p++) {
+                        var comp = data.pipelines[p];
+                        for (var d = 0; d < comp.pipelines.length; d++) {
+                            var pipe = comp.pipelines[d];
+                            var head = document.getElementById(pipe.id);
+                            if (head) {
+                                head.innerHTML = formatDate(pipe.timestamp, lastUpdate)
+                            }
+
+                            for (var l = 0; l < pipe.stages.length; l++) {
+                                var st = pipe.stages[l];
+                                for (var m = 0; m < st.tasks.length; m++) {
+                                    var ta = st.tasks[m];
+                                    var time = document.getElementById(getTaskId(pipe, ta) + ".timestamp");
+                                    if (time) {
+                                        time.innerHTML = formatDate(ta.status.timestamp, lastUpdate);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             },
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + error);
             }
-       }
+        }
     )
     ;
 
+}
+
+function getTaskId(pipeline, task) {
+    var re = new RegExp(' ', 'g');
+    var id = "task-" + task.id.replace(re, '_') + "_" + task.buildId;
+    if (pipeline.aggregated) {
+        id = "aggregated-task-" + task.id.replace(re, '_') + "_" + task.buildId;
+    }
+    return id;
 }
 
 function formatDate(date, currentTime) {
