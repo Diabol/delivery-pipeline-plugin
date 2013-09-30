@@ -59,9 +59,6 @@ public abstract class ProjectUtil {
         return projects;
     }
 
-    /**
-     * Opens up for testing and mocking, since Jenkins has getDownstreamProjects() final
-     */
     public static List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
         //noinspection unchecked
         return project.getDownstreamProjects();

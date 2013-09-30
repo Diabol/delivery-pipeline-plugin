@@ -55,7 +55,7 @@ public abstract class PipelineFactory {
                     ? property.getTaskName() : project.getDisplayName();
             Status status = project.isDisabled() ? disabled() : idle();
             //TODO add if manual triggered
-            Task task = new Task(project.getName(), taskName, null, status, getJobUrl(project), false, null);
+            Task task = new Task(project.getName(), taskName, null, status, project.getUrl(), false, null);
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
@@ -68,13 +68,6 @@ public abstract class PipelineFactory {
         return new Pipeline(name, null, null, null, newArrayList(stages.values()), false);
     }
 
-
-    /**
-     * Opens up for testing and mocking, since Jenkins has getUrl() method final
-     */
-    static String getJobUrl(AbstractProject project) {
-        return "job/" + project.getName();
-    }
 
     /**
      * Helper method
