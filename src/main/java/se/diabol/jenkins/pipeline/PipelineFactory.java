@@ -49,13 +49,9 @@ public abstract class PipelineFactory {
      */
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
         Map<String, Stage> stages = newLinkedHashMap();
-        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject)) {
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject).values()) {
+            Task task = getPrototypeTask(project);
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
-            String taskName = property != null && !isNullOrEmpty(property.getTaskName())
-                    ? property.getTaskName() : project.getDisplayName();
-            Status status = project.isDisabled() ? disabled() : idle();
-            //TODO add if manual triggered
-            Task task = new Task(project.getName(), taskName, null, status, project.getUrl(), false, null);
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
@@ -68,6 +64,22 @@ public abstract class PipelineFactory {
         return new Pipeline(name, null, null, null, newArrayList(stages.values()), false);
     }
 
+    private static Task getPrototypeTask(AbstractProject project) {
+        PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+        String taskName = property != null && !isNullOrEmpty(property.getTaskName())
+                ? property.getTaskName() : project.getDisplayName();
+        Status status = project.isDisabled() ? disabled() : idle();
+        return new Task(project.getName(), taskName, null, status, project.getUrl(), false, null);
+    }
+
+    public static Task getTask(String id, int buildNo) {
+        AbstractProject project = ProjectUtil.getProject(id);
+        AbstractBuild build = project.getBuildByNumber(buildNo);
+
+        Task prototype = getPrototypeTask(project);
+        return getTask(prototype, build);
+
+    }
 
     /**
      * Helper method
@@ -153,10 +165,7 @@ public abstract class PipelineFactory {
                 for (Task task : stage.getTasks()) {
                     AbstractProject taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
-                    Status status = resolveStatus(taskProject, currentBuild);
-                    String link = currentBuild == null || status.isIdle() || status.isQueued() ? task.getLink() : currentBuild.getUrl();
-                    String buildId =  currentBuild == null || status.isIdle() || status.isQueued() ? null : String.valueOf(currentBuild.getNumber());
-                    tasks.add(new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(currentBuild)));
+                    tasks.add(getTask(task, currentBuild));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
@@ -165,6 +174,16 @@ public abstract class PipelineFactory {
         }
         return result;
     }
+
+
+    private static Task getTask(Task task, AbstractBuild build) {
+        AbstractProject project = getProject(task);
+        Status status = resolveStatus(project, build);
+        String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
+        String buildId =  build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
+        return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(build));
+    }
+
 
     private static TestResult getTestResult(AbstractBuild build) {
         if (build != null) {

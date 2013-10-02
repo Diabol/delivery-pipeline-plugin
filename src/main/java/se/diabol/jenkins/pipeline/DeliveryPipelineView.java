@@ -193,7 +193,7 @@ public class DeliveryPipelineView extends View {
         for (ComponentSpec componentSpec : componentSpecs) {
 
             AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob());
-            List<AbstractProject<?,?>> projects = ProjectUtil.getAllDownstreamProjects(project);
+            Collection<AbstractProject<?,?>> projects = ProjectUtil.getAllDownstreamProjects(project).values();
             for (AbstractProject<?, ?> abstractProject : projects) {
                 result.add(getItem(abstractProject.getName()));
             }

@@ -50,7 +50,7 @@ public class PipelineFactoryTest {
     public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    public void testExtractPipelineWithJoin() throws Exception {
+    public void testExtractPipeline() throws Exception {
         FreeStyleProject compile = jenkins.createFreeStyleProject("comp");
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
         FreeStyleProject test = jenkins.createFreeStyleProject("test");
@@ -76,6 +76,33 @@ public class PipelineFactoryTest {
                         asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null))),
                                 new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null))),
                                 new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null)))), false));
+
+
+    }
+
+    @Test
+    public void testExtractSimpleForkJoinPipeline() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        build.addProperty(new PipelineProperty(null, "build"));
+        FreeStyleProject deploy1 = jenkins.createFreeStyleProject("deploy1");
+        deploy1.addProperty(new PipelineProperty(null, "CI"));
+        FreeStyleProject deploy2 = jenkins.createFreeStyleProject("deploy2");
+        deploy2.addProperty(new PipelineProperty(null, "CI"));
+        FreeStyleProject deploy3 = jenkins.createFreeStyleProject("deploy3");
+        deploy3.addProperty(new PipelineProperty(null, "QA"));
+
+        build.getPublishersList().add(new BuildTrigger("deploy1,deploy2", false));
+        deploy1.getPublishersList().add(new BuildTrigger("deploy3", false));
+        deploy2.getPublishersList().add(new BuildTrigger("deploy3", false));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
+
+        assertEquals(3, pipeline.getStages().size());
+        assertEquals(1, pipeline.getStages().get(2).getTasks().size());
+        assertEquals("deploy3", pipeline.getStages().get(2).getTasks().get(0).getName());
+
 
 
     }

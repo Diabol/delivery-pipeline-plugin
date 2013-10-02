@@ -23,10 +23,13 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 
 public abstract class ProjectUtil {
 
@@ -39,7 +42,7 @@ public abstract class ProjectUtil {
     }
 
     public static Set<String> getStageNames() {
-        List<AbstractProject> projects =  Jenkins.getInstance().getAllItems(AbstractProject.class);
+        List<AbstractProject> projects = Jenkins.getInstance().getAllItems(AbstractProject.class);
         Set<String> result = new HashSet<>();
         for (AbstractProject project : projects) {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
@@ -51,11 +54,11 @@ public abstract class ProjectUtil {
         return result;
     }
 
-    public static List<AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first) {
-        List<AbstractProject<?, ?>> projects = new ArrayList<>();
-        projects.add(first);
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first) {
+        Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
+        projects.put(first.getName(), first);
         for (AbstractProject project : getDownstreamProjects(first))
-            projects.addAll(getAllDownstreamProjects(project));
+            projects.putAll(getAllDownstreamProjects(project));
         return projects;
     }
 
@@ -67,9 +70,6 @@ public abstract class ProjectUtil {
     public static AbstractProject<?, ?> getProject(String name) {
         return Jenkins.getInstance().getItem(name, Jenkins.getInstance(), AbstractProject.class);
     }
-
-
-
 
 
 }
