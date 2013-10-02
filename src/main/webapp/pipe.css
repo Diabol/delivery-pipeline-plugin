@@ -42,7 +42,7 @@ section.stage {
     background: white;
     border-radius: 10px;
     border: solid 2px black;
-    padding: 0;
+    padding: 0 3px 3px 0px;
     margin: 0 5px;
 }
 
@@ -74,43 +74,61 @@ section.stage a:hover {
     text-decoration: underline;
 }
 
+.IDLE {
+    border-left: 6px solid #d3d3d3;
+}
+
 .QUEUED {
-    background-color: lightgray;
+    /*background-color: lightgray;*/
+    border-left: 6px solid #0092ef;
 }
 
 .FAILED {
-    background-color: tomato;
+    border-left: 6px solid #8b0000;
+    /*background-color: tomato;*/
+    background-color: #ff6347;
+    font-weight: bold;
 }
 
 .SUCCESS {
-    background-color: lightgreen;
+    /*background-color: lightgreen;*/
+    border-left: 6px solid #228b22;
 }
 
 .UNSTABLE {
-    background-color: orange;
+    /*background-color: orange;*/
+    border-left: 6px solid #fcae3f;
+    background-color: #fad42e;
+    font-weight: bold;
 }
 
 .CANCELLED {
-    background-color: yellow;
+    border-left: 6px solid #8b8989;
+    background-color: #d3d3d3;
+    font-weight: bold;
 }
 
 .DISABLED {
-    color: lightgray;
+    border-left: 6px solid transparent;
+    color: #a9a9a9;
 }
 
 .RUNNING {
     background: url("running.gif") no-repeat right;
+    border-left: 6px solid #0092ef;
 }
 
 span.timestamp {
     display: inline-block;
-    font-size: 10px;
+    font-size: 0.8em;
+    font-weight: lighter;
 }
 
 span.duration {
     display: inline-block;
-    font-size: 10px;
+    font-size: 0.8em;
     margin-left: 15px;
+    font-weight: lighter;
 }
 
 section.legend {
