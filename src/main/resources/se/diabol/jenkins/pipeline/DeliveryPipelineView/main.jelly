@@ -10,13 +10,13 @@
     <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
     <j:switch on="${fullscreen}">
         <j:case value="true">
-            <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe-fullscreen.css"/>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipe-fullscreen.css"/>
             <j:if test="${it.fullScreenCss != null}">
                 <link rel="stylesheet" href="${it.fullScreenCss}"/>
             </j:if>
         </j:case>
         <j:default>
-            <link rel="stylesheet" href="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.css"/>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipe.css"/>
             <j:if test="${it.embeddedCss != null}">
                 <link rel="stylesheet" href="${it.embeddedCss}"/>
             </j:if>
@@ -38,8 +38,8 @@
     </j:forEach>
     <div class="clear"></div>
 
-    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/moment.min.js"/>
-    <script type="text/javascript" src="${it.getRootUrl()}plugin/delivery-pipeline-plugin/pipe.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/moment.min.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
 
     <script type="text/javascript">
         renderPipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars});

@@ -183,10 +183,6 @@ public class DeliveryPipelineView extends View {
         return new Task(id, "Hej", String.valueOf(build), StatusFactory.idle(), null, false, null);
     }
 
-    public String getRootUrl() {
-        return Jenkins.getInstance().getRootUrl();
-    }
-
     @Override
     public Collection<TopLevelItem> getItems() {
         List<TopLevelItem> result = new ArrayList<>();
