@@ -46,14 +46,6 @@
         </developer>
     </developers>
 
-    <distributionManagement>
-        <repository>
-            <id>bintray</id>
-            <name>diabol-jenkins-delivery-pipeline-plugin</name>
-            <url>https://api.bintray.com/maven/diabol/jenkins/delivery-pipeline-plugin</url>
-        </repository>
-    </distributionManagement>
-
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
@@ -86,16 +78,28 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.jenkins-ci.main</groupId>
-            <artifactId>jenkins-test-harness</artifactId>
-            <scope>test</scope>
-            <version>${project.parent.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>14.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Dependencies to other Jenkins plugins-->
@@ -104,12 +108,6 @@
             <artifactId>build-pipeline-plugin</artifactId>
             <version>1.4</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.8.3</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
