@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -83,6 +86,38 @@ public class PipelineVersionContributorTest {
         assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
 
 
+    }
+
+    @Test
+    public void testVersionContributorConfiguredManualTrigger() throws Exception {
+
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(new BuildPipelineTrigger("secondProject", null));
+        firstProject.save();
+
+        firstProject.addProperty(new PipelineVersionProperty(true, true, "1.0.0.${BUILD_NUMBER}"));
+
+        firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+        secondProject.getBuildersList().add(new AssertNoPipelineVersion());
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(firstProject.getLastBuild());
+        assertNull(secondProject.getLastBuild());
+        assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
+
+        secondProject.getBuildersList().clear();
+        secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("firstProject"), "1", false, null);
+        view.triggerManualBuild(1, "secondProject", "firstProject");
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(secondProject.getLastBuild());
 
     }
 
@@ -90,7 +125,7 @@ public class PipelineVersionContributorTest {
     private class AssertNoPipelineVersion extends TestBuilder {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                BuildListener listener) throws InterruptedException, IOException {
-            EnvVars env = build.getEnvironment(new StreamTaskListener(System.out));
+            EnvVars env = build.getEnvironment(new StreamTaskListener(System.out, null));
             assertFalse(env.containsKey("PIPELINE_VERSION"));
             return true;
         }
@@ -105,7 +140,7 @@ public class PipelineVersionContributorTest {
 
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                BuildListener listener) throws InterruptedException, IOException {
-            EnvVars env = build.getEnvironment(new StreamTaskListener(System.out));
+            EnvVars env = build.getEnvironment(new StreamTaskListener(System.out, null));
             assertTrue(env.containsKey("PIPELINE_VERSION"));
             assertEquals(version, env.get("PIPELINE_VERSION"));
             return true;
