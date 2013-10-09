@@ -1,38 +1,43 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-    <f:entry title="Number of pipeline instances per product" field="noOfPipelines">
-        <f:select/>
-    </f:entry>
+    <f:section title="View settings">
+        <f:entry title="Number of pipeline instances per pipeline" field="noOfPipelines">
+            <f:select/>
+        </f:entry>
 
-    <f:entry title="Display aggregated pipeline for each pipeline" field="showAggregatedPipeline">
-        <f:checkbox/>
-    </f:entry>
+        <f:entry title="Display aggregated pipeline for each pipeline" field="showAggregatedPipeline">
+            <f:checkbox/>
+        </f:entry>
 
-    <f:entry title="Number of columns" field="noOfColumns">
-        <f:select />
-    </f:entry>
+        <f:entry title="Number of columns" field="noOfColumns">
+            <f:select/>
+        </f:entry>
 
-    <f:entry title="Sorting" field="sorting">
-        <f:select />
-    </f:entry>
+        <f:entry title="Sorting" field="sorting">
+            <f:select/>
+        </f:entry>
 
-    <f:entry title="Show avatars" field="showAvatars">
-        <f:checkbox />
-    </f:entry>
+        <f:entry title="Show avatars" field="showAvatars">
+            <f:checkbox/>
+        </f:entry>
 
+        <f:entry title="URL for custom CSS file" field="embeddedCss">
+            <f:textbox/>
+        </f:entry>
 
-    <f:entry>
-        <f:repeatableProperty minimum="1" field="componentSpecs"/>
-    </f:entry>
+        <f:entry title="URL for custom CSS file (fullscreen)" field="fullScreenCss">
+            <f:textbox/>
+        </f:entry>
 
+    </f:section>
 
-    <f:entry title="URL for custom CSS file" field="embeddedCss">
-        <f:textbox/>
-    </f:entry>
+    <f:section title="Pipelines">
+        <f:entry>
+            <f:repeatableProperty minimum="1" field="componentSpecs"/>
+        </f:entry>
+    </f:section>
 
-    <f:entry title="URL for custom CSS file (fullscreen)" field="fullScreenCss">
-        <f:textbox/>
-    </f:entry>
 
 </j:jelly>
