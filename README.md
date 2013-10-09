@@ -16,7 +16,6 @@ Configuration
 -------------
 * Create jobs with downstream/upstream relationships.
 * Tag your Jenkins jobs with which stage it belongs to and the task name.
-http://beta.diabol.se/delivery-pipeline-plugin/config.png
 ![Configuration](http://beta.diabol.se/delivery-pipeline-plugin/config.png)   
 * Create a view by clicking the +  
 ![New View](http://beta.diabol.se/delivery-pipeline-plugin/newview.png)   
