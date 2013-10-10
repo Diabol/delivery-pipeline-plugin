@@ -1,0 +1,11 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <j:new var="h" className="hudson.Functions"/>
+    <!-- instead of JSP functions -->
+    ${h.initPageVariables(context)}
+
+    <div>
+        <img src="${resURL}/plugin/delivery-pipeline-plugin/help/stage.png"/>
+        <p>In a build Delivery Pipeline View this job will be shown as an task in a stage. Enter the name for the stage.</p>
+    </div>
+</j:jelly>
