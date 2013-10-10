@@ -2,4 +2,4 @@ Delivery Pipeline Plugin
 ========================
 
 Please follow link: 
-https://github.com/Diabol/delivery-pipeline-plugin/wiki
+https://wiki.jenkins-ci.org/display/JENKINS/Delivery+Pipeline+Plugin
