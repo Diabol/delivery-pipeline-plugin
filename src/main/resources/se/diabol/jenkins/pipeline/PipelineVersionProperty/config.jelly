@@ -4,6 +4,7 @@
     <f:section title="Delivery Pipeline version configuration">
             <f:optionalBlock name="createVersion"
                              title="Generate version in this build"
+                             field="createVersion"
                              inline="true"
                              checked="${instance.createVersion}">
                 <f:entry title="Template"
