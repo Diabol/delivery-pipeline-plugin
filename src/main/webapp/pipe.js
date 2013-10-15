@@ -1,13 +1,14 @@
 function renderPipelines(divNames, errorDiv, view, showAvatars) {
     //Simple feature switch for task details
     var popover = false;
-    Q("#" + errorDiv).html('');
     Q.ajax({
             url: 'api/json',
             dataType: 'json',
-            async: false,
+            async: true,
             cache: false,
+            timeout: 20000,
             success: function (data) {
+                Q("#" + errorDiv).html('');
                 var lastUpdate = data.lastUpdated;
                 if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
 
