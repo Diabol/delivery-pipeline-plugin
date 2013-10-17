@@ -18,65 +18,84 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
+import hudson.Launcher;
 import hudson.model.*;
-import hudson.model.listeners.RunListener;
+import hudson.tasks.BuildWrapper;
+import hudson.tasks.BuildWrapperDescriptor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Extension
-public class PipelineVersionContributor extends RunListener<Run> {
+public class PipelineVersionContributor extends BuildWrapper {
 
     private static final Logger LOG = Logger.getLogger(PipelineVersionContributor.class.getName());
 
+    public static final String VERSION_PARAMETER = "PIPELINE_VERSION";
+
+    private String versionTemplate;
+    private boolean updateDisplayName = false;
+
+    @DataBoundConstructor
+    public PipelineVersionContributor(boolean updateDisplayName, String versionTemplate) {
+        this.updateDisplayName = updateDisplayName;
+        this.versionTemplate = versionTemplate;
+    }
+
+    public String getVersionTemplate() {
+        return versionTemplate;
+    }
+
+    public boolean isUpdateDisplayName() {
+        return updateDisplayName;
+    }
+
     @Override
-    public void onStarted(Run run, TaskListener listener) {
-        if (run instanceof AbstractBuild) {
-            try {
-                AbstractBuild build = (AbstractBuild) run;
-                PipelineVersionProperty property = (PipelineVersionProperty) build.getProject().getProperty(PipelineVersionProperty.class);
-                if (property != null && property.getCreateVersion()) {
+    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
+        onStarted(build, listener);
+        return new Environment() {
+            @Override
+            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+                return true;
+            }
+        };
+    }
 
-                    String version = TokenMacro.expand(build, listener, property.getVersionTemplate());
-                    ParametersAction action = new ParametersAction(new StringParameterValue("PIPELINE_VERSION", version));
-                    build.addAction(action);
+    public void onStarted(AbstractBuild build, BuildListener listener) {
+        try {
 
-                    listener.getLogger().println("Creating version: " + version);
+            String version = TokenMacro.expand(build, listener, getVersionTemplate());
+            ParametersAction action = new ParametersAction(new StringParameterValue(VERSION_PARAMETER, version));
+            build.addAction(action);
 
-                    if (property.getUpdateDisplayName()) {
-                        build.setDisplayName(version);
-                    }
+            listener.getLogger().println("Creating version: " + version);
 
-
-                } else {
-                    AbstractBuild upstreamBuild = PipelineFactory.getUpstreamBuild(build);
-                    if (upstreamBuild != null) {
-                        List<ParametersAction> parameters = upstreamBuild.getActions(ParametersAction.class);
-                        for (ParametersAction parameter : parameters) {
-                            ParameterValue value = parameter.getParameter("PIPELINE_VERSION");
-                            if (value != null && value instanceof StringParameterValue) {
-                                String version = ((StringParameterValue) value).value;
-                                ParametersAction action = new ParametersAction(new StringParameterValue("PIPELINE_VERSION", version));
-                                build.addAction(action);
-
-                                listener.getLogger().println("Setting version to: " + version + " from upstream version");
-
-                            }
-                        }
-                    }
-                }
-            } catch (MacroEvaluationException | InterruptedException | IOException e) {
-                LOG.log(Level.WARNING, "Error creating version", e);
+            if (isUpdateDisplayName()) {
+                build.setDisplayName(version);
             }
 
-
+        } catch (MacroEvaluationException | InterruptedException | IOException e) {
+            LOG.log(Level.WARNING, "Error creating version", e);
         }
+
 
     }
 
+
+    @Extension
+    public static class DescriptorImpl extends BuildWrapperDescriptor {
+        @Override
+        public boolean isApplicable(AbstractProject<?, ?> item) {
+            return true;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "Create Delivery Pipeline version";
+        }
+    }
 
 }

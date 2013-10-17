@@ -69,9 +69,8 @@ public class PipelineVersionContributorTest {
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
         FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
         firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
-        firstProject.save();
 
-        firstProject.addProperty(new PipelineVersionProperty(true, true, "1.0.0.${BUILD_NUMBER}"));
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
 
         firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
         secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
@@ -96,7 +95,7 @@ public class PipelineVersionContributorTest {
         firstProject.getPublishersList().add(new BuildPipelineTrigger("secondProject", null));
         firstProject.save();
 
-        firstProject.addProperty(new PipelineVersionProperty(true, true, "1.0.0.${BUILD_NUMBER}"));
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
 
         firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
         secondProject.getBuildersList().add(new AssertNoPipelineVersion());
