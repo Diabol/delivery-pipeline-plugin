@@ -155,6 +155,7 @@ div.pipelineerror {
     background-color: red;
     font-size: 22px;
     color: #ffffff;
+    display: none;
 }
 
 div.left {

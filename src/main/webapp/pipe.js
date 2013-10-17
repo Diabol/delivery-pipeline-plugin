@@ -9,6 +9,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
             timeout: 20000,
             success: function (data) {
                 Q("#" + errorDiv).html('');
+                Q("#" + errorDiv).hide();
                 var lastUpdate = data.lastUpdated;
                 if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
 
@@ -144,6 +145,8 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
             },
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + error);
+                Q("#" + errorDiv).show();
+
             }
         }
     )
