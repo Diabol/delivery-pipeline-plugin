@@ -44,6 +44,12 @@
             <organization>Diabol AB</organization>
             <organizationUrl>http://diabol.se</organizationUrl>
         </developer>
+        <developer>
+            <id>mrfatstrat</id>
+            <name>Andreas Rehn</name>
+            <organization>Diabol AB</organization>
+            <organizationUrl>http://diabol.se</organizationUrl>
+        </developer>
     </developers>
 
     <repositories>
