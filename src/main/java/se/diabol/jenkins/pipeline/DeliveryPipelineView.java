@@ -44,22 +44,19 @@ import java.util.*;
 public class DeliveryPipelineView extends View {
 
     private List<ComponentSpec> componentSpecs;
-    private int noOfPipelines = 1;
+    private int noOfPipelines = 3;
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
     private String sorting = NoOpComparator.class.getName();
     private String fullScreenCss = null;
     private String embeddedCss = null;
     private boolean showAvatars = false;
+    private int updateInterval = 2;
 
     @DataBoundConstructor
-    public DeliveryPipelineView(String name, int noOfColumns, List<ComponentSpec> componentSpecs,
-                                int noOfPipelines, boolean showAggregatedPipeline) {
+    public DeliveryPipelineView(String name, List<ComponentSpec> componentSpecs) {
         super(name);
         this.componentSpecs = componentSpecs;
-        this.noOfColumns = noOfColumns;
-        this.noOfPipelines = noOfPipelines;
-        this.showAggregatedPipeline = showAggregatedPipeline;
     }
 
     public boolean getShowAvatars() {
@@ -112,6 +109,14 @@ public class DeliveryPipelineView extends View {
 
     public String getFullScreenCss() {
         return fullScreenCss;
+    }
+
+    public int getUpdateInterval() {
+        return updateInterval;
+    }
+
+    public void setUpdateInterval(int updateInterval) {
+        this.updateInterval = updateInterval;
     }
 
     public void setFullScreenCss(String fullScreenCss) {
@@ -240,6 +245,19 @@ public class DeliveryPipelineView extends View {
                 options.add(descriptor.getDisplayName(), descriptor.getId());
             }
             return options;
+        }
+
+        public FormValidation doCheckUpdateInterval(@QueryParameter String value) {
+            int valueAsInt;
+            try {
+                valueAsInt = Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return FormValidation.error("Value must be a integer");
+            }
+            if (valueAsInt <= 0) {
+                return FormValidation.error("Value must be greater that 0");
+            }
+            return FormValidation.ok();
         }
 
         @Override

@@ -27,13 +27,13 @@ import static org.junit.Assert.assertEquals;
 public class DeliveryPipelineViewTest {
 
     @Test
-    public void testOnJobRenamed()  {
+    public void testOnJobRenamed() {
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
 
-        DeliveryPipelineView view = new DeliveryPipelineView("Test", 1, componentSpecs, 1, true);
+        DeliveryPipelineView view = new DeliveryPipelineView("Test", componentSpecs);
         view.onJobRenamed(null, "build1", "newbuild");
         assertEquals("newbuild", view.getComponentSpecs().get(0).getFirstJob());
     }
@@ -45,7 +45,7 @@ public class DeliveryPipelineViewTest {
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
 
-        DeliveryPipelineView view = new DeliveryPipelineView("Test", 1, componentSpecs, 1, true);
+        DeliveryPipelineView view = new DeliveryPipelineView("Test", componentSpecs);
         assertEquals(2, view.getComponentSpecs().size());
         view.onJobRenamed(null, "build1", null);
 

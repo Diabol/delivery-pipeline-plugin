@@ -19,6 +19,12 @@
             <f:select/>
         </f:entry>
 
+
+        <f:entry title="Update interval" field="updateInterval" default="2">
+            <f:textbox/>
+        </f:entry>
+
+
         <f:entry title="Show avatars" field="showAvatars">
             <f:checkbox/>
         </f:entry>

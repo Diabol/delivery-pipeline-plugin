@@ -45,7 +45,7 @@
 
     <script type="text/javascript">
         renderPipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars});
-        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror", view, ${it.getShowAvatars()});}, 2000);
+        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror", view, ${it.getShowAvatars()});}, ${it.updateInterval * 1000});
     </script>
 
     <!--<st:include page="legend.jelly"/>-->
