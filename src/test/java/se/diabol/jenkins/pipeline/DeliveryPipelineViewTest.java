@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import hudson.util.FormValidation;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -51,6 +52,17 @@ public class DeliveryPipelineViewTest {
 
         assertEquals(1, view.getComponentSpecs().size());
 
+    }
+
+    @Test
+    public void testDoCheckUpdateInterval() {
+        DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval(null).kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckUpdateInterval("3").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("3a").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("0").kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckUpdateInterval("1").kind);
     }
 
 }
