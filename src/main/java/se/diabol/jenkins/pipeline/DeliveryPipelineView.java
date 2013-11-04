@@ -43,6 +43,8 @@ import java.util.*;
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
 
+    public static final int DEFAULT_INTERVAL = 2;
+
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = 3;
     private boolean showAggregatedPipeline = false;
@@ -51,7 +53,7 @@ public class DeliveryPipelineView extends View {
     private String fullScreenCss = null;
     private String embeddedCss = null;
     private boolean showAvatars = false;
-    private int updateInterval = 2;
+    private int updateInterval = DEFAULT_INTERVAL;
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name, List<ComponentSpec> componentSpecs) {
@@ -112,6 +114,12 @@ public class DeliveryPipelineView extends View {
     }
 
     public int getUpdateInterval() {
+        //This occurs when the plugin has been updated and as long as the view has not been updated
+        //Jenkins will set the default value to 0
+        if (updateInterval == 0) {
+            updateInterval = DEFAULT_INTERVAL;
+        }
+
         return updateInterval;
     }
 
