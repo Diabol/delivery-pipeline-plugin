@@ -21,7 +21,6 @@ import hudson.Extension;
 import hudson.model.*;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
