@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.model.*;
+import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -30,10 +31,12 @@ import java.util.Set;
 
 public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
-    private String taskName;
-    private String stageName;
+    private String taskName = null;
+    private String stageName = null;
 
-    @DataBoundConstructor
+    public PipelineProperty() {
+    }
+
     public PipelineProperty(String taskName, String stageName) {
         this.taskName = taskName;
         this.stageName = stageName;
@@ -49,6 +52,13 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         return stageName;
     }
 
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
+    }
 
     @Extension
     public static final class DescriptorImpl extends JobPropertyDescriptor {
@@ -76,10 +86,43 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             }
         }
 
+        @SuppressWarnings("unused")
+        public FormValidation doCheckStageName(@QueryParameter String value) {
+            return checkValue(value);
+        }
+
+        @SuppressWarnings("unused")
+        public FormValidation doCheckTaskName(@QueryParameter String value) {
+            return checkValue(value);
+        }
+
+        protected FormValidation checkValue(String value) {
+            if (value == null || value.equals("")) {
+                return FormValidation.ok();
+            }
+            if (value.trim().equals("")) {
+                return FormValidation.error("Value needs to be empty or include characters and/or numbers");
+            }
+            return FormValidation.ok();
+
+        }
+
+
         @Override
         public PipelineProperty newInstance(StaplerRequest sr, JSONObject formData) throws FormException {
-            return new PipelineProperty(sr.getParameter("taskName"),
-                    sr.getParameter("stageName"));
+            String taskName = sr.getParameter("taskName");
+            String stageName = sr.getParameter("stageName");
+            if (taskName != null && taskName.equals("")) {
+                taskName = null;
+            }
+            if (stageName != null && stageName.equals("")) {
+                stageName = null;
+            }
+            if (taskName == null && stageName == null) {
+                return null;
+            }
+            return new PipelineProperty(taskName,
+                    stageName);
         }
     }
 }
