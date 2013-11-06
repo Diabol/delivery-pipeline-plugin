@@ -18,13 +18,10 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.model;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.google.common.base.Objects.toStringHelper;
 

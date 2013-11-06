@@ -19,7 +19,11 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
+import hudson.model.ParametersAction;
+import hudson.model.StringParameterValue;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;

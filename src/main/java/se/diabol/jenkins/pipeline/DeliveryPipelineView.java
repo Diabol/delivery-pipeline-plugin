@@ -19,11 +19,21 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.AbstractDescribableImpl;
+import hudson.model.AbstractProject;
+import hudson.model.Descriptor;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.TopLevelItem;
+import hudson.model.View;
+import hudson.model.ViewDescriptor;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
-import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.Component;
@@ -38,7 +48,11 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {

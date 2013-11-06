@@ -22,8 +22,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
-import java.util.Objects;
-
 import static com.google.common.base.Objects.toStringHelper;
 
 public class Task extends AbstractItem {

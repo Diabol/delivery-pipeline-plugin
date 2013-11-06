@@ -24,7 +24,6 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.google.common.base.Objects.toStringHelper;
 

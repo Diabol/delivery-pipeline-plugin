@@ -29,7 +29,11 @@ import hudson.tasks.BuildTrigger;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.*;
+import org.jvnet.hudson.test.FailureBuilder;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockBuilder;
+import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.UnstableBuilder;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.model.Stage;
 import se.diabol.jenkins.pipeline.model.Task;
@@ -38,10 +42,7 @@ import se.diabol.jenkins.pipeline.model.status.Status;
 import java.io.IOException;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 public class PipelineFactoryTest {

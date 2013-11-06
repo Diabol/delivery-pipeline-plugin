@@ -1,10 +1,7 @@
 package se.diabol.jenkins.pipeline.model;
 
 import org.junit.Test;
-import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
-
-import javax.net.ssl.SSLEngineResult;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

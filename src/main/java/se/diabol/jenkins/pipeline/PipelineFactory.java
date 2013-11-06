@@ -18,18 +18,32 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionList;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.Result;
+import hudson.model.User;
 import hudson.tasks.UserAvatarResolver;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
-import se.diabol.jenkins.pipeline.model.*;
+import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.model.Stage;
+import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.model.TestResult;
+import se.diabol.jenkins.pipeline.model.UserInfo;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Iterables.concat;

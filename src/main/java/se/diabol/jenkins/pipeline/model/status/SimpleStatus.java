@@ -17,12 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.model.status;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
-
-import java.util.Objects;
 
 import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
 
