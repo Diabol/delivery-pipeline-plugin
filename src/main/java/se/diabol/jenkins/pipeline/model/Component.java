@@ -18,6 +18,8 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.model;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -52,7 +54,7 @@ public class Component extends AbstractItem
     @Override
     public int hashCode()
     {
-        return Objects.hash(super.hashCode(), pipelines);
+        return pipelines.hashCode();
     }
 
     @Override
@@ -63,6 +65,6 @@ public class Component extends AbstractItem
 
     private boolean equals(Component o)
     {
-        return super.equals(o) && Objects.equals(pipelines, o.pipelines);
+        return super.equals(o) && pipelines.equals( o.pipelines );
     }
 }

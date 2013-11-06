@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
@@ -75,7 +77,7 @@ public class Task extends AbstractItem {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, super.hashCode());
+        return new HashCodeBuilder().append( id ).append( status ).appendSuper( super.hashCode() ).toHashCode();
     }
 
     @Override
@@ -84,7 +86,7 @@ public class Task extends AbstractItem {
     }
 
     private boolean equals(Task o) {
-        return Objects.equals(id, o.id) && Objects.equals(status, o.status) && super.equals(o);
+        return new EqualsBuilder().append( id, o.id ).append( status, o.status ).appendSuper( super.equals( o ) ).isEquals();
     }
 
     @Override

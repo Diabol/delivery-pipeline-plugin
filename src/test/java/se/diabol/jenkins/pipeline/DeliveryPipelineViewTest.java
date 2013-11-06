@@ -29,7 +29,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testOnJobRenamed() {
-        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<>();
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
@@ -41,7 +41,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testOnJobRenamedDelete() {
-        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<>();
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 

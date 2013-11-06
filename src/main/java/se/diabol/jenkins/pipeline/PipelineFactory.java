@@ -95,10 +95,10 @@ public abstract class PipelineFactory {
     public static Pipeline createPipelineAggregated(Pipeline pipeline) {
 
         AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
-        List<Stage> stages = new ArrayList<>();
+        List<Stage> stages = new ArrayList<Stage>();
         for (Stage stage : pipeline.getStages()) {
 
-            List<Task> tasks = new ArrayList<>();
+            List<Task> tasks = new ArrayList<Task>();
 
             //The version build for this stage is the highest first task build
             AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject);
@@ -153,15 +153,15 @@ public abstract class PipelineFactory {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getProject(firstTask);
 
-        List<Pipeline> result = new ArrayList<>();
+        List<Pipeline> result = new ArrayList<Pipeline>();
 
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             String timestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
-            List<Stage> stages = new ArrayList<>();
+            List<Stage> stages = new ArrayList<Stage>();
             for (Stage stage : pipeline.getStages()) {
-                List<Task> tasks = new ArrayList<>();
+                List<Task> tasks = new ArrayList<Task>();
                 for (Task task : stage.getTasks()) {
                     AbstractProject taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
@@ -198,7 +198,7 @@ public abstract class PipelineFactory {
 
     private static List<UserInfo> getTriggeredBy(AbstractBuild build) {
         Set<User> users = build.getCulprits();
-        List<UserInfo> triggeredBy = new ArrayList<>();
+        List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
 
         for (User user : users) {
             triggeredBy.add(getUser(user));

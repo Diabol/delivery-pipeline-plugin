@@ -43,7 +43,7 @@ public abstract class ProjectUtil {
 
     public static Set<String> getStageNames() {
         List<AbstractProject> projects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-        Set<String> result = new HashSet<>();
+        Set<String> result = new HashSet<String>();
         for (AbstractProject project : projects) {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property != null && property.getStageName() != null) {

@@ -170,11 +170,11 @@ public class DeliveryPipelineView extends View {
 
     @Exported
     public List<Component> getPipelines() {
-        List<Component> components = new ArrayList<>();
+        List<Component> components = new ArrayList<Component>();
         for (ComponentSpec componentSpec : componentSpecs) {
             AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
             Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
-            List<Pipeline> pipelines = new ArrayList<>();
+            List<Pipeline> pipelines = new ArrayList<Pipeline>();
             if (showAggregatedPipeline)
                 pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
             pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
@@ -198,7 +198,7 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        List<TopLevelItem> result = new ArrayList<>();
+        List<TopLevelItem> result = new ArrayList<TopLevelItem>();
         for (ComponentSpec componentSpec : componentSpecs) {
 
             AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob());

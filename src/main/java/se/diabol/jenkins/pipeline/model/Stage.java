@@ -18,6 +18,8 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.model;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.status.Status;
@@ -61,7 +63,7 @@ public class Stage extends AbstractItem
     @Override
     public int hashCode()
     {
-        return Objects.hash(tasks);
+        return new HashCodeBuilder().append( tasks ).append( version ).appendSuper( super.hashCode() ).toHashCode();
     }
 
     @Override
@@ -72,7 +74,7 @@ public class Stage extends AbstractItem
 
     private boolean equals(Stage o)
     {
-        return Objects.equals(tasks, o.tasks) && Objects.equals(version, o.version) && super.equals(o) ;
+        return new EqualsBuilder().append( tasks, o.tasks ).append( version, o.version ).appendSuper( super.equals( o ) ).isEquals();
     }
 
     @Override

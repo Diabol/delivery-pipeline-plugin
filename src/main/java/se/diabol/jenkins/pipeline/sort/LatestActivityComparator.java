@@ -27,7 +27,7 @@ public class LatestActivityComparator extends ComponentComparator {
 
     @Override
     public int compare(Component o1, Component o2) {
-        return Long.compare(getLastActivity(o2), getLastActivity(o1));
+        return Long.valueOf( getLastActivity( o1 ) ).compareTo( Long.valueOf( getLastActivity( o2 ) ) );
     }
 
     private long getLastActivity(Pipeline pipeline) {

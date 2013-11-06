@@ -77,11 +77,13 @@ public class PipelineVersionContributor extends BuildWrapper {
                 build.setDisplayName(version);
             }
 
-        } catch (MacroEvaluationException | InterruptedException | IOException e) {
-            LOG.log(Level.WARNING, "Error creating version", e);
+        } catch (MacroEvaluationException e) {
+            LOG.log( Level.WARNING, "Error creating version", e );
+        } catch (InterruptedException e) {
+            LOG.log( Level.WARNING, "Error creating version", e );
+        } catch (IOException e) {
+            LOG.log( Level.WARNING, "Error creating version", e );
         }
-
-
     }
 
 

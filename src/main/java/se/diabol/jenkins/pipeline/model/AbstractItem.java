@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -52,7 +54,7 @@ public abstract class AbstractItem
     @Override
     public int hashCode()
     {
-        return Objects.hash(name);
+        return name.hashCode();
     }
 
     @Override
@@ -63,6 +65,6 @@ public abstract class AbstractItem
 
     private boolean equals(AbstractItem o)
     {
-        return Objects.equals(name, o.name);
+        return name.equals( o.name );
     }
 }

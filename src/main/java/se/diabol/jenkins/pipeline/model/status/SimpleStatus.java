@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.model.status;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -111,7 +112,7 @@ public class SimpleStatus implements Status {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof SimpleStatus && Objects.equals(((SimpleStatus) obj).type, type);
+        return this == obj || obj instanceof SimpleStatus && type.equals(((SimpleStatus) obj).getType());
     }
 
     @Override
