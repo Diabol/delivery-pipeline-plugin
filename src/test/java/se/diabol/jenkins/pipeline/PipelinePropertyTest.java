@@ -17,10 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import hudson.model.AutoCompletionCandidates;
 import hudson.model.FreeStyleProject;
 import hudson.util.FormValidation;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -35,7 +39,11 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class PipelinePropertyTest {
 
+    @Rule
+    public JenkinsRule jenkins = new JenkinsRule();
+
     @Test
+    @WithoutJenkins
     public void testDoCheckStageName() {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         assertEquals(FormValidation.Kind.OK, d.doCheckStageName("").kind);
@@ -44,6 +52,7 @@ public class PipelinePropertyTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testDoCheckTaskName() {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         assertEquals(FormValidation.Kind.OK, d.doCheckTaskName("").kind);
@@ -52,6 +61,7 @@ public class PipelinePropertyTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testIsApplicable() {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         assertTrue(d.isApplicable(FreeStyleProject.class));
@@ -59,6 +69,7 @@ public class PipelinePropertyTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testNewInstanceEmpty() throws Exception {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
@@ -68,6 +79,7 @@ public class PipelinePropertyTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testNewInstanceBothSet() throws Exception {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
@@ -77,6 +89,23 @@ public class PipelinePropertyTest {
         assertNotNull(p);
         assertEquals("Task", p.getTaskName());
         assertEquals("Stage", p.getStageName());
+    }
+
+    @Test
+    public void testDoAutoCompleteStageName() throws Exception {
+        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        build.addProperty(new PipelineProperty("Build", "Build"));
+
+        AutoCompletionCandidates c1 = d.doAutoCompleteStageName("B");
+        assertEquals(c1.getValues().size(), 1);
+
+        AutoCompletionCandidates c2 = d.doAutoCompleteStageName("A");
+        assertEquals(c2.getValues().size(), 0);
+
+        AutoCompletionCandidates c3 = d.doAutoCompleteStageName(null);
+        assertEquals(c2.getValues().size(), 0);
+
 
     }
 

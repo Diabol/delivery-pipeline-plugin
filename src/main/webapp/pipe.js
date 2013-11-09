@@ -1,6 +1,4 @@
 function renderPipelines(divNames, errorDiv, view, showAvatars) {
-    //Simple feature switch for task details
-    var popover = false;
     Q.ajax({
             url: 'api/json',
             dataType: 'json',
@@ -94,28 +92,6 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                         html = html + "</section>";
 
                         Q("#" + divNames[c % divNames.length]).append(html);
-                        if (popover) {
-                            for (var x = 0; x < tasks.length; x++) {
-                                var taskId = tasks[x].taskId;
-                                var buildId = tasks[x].buildId;
-                                Q('#' + tasks[x].id).on("mouseenter mouseleave", {taskId: taskId, buildId: buildId}, function (e) {
-                                    if (e.type == "mouseenter") {
-                                        Q('#taskDetails').html('');
-                                        view.getTask(e.data.taskId, e.data.buildId, function (call) {
-                                            var stage = call.responseObject();
-
-                                            Q('#taskDetails').html(stage.id);
-                                        });
-
-
-                                        Q('#taskDetails').show().css('top', e.pageY)
-                                            .css('left', e.pageX);
-                                    } else {
-                                        Q('#taskDetails').hide();
-                                    }
-                                });
-                            }
-                        }
                     }
                     lastResponse = data;
                     equalheight(".stage");

@@ -17,17 +17,29 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import hudson.model.FreeStyleProject;
+import hudson.model.TopLevelItem;
+import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.WithoutJenkins;
+import se.diabol.jenkins.pipeline.sort.NoOpComparator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class DeliveryPipelineViewTest {
 
+    @Rule
+    public JenkinsRule jenkins = new JenkinsRule();
+
     @Test
+    @WithoutJenkins
     public void testOnJobRenamed() {
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
@@ -40,6 +52,7 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testOnJobRenamedDelete() {
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
@@ -55,6 +68,7 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testDoCheckUpdateInterval() {
         DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
         assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("").kind);
@@ -63,6 +77,56 @@ public class DeliveryPipelineViewTest {
         assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("3a").kind);
         assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("0").kind);
         assertEquals(FormValidation.Kind.OK, d.doCheckUpdateInterval("1").kind);
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testDefaults() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        assertEquals(3, view.getNoOfPipelines());
+        assertEquals(1, view.getNoOfColumns());
+        assertEquals(2, view.getUpdateInterval());
+        assertEquals(NoOpComparator.class.getName(), view.getSorting());
+        assertNull(view.getEmbeddedCss());
+        assertNull(view.getFullScreenCss());
+        assertFalse(view.isShowAggregatedPipeline());
+        assertFalse(view.getShowAvatars());
+    }
+
+    @Test
+    public void testGetItemsAndContains() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
+        FreeStyleProject packaging = jenkins.createFreeStyleProject("packaging");
+        build.getPublishersList().add(new BuildTrigger("sonar", false));
+        build.getPublishersList().add(new BuildTrigger("packaging", false));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        DeliveryPipelineView view = new DeliveryPipelineView("name", specs);
+        jenkins.getInstance().addView(view);
+
+        assertTrue(view.contains(build));
+        assertTrue(view.contains(sonar));
+        assertTrue(view.contains(packaging));
+
+        Collection<TopLevelItem> items =  view.getItems();
+        assertEquals(3, items.size());
+
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testDoCheckName() {
+        DeliveryPipelineView.ComponentSpec.DescriptorImpl d = new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
+        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(null).kind);
+        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName("").kind);
+        assertEquals(FormValidation.Kind.OK,  d.doCheckName("Component").kind);
+
+
     }
 
 }

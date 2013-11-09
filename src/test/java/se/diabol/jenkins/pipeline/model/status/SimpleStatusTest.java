@@ -15,29 +15,23 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.model.status;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
-public class AbstractItemTest {
+public class SimpleStatusTest {
 
-    class AbstractItemTester extends AbstractItem {
-        protected AbstractItemTester( String name ) {
-            super( name );
-        }
+    @Test
+    public void textEqualsHashCode() {
+        assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1), new SimpleStatus(StatusType.DISABLED, -1, -1));
+        assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode(), new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode());
     }
 
     @Test
-    public void testHashCode() {
-        assertThat(new AbstractItemTester("name").hashCode(), is("name".hashCode()));
+    public void testGetTimestamp() {
+        assertEquals(new SimpleStatus(StatusType.SUCCESS, 999999999999l, 20).getTimestamp(), "2001-09-09T03:46:39.999Z") ;
     }
 
-    @Test
-    public void testEquals() {
-        assertThat( new AbstractItemTester( "A" ), is( new AbstractItemTester( "A") ) );
-        assertThat( new AbstractItemTester( "A" ).equals( new AbstractItemTester( "B" )), is( false ));
-    }
 }

@@ -34,12 +34,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.Component;
 import se.diabol.jenkins.pipeline.model.Pipeline;
-import se.diabol.jenkins.pipeline.model.Task;
-import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.sort.NoOpComparator;
@@ -202,12 +199,6 @@ public class DeliveryPipelineView extends View {
         }
 
         return components;
-    }
-
-    @JavaScriptMethod
-    public Task getTask(String id, int build) {
-        System.out.println("getTask(" + id + "," + build + ")");
-        return new Task(id, "Hej", String.valueOf(build), StatusFactory.idle(), null, false, null);
     }
 
     @Override

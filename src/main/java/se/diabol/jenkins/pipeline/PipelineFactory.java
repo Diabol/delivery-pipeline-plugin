@@ -190,7 +190,7 @@ public abstract class PipelineFactory {
     }
 
 
-    private static TestResult getTestResult(AbstractBuild build) {
+    protected static TestResult getTestResult(AbstractBuild build) {
         if (build != null) {
             AggregatedTestResultAction tests = build.getAction(AggregatedTestResultAction.class);
             if (tests != null) {
@@ -201,7 +201,7 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    public static List<UserInfo> getTriggeredBy(AbstractBuild build) {
+    public static List<UserInfo> getTriggeredBy(AbstractBuild<?,?> build) {
         Set<User> users = build.getCulprits();
         List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
 
@@ -209,7 +209,7 @@ public abstract class PipelineFactory {
             triggeredBy.add(getUser(user));
         }
 
-        Cause.UserIdCause cause = (Cause.UserIdCause) build.getCause(Cause.UserIdCause.class);
+        Cause.UserIdCause cause = build.getCause(Cause.UserIdCause.class);
         if (cause != null && cause.getUserName() != null) {
             UserInfo user = getUser(Jenkins.getInstance().getUser(cause.getUserName()));
             triggeredBy.add(user);

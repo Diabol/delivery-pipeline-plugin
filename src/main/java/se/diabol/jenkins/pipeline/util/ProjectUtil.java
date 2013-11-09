@@ -62,8 +62,7 @@ public abstract class ProjectUtil {
         return projects;
     }
 
-    public static List<AbstractProject<?, ?>> getDownstreamProjects(AbstractProject project) {
-        //noinspection unchecked
+    public static List<AbstractProject> getDownstreamProjects(AbstractProject<?,?> project) {
         return project.getDownstreamProjects();
     }
 

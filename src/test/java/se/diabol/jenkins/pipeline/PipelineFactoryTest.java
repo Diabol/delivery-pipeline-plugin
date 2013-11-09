@@ -26,17 +26,18 @@ import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.tasks.BuildTrigger;
+import hudson.tasks.test.AggregatedTestResultAction;
+import hudson.tasks.test.MatrixTestResult;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.FailureBuilder;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.MockBuilder;
-import org.jvnet.hudson.test.TestBuilder;
-import org.jvnet.hudson.test.UnstableBuilder;
+import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.*;
+import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.model.Stage;
 import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.model.TestResult;
 import se.diabol.jenkins.pipeline.model.status.Status;
 
 import java.io.IOException;
@@ -44,7 +45,10 @@ import java.io.IOException;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
+import static org.mockito.Mockito.*;
 
+
+@RunWith(MockitoJUnitRunner.class)
 public class PipelineFactoryTest {
 
     @Rule
@@ -434,6 +438,26 @@ public class PipelineFactoryTest {
         Status status = PipelineFactory.resolveStatus(project, project.getFirstBuild());
         jenkins.waitUntilNoActivity();
         assertTrue(status.isRunning());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testGetTestResult() {
+        AbstractBuild build =  mock(AbstractBuild.class);
+        AggregatedTestResultAction tests = mock(AggregatedTestResultAction.class);
+        when(build.getAction(AggregatedTestResultAction.class)).thenReturn(tests);
+        when(tests.getFailCount()).thenReturn(1);
+        when(tests.getSkipCount()).thenReturn(0);
+        when(tests.getTotalCount()).thenReturn(11);
+
+        TestResult result = PipelineFactory.getTestResult(build);
+        assertNotNull(result);
+        assertEquals(1, result.getFailed());
+        assertEquals(0, result.getSkipped());
+        assertEquals(11, result.getTotal());
+
+
+
     }
 
 }
