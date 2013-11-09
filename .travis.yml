@@ -7,3 +7,5 @@ notifications:
   hipchat:
     rooms:
       secure: oSbQ5xr/I7a7Gun9GpqPWC1bO1ZP6zxObnbeE9CgsnzamGeqJiXJSO0TaV7NgKbTsfFHjRqZc9a5CKpZGb2qrfmUUu9WbhNosXQlliBF/LRkIig3UWcrMqgkk1aQC6SnadJWskhFdxbIS8J4LJ36TcDwXtkvdyUsq6gIkYMcu0k=
+after_success:
+- mvn jacoco:report coveralls:jacoco
