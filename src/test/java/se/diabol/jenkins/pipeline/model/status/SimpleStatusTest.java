@@ -28,10 +28,4 @@ public class SimpleStatusTest {
         assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1), new SimpleStatus(StatusType.DISABLED, -1, -1));
         assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode(), new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode());
     }
-
-    @Test
-    public void testGetTimestamp() {
-        assertEquals(new SimpleStatus(StatusType.SUCCESS, 999999999999l, 20).getTimestamp(), "2001-09-09T03:46:39.999Z") ;
-    }
-
 }
