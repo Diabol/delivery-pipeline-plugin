@@ -407,6 +407,7 @@ public class PipelineFactoryTest {
         project.scheduleBuild2(2);
         Status status = PipelineFactory.resolveStatus(project, null);
         assertTrue(status.isQueued());
+        assertFalse(status.isRunning());
         assertEquals("QUEUED", status.toString());
         jenkins.waitUntilNoActivity();
         status = PipelineFactory.resolveStatus(project, project.getLastBuild());

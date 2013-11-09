@@ -20,11 +20,19 @@ package se.diabol.jenkins.pipeline;
 import hudson.model.FreeStyleProject;
 import hudson.util.FormValidation;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 
+@RunWith(MockitoJUnitRunner.class)
 public class PipelinePropertyTest {
 
     @Test
@@ -47,6 +55,28 @@ public class PipelinePropertyTest {
     public void testIsApplicable() {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         assertTrue(d.isApplicable(FreeStyleProject.class));
+
+    }
+
+    @Test
+    public void testNewInstanceEmpty() throws Exception {
+        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getParameter("taskName")).thenReturn("");
+        when(request.getParameter("stageName")).thenReturn("");
+        assertNull(d.newInstance(request, null));
+    }
+
+    @Test
+    public void testNewInstanceBothSet() throws Exception {
+        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getParameter("taskName")).thenReturn("Task");
+        when(request.getParameter("stageName")).thenReturn("Stage");
+        PipelineProperty p = d.newInstance(request, null);
+        assertNotNull(p);
+        assertEquals("Task", p.getTaskName());
+        assertEquals("Stage", p.getStageName());
 
     }
 

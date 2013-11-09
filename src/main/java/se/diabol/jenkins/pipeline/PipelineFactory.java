@@ -86,15 +86,6 @@ public abstract class PipelineFactory {
         return new Task(project.getName(), taskName, null, status, project.getUrl(), false, null);
     }
 
-    public static Task getTask(String id, int buildNo) {
-        AbstractProject project = ProjectUtil.getProject(id);
-        AbstractBuild build = project.getBuildByNumber(buildNo);
-
-        Task prototype = getPrototypeTask(project);
-        return getTask(prototype, build);
-
-    }
-
     /**
      * Helper method
      *
@@ -210,7 +201,7 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    private static List<UserInfo> getTriggeredBy(AbstractBuild build) {
+    public static List<UserInfo> getTriggeredBy(AbstractBuild build) {
         Set<User> users = build.getCulprits();
         List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
 
