@@ -40,7 +40,10 @@ public class Pipeline extends AbstractItem
 
     private String timestamp;
 
-    public Pipeline(String name, String version, String timestamp,  List<UserInfo> triggeredBy, List<Stage> stages, boolean aggregated)
+    private List<Change> changes;
+
+    public Pipeline(String name, String version, List<Change> changes, String timestamp,  List<UserInfo> triggeredBy,
+                    List<Stage> stages, boolean aggregated)
     {
         super(name);
         this.version = version;
@@ -48,6 +51,7 @@ public class Pipeline extends AbstractItem
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
         this.timestamp = timestamp;
+        this.changes = changes;
     }
 
     @Exported
@@ -87,6 +91,11 @@ public class Pipeline extends AbstractItem
         return hashCode();
     }
 
+    @Exported
+    @SuppressWarnings("unused")
+    public List<Change> getChanges() {
+        return changes;
+    }
 
     @Override
     public int hashCode()

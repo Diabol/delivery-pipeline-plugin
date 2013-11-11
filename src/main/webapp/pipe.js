@@ -1,4 +1,6 @@
 function renderPipelines(divNames, errorDiv, view, showAvatars) {
+    //Simple feature switch for task details
+    var popover = false;
     Q.ajax({
             url: 'api/json',
             dataType: 'json',
@@ -45,7 +47,27 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                                 html = html + '<h1>Aggregated view</h1>'
                             } else {
                                 html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>'
+
+                                if (pipeline.changes && pipeline.changes.length > 0) {
+                                    html = html + '<div class="changes">';
+                                    html = html + '<h1>Changes:</h1>';
+                                    for (var o = 0; o < pipeline.changes.length; o++) {
+                                        html = html + '<div class="change">';
+                                        var change = pipeline.changes[o];
+                                        html = html + '<div class="change-author">' + change.author.name + '</div>';
+                                        html = html + '<div class="change-message">' + change.message + '</div>';
+                                        html = html + '</div>';
+                                    }
+                                    html = html + '</div>';
+
+
+                                }
+
+
                             }
+
+
+
 
                             for (var j = 0; j < pipeline.stages.length; j++) {
                                 var stage = pipeline.stages[j];
@@ -169,13 +191,13 @@ function equalheight(container) {
 
     var currentTallest = 0,
         currentRowStart = 0,
-        rowDivs = new Array(),
+        rowDivs = [],
         $el,
         topPosition = 0;
     Q(container).each(function () {
 
         $el = Q(this);
-        Q($el).height('auto')
+        Q($el).height('auto');
         topPostion = $el.position().top;
 
         if (currentRowStart != topPostion) {

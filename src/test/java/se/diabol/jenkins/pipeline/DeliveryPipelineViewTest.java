@@ -91,6 +91,7 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getFullScreenCss());
         assertFalse(view.isShowAggregatedPipeline());
         assertFalse(view.getShowAvatars());
+        assertFalse(view.isShowChanges());
     }
 
     @Test

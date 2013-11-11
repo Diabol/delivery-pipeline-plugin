@@ -77,7 +77,7 @@ public class PipelineFactoryTest {
         Pipeline pipeline = PipelineFactory.extractPipeline("Piper", compile);
 
         assertEquals(pipeline,
-                new Pipeline("Piper", null, null, null,
+                new Pipeline("Piper", null, null, null, null,
                         asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null))),
                                 new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null))),
                                 new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null)))), false));
@@ -285,7 +285,7 @@ public class PipelineFactoryTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        assertEquals(new Pipeline("Pipeline", null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
+        assertEquals(new Pipeline("Pipeline", null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
 
 
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
@@ -293,7 +293,7 @@ public class PipelineFactoryTest {
 
         Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
 
-        assertEquals(new Pipeline("Pipeline", null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
+        assertEquals(new Pipeline("Pipeline", null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 

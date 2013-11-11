@@ -55,10 +55,12 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         return stageName;
     }
 
+    @SuppressWarnings("unused")
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
 
+    @SuppressWarnings("unused")
     public void setStageName(String stageName) {
         this.stageName = stageName;
     }

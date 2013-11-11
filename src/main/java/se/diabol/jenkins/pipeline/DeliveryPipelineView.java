@@ -65,6 +65,7 @@ public class DeliveryPipelineView extends View {
     private String embeddedCss = null;
     private boolean showAvatars = false;
     private int updateInterval = DEFAULT_INTERVAL;
+    private boolean showChanges = false;
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name, List<ComponentSpec> componentSpecs) {
@@ -106,6 +107,14 @@ public class DeliveryPipelineView extends View {
 
     public void setNoOfPipelines(int noOfPipelines) {
         this.noOfPipelines = noOfPipelines;
+    }
+
+    public boolean isShowChanges() {
+        return showChanges;
+    }
+
+    public void setShowChanges(boolean showChanges) {
+        this.showChanges = showChanges;
     }
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {

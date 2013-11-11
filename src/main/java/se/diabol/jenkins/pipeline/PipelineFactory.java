@@ -24,15 +24,12 @@ import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.User;
+import hudson.scm.ChangeLogSet;
 import hudson.tasks.UserAvatarResolver;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
-import se.diabol.jenkins.pipeline.model.Pipeline;
-import se.diabol.jenkins.pipeline.model.Stage;
-import se.diabol.jenkins.pipeline.model.Task;
-import se.diabol.jenkins.pipeline.model.TestResult;
-import se.diabol.jenkins.pipeline.model.UserInfo;
+import se.diabol.jenkins.pipeline.model.*;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -75,7 +72,7 @@ public abstract class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, null, null, null, newArrayList(stages.values()), false);
+        return new Pipeline(name, null, null, null, null, newArrayList(stages.values()), false);
     }
 
     private static Task getPrototypeTask(AbstractProject project) {
@@ -127,7 +124,7 @@ public abstract class PipelineFactory {
             stages.add(new Stage(stage.getName(), tasks, version));
         }
         //TODO add triggeredBy
-        return new Pipeline(pipeline.getName(), null, null, null, stages, true);
+        return new Pipeline(pipeline.getName(), null, null, null, null, stages, true);
     }
 
     private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject) {
@@ -163,6 +160,7 @@ public abstract class PipelineFactory {
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
+            List<Change> changes = getChanges(firstBuild);
             String timestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
             List<Stage> stages = new ArrayList<Stage>();
             for (Stage stage : pipeline.getStages()) {
@@ -175,7 +173,17 @@ public abstract class PipelineFactory {
                 stages.add(new Stage(stage.getName(), tasks));
             }
 
-            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), timestamp, getTriggeredBy(firstBuild), stages, false));
+            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), changes, timestamp,
+                    getTriggeredBy(firstBuild), stages, false));
+        }
+        return result;
+    }
+
+    private static List<Change> getChanges(AbstractBuild<?, ?> build) {
+        List<Change> result = new ArrayList<Change>();
+        for (ChangeLogSet.Entry entry : build.getChangeSet()) {
+            UserInfo user = getUser(entry.getAuthor());
+            result.add(new Change(user, entry.getMsg()));
         }
         return result;
     }
@@ -201,7 +209,7 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    public static List<UserInfo> getTriggeredBy(AbstractBuild<?,?> build) {
+    private static List<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
         Set<User> users = build.getCulprits();
         List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
 
@@ -301,15 +309,13 @@ public abstract class PipelineFactory {
     }
 
 
-    private static AbstractBuild getFirstUpstreamBuild(AbstractProject project, AbstractProject first) {
-        RunList builds = project.getBuilds();
-        for (Object build1 : builds) {
-            AbstractBuild b = (AbstractBuild) build1;
-            AbstractBuild upstream = getFirstUpstreamBuild(b);
+    private static AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first) {
+        RunList<? extends AbstractBuild> builds = project.getBuilds();
+        for (AbstractBuild build : builds) {
+            AbstractBuild upstream = getFirstUpstreamBuild(build);
             if (upstream != null && upstream.getProject().equals(first)) {
                 return upstream;
             }
-
         }
         return null;
     }
