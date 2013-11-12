@@ -27,13 +27,13 @@ public class LatestActivityComparator extends ComponentComparator {
 
     @Override
     public int compare(Component o1, Component o2) {
-        return Long.valueOf( getLastActivity( o1 ) ).compareTo( Long.valueOf( getLastActivity( o2 ) ) );
+        return Long.valueOf(getLastActivity(o2)).compareTo(getLastActivity(o1));
     }
 
     private long getLastActivity(Pipeline pipeline) {
         long result = 0;
-        for (Stage stage: pipeline.getStages()) {
-            for (Task task: stage.getTasks()) {
+        for (Stage stage : pipeline.getStages()) {
+            for (Task task : stage.getTasks()) {
                 if (task.getStatus().getLastActivity() > result) {
                     result = task.getStatus().getLastActivity();
                 }
@@ -44,7 +44,7 @@ public class LatestActivityComparator extends ComponentComparator {
 
     private long getLastActivity(Component component) {
         long result = 0;
-        for (Pipeline pipeline: component.getPipelines()) {
+        for (Pipeline pipeline : component.getPipelines()) {
             long lastActivity = getLastActivity(pipeline);
             if (lastActivity > result) {
                 result = lastActivity;
@@ -54,8 +54,7 @@ public class LatestActivityComparator extends ComponentComparator {
     }
 
     @Extension
-    public static class DescriptorImpl extends ComponentComparatorDescriptor
-    {
+    public static class DescriptorImpl extends ComponentComparatorDescriptor {
         @Override
         public String getDisplayName() {
             return "Sorting by last activity";
