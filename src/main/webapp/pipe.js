@@ -1,4 +1,4 @@
-function renderPipelines(divNames, errorDiv, view, showAvatars) {
+function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
     //Simple feature switch for task details
     var popover = false;
     Q.ajax({
@@ -48,7 +48,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars) {
                             } else {
                                 html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>'
 
-                                if (pipeline.changes && pipeline.changes.length > 0) {
+                                if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                                     html = html + '<div class="changes">';
                                     html = html + '<h1>Changes:</h1>';
                                     for (var o = 0; o < pipeline.changes.length; o++) {
