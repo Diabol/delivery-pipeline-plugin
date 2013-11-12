@@ -37,7 +37,7 @@ public class NameComparator extends ComponentComparator {
 
         @Override
         public ComponentComparator createInstance() {
-            return new LatestActivityComparator();
+            return new NameComparator();
         }
     }
 

@@ -36,7 +36,7 @@ public class NameComparatorTest {
         List<Component> list = new ArrayList<Component>();
         list.add(componentB);
         list.add(componentA);
-        Collections.sort(list, new NameComparator());
+        Collections.sort(list, new NameComparator.DescriptorImpl().createInstance());
         assertEquals(componentA, list.get(0));
         assertEquals(componentB, list.get(1));
     }
