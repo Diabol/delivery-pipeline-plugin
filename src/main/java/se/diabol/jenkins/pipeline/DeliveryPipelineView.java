@@ -39,7 +39,6 @@ import se.diabol.jenkins.pipeline.model.Component;
 import se.diabol.jenkins.pipeline.model.Pipeline;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
-import se.diabol.jenkins.pipeline.sort.NoOpComparator;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -50,17 +49,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
 
+    private static final Logger LOG = Logger.getLogger(DeliveryPipelineView.class.getName());
+
     public static final int DEFAULT_INTERVAL = 2;
+
+    private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
+    public static final String NONE_SORTER = "none";
 
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = 3;
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
-    private String sorting = NoOpComparator.class.getName();
+    private String sorting = NONE_SORTER;
     private String fullScreenCss = null;
     private String embeddedCss = null;
     private boolean showAvatars = false;
@@ -82,11 +87,20 @@ public class DeliveryPipelineView extends View {
     }
 
     public String getSorting() {
+        /* Removed se.diabol.jenkins.pipeline.sort.NoOpComparator since it in some cases did sorting*/
+        if (OLD_NONE_SORTER.equals(sorting)) {
+            this.sorting = NONE_SORTER;
+        }
         return sorting;
     }
 
     public void setSorting(String sorting) {
-        this.sorting = sorting;
+        /* Removed se.diabol.jenkins.pipeline.sort.NoOpComparator since it in some cases did sorting*/
+        if (OLD_NONE_SORTER.equals(sorting)) {
+            this.sorting = NONE_SORTER;
+        } else {
+            this.sorting = sorting;
+        }
     }
 
     public List<ComponentSpec> getComponentSpecs() {
@@ -190,6 +204,7 @@ public class DeliveryPipelineView extends View {
 
     @Exported
     public List<Component> getPipelines() {
+        LOG.fine("Getting pipelines!");
         List<Component> components = new ArrayList<Component>();
         for (ComponentSpec componentSpec : componentSpecs) {
             AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
@@ -200,7 +215,7 @@ public class DeliveryPipelineView extends View {
             pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
             components.add(new Component(componentSpec.getName(), pipelines));
         }
-        if (sorting != null) {
+        if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
             ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
             if (comparatorDescriptor != null) {
                 Collections.sort(components, comparatorDescriptor.createInstance());
@@ -263,6 +278,7 @@ public class DeliveryPipelineView extends View {
         public ListBoxModel doFillSortingItems() {
             DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors = ComponentComparator.all();
             ListBoxModel options = new ListBoxModel();
+            options.add("None", NONE_SORTER);
             for (ComponentComparatorDescriptor descriptor : descriptors) {
                 options.add(descriptor.getDisplayName(), descriptor.getId());
             }

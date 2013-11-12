@@ -1,6 +1,4 @@
 function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
-    //Simple feature switch for task details
-    var popover = false;
     Q.ajax({
             url: 'api/json',
             dataType: 'json',
@@ -55,7 +53,11 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
                                         html = html + '<div class="change">';
                                         var change = pipeline.changes[o];
                                         html = html + '<div class="change-author">' + change.author.name + '</div>';
-                                        html = html + '<div class="change-message">' + change.message + '</div>';
+                                        if (change.changeLink) {
+                                            html = html + '<div class="change-message"><a href="' + change.changeLink + '">'  + change.message + '</a></div>';
+                                        } else {
+                                            html = html + '<div class="change-message">' + change.message + '</div>';
+                                        }
                                         html = html + '</div>';
                                     }
                                     html = html + '</div>';

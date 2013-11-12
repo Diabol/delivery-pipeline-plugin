@@ -1,19 +1,32 @@
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:visited {
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 body {
     font-family: sans-serif;
     background: #000000;
-    color: rgb(217,217,217);
+    color: #fefefe;
 }
 
 section.component {
     display: block;
-    background-color: #1C1C1C;
+    background: #000000;
     border-radius: 20px;
     padding: 10px;
     margin: 20px;
 }
 
 section.component h1 {
-    font-size: large;
+    font-size: 36px;
     font-weight: bold;
     font-stretch: expanded;
     margin-top: 0;
@@ -39,6 +52,7 @@ section.pipe h1 {
 div.changes {
     padding-top: 0;
     padding-bottom: 10px;
+    padding-left: 20px;
 }
 
 div.changes h1 {
@@ -51,6 +65,7 @@ div.changes h1 {
 
 div.change {
     clear: both;
+    padding-left: 5px;
 }
 
 div.change-author {
@@ -68,16 +83,7 @@ section.stage {
     min-height: 100px;
     min-width: 180px;
     vertical-align: top;
-    background: #45484d; /* Old browsers */
-    background: -moz-linear-gradient(top,  #45484d 0%, #000000 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#45484d), color-stop(100%,#000000)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  #45484d 0%,#000000 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  #45484d 0%,#000000 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  #45484d 0%,#000000 100%); /* IE10+ */
-    background: linear-gradient(to bottom,  #45484d 0%,#000000 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
-    border-radius: 10px;
-    padding: 0 3px 3px 0px;
+    background: #404040;
     margin: 0 5px;
 }
 
@@ -86,11 +92,12 @@ section.stage h1 {
     margin: 0;
     margin-bottom: 3px;
     padding: 5px 10px;
+    border: 0;
+    background: #808080;
 }
 
 section.stage div.task {
     display: block;
-    border-radius: 3px;
     margin: 0 5px 2px 5px;
     padding-left: 5px;
 }
@@ -113,25 +120,21 @@ section.stage a:hover {
     color: lightgray;
 }
 
-.QUEUED {
-    border-left: 7px solid #add8e6;
-    color: lightgray;
-}
 
 .FAILED {
-    border-left: 7px solid red;
-    color: #ff6347;
+    border-left: 7px solid #fe0000;
+    color: #fe0000;
     font-weight: 700;
 }
 
 .SUCCESS {
-    border-left: 7px solid #90ee90;
+    border-left: 7px solid #00AC00;
     color: #d3d3d3;
 }
 
 .UNSTABLE {
-    border-left: 7px solid #fad42e;
-    color: #fad42e;
+    border-left: 7px solid #ffdb00;
+    color: #ffdb00;
     font-weight: bold;
 }
 
@@ -146,9 +149,14 @@ section.stage a:hover {
     color: #a9a9a9;
 }
 
+.QUEUED {
+    border-left: 7px solid #0197fe;
+    color: lightgray;
+}
+
 .RUNNING {
     background: url("running.gif") no-repeat right;
-    border-left: 6px solid #add8e6;
+    border-left: 6px solid #0197fe;
     color: lightgray;
 }
 

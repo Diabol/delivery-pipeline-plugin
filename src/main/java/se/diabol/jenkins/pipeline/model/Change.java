@@ -24,10 +24,14 @@ import org.kohsuke.stapler.export.ExportedBean;
 public class Change {
     private UserInfo author;
     private String message;
+    private String commitId;
+    private String changeLink;
 
-    public Change(UserInfo author, String message) {
+    public Change(UserInfo author, String message, String commitId, String changeLink) {
         this.author = author;
         this.message = message;
+        this.commitId = commitId;
+        this.changeLink = changeLink;
     }
 
     @Exported
@@ -38,5 +42,15 @@ public class Change {
     @Exported
     public String getMessage() {
         return message;
+    }
+
+    @Exported
+    public String getCommitId() {
+        return commitId;
+    }
+
+    @Exported
+    public String getChangeLink() {
+        return changeLink;
     }
 }

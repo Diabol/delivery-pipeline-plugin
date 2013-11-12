@@ -25,6 +25,7 @@ import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.User;
 import hudson.scm.ChangeLogSet;
+import hudson.scm.RepositoryBrowser;
 import hudson.tasks.UserAvatarResolver;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.RunList;
@@ -35,6 +36,8 @@ import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -180,10 +183,22 @@ public abstract class PipelineFactory {
     }
 
     private static List<Change> getChanges(AbstractBuild<?, ?> build) {
+        RepositoryBrowser repositoryBrowser = build.getProject().getScm().getBrowser();
         List<Change> result = new ArrayList<Change>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
             UserInfo user = getUser(entry.getAuthor());
-            result.add(new Change(user, entry.getMsg()));
+            String changeLink = null;
+            if (repositoryBrowser != null) {
+                try {
+                    URL link = repositoryBrowser.getChangeSetLink(entry);
+                    if (link != null) {
+                        changeLink = link.toExternalForm();
+                    }
+                } catch (IOException e) {
+                    //Ignore
+                }
+            }
+            result.add(new Change(user, entry.getMsg(), entry.getCommitId(), changeLink));
         }
         return result;
     }

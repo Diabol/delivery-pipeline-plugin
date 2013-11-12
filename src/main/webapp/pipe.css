@@ -37,7 +37,22 @@ section.pipe h1 {
 div.changes {
     padding-top: 0;
     padding-bottom: 10px;
+    padding-left: 10px;
 }
+
+div.changes a {
+    text-decoration: none;
+    color: inherit;
+}
+
+div.changes a:visited {
+    color: inherit;
+}
+
+div.changes a:hover {
+    text-decoration: underline;
+}
+
 
 div.changes h1 {
     font-size: 14px;
@@ -49,6 +64,7 @@ div.changes h1 {
 
 div.change {
     clear: both;
+    padding-left: 5px;
 }
 
 div.change-author {

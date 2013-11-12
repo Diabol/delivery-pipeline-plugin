@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
-import se.diabol.jenkins.pipeline.sort.NoOpComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,7 +85,7 @@ public class DeliveryPipelineViewTest {
         assertEquals(3, view.getNoOfPipelines());
         assertEquals(1, view.getNoOfColumns());
         assertEquals(2, view.getUpdateInterval());
-        assertEquals(NoOpComparator.class.getName(), view.getSorting());
+        assertEquals("none", view.getSorting());
         assertNull(view.getEmbeddedCss());
         assertNull(view.getFullScreenCss());
         assertFalse(view.isShowAggregatedPipeline());
