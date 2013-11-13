@@ -113,7 +113,7 @@ public abstract class PipelineFactory {
                 version = versionBuild.getDisplayName();
             }
             for (Task task : stage.getTasks()) {
-                AbstractProject taskProject = getProject(task);
+                AbstractProject<?, ?> taskProject = getProject(task);
                 AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
 
                 if (currentBuild != null) {
@@ -169,7 +169,7 @@ public abstract class PipelineFactory {
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<Task>();
                 for (Task task : stage.getTasks()) {
-                    AbstractProject taskProject = getProject(task);
+                    AbstractProject<?,?> taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     tasks.add(getTask(task, currentBuild));
                 }
@@ -182,7 +182,7 @@ public abstract class PipelineFactory {
         return result;
     }
 
-    private static List<Change> getChanges(AbstractBuild<?, ?> build) {
+    protected static List<Change> getChanges(AbstractBuild<?, ?> build) {
         RepositoryBrowser repositoryBrowser = build.getProject().getScm().getBrowser();
         List<Change> result = new ArrayList<Change>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
@@ -261,11 +261,10 @@ public abstract class PipelineFactory {
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
-    private static AbstractBuild match(RunList runList, AbstractBuild firstBuild) {
+    private static AbstractBuild match(RunList<? extends AbstractBuild> runList, AbstractBuild firstBuild) {
         if (firstBuild != null) {
-            for (Object aRunList : runList) {
-                AbstractBuild currentBuild = (AbstractBuild) aRunList;
-                if (firstBuild.equals(getFirstUpstreamBuild(currentBuild))) {
+            for (AbstractBuild currentBuild : runList) {
+                if (firstBuild.equals(getFirstUpstreamBuild(currentBuild, firstBuild.getProject()))) {
                     return currentBuild;
                 }
             }
@@ -311,13 +310,21 @@ public abstract class PipelineFactory {
      * @param build the build to find the first upstream for
      * @return the first upstream build for the given build
      */
-    private static AbstractBuild getFirstUpstreamBuild(AbstractBuild build) {
+    protected static AbstractBuild getFirstUpstreamBuild(AbstractBuild build, AbstractProject first) {
         if (build == null) {
             return null;
         }
+        if (build.getProject().equals(first)) {
+            return build;
+        }
+
         AbstractBuild upstreamBuild = getUpstreamBuild(build);
         if (upstreamBuild != null) {
-            return getFirstUpstreamBuild(upstreamBuild);
+            if (upstreamBuild.getProject().equals(first)) {
+                return upstreamBuild;
+            } else {
+                return getFirstUpstreamBuild(upstreamBuild, first);
+            }
         }
 
         return build;
@@ -327,7 +334,7 @@ public abstract class PipelineFactory {
     private static AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first) {
         RunList<? extends AbstractBuild> builds = project.getBuilds();
         for (AbstractBuild build : builds) {
-            AbstractBuild upstream = getFirstUpstreamBuild(build);
+            AbstractBuild upstream = getFirstUpstreamBuild(build, first);
             if (upstream != null && upstream.getProject().equals(first)) {
                 return upstream;
             }

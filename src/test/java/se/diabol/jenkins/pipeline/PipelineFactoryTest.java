@@ -27,20 +27,18 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.test.AggregatedTestResultAction;
-import hudson.tasks.test.MatrixTestResult;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.diabol.jenkins.pipeline.model.Pipeline;
-import se.diabol.jenkins.pipeline.model.Stage;
-import se.diabol.jenkins.pipeline.model.Task;
-import se.diabol.jenkins.pipeline.model.TestResult;
+import se.diabol.jenkins.pipeline.model.*;
 import se.diabol.jenkins.pipeline.model.status.Status;
+import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 
 import java.io.IOException;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -327,6 +325,42 @@ public class PipelineFactoryTest {
 
     }
 
+
+    @Test
+    public void testFirstUpstreamBuildFirstProjectHasUpstreamJob() throws Exception {
+        FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject pack = jenkins.createFreeStyleProject("package");
+        upstream.getPublishersList().add(new BuildTrigger("build", false));
+        build.getPublishersList().add(new BuildTrigger("package", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(upstream);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(upstream.getLastBuild());
+        assertNotNull(build.getLastBuild());
+        assertNotNull(pack.getLastBuild());
+
+        assertEquals(build.getLastBuild(), PipelineFactory.getFirstUpstreamBuild(pack.getLastBuild(), build));
+
+    }
+
+    @Test
+    public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
+        FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        upstream.getPublishersList().add(new BuildTrigger("build", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(upstream);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(upstream.getLastBuild());
+        assertNotNull(build.getLastBuild());
+
+        assertEquals(build.getLastBuild(), PipelineFactory.getFirstUpstreamBuild(build.getLastBuild(), build));
+
+    }
+
     @Test
     public void testResolveStatusIdle() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
@@ -458,6 +492,43 @@ public class PipelineFactoryTest {
 
 
 
+    }
+
+
+    @Test
+    public void testGetChangesNoBrowser() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeChangeLogSCM scm = new FakeChangeLogSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        jenkins.buildAndAssertSuccess(project);
+        AbstractBuild build = project.getLastBuild();
+        List<Change> changes = PipelineFactory.getChanges(build);
+        assertNotNull(changes);
+        assertEquals(1, changes.size());
+        Change change = changes.get(0);
+        assertEquals("Fixed bug", change.getMessage());
+        assertEquals("test-user", change.getAuthor().getName());
+        assertNull(change.getCommitId());
+        assertNull(change.getChangeLink());
+    }
+
+    @Test
+    public void testGetChangesWithBrowser() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        jenkins.buildAndAssertSuccess(project);
+        AbstractBuild build = project.getLastBuild();
+        List<Change> changes = PipelineFactory.getChanges(build);
+        assertNotNull(changes);
+        assertEquals(1, changes.size());
+        Change change = changes.get(0);
+        assertEquals("Fixed bug", change.getMessage());
+        assertEquals("test-user", change.getAuthor().getName());
+        assertNull(change.getCommitId());
+        assertEquals("http://somewhere.com/test-user", change.getChangeLink());
     }
 
 }
