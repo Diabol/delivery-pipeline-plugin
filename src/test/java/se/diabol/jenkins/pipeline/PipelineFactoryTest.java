@@ -21,10 +21,7 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.FreeStyleProject;
-import hudson.model.Result;
+import hudson.model.*;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.OneShotEvent;
@@ -347,6 +344,12 @@ public class PipelineFactoryTest {
     }
 
     @Test
+    @WithoutJenkins
+    public void testGetFirstUpstreamBuildNull() {
+        assertNull(PipelineFactory.getFirstUpstreamBuild(null, null));
+    }
+
+    @Test
     public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
         FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
@@ -539,6 +542,35 @@ public class PipelineFactoryTest {
         assertEquals("test-user", change.getAuthor().getName());
         assertNull(change.getCommitId());
         assertEquals("http://somewhere.com/test-user", change.getChangeLink());
+    }
+
+    @Test
+    public void testGetTriggeredBy() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        project.scheduleBuild(new Cause.UserIdCause());
+        jenkins.waitUntilNoActivity();
+        List<UserInfo> users = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, users.size());
+        UserInfo user = users.get(0);
+        assertEquals("SYSTEM", user.getName());
+
+    }
+
+    @Test
+    public void testGetTriggeredByWithCulprits() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        project.scheduleBuild(new Cause.UserIdCause());
+        jenkins.waitUntilNoActivity();
+        List<UserInfo> users = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(2, users.size());
+        UserInfo user1 = users.get(0);
+        assertEquals("test-user", user1.getName());
+        UserInfo user2 = users.get(1);
+        assertEquals("SYSTEM", user2.getName());
+
     }
 
 }

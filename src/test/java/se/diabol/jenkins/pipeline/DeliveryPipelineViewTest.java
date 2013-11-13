@@ -21,6 +21,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.TopLevelItem;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -202,6 +203,57 @@ public class DeliveryPipelineViewTest {
         assertEquals(FormValidation.Kind.OK,  d.doCheckName("Component").kind);
 
 
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testUpdateInterval() {
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        view.setUpdateInterval(0);
+        assertEquals(2, view.getUpdateInterval());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testFullScreenCss() {
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        view.setFullScreenCss(null);
+        assertNull(view.getFullScreenCss());
+        view.setFullScreenCss(" ");
+        assertNull(view.getFullScreenCss());
+
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testEmbeddedCss() {
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        view.setEmbeddedCss(null);
+        assertNull(view.getEmbeddedCss());
+        view.setEmbeddedCss(" ");
+        assertNull(view.getEmbeddedCss());
+
+    }
+
+    @Test
+    public void testDoFillSortingItems() {
+        ListBoxModel model = new DeliveryPipelineView.DescriptorImpl().doFillSortingItems();
+        assertNotNull(model);
+        assertTrue(model.size() >= 1);
+    }
+
+    @Test
+    public void testDoFillNoOfPipelinesItems() {
+        ListBoxModel model = new DeliveryPipelineView.DescriptorImpl().doFillNoOfPipelinesItems(jenkins.getInstance());
+        assertNotNull(model);
+        assertTrue(model.size() != 0);
+    }
+
+    @Test
+    public void testDoFillNoOfColumnsItems() {
+        ListBoxModel model = new DeliveryPipelineView.DescriptorImpl().doFillNoOfColumnsItems(jenkins.getInstance());
+        assertNotNull(model);
+        assertTrue(model.size() != 0);
     }
 
 }

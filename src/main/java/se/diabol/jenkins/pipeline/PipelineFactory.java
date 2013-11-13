@@ -224,7 +224,7 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    private static List<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
+    protected static List<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
         Set<User> users = build.getCulprits();
         List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
 
