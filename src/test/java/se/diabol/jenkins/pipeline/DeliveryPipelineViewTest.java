@@ -25,6 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
+import se.diabol.jenkins.pipeline.model.Component;
+import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.model.Stage;
+import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.sort.NameComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +48,6 @@ public class DeliveryPipelineViewTest {
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
-
 
         DeliveryPipelineView view = new DeliveryPipelineView("Test", componentSpecs);
         view.onJobRenamed(null, "build1", "newbuild");
@@ -115,6 +119,77 @@ public class DeliveryPipelineViewTest {
 
         Collection<TopLevelItem> items =  view.getItems();
         assertEquals(3, items.size());
+
+    }
+
+    @Test
+    public void testGetPipelines() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        build.addProperty(new PipelineProperty("Build", "BuildStage"));
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", specs);
+        view.setSorting(NameComparator.class.getName());
+        jenkins.getInstance().addView(view);
+        List<Component> components = view.getPipelines();
+        assertEquals(1, components.size());
+        Component component = components.get(0);
+        assertEquals(0, component.getPipelines().size());
+        assertEquals("Comp", component.getName());
+
+        jenkins.buildAndAssertSuccess(build);
+
+        components = view.getPipelines();
+        assertEquals(1, components.size());
+        component = components.get(0);
+        assertEquals(1, component.getPipelines().size());
+        assertEquals("Comp", component.getName());
+        Pipeline pipeline = component.getPipelines().get(0);
+        assertEquals("#1", pipeline.getVersion());
+        assertNotNull(pipeline.getTimestamp());
+        assertFalse(pipeline.isAggregated());
+        assertEquals(1, pipeline.getTriggeredBy().size());
+        assertEquals(1, pipeline.getStages().size());
+        assertEquals(0, pipeline.getChanges().size());
+
+        Stage stage = pipeline.getStages().get(0);
+        assertEquals("BuildStage", stage.getName());
+        assertEquals(1, stage.getTasks().size());
+        Task task = stage.getTasks().get(0);
+        assertEquals("Build", task.getName());
+        assertEquals("build", task.getId());
+        assertEquals("1", task.getBuildId());
+        assertNull(task.getTestResult());
+
+
+        view.setShowAggregatedPipeline(true);
+        components = view.getPipelines();
+        assertEquals(1, components.size());
+        component = components.get(0);
+        assertEquals(2, component.getPipelines().size());
+        assertEquals("Comp", component.getName());
+
+
+
+        pipeline = component.getPipelines().get(0);
+        assertNull(pipeline.getVersion());
+        assertNull(pipeline.getTimestamp());
+        assertTrue(pipeline.isAggregated());
+        assertNull(pipeline.getTriggeredBy());
+        assertEquals(1, pipeline.getStages().size());
+        assertNull(pipeline.getChanges());
+
+
+
+        pipeline = component.getPipelines().get(1);
+        assertEquals("#1", pipeline.getVersion());
+        assertNotNull(pipeline.getTimestamp());
+        assertFalse(pipeline.isAggregated());
+        assertEquals(1, pipeline.getTriggeredBy().size());
+        assertEquals(1, pipeline.getStages().size());
+        assertEquals(0, pipeline.getChanges().size());
+
+
 
     }
 

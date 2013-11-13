@@ -67,32 +67,27 @@ public class Pipeline extends AbstractItem
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public String getTimestamp() {
         return timestamp;
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public boolean isAggregated()
     {
         return aggregated;
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public List<UserInfo> getTriggeredBy() {
         return triggeredBy;
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public int getId() {
         return hashCode();
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public List<Change> getChanges() {
         return changes;
     }
@@ -118,6 +113,7 @@ public class Pipeline extends AbstractItem
     public String toString()
     {
         return toStringHelper(this)
+                .add("id", getId())
                 .add("name", getName())
                 .add("version", getVersion())
                 .add("stages", getStages())

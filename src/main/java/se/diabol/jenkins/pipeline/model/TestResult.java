@@ -42,19 +42,16 @@ public class TestResult {
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public int getFailed() {
         return failed;
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public int getSkipped() {
         return skipped;
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public int getTotal() {
         return total;
     }
