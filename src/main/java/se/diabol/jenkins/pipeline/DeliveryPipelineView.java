@@ -221,7 +221,7 @@ public class DeliveryPipelineView extends View {
                 Collections.sort(components, comparatorDescriptor.createInstance());
             }
         }
-
+        LOG.fine("Returning: " + components);
         return components;
     }
 
