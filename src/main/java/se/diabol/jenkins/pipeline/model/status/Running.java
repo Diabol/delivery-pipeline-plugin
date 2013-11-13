@@ -21,38 +21,36 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 100)
-public class Running extends SimpleStatus
-{
+public class Running extends SimpleStatus {
     private final int percentage;
 
-    Running(int percentage, long lastActivity, long duration)
-    {
+    Running(int percentage, long lastActivity, long duration) {
         super(StatusType.RUNNING, lastActivity, duration);
         this.percentage = percentage;
     }
 
     @Exported
-    @SuppressWarnings("unused")
-    public int getPercentage() { return percentage; }
+    public int getPercentage() {
+        return percentage;
+    }
 
     @Override
-    public boolean isRunning() { return true; }
+    public boolean isRunning() {
+        return true;
+    }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "RUNNING " + percentage + "%";
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return this == o || o instanceof Running && percentage == ((Running) o).percentage;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return percentage;
     }
 }

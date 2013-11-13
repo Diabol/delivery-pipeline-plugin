@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.util;
 
 import hudson.model.FreeStyleProject;
+import hudson.util.ListBoxModel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -49,6 +50,24 @@ public class ProjectUtilTest {
         assertEquals(2, stageNames.size());
         assertTrue(stageNames.contains("Build"));
         assertTrue(stageNames.contains("QA"));
+    }
+
+
+    @Test
+    public void testFillAllProjects() throws Exception {
+        FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
+        FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
+        ListBoxModel list = ProjectUtil.fillAllProjects(jenkins.getInstance());
+        assertEquals(2, list.size());
+        ListBoxModel.Option option1 = list.get(0);
+        assertEquals(build1.getDisplayName(), option1.name);
+
+
+        ListBoxModel.Option option2 = list.get(1);
+        assertEquals(build2.getDisplayName(), option2.name);
+
+
+
     }
 
 }

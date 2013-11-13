@@ -36,7 +36,6 @@ public class SimpleStatus implements Status {
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public StatusType getType() {
         return type;
     }
@@ -47,7 +46,6 @@ public class SimpleStatus implements Status {
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public String getTimestamp() {
         if (lastActivity != -1) {
             return PipelineUtils.formatTimestamp(lastActivity);

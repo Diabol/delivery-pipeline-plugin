@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.model.*;
+import se.diabol.jenkins.pipeline.model.status.Running;
 import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 
@@ -369,7 +370,7 @@ public class PipelineFactoryTest {
         assertEquals("IDLE", status.toString());
         assertEquals(-1, status.getLastActivity());
         assertEquals(-1, status.getDuration());
-
+        assertNull(status.getTimestamp());
     }
 
     @Test
@@ -381,7 +382,7 @@ public class PipelineFactoryTest {
         assertEquals("DISABLED", status.toString());
         assertEquals(-1, status.getLastActivity());
         assertEquals(-1, status.getDuration());
-
+        assertNull(status.getTimestamp());
     }
 
     @Test
@@ -394,7 +395,7 @@ public class PipelineFactoryTest {
         assertEquals("SUCCESS", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
-
+        assertNotNull(status.getTimestamp());
     }
 
     @Test
@@ -408,6 +409,7 @@ public class PipelineFactoryTest {
         assertEquals("FAILED", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
+        assertNotNull(status.getTimestamp());
     }
 
 
@@ -422,6 +424,7 @@ public class PipelineFactoryTest {
         assertEquals("UNSTABLE", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
+        assertNotNull(status.getTimestamp());
     }
 
 
@@ -436,6 +439,7 @@ public class PipelineFactoryTest {
         assertEquals("CANCELLED", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
+        assertNotNull(status.getTimestamp());
     }
 
 
@@ -451,6 +455,7 @@ public class PipelineFactoryTest {
         status = PipelineFactory.resolveStatus(project, project.getLastBuild());
         assertTrue(status.isSuccess());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
+        assertNotNull(status.getTimestamp());
     }
 
     @Test
@@ -472,6 +477,11 @@ public class PipelineFactoryTest {
         Status status = PipelineFactory.resolveStatus(project, project.getFirstBuild());
         jenkins.waitUntilNoActivity();
         assertTrue(status.isRunning());
+        assertNotNull(status.getTimestamp());
+        assertTrue(status instanceof Running);
+        Running running = (Running) status;
+        assertFalse(running.getPercentage() == 0);
+        assertTrue(running.equals(running));
     }
 
     @Test
