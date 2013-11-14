@@ -36,10 +36,12 @@ import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 import static org.mockito.Mockito.*;
 
@@ -570,6 +572,19 @@ public class PipelineFactoryTest {
         assertEquals("test-user", user1.getName());
         UserInfo user2 = users.get(1);
         assertEquals("SYSTEM", user2.getName());
+
+    }
+
+    @Test
+    public void testGetUpstreamBuildProjectRenamed() {
+        AbstractBuild build = mock(AbstractBuild.class);
+        List<CauseAction> causeActions = new ArrayList<CauseAction>();
+        Cause.UpstreamCause cause = mock(Cause.UpstreamCause.class);
+        when(cause.getUpstreamProject()).thenReturn("thisprojectdontexists");
+        causeActions.add(new CauseAction(cause));
+        when(build.getActions(CauseAction.class)).thenReturn(causeActions);
+
+        assertNull(PipelineFactory.getUpstreamBuild(build));
 
     }
 
