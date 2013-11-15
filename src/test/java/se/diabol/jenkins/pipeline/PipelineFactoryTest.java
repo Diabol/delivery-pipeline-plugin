@@ -22,6 +22,9 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBu
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
 import hudson.model.*;
+import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
+import hudson.plugins.parameterizedtrigger.TriggerBuilder;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.util.OneShotEvent;
@@ -105,8 +108,28 @@ public class PipelineFactoryTest {
         assertEquals(3, pipeline.getStages().size());
         assertEquals(1, pipeline.getStages().get(2).getTasks().size());
         assertEquals("deploy3", pipeline.getStages().get(2).getTasks().get(0).getName());
+    }
+
+    @Test
+    public void testExtractPipelineWithSubProjects() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        build.addProperty(new PipelineProperty("Build", "Build"));
+        FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
+        sonar.addProperty(new PipelineProperty("Sonar", "Build"));
+
+        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+        deploy.addProperty(new PipelineProperty("Deploy", "QA"));
 
 
+        build.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("sonar", new BlockingBehaviour("never", "never", "never"), null)));
+        build.getPublishersList().add(new BuildTrigger("deploy", false));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
+        assertEquals(2, pipeline.getStages().size());
+        assertEquals(2, pipeline.getStages().get(0).getTasks().size());
+        assertEquals(1, pipeline.getStages().get(1).getTasks().size());
 
     }
 

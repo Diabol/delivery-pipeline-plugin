@@ -186,6 +186,12 @@
             <artifactId>jquery</artifactId>
             <version>1.7.2-1</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>parameterized-trigger</artifactId>
+            <version>2.17</version>
+        </dependency>
+
     </dependencies>
 
 </project>

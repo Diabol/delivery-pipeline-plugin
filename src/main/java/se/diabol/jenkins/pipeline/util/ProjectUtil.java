@@ -17,16 +17,16 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
+import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.SubProjectsAction;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
@@ -62,8 +62,23 @@ public abstract class ProjectUtil {
         return projects;
     }
 
-    public static List<AbstractProject> getDownstreamProjects(AbstractProject<?,?> project) {
-        return project.getDownstreamProjects();
+    public static List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?> project) {
+        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        result.addAll(getSubProjects(project));
+        result.addAll(project.getDownstreamProjects());
+        return result;
+    }
+
+    protected static List<AbstractProject> getSubProjects(AbstractProject project) {
+        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        for (SubProjectsAction action : Util.filter(project.getActions(), SubProjectsAction.class)) {
+            for (BlockableBuildTriggerConfig config : action.getConfigs()) {
+                for (AbstractProject subProject : config.getProjectList(project.getParent(), null)) {
+                    result.add(subProject);
+                }
+            }
+        }
+        return result;
     }
 
     public static AbstractProject<?, ?> getProject(String name) {
