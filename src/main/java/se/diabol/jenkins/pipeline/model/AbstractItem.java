@@ -26,41 +26,34 @@ import static com.google.common.base.Objects.toStringHelper;
  * This is the common abstraction for all the entities that makes a pipeline.
  */
 @ExportedBean(defaultVisibility = 100)
-public abstract class AbstractItem
-{
+public abstract class AbstractItem {
     private final String name;
 
-    protected AbstractItem(String name)
-    {
+    protected AbstractItem(String name) {
         this.name = name;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toStringHelper(this).add("name", name).toString();
     }
 
     @Exported
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return name.hashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return this == o || o instanceof AbstractItem && equals((AbstractItem) o);
     }
 
-    private boolean equals(AbstractItem o)
-    {
-        return name.equals( o.name );
+    private boolean equals(AbstractItem o) {
+        return name.equals(o.name);
     }
 }

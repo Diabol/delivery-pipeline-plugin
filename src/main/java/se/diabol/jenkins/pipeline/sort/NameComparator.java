@@ -28,8 +28,7 @@ public class NameComparator extends ComponentComparator {
     }
 
     @Extension
-    public static class DescriptorImpl extends ComponentComparatorDescriptor
-    {
+    public static class DescriptorImpl extends ComponentComparatorDescriptor {
         @Override
         public String getDisplayName() {
             return "Sort by title";

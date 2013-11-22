@@ -33,7 +33,7 @@ public abstract class ComponentComparator implements Comparator<Component>, Exte
         return (ComponentComparatorDescriptor) Jenkins.getInstance().getDescriptor(getClass());
     }
 
-    public static DescriptorExtensionList<ComponentComparator,ComponentComparatorDescriptor> all() {
+    public static DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> all() {
         return Jenkins.getInstance().getDescriptorList(ComponentComparator.class);
     }
 }

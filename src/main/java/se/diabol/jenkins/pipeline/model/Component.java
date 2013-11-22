@@ -26,42 +26,35 @@ import java.util.List;
 import static com.google.common.base.Objects.toStringHelper;
 
 @ExportedBean(defaultVisibility = 100)
-public class Component extends AbstractItem
-{
+public class Component extends AbstractItem {
     private final List<Pipeline> pipelines;
 
-    public Component(String name, List<Pipeline> pipelines)
-    {
+    public Component(String name, List<Pipeline> pipelines) {
         super(name);
         this.pipelines = ImmutableList.copyOf(pipelines);
     }
 
     @Exported
-    public List<Pipeline> getPipelines()
-    {
+    public List<Pipeline> getPipelines() {
         return pipelines;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toStringHelper(this).add("name", getName()).add("pipelines", pipelines).toString();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return pipelines.hashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        return this == o || o instanceof Component && equals((Component)o);
+    public boolean equals(Object o) {
+        return this == o || o instanceof Component && equals((Component) o);
     }
 
-    private boolean equals(Component o)
-    {
-        return super.equals(o) && pipelines.equals( o.pipelines );
+    private boolean equals(Component o) {
+        return super.equals(o) && pipelines.equals(o.pipelines);
     }
 }

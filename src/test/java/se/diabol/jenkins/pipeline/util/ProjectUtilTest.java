@@ -67,7 +67,6 @@ public class ProjectUtilTest {
         assertEquals(build2.getDisplayName(), option2.name);
 
 
-
     }
 
 }

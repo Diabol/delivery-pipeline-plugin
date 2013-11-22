@@ -18,12 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionList;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Cause;
-import hudson.model.CauseAction;
-import hudson.model.Result;
-import hudson.model.User;
+import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
 import hudson.tasks.UserAvatarResolver;
@@ -38,11 +33,7 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Iterables.concat;
@@ -168,7 +159,7 @@ public abstract class PipelineFactory {
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<Task>();
                 for (Task task : stage.getTasks()) {
-                    AbstractProject<?,?> taskProject = getProject(task);
+                    AbstractProject<?, ?> taskProject = getProject(task);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     tasks.add(getTask(task, currentBuild));
                 }
@@ -207,7 +198,7 @@ public abstract class PipelineFactory {
         AbstractProject project = getProject(task);
         Status status = resolveStatus(project, build);
         String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
-        String buildId =  build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
+        String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
         return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(build));
     }
 

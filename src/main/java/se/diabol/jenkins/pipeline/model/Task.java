@@ -32,7 +32,8 @@ public class Task extends AbstractItem {
     private final boolean manual;
     private final String buildId;
 
-    public Task(String id, String name, String buildId, Status status, String link, boolean manual, TestResult testResult) {
+    public Task(String id, String name, String buildId, Status status, String link, boolean manual,
+                TestResult testResult) {
         super(name);
         this.id = id;
         this.link = link;
@@ -75,7 +76,7 @@ public class Task extends AbstractItem {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append( id ).append( status ).appendSuper( super.hashCode() ).toHashCode();
+        return new HashCodeBuilder().append(id).append(status).appendSuper(super.hashCode()).toHashCode();
     }
 
     @Override
@@ -84,7 +85,7 @@ public class Task extends AbstractItem {
     }
 
     private boolean equals(Task o) {
-        return new EqualsBuilder().append( id, o.id ).append( status, o.status ).appendSuper( super.equals( o ) ).isEquals();
+        return new EqualsBuilder().append(id, o.id).append(status, o.status).appendSuper(super.equals(o)).isEquals();
     }
 
     @Override

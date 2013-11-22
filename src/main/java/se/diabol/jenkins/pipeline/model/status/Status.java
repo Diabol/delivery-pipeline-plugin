@@ -20,8 +20,7 @@ package se.diabol.jenkins.pipeline.model.status;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
-public interface Status
-{
+public interface Status {
     @SuppressWarnings("unused")
     public boolean isIdle();
 

@@ -19,11 +19,7 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.ParametersAction;
-import hudson.model.StringParameterValue;
+import hudson.model.*;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
@@ -82,11 +78,11 @@ public class PipelineVersionContributor extends BuildWrapper {
             }
 
         } catch (MacroEvaluationException e) {
-            LOG.log( Level.WARNING, "Error creating version", e );
+            LOG.log(Level.WARNING, "Error creating version", e);
         } catch (InterruptedException e) {
-            LOG.log( Level.WARNING, "Error creating version", e );
+            LOG.log(Level.WARNING, "Error creating version", e);
         } catch (IOException e) {
-            LOG.log( Level.WARNING, "Error creating version", e );
+            LOG.log(Level.WARNING, "Error creating version", e);
         }
     }
 

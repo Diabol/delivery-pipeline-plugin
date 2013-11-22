@@ -28,28 +28,24 @@ import java.util.List;
 import static com.google.common.base.Objects.toStringHelper;
 
 @ExportedBean(defaultVisibility = 100)
-public class Stage extends AbstractItem
-{
+public class Stage extends AbstractItem {
     private List<Task> tasks;
 
     private String version;
 
-    public Stage(String name, List<Task> tasks, String version)
-    {
+    public Stage(String name, List<Task> tasks, String version) {
         super(name);
         this.tasks = tasks;
         this.version = version;
     }
 
-    public Stage(String name, List<Task> tasks)
-    {
+    public Stage(String name, List<Task> tasks) {
         super(name);
         this.tasks = ImmutableList.copyOf(tasks);
     }
 
     @Exported
-    public List<Task> getTasks()
-    {
+    public List<Task> getTasks() {
         return tasks;
     }
 
@@ -59,25 +55,21 @@ public class Stage extends AbstractItem
     }
 
     @Override
-    public int hashCode()
-    {
-        return new HashCodeBuilder().append( tasks ).append( version ).appendSuper( super.hashCode() ).toHashCode();
+    public int hashCode() {
+        return new HashCodeBuilder().append(tasks).append(version).appendSuper(super.hashCode()).toHashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return o == this || o instanceof Stage && equals((Stage) o);
     }
 
-    private boolean equals(Stage o)
-    {
-        return new EqualsBuilder().append( tasks, o.tasks ).append( version, o.version ).appendSuper( super.equals( o ) ).isEquals();
+    private boolean equals(Stage o) {
+        return new EqualsBuilder().append(tasks, o.tasks).append(version, o.version).appendSuper(super.equals(o)).isEquals();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toStringHelper(this)
                 .add("name", getName())
                 .add("version", getVersion())

@@ -19,21 +19,10 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.AbstractProject;
-import hudson.model.Descriptor;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
-import hudson.model.View;
-import hudson.model.ViewDescriptor;
+import hudson.model.*;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.model.Component;
 import se.diabol.jenkins.pipeline.model.Pipeline;
@@ -44,11 +33,7 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -231,7 +216,7 @@ public class DeliveryPipelineView extends View {
         for (ComponentSpec componentSpec : componentSpecs) {
 
             AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob());
-            Collection<AbstractProject<?,?>> projects = ProjectUtil.getAllDownstreamProjects(project).values();
+            Collection<AbstractProject<?, ?>> projects = ProjectUtil.getAllDownstreamProjects(project).values();
             for (AbstractProject<?, ?> abstractProject : projects) {
                 result.add(getItem(abstractProject.getName()));
             }

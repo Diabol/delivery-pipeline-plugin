@@ -28,8 +28,7 @@ import java.util.List;
 import static com.google.common.base.Objects.toStringHelper;
 
 @ExportedBean(defaultVisibility = 100)
-public class Pipeline extends AbstractItem
-{
+public class Pipeline extends AbstractItem {
     private List<Stage> stages;
 
     private String version;
@@ -42,9 +41,8 @@ public class Pipeline extends AbstractItem
 
     private List<Change> changes;
 
-    public Pipeline(String name, String version, List<Change> changes, String timestamp,  List<UserInfo> triggeredBy,
-                    List<Stage> stages, boolean aggregated)
-    {
+    public Pipeline(String name, String version, List<Change> changes, String timestamp, List<UserInfo> triggeredBy,
+                    List<Stage> stages, boolean aggregated) {
         super(name);
         this.version = version;
         this.triggeredBy = triggeredBy;
@@ -55,14 +53,12 @@ public class Pipeline extends AbstractItem
     }
 
     @Exported
-    public List<Stage> getStages()
-    {
+    public List<Stage> getStages() {
         return stages;
     }
 
     @Exported
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
@@ -72,8 +68,7 @@ public class Pipeline extends AbstractItem
     }
 
     @Exported
-    public boolean isAggregated()
-    {
+    public boolean isAggregated() {
         return aggregated;
     }
 
@@ -93,25 +88,21 @@ public class Pipeline extends AbstractItem
     }
 
     @Override
-    public int hashCode()
-    {
-        return new HashCodeBuilder().appendSuper( super.hashCode() ).append( version ).append( stages ).toHashCode();
+    public int hashCode() {
+        return new HashCodeBuilder().appendSuper(super.hashCode()).append(version).append(stages).toHashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return o == this || o instanceof Pipeline && equals((Pipeline) o);
     }
 
-    private boolean equals(Pipeline o)
-    {
-        return super.equals(o) && new EqualsBuilder().appendSuper( super.equals( o ) ).append( stages, o.stages ).append( version, o.version ).isEquals();
+    private boolean equals(Pipeline o) {
+        return super.equals(o) && new EqualsBuilder().appendSuper(super.equals(o)).append(stages, o.stages).append(version, o.version).isEquals();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toStringHelper(this)
                 .add("id", getId())
                 .add("name", getName())

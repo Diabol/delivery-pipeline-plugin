@@ -27,7 +27,6 @@ import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
 import hudson.plugins.parameterizedtrigger.TriggerBuilder;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.test.AggregatedTestResultAction;
-import hudson.triggers.TimerTrigger;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,13 +41,12 @@ import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
-import static org.mockito.Mockito.*;
 
 
 @RunWith(MockitoJUnitRunner.class)
