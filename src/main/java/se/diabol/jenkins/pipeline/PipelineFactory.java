@@ -225,13 +225,10 @@ public abstract class PipelineFactory {
     }
 
     protected static List<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
-        Set<User> users = build.getCulprits();
         List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
-
-        for (User user : users) {
-            triggeredBy.add(getUser(user));
+        for (ChangeLogSet.Entry entry : build.getChangeSet()) {
+            triggeredBy.add(getUser(entry.getAuthor()));
         }
-
         Cause.UserIdCause cause = build.getCause(Cause.UserIdCause.class);
         if (cause != null && cause.getUserName() != null) {
             UserInfo user = getUser(Jenkins.getInstance().getUser(cause.getUserName()));
