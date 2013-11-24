@@ -27,11 +27,18 @@ import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 
 public abstract class ProjectUtil {
+
+    private static final Logger LOG = Logger.getLogger(ProjectUtil.class.getName());
 
     public static ListBoxModel fillAllProjects(ItemGroup<?> context) {
         ListBoxModel options = new ListBoxModel();
@@ -83,6 +90,28 @@ public abstract class ProjectUtil {
 
     public static AbstractProject<?, ?> getProject(String name) {
         return Jenkins.getInstance().getItem(name, Jenkins.getInstance(), AbstractProject.class);
+    }
+
+    public static Map<String, AbstractProject> getProjects(String regExp) {
+        try {
+            Pattern pattern = Pattern.compile(regExp);
+            Map<String, AbstractProject> result = new HashMap<String, AbstractProject>();
+            for (AbstractProject<?, ?> project : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+                Matcher matcher = pattern.matcher(project.getName());
+                if (matcher.find()) {
+                    if (matcher.groupCount() >=1) {
+                        String name = matcher.group(1);
+                        result.put(name, project);
+                    } else {
+                        LOG.log(Level.WARNING, "Could not find match group");
+                    }
+                }
+            }
+            return result;
+        } catch (PatternSyntaxException e) {
+            LOG.log(Level.WARNING, "Could not find projects on regular expression", e);
+            return Collections.emptyMap();
+        }
     }
 
 

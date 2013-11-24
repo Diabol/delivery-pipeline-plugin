@@ -35,6 +35,8 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
@@ -57,10 +59,12 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
 
+    private String regexpFirstJob = null;
+
+
     @DataBoundConstructor
-    public DeliveryPipelineView(String name, List<ComponentSpec> componentSpecs) {
+    public DeliveryPipelineView(String name) {
         super(name);
-        this.componentSpecs = componentSpecs;
     }
 
     public boolean getShowAvatars() {
@@ -90,6 +94,14 @@ public class DeliveryPipelineView extends View {
 
     public List<ComponentSpec> getComponentSpecs() {
         return componentSpecs;
+    }
+
+    public String getRegexpFirstJob() {
+        return regexpFirstJob;
+    }
+
+    public void setRegexpFirstJob(String regexpFirstJob) {
+        this.regexpFirstJob = regexpFirstJob;
     }
 
     public void setComponentSpecs(List<ComponentSpec> componentSpecs) {
@@ -191,14 +203,17 @@ public class DeliveryPipelineView extends View {
     public List<Component> getPipelines() {
         LOG.fine("Getting pipelines!");
         List<Component> components = new ArrayList<Component>();
-        for (ComponentSpec componentSpec : componentSpecs) {
-            AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
-            Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
-            List<Pipeline> pipelines = new ArrayList<Pipeline>();
-            if (showAggregatedPipeline)
-                pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
-            pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
-            components.add(new Component(componentSpec.getName(), pipelines));
+        if (componentSpecs != null) {
+            for (ComponentSpec componentSpec : componentSpecs) {
+                AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
+                components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
+            }
+        }
+        if (regexpFirstJob != null && !regexpFirstJob.trim().equals("")) {
+            Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexpFirstJob);
+            for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
+                components.add(getComponent(entry.getKey(), entry.getValue(), showAggregatedPipeline));
+            }
         }
         if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
             ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
@@ -210,18 +225,35 @@ public class DeliveryPipelineView extends View {
         return components;
     }
 
+    private Component getComponent(String name, AbstractProject firstJob, boolean showAggregatedPipeline) {
+        Pipeline prototype = PipelineFactory.extractPipeline(name, firstJob);
+        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        if (showAggregatedPipeline)
+            pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
+        pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
+        return new Component(name, pipelines);
+    }
+
     @Override
     public Collection<TopLevelItem> getItems() {
         List<TopLevelItem> result = new ArrayList<TopLevelItem>();
-        for (ComponentSpec componentSpec : componentSpecs) {
-
-            AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob());
-            Collection<AbstractProject<?, ?>> projects = ProjectUtil.getAllDownstreamProjects(project).values();
-            for (AbstractProject<?, ?> abstractProject : projects) {
+        Set<AbstractProject> projects = new HashSet<AbstractProject>();
+        if (componentSpecs != null) {
+            for (ComponentSpec componentSpec : componentSpecs) {
+                projects.add(ProjectUtil.getProject(componentSpec.getFirstJob()));
+            }
+        }
+        if (regexpFirstJob != null && !regexpFirstJob.trim().equals("")) {
+            Map<String, AbstractProject> projectMap = ProjectUtil.getProjects(regexpFirstJob);
+            projects.addAll(projectMap.values());
+        }
+        for (AbstractProject project : projects) {
+            Collection<AbstractProject<?, ?>> downstreamProjects = ProjectUtil.getAllDownstreamProjects(project).values();
+            for (AbstractProject<?, ?> abstractProject : downstreamProjects) {
                 result.add(getItem(abstractProject.getName()));
             }
-
         }
+
         return result;
     }
 
@@ -279,6 +311,22 @@ public class DeliveryPipelineView extends View {
             }
             if (valueAsInt <= 0) {
                 return FormValidation.error("Value must be greater that 0");
+            }
+            return FormValidation.ok();
+        }
+
+        public FormValidation doCheckRegexpFirstJob(@QueryParameter String value) {
+            if (value != null) {
+                try {
+                    Pattern pattern = Pattern.compile(value);
+                    if (pattern.matcher("").groupCount() == 1) {
+                        return FormValidation.ok();
+                    } else {
+                        return FormValidation.error("No capture group defined");
+                    }
+                } catch (PatternSyntaxException e) {
+                    return FormValidation.error("Syntax error in regular-expression pattern");
+                }
             }
             return FormValidation.ok();
         }

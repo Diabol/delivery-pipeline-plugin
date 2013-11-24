@@ -50,7 +50,8 @@ public class DeliveryPipelineViewTest {
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
-        DeliveryPipelineView view = new DeliveryPipelineView("Test", componentSpecs);
+        DeliveryPipelineView view = new DeliveryPipelineView("Test");
+        view.setComponentSpecs(componentSpecs);
         view.onJobRenamed(null, "build1", "newbuild");
         assertEquals("newbuild", view.getComponentSpecs().get(0).getFirstJob());
     }
@@ -63,7 +64,8 @@ public class DeliveryPipelineViewTest {
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
 
-        DeliveryPipelineView view = new DeliveryPipelineView("Test", componentSpecs);
+        DeliveryPipelineView view = new DeliveryPipelineView("Test");
+        view.setComponentSpecs(componentSpecs);
         assertEquals(2, view.getComponentSpecs().size());
         view.onJobRenamed(null, "build1", null);
 
@@ -86,13 +88,14 @@ public class DeliveryPipelineViewTest {
     @Test
     @WithoutJenkins
     public void testDefaults() {
-        DeliveryPipelineView view = new DeliveryPipelineView("name", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
         assertEquals(3, view.getNoOfPipelines());
         assertEquals(1, view.getNoOfColumns());
         assertEquals(2, view.getUpdateInterval());
         assertEquals("none", view.getSorting());
         assertNull(view.getEmbeddedCss());
         assertNull(view.getFullScreenCss());
+        assertNull(view.getComponentSpecs());
         assertFalse(view.isShowAggregatedPipeline());
         assertFalse(view.getShowAvatars());
         assertFalse(view.isShowChanges());
@@ -111,7 +114,8 @@ public class DeliveryPipelineViewTest {
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
-        DeliveryPipelineView view = new DeliveryPipelineView("name", specs);
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setComponentSpecs(specs);
         jenkins.getInstance().addView(view);
 
         assertTrue(view.contains(build));
@@ -129,7 +133,8 @@ public class DeliveryPipelineViewTest {
         build.addProperty(new PipelineProperty("Build", "BuildStage"));
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
-        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", specs);
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        view.setComponentSpecs(specs);
         view.setSorting(NameComparator.class.getName());
         jenkins.getInstance().addView(view);
         List<Component> components = view.getPipelines();
@@ -207,8 +212,18 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    public void testDoCheckRegexpFirstJob() {
+        DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
+        assertEquals(FormValidation.Kind.OK, d.doCheckRegexpFirstJob(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexpFirstJob("*").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexpFirstJob("^build-.+?-project").kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckRegexpFirstJob("^build-(.+?)-project").kind);
+    }
+
+    @Test
+    @WithoutJenkins
     public void testUpdateInterval() {
-        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setUpdateInterval(0);
         assertEquals(2, view.getUpdateInterval());
     }
@@ -216,7 +231,7 @@ public class DeliveryPipelineViewTest {
     @Test
     @WithoutJenkins
     public void testFullScreenCss() {
-        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setFullScreenCss(null);
         assertNull(view.getFullScreenCss());
         view.setFullScreenCss(" ");
@@ -227,7 +242,7 @@ public class DeliveryPipelineViewTest {
     @Test
     @WithoutJenkins
     public void testEmbeddedCss() {
-        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", new ArrayList<DeliveryPipelineView.ComponentSpec>());
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setEmbeddedCss(null);
         assertNull(view.getEmbeddedCss());
         view.setEmbeddedCss(" ");
