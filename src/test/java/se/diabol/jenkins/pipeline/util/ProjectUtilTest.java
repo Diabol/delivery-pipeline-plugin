@@ -22,6 +22,8 @@ import hudson.util.ListBoxModel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
+import org.mortbay.jetty.security.UserRealm;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
 import java.util.Set;
@@ -36,8 +38,9 @@ public class ProjectUtilTest {
 
     @Test
     public void testGetStageNames() throws Exception {
-        FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
-        FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
+        MockFolder folder = jenkins.createFolder("folder");
+        FreeStyleProject build1 = folder.createProject(FreeStyleProject.class, "build1");
+        FreeStyleProject build2 = folder.createProject(FreeStyleProject.class, "build2");
 
         Set<String> stageNames = ProjectUtil.getStageNames();
         assertNotNull(stageNames);

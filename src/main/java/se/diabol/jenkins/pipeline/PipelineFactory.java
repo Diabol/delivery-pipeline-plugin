@@ -79,31 +79,31 @@ public abstract class PipelineFactory {
     /**
      * Helper method
      *
-     * @see PipelineFactory#createPipelineLatest(se.diabol.jenkins.pipeline.model.Pipeline, int)
+     * @see PipelineFactory#createPipelineLatest(se.diabol.jenkins.pipeline.model.Pipeline, int, ItemGroup)
      */
 
-    public static Pipeline createPipelineLatest(Pipeline pipeline) {
-        List<Pipeline> pipelines = createPipelineLatest(pipeline, 1);
+    public static Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup context) {
+        List<Pipeline> pipelines = createPipelineLatest(pipeline, 1, context);
         return pipelines.size() > 0 ? pipelines.get(0) : null;
     }
 
-    public static Pipeline createPipelineAggregated(Pipeline pipeline) {
+    public static Pipeline createPipelineAggregated(Pipeline pipeline, ItemGroup context) {
 
-        AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
+        AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0), context);
         List<Stage> stages = new ArrayList<Stage>();
         for (Stage stage : pipeline.getStages()) {
 
             List<Task> tasks = new ArrayList<Task>();
 
             //The version build for this stage is the highest first task build
-            AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject);
+            AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject, context);
 
             String version = null;
             if (versionBuild != null) {
                 version = versionBuild.getDisplayName();
             }
             for (Task task : stage.getTasks()) {
-                AbstractProject<?, ?> taskProject = getProject(task);
+                AbstractProject<?, ?> taskProject = getProject(task, context);
                 AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
 
                 if (currentBuild != null) {
@@ -120,10 +120,10 @@ public abstract class PipelineFactory {
         return new Pipeline(pipeline.getName(), null, null, null, null, stages, true);
     }
 
-    private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject) {
+    private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
         int highest = -1;
         for (Task task : tasks) {
-            AbstractProject project = getProject(task);
+            AbstractProject project = getProject(task, context);
             AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject);
             if (firstBuild != null && firstBuild.getNumber() > highest) {
                 highest = firstBuild.getNumber();
@@ -144,9 +144,9 @@ public abstract class PipelineFactory {
      * @param pipeline      the pipeline prototype
      * @param noOfPipelines number of pipeline instances
      */
-    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
+    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines, ItemGroup context) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
-        AbstractProject firstProject = getProject(firstTask);
+        AbstractProject firstProject = getProject(firstTask, context);
 
         List<Pipeline> result = new ArrayList<Pipeline>();
 
@@ -159,9 +159,9 @@ public abstract class PipelineFactory {
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<Task>();
                 for (Task task : stage.getTasks()) {
-                    AbstractProject<?, ?> taskProject = getProject(task);
+                    AbstractProject<?, ?> taskProject = getProject(task, context);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
-                    tasks.add(getTask(task, currentBuild));
+                    tasks.add(getTask(task, currentBuild, context));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
@@ -194,8 +194,8 @@ public abstract class PipelineFactory {
     }
 
 
-    private static Task getTask(Task task, AbstractBuild build) {
-        AbstractProject project = getProject(task);
+    private static Task getTask(Task task, AbstractBuild build, ItemGroup context) {
+        AbstractProject project = getProject(task, context);
         Status status = resolveStatus(project, build);
         String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
         String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
@@ -259,8 +259,8 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    private static AbstractProject getProject(Task task) {
-        return Jenkins.getInstance().getItem(task.getId(), Jenkins.getInstance().getItemGroup(), AbstractProject.class);
+    private static AbstractProject getProject(Task task, ItemGroup context) {
+        return ProjectUtil.getProject(task.getId(), context);
     }
 
     protected static Status resolveStatus(AbstractProject project, AbstractBuild build) {

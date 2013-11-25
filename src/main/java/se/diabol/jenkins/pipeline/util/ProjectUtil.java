@@ -81,8 +81,8 @@ public abstract class ProjectUtil {
         return result;
     }
 
-    public static AbstractProject<?, ?> getProject(String name) {
-        return Jenkins.getInstance().getItem(name, Jenkins.getInstance(), AbstractProject.class);
+    public static AbstractProject<?, ?> getProject(String name, ItemGroup context) {
+        return Jenkins.getInstance().getItem(name, context, AbstractProject.class);
     }
 
 

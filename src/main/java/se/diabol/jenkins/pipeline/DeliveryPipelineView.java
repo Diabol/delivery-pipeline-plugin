@@ -192,12 +192,12 @@ public class DeliveryPipelineView extends View {
         LOG.fine("Getting pipelines!");
         List<Component> components = new ArrayList<Component>();
         for (ComponentSpec componentSpec : componentSpecs) {
-            AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
+            AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
             Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
             List<Pipeline> pipelines = new ArrayList<Pipeline>();
             if (showAggregatedPipeline)
-                pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
-            pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
+                pipelines.add(PipelineFactory.createPipelineAggregated(prototype, getOwnerItemGroup()));
+            pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines, getOwnerItemGroup()));
             components.add(new Component(componentSpec.getName(), pipelines));
         }
         if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
@@ -215,7 +215,7 @@ public class DeliveryPipelineView extends View {
         List<TopLevelItem> result = new ArrayList<TopLevelItem>();
         for (ComponentSpec componentSpec : componentSpecs) {
 
-            AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob());
+            AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
             Collection<AbstractProject<?, ?>> projects = ProjectUtil.getAllDownstreamProjects(project).values();
             for (AbstractProject<?, ?> abstractProject : projects) {
                 result.add(getItem(abstractProject.getName()));
