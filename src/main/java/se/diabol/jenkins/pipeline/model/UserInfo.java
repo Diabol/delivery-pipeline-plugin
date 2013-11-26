@@ -35,13 +35,11 @@ public class UserInfo extends AbstractItem {
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public String getAvatarUrl() {
         return avatarUrl;
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public String getUrl() {
         return url;
     }

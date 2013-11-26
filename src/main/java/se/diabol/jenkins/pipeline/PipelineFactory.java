@@ -48,6 +48,8 @@ import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 public abstract class PipelineFactory {
 
+    private static final int AVATAR_SIZE = 16;
+
     /**
      * Created a pipeline prototype for the supplied first project
      */
@@ -146,7 +148,6 @@ public abstract class PipelineFactory {
     public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines, ItemGroup context) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getProject(firstTask, context);
-        //ItemGroup i = firstProject.getParent();
 
         List<Pipeline> result = new ArrayList<Pipeline>();
 
@@ -236,7 +237,7 @@ public abstract class PipelineFactory {
     private static String getAvatarUrl(User user) {
         ExtensionList<UserAvatarResolver> resolvers = UserAvatarResolver.all();
         for (UserAvatarResolver resolver : resolvers) {
-            String avatarUrl = resolver.findAvatarFor(user, 16, 16);
+            String avatarUrl = resolver.findAvatarFor(user, AVATAR_SIZE, AVATAR_SIZE);
             if (avatarUrl != null) {
                 return avatarUrl;
             }
@@ -265,12 +266,13 @@ public abstract class PipelineFactory {
 
     protected static Status resolveStatus(AbstractProject project, AbstractBuild build) {
         if (build == null) {
-            if (project.isInQueue())
+            if (project.isInQueue()) {
                 return StatusFactory.queued(project.getQueueItem().getInQueueSince());
-            else if (project.isDisabled())
+            } else if (project.isDisabled()) {
                 return StatusFactory.disabled();
-            else
+            } else {
                 return StatusFactory.idle();
+            }
         }
 
         if (build.isBuilding()) {

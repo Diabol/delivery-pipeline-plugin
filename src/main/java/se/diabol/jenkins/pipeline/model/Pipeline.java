@@ -27,7 +27,7 @@ import java.util.List;
 
 import static com.google.common.base.Objects.toStringHelper;
 
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Pipeline extends AbstractItem {
     private List<Stage> stages;
 

@@ -25,9 +25,11 @@ import static com.google.common.base.Objects.toStringHelper;
 /**
  * This is the common abstraction for all the entities that makes a pipeline.
  */
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public abstract class AbstractItem {
     private final String name;
+
+    public static final int VISIBILITY = 100;
 
     protected AbstractItem(String name) {
         this.name = name;

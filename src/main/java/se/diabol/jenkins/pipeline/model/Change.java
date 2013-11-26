@@ -20,7 +20,7 @@ package se.diabol.jenkins.pipeline.model;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Change {
     private UserInfo author;
     private String message;

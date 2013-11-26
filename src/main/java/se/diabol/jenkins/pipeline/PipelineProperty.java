@@ -51,11 +51,11 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         return stageName;
     }
 
-    public void setTaskName(String taskName) {
+    public final void setTaskName(String taskName) {
         this.taskName = taskName;
     }
 
-    public void setStageName(String stageName) {
+    public final void setStageName(String stageName) {
         this.stageName = stageName;
     }
 
