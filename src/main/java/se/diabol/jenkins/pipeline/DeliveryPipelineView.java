@@ -43,11 +43,14 @@ public class DeliveryPipelineView extends View {
 
     public static final int DEFAULT_INTERVAL = 2;
 
+    public static final int DEFAULT_NO_OF_PIPELINES = 3;
+    private static final int MAX_NO_OF_PIPELINES = 10;
+
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     public static final String NONE_SORTER = "none";
 
     private List<ComponentSpec> componentSpecs;
-    private int noOfPipelines = 3;
+    private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
     private String sorting = NONE_SORTER;
@@ -195,8 +198,9 @@ public class DeliveryPipelineView extends View {
             AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
             Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
             List<Pipeline> pipelines = new ArrayList<Pipeline>();
-            if (showAggregatedPipeline)
+            if (showAggregatedPipeline) {
                 pipelines.add(PipelineFactory.createPipelineAggregated(prototype, getOwnerItemGroup()));
+            }
             pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines, getOwnerItemGroup()));
             components.add(new Component(componentSpec.getName(), pipelines));
         }
@@ -243,6 +247,7 @@ public class DeliveryPipelineView extends View {
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
+
         public ListBoxModel doFillNoOfColumnsItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
             options.add("1", "1");
@@ -253,7 +258,7 @@ public class DeliveryPipelineView extends View {
 
         public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
-            for (int i = 0; i <= 10; i++) {
+            for (int i = 0; i <= MAX_NO_OF_PIPELINES; i++) {
                 String opt = String.valueOf(i);
                 options.add(opt, opt);
             }

@@ -19,11 +19,12 @@ package se.diabol.jenkins.pipeline.model.status;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.model.AbstractItem;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
 
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class SimpleStatus implements Status {
     private final StatusType type;
     private final long lastActivity;

@@ -75,9 +75,11 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
                 AutoCompletionCandidates c = new AutoCompletionCandidates();
                 Set<String> stages = ProjectUtil.getStageNames();
 
-                for (String stage : stages)
-                    if (stage.toLowerCase().startsWith(value.toLowerCase()))
+                for (String stage : stages) {
+                    if (stage.toLowerCase().startsWith(value.toLowerCase())) {
                         c.add(stage);
+                    }
+                }
                 return c;
             } else {
                 return new AutoCompletionCandidates();

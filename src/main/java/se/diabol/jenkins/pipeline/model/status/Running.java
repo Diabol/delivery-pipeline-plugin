@@ -19,8 +19,9 @@ package se.diabol.jenkins.pipeline.model.status;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.model.AbstractItem;
 
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Running extends SimpleStatus {
     private final int percentage;
 

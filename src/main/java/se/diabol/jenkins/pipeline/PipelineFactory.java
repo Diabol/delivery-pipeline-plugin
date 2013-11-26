@@ -61,8 +61,9 @@ public abstract class PipelineFactory {
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
-            if (stage == null)
+            if (stage == null) {
                 stage = new Stage(stageName, Collections.<Task>emptyList());
+            }
             stages.put(stageName,
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
