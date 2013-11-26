@@ -36,7 +36,7 @@ public class PipelineEnvironmentContributor extends RunListener<Run> {
                 List<ParametersAction> parameters = upstreamBuild.getActions(ParametersAction.class);
                 for (ParametersAction parameter : parameters) {
                     ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
-                    if (value != null && value instanceof StringParameterValue) {
+                    if (value instanceof StringParameterValue) {
                         String version = ((StringParameterValue) value).value;
                         ParametersAction action = new ParametersAction(
                                 new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));

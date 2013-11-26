@@ -36,25 +36,6 @@ public class ProjectUtilTest {
     public JenkinsRule jenkins = new JenkinsRule();
 
 
-    @Test
-    public void testGetStageNames() throws Exception {
-        MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject build1 = folder.createProject(FreeStyleProject.class, "build1");
-        FreeStyleProject build2 = folder.createProject(FreeStyleProject.class, "build2");
-
-        Set<String> stageNames = ProjectUtil.getStageNames();
-        assertNotNull(stageNames);
-        assertEquals(0, stageNames.size());
-        build1.addProperty(new PipelineProperty(null, "Build"));
-        build2.addProperty(new PipelineProperty(null, "QA"));
-
-        stageNames = ProjectUtil.getStageNames();
-        assertNotNull(stageNames);
-        assertEquals(2, stageNames.size());
-        assertTrue(stageNames.contains("Build"));
-        assertTrue(stageNames.contains("QA"));
-    }
-
 
     @Test
     public void testFillAllProjects() throws Exception {

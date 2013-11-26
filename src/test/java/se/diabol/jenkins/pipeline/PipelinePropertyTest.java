@@ -24,10 +24,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -108,5 +112,25 @@ public class PipelinePropertyTest {
 
 
     }
+
+    @Test
+    public void testGetStageNames() throws Exception {
+        MockFolder folder = jenkins.createFolder("folder");
+        FreeStyleProject build1 = folder.createProject(FreeStyleProject.class, "build1");
+        FreeStyleProject build2 = folder.createProject(FreeStyleProject.class, "build2");
+
+        Set<String> stageNames = PipelineProperty.getStageNames();
+        assertNotNull(stageNames);
+        assertEquals(0, stageNames.size());
+        build1.addProperty(new PipelineProperty(null, "Build"));
+        build2.addProperty(new PipelineProperty(null, "QA"));
+
+        stageNames = PipelineProperty.getStageNames();
+        assertNotNull(stageNames);
+        assertEquals(2, stageNames.size());
+        assertTrue(stageNames.contains("Build"));
+        assertTrue(stageNames.contains("QA"));
+    }
+
 
 }

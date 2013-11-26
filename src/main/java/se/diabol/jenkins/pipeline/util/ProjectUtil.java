@@ -18,14 +18,16 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.util;
 
 import hudson.Util;
-import hudson.model.*;
+import hudson.model.AbstractProject;
+import hudson.model.ItemGroup;
 import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.SubProjectsAction;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
-import se.diabol.jenkins.pipeline.PipelineProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
@@ -38,19 +40,6 @@ public abstract class ProjectUtil {
             options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
         }
         return options;
-    }
-
-    public static Set<String> getStageNames() {
-        List<AbstractProject> projects = Jenkins.getInstance().getAllItems(AbstractProject.class);
-        Set<String> result = new HashSet<String>();
-        for (AbstractProject project : projects) {
-            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
-            if (property != null && property.getStageName() != null) {
-                result.add(property.getStageName());
-            }
-
-        }
-        return result;
     }
 
     public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first) {

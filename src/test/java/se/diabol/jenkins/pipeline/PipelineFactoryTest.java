@@ -470,6 +470,22 @@ public class PipelineFactoryTest {
         assertNotNull(status.getTimestamp());
     }
 
+    @Test
+    public void testResolveStatusNotBuilt() throws Exception {
+        //Result.NOT_BUILT should never occur for a build, just for a module within a maven build.
+        FreeStyleProject project = jenkins.createFreeStyleProject();
+        project.getBuildersList().add(new MockBuilder(Result.NOT_BUILT));
+        project.scheduleBuild2(0);
+        jenkins.waitUntilNoActivity();
+        try {
+            PipelineFactory.resolveStatus(project, project.getLastBuild());
+            fail("Should throw exception here");
+        } catch (IllegalStateException e) {
+        }
+    }
+
+
+
 
     @Test
     public void testResolveStatusQueued() throws Exception {
