@@ -81,10 +81,10 @@ public class Task extends AbstractItem {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof Task && equals((Task) obj);
+        return this == obj || obj instanceof Task && equalsSelf((Task) obj);
     }
 
-    private boolean equals(Task o) {
+    private boolean equalsSelf(Task o) {
         return new EqualsBuilder().append(id, o.id).append(status, o.status).appendSuper(super.equals(o)).isEquals();
     }
 

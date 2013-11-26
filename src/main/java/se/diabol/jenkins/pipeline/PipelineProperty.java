@@ -51,12 +51,10 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         return stageName;
     }
 
-    @SuppressWarnings("unused")
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
 
-    @SuppressWarnings("unused")
     public void setStageName(String stageName) {
         this.stageName = stageName;
     }
@@ -72,7 +70,6 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             return true;
         }
 
-        @SuppressWarnings("unused")
         public AutoCompletionCandidates doAutoCompleteStageName(@QueryParameter String value) {
             if (value != null) {
                 AutoCompletionCandidates c = new AutoCompletionCandidates();
@@ -87,12 +84,10 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             }
         }
 
-        @SuppressWarnings("unused")
         public FormValidation doCheckStageName(@QueryParameter String value) {
             return checkValue(value);
         }
 
-        @SuppressWarnings("unused")
         public FormValidation doCheckTaskName(@QueryParameter String value) {
             return checkValue(value);
         }

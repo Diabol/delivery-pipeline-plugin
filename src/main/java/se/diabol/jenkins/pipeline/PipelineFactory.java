@@ -279,16 +279,20 @@ public abstract class PipelineFactory {
         }
 
         Result result = build.getResult();
-        if (ABORTED.equals(result))
+        if (ABORTED.equals(result)) {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
-        else if (SUCCESS.equals(result))
+        }
+        if (SUCCESS.equals(result)) {
             return StatusFactory.success(build.getTimeInMillis(), build.getDuration());
-        else if (FAILURE.equals(result))
+        }
+        if (FAILURE.equals(result)) {
             return StatusFactory.failed(build.getTimeInMillis(), build.getDuration());
-        else if (UNSTABLE.equals(result))
+        }
+        if (UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
-        else
+        } else {
             throw new IllegalStateException("Result " + result + " not recognized.");
+        }
     }
 
     /**

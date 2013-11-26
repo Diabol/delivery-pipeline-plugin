@@ -21,37 +21,25 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
 public interface Status {
-    @SuppressWarnings("unused")
-    public boolean isIdle();
+    boolean isIdle();
 
-    @SuppressWarnings("unused")
-    public boolean isQueued();
+    boolean isQueued();
 
-    @SuppressWarnings("unused")
-    public boolean isRunning();
+    boolean isRunning();
 
-    @SuppressWarnings("unused")
-    public boolean isSuccess();
+    boolean isSuccess();
 
-    @SuppressWarnings("unused")
-    public boolean isFailed();
+    boolean isFailed();
 
-    @SuppressWarnings("unused")
-    public boolean isUnstable();
+    boolean isUnstable();
 
-    @SuppressWarnings("unused")
-    public boolean isCancelled();
+    boolean isCancelled();
 
-    @SuppressWarnings("unused")
-    public boolean isDisabled();
+    boolean isDisabled();
 
-
-    @SuppressWarnings("unused")
     long getLastActivity();
 
-    @SuppressWarnings("unused")
     String getTimestamp();
 
-    @SuppressWarnings("unused")
     long getDuration();
 }

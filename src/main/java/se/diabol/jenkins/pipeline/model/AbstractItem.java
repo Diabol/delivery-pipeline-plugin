@@ -50,10 +50,10 @@ public abstract class AbstractItem {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o instanceof AbstractItem && equals((AbstractItem) o);
+        return this == o || o instanceof AbstractItem && equalsSelf((AbstractItem) o);
     }
 
-    private boolean equals(AbstractItem o) {
+    private boolean equalsSelf(AbstractItem o) {
         return name.equals(o.name);
     }
 }
