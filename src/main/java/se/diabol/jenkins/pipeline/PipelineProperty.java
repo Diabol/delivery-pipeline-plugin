@@ -25,7 +25,6 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
-import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.HashSet;
 import java.util.List;
