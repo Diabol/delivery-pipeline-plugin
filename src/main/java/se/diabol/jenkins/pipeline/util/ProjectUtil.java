@@ -18,8 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.util;
 
 import hudson.Util;
-import hudson.model.AbstractProject;
-import hudson.model.ItemGroup;
+import hudson.model.*;
 import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.SubProjectsAction;
 import hudson.util.ListBoxModel;

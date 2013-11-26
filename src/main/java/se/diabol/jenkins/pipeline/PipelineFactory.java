@@ -73,7 +73,7 @@ public abstract class PipelineFactory {
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
         Status status = project.isDisabled() ? disabled() : idle();
-        return new Task(project.getName(), taskName, null, status, project.getUrl(), false, null);
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, project.getUrl(), false, null);
     }
 
     /**
@@ -116,7 +116,6 @@ public abstract class PipelineFactory {
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
-        //TODO add triggeredBy
         return new Pipeline(pipeline.getName(), null, null, null, null, stages, true);
     }
 
@@ -147,6 +146,7 @@ public abstract class PipelineFactory {
     public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines, ItemGroup context) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
         AbstractProject firstProject = getProject(firstTask, context);
+        //ItemGroup i = firstProject.getParent();
 
         List<Pipeline> result = new ArrayList<Pipeline>();
 

@@ -643,4 +643,33 @@ public class PipelineFactoryTest {
 
     }
 
+    @Test
+    public void getPipelineLatestWithFolders() throws Exception {
+        MockFolder folder1 = jenkins.createFolder("folder1");
+        MockFolder folder2 = jenkins.createFolder("folder2");
+        FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
+        FreeStyleProject job2 = folder2.createProject(FreeStyleProject.class, "job2");
+
+        job1.getPublishersList().add(new BuildTrigger("folder2/job2", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline prototype = PipelineFactory.extractPipeline("Folders", job1);
+
+        assertNotNull(prototype);
+
+        jenkins.buildAndAssertSuccess(job1);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(job1.getLastBuild());
+        assertNotNull(job2.getLastBuild());
+
+        Pipeline pipeline = PipelineFactory.createPipelineLatest(prototype, folder1);
+        assertNotNull(pipeline);
+        assertEquals(2, pipeline.getStages().size());
+        assertEquals("folder1/job1", pipeline.getStages().get(0).getTasks().get(0).getId());
+        assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
+
+
+    }
+
 }
