@@ -47,7 +47,7 @@
         <f:entry title="Components">
             <f:repeatableProperty minimum="0" field="componentSpecs"/>
         </f:entry>
-        <f:entry title="Regular Expression for matching first jobs">
+        <f:entry title="Regular Expression">
             <f:repeatableProperty minimum="0" field="regexpFirstJobs"/>
         </f:entry>
     </f:section>
