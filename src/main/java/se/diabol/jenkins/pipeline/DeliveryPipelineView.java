@@ -62,12 +62,19 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
 
-    private String regexpFirstJob = null;
-
+    private List<RegExpSpec> regexpFirstJobs;
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name) {
         super(name);
+    }
+
+    public List<RegExpSpec> getRegexpFirstJobs() {
+        return regexpFirstJobs;
+    }
+
+    public void setRegexpFirstJobs(List<RegExpSpec> regexpFirstJobs) {
+        this.regexpFirstJobs = regexpFirstJobs;
     }
 
     public boolean getShowAvatars() {
@@ -97,14 +104,6 @@ public class DeliveryPipelineView extends View {
 
     public List<ComponentSpec> getComponentSpecs() {
         return componentSpecs;
-    }
-
-    public String getRegexpFirstJob() {
-        return regexpFirstJob;
-    }
-
-    public void setRegexpFirstJob(String regexpFirstJob) {
-        this.regexpFirstJob = regexpFirstJob;
     }
 
     public void setComponentSpecs(List<ComponentSpec> componentSpecs) {
@@ -212,10 +211,12 @@ public class DeliveryPipelineView extends View {
                 components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
             }
         }
-        if (regexpFirstJob != null && !regexpFirstJob.trim().equals("")) {
-            Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexpFirstJob);
-            for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
-                components.add(getComponent(entry.getKey(), entry.getValue(), showAggregatedPipeline));
+        if (regexpFirstJobs != null) {
+            for (RegExpSpec regexp : regexpFirstJobs) {
+                Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
+                for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
+                    components.add(getComponent(entry.getKey(), entry.getValue(), showAggregatedPipeline));
+                }
             }
         }
         if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
@@ -247,9 +248,12 @@ public class DeliveryPipelineView extends View {
                 projects.add(ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup()));
             }
         }
-        if (regexpFirstJob != null && !regexpFirstJob.trim().equals("")) {
-            Map<String, AbstractProject> projectMap = ProjectUtil.getProjects(regexpFirstJob);
-            projects.addAll(projectMap.values());
+        if (regexpFirstJobs != null) {
+            for (RegExpSpec regexp : regexpFirstJobs) {
+                Map<String, AbstractProject> projectMap = ProjectUtil.getProjects(regexp.getRegexp());
+                projects.addAll(projectMap.values());
+            }
+
         }
         for (AbstractProject project : projects) {
             Collection<AbstractProject<?, ?>> downstreamProjects = ProjectUtil.getAllDownstreamProjects(project).values();
@@ -319,28 +323,50 @@ public class DeliveryPipelineView extends View {
             return FormValidation.ok();
         }
 
-        public FormValidation doCheckRegexpFirstJob(@QueryParameter String value) {
-            if (value != null) {
-                try {
-                    Pattern pattern = Pattern.compile(value);
-                    if (pattern.matcher("").groupCount() == 1) {
-                        return FormValidation.ok();
-                    } else {
-                        return FormValidation.error("No capture group defined");
-                    }
-                } catch (PatternSyntaxException e) {
-                    return FormValidation.error("Syntax error in regular-expression pattern");
-                }
-            }
-            return FormValidation.ok();
-        }
-
         @Override
         public String getDisplayName() {
             return "Delivery Pipeline View";
         }
     }
 
+    public static class RegExpSpec extends AbstractDescribableImpl<RegExpSpec> {
+
+        private String regexp;
+
+        @DataBoundConstructor
+        public RegExpSpec(String regexp) {
+            this.regexp = regexp;
+        }
+
+        public String getRegexp() {
+            return regexp;
+        }
+
+        @Extension
+        public static class DescriptorImpl extends Descriptor<RegExpSpec> {
+
+            @Override
+            public String getDisplayName() {
+                return "RegExp";
+            }
+
+            public FormValidation doCheckRegexp(@QueryParameter String value) {
+                if (value != null) {
+                    try {
+                        Pattern pattern = Pattern.compile(value);
+                        if (pattern.matcher("").groupCount() == 1) {
+                            return FormValidation.ok();
+                        } else {
+                            return FormValidation.error("No capture group defined");
+                        }
+                    } catch (PatternSyntaxException e) {
+                        return FormValidation.error("Syntax error in regular-expression pattern");
+                    }
+                }
+                return FormValidation.ok();
+            }
+        }
+    }
 
     public static class ComponentSpec extends AbstractDescribableImpl<ComponentSpec> {
         private String name;
