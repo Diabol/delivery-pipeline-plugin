@@ -25,7 +25,7 @@ import java.util.List;
 
 import static com.google.common.base.Objects.toStringHelper;
 
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
     private final List<Pipeline> pipelines;
 
@@ -51,10 +51,10 @@ public class Component extends AbstractItem {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o instanceof Component && equals((Component) o);
+        return this == o || o instanceof Component && equalsSelf((Component) o);
     }
 
-    private boolean equals(Component o) {
+    private boolean equalsSelf(Component o) {
         return super.equals(o) && pipelines.equals(o.pipelines);
     }
 }

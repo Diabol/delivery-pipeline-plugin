@@ -45,11 +45,14 @@ public class DeliveryPipelineView extends View {
 
     public static final int DEFAULT_INTERVAL = 2;
 
+    public static final int DEFAULT_NO_OF_PIPELINES = 3;
+    private static final int MAX_NO_OF_PIPELINES = 10;
+
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     public static final String NONE_SORTER = "none";
 
     private List<ComponentSpec> componentSpecs;
-    private int noOfPipelines = 3;
+    private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
     private boolean showAggregatedPipeline = false;
     private int noOfColumns = 1;
     private String sorting = NONE_SORTER;
@@ -205,7 +208,7 @@ public class DeliveryPipelineView extends View {
         List<Component> components = new ArrayList<Component>();
         if (componentSpecs != null) {
             for (ComponentSpec componentSpec : componentSpecs) {
-                AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob());
+                AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
                 components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
             }
         }
@@ -228,9 +231,10 @@ public class DeliveryPipelineView extends View {
     private Component getComponent(String name, AbstractProject firstJob, boolean showAggregatedPipeline) {
         Pipeline prototype = PipelineFactory.extractPipeline(name, firstJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
-        if (showAggregatedPipeline)
-            pipelines.add(PipelineFactory.createPipelineAggregated(prototype));
-        pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines));
+        if (showAggregatedPipeline) {
+            pipelines.add(PipelineFactory.createPipelineAggregated(prototype, getOwnerItemGroup()));
+        }
+        pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines, getOwnerItemGroup()));
         return new Component(name, pipelines);
     }
 
@@ -240,7 +244,7 @@ public class DeliveryPipelineView extends View {
         Set<AbstractProject> projects = new HashSet<AbstractProject>();
         if (componentSpecs != null) {
             for (ComponentSpec componentSpec : componentSpecs) {
-                projects.add(ProjectUtil.getProject(componentSpec.getFirstJob()));
+                projects.add(ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup()));
             }
         }
         if (regexpFirstJob != null && !regexpFirstJob.trim().equals("")) {

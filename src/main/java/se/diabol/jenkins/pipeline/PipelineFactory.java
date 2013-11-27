@@ -48,6 +48,8 @@ import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
 public abstract class PipelineFactory {
 
+    private static final int AVATAR_SIZE = 16;
+
     /**
      * Created a pipeline prototype for the supplied first project
      */
@@ -59,8 +61,9 @@ public abstract class PipelineFactory {
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
-            if (stage == null)
+            if (stage == null) {
                 stage = new Stage(stageName, Collections.<Task>emptyList());
+            }
             stages.put(stageName,
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
@@ -73,37 +76,37 @@ public abstract class PipelineFactory {
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
         Status status = project.isDisabled() ? disabled() : idle();
-        return new Task(project.getName(), taskName, null, status, project.getUrl(), false, null);
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, project.getUrl(), false, null);
     }
 
     /**
      * Helper method
      *
-     * @see PipelineFactory#createPipelineLatest(se.diabol.jenkins.pipeline.model.Pipeline, int)
+     * @see PipelineFactory#createPipelineLatest(se.diabol.jenkins.pipeline.model.Pipeline, int, ItemGroup)
      */
 
-    public static Pipeline createPipelineLatest(Pipeline pipeline) {
-        List<Pipeline> pipelines = createPipelineLatest(pipeline, 1);
+    public static Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup context) {
+        List<Pipeline> pipelines = createPipelineLatest(pipeline, 1, context);
         return pipelines.size() > 0 ? pipelines.get(0) : null;
     }
 
-    public static Pipeline createPipelineAggregated(Pipeline pipeline) {
+    public static Pipeline createPipelineAggregated(Pipeline pipeline, ItemGroup context) {
 
-        AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0));
+        AbstractProject firstProject = getProject(pipeline.getStages().get(0).getTasks().get(0), context);
         List<Stage> stages = new ArrayList<Stage>();
         for (Stage stage : pipeline.getStages()) {
 
             List<Task> tasks = new ArrayList<Task>();
 
             //The version build for this stage is the highest first task build
-            AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject);
+            AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject, context);
 
             String version = null;
             if (versionBuild != null) {
                 version = versionBuild.getDisplayName();
             }
             for (Task task : stage.getTasks()) {
-                AbstractProject<?, ?> taskProject = getProject(task);
+                AbstractProject<?, ?> taskProject = getProject(task, context);
                 AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
 
                 if (currentBuild != null) {
@@ -116,14 +119,13 @@ public abstract class PipelineFactory {
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
-        //TODO add triggeredBy
         return new Pipeline(pipeline.getName(), null, null, null, null, stages, true);
     }
 
-    private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject) {
+    private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
         int highest = -1;
         for (Task task : tasks) {
-            AbstractProject project = getProject(task);
+            AbstractProject project = getProject(task, context);
             AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject);
             if (firstBuild != null && firstBuild.getNumber() > highest) {
                 highest = firstBuild.getNumber();
@@ -144,9 +146,9 @@ public abstract class PipelineFactory {
      * @param pipeline      the pipeline prototype
      * @param noOfPipelines number of pipeline instances
      */
-    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines) {
+    public static List<Pipeline> createPipelineLatest(Pipeline pipeline, int noOfPipelines, ItemGroup context) {
         Task firstTask = pipeline.getStages().get(0).getTasks().get(0);
-        AbstractProject firstProject = getProject(firstTask);
+        AbstractProject firstProject = getProject(firstTask, context);
 
         List<Pipeline> result = new ArrayList<Pipeline>();
 
@@ -159,9 +161,9 @@ public abstract class PipelineFactory {
             for (Stage stage : pipeline.getStages()) {
                 List<Task> tasks = new ArrayList<Task>();
                 for (Task task : stage.getTasks()) {
-                    AbstractProject<?, ?> taskProject = getProject(task);
+                    AbstractProject<?, ?> taskProject = getProject(task, context);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
-                    tasks.add(getTask(task, currentBuild));
+                    tasks.add(getTask(task, currentBuild, context));
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
@@ -194,8 +196,8 @@ public abstract class PipelineFactory {
     }
 
 
-    private static Task getTask(Task task, AbstractBuild build) {
-        AbstractProject project = getProject(task);
+    private static Task getTask(Task task, AbstractBuild build, ItemGroup context) {
+        AbstractProject project = getProject(task, context);
         Status status = resolveStatus(project, build);
         String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
         String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
@@ -236,7 +238,7 @@ public abstract class PipelineFactory {
     private static String getAvatarUrl(User user) {
         ExtensionList<UserAvatarResolver> resolvers = UserAvatarResolver.all();
         for (UserAvatarResolver resolver : resolvers) {
-            String avatarUrl = resolver.findAvatarFor(user, 16, 16);
+            String avatarUrl = resolver.findAvatarFor(user, AVATAR_SIZE, AVATAR_SIZE);
             if (avatarUrl != null) {
                 return avatarUrl;
             }
@@ -259,18 +261,19 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    private static AbstractProject getProject(Task task) {
-        return Jenkins.getInstance().getItem(task.getId(), Jenkins.getInstance().getItemGroup(), AbstractProject.class);
+    private static AbstractProject getProject(Task task, ItemGroup context) {
+        return ProjectUtil.getProject(task.getId(), context);
     }
 
     protected static Status resolveStatus(AbstractProject project, AbstractBuild build) {
         if (build == null) {
-            if (project.isInQueue())
+            if (project.isInQueue()) {
                 return StatusFactory.queued(project.getQueueItem().getInQueueSince());
-            else if (project.isDisabled())
+            } else if (project.isDisabled()) {
                 return StatusFactory.disabled();
-            else
+            } else {
                 return StatusFactory.idle();
+            }
         }
 
         if (build.isBuilding()) {
@@ -279,16 +282,20 @@ public abstract class PipelineFactory {
         }
 
         Result result = build.getResult();
-        if (ABORTED.equals(result))
+        if (ABORTED.equals(result)) {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
-        else if (SUCCESS.equals(result))
+        }
+        if (SUCCESS.equals(result)) {
             return StatusFactory.success(build.getTimeInMillis(), build.getDuration());
-        else if (FAILURE.equals(result))
+        }
+        if (FAILURE.equals(result)) {
             return StatusFactory.failed(build.getTimeInMillis(), build.getDuration());
-        else if (UNSTABLE.equals(result))
+        }
+        if (UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
-        else
+        } else {
             throw new IllegalStateException("Result " + result + " not recognized.");
+        }
     }
 
     /**

@@ -17,7 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.model.status;
 
-public class StatusFactory {
+public final class StatusFactory {
+
+    private StatusFactory() {
+    }
+
     public static Status idle() {
         return new SimpleStatus(StatusType.IDLE, -1, -1);
     }

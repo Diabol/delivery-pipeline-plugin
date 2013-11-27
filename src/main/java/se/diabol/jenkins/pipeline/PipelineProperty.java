@@ -20,12 +20,14 @@ package se.diabol.jenkins.pipeline;
 import hudson.Extension;
 import hudson.model.*;
 import hudson.util.FormValidation;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
-import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
@@ -51,15 +53,27 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         return stageName;
     }
 
-    @SuppressWarnings("unused")
-    public void setTaskName(String taskName) {
+    public final void setTaskName(String taskName) {
         this.taskName = taskName;
     }
 
-    @SuppressWarnings("unused")
-    public void setStageName(String stageName) {
+    public final void setStageName(String stageName) {
         this.stageName = stageName;
     }
+
+    public static Set<String> getStageNames() {
+        List<AbstractProject> projects = Jenkins.getInstance().getAllItems(AbstractProject.class);
+        Set<String> result = new HashSet<String>();
+        for (AbstractProject project : projects) {
+            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            if (property != null && property.getStageName() != null) {
+                result.add(property.getStageName());
+            }
+
+        }
+        return result;
+    }
+
 
     @Extension
     public static final class DescriptorImpl extends JobPropertyDescriptor {
@@ -72,27 +86,26 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             return true;
         }
 
-        @SuppressWarnings("unused")
         public AutoCompletionCandidates doAutoCompleteStageName(@QueryParameter String value) {
             if (value != null) {
                 AutoCompletionCandidates c = new AutoCompletionCandidates();
-                Set<String> stages = ProjectUtil.getStageNames();
+                Set<String> stages = getStageNames();
 
-                for (String stage : stages)
-                    if (stage.toLowerCase().startsWith(value.toLowerCase()))
+                for (String stage : stages) {
+                    if (stage.toLowerCase().startsWith(value.toLowerCase())) {
                         c.add(stage);
+                    }
+                }
                 return c;
             } else {
                 return new AutoCompletionCandidates();
             }
         }
 
-        @SuppressWarnings("unused")
         public FormValidation doCheckStageName(@QueryParameter String value) {
             return checkValue(value);
         }
 
-        @SuppressWarnings("unused")
         public FormValidation doCheckTaskName(@QueryParameter String value) {
             return checkValue(value);
         }

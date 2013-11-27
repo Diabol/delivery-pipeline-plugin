@@ -27,7 +27,7 @@ import java.util.List;
 
 import static com.google.common.base.Objects.toStringHelper;
 
-@ExportedBean(defaultVisibility = 100)
+@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
     private List<Task> tasks;
 
@@ -61,10 +61,10 @@ public class Stage extends AbstractItem {
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof Stage && equals((Stage) o);
+        return o == this || o instanceof Stage && equalsSelf((Stage) o);
     }
 
-    private boolean equals(Stage o) {
+    private boolean equalsSelf(Stage o) {
         return new EqualsBuilder().append(tasks, o.tasks).append(version, o.version).appendSuper(super.equals(o)).isEquals();
     }
 

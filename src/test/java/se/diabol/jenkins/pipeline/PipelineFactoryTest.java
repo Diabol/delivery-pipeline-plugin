@@ -150,8 +150,8 @@ public class PipelineFactoryTest {
         final Pipeline pipe1 = PipelineFactory.extractPipeline("pipe1", build1);
         final Pipeline pipe2 = PipelineFactory.extractPipeline("pipe2", build2);
 
-        Pipeline aggregated1 = PipelineFactory.createPipelineAggregated(pipe1);
-        Pipeline aggregated2 = PipelineFactory.createPipelineAggregated(pipe2);
+        Pipeline aggregated1 = PipelineFactory.createPipelineAggregated(pipe1, jenkins.getInstance());
+        Pipeline aggregated2 = PipelineFactory.createPipelineAggregated(pipe2, jenkins.getInstance());
 
         assertNull(aggregated1.getStages().get(0).getVersion());
         assertNull(aggregated2.getStages().get(0).getVersion());
@@ -171,8 +171,8 @@ public class PipelineFactoryTest {
         assertEquals(2, pipe2.getStages().size());
         assertNotNull(sonar.getBuild("1"));
 
-        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1);
-        aggregated2 = PipelineFactory.createPipelineAggregated(pipe2);
+        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1, jenkins.getInstance());
+        aggregated2 = PipelineFactory.createPipelineAggregated(pipe2, jenkins.getInstance());
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
         assertEquals("job/sonar1/1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
@@ -190,8 +190,8 @@ public class PipelineFactoryTest {
         jenkins.buildAndAssertSuccess(build2);
         jenkins.waitUntilNoActivity();
 
-        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1);
-        aggregated2 = PipelineFactory.createPipelineAggregated(pipe2);
+        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1, jenkins.getInstance());
+        aggregated2 = PipelineFactory.createPipelineAggregated(pipe2, jenkins.getInstance());
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
         assertEquals("#1", aggregated2.getStages().get(1).getVersion());
@@ -203,8 +203,8 @@ public class PipelineFactoryTest {
         jenkins.buildAndAssertSuccess(build1);
         jenkins.waitUntilNoActivity();
 
-        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1);
-        aggregated2 = PipelineFactory.createPipelineAggregated(pipe2);
+        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1, jenkins.getInstance());
+        aggregated2 = PipelineFactory.createPipelineAggregated(pipe2, jenkins.getInstance());
 
 
         assertEquals("#2", aggregated1.getStages().get(1).getVersion());
@@ -229,7 +229,7 @@ public class PipelineFactoryTest {
         BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
         view.triggerManualBuild(1, "prod", "test");
         jenkins.waitUntilNoActivity();
-        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1);
+        aggregated1 = PipelineFactory.createPipelineAggregated(pipe1, jenkins.getInstance());
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isSuccess());
         assertEquals("#1", aggregated1.getStages().get(3).getVersion());
 
@@ -261,7 +261,7 @@ public class PipelineFactoryTest {
         assertNull(ci2.getLastBuild());
 
         Pipeline pipeline = PipelineFactory.extractPipeline("test", build);
-        Pipeline aggregated = PipelineFactory.createPipelineAggregated(pipeline);
+        Pipeline aggregated = PipelineFactory.createPipelineAggregated(pipeline, jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("ci1", aggregated.getStages().get(1).getTasks().get(0).getName());
         assertEquals("ci2", aggregated.getStages().get(1).getTasks().get(1).getName());
@@ -272,7 +272,7 @@ public class PipelineFactoryTest {
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
-        aggregated = PipelineFactory.createPipelineAggregated(pipeline);
+        aggregated = PipelineFactory.createPipelineAggregated(pipeline, jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("#2", build.getLastBuild().getDisplayName());
         assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
@@ -281,7 +281,7 @@ public class PipelineFactoryTest {
 
         view.triggerManualBuild(2, "ci2", "build");
         jenkins.waitUntilNoActivity();
-        aggregated = PipelineFactory.createPipelineAggregated(pipeline);
+        aggregated = PipelineFactory.createPipelineAggregated(pipeline, jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("IDLE", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
         assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
@@ -318,7 +318,7 @@ public class PipelineFactoryTest {
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
-        Pipeline latest = PipelineFactory.createPipelineLatest(pipeline);
+        Pipeline latest = PipelineFactory.createPipelineLatest(pipeline, jenkins.getInstance());
 
         assertNotNull(latest);
 
@@ -339,7 +339,7 @@ public class PipelineFactoryTest {
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
         Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
-        Pipeline latest = PipelineFactory.createPipelineLatest(pipeline);
+        Pipeline latest = PipelineFactory.createPipelineLatest(pipeline, jenkins.getInstance());
         assertNotNull(latest);
         assertEquals(2, latest.getStages().size());
         assertEquals("SUCCESS", latest.getStages().get(0).getTasks().get(0).getStatus().toString());
@@ -469,6 +469,22 @@ public class PipelineFactoryTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
     }
+
+    @Test
+    public void testResolveStatusNotBuilt() throws Exception {
+        //Result.NOT_BUILT should never occur for a build, just for a module within a maven build.
+        FreeStyleProject project = jenkins.createFreeStyleProject();
+        project.getBuildersList().add(new MockBuilder(Result.NOT_BUILT));
+        project.scheduleBuild2(0);
+        jenkins.waitUntilNoActivity();
+        try {
+            PipelineFactory.resolveStatus(project, project.getLastBuild());
+            fail("Should throw exception here");
+        } catch (IllegalStateException e) {
+        }
+    }
+
+
 
 
     @Test
@@ -640,6 +656,35 @@ public class PipelineFactoryTest {
         when(build.getActions(CauseAction.class)).thenReturn(causeActions);
 
         assertNull(PipelineFactory.getUpstreamBuild(build));
+
+    }
+
+    @Test
+    public void getPipelineLatestWithFolders() throws Exception {
+        MockFolder folder1 = jenkins.createFolder("folder1");
+        MockFolder folder2 = jenkins.createFolder("folder2");
+        FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
+        FreeStyleProject job2 = folder2.createProject(FreeStyleProject.class, "job2");
+
+        job1.getPublishersList().add(new BuildTrigger("folder2/job2", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline prototype = PipelineFactory.extractPipeline("Folders", job1);
+
+        assertNotNull(prototype);
+
+        jenkins.buildAndAssertSuccess(job1);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(job1.getLastBuild());
+        assertNotNull(job2.getLastBuild());
+
+        Pipeline pipeline = PipelineFactory.createPipelineLatest(prototype, folder1);
+        assertNotNull(pipeline);
+        assertEquals(2, pipeline.getStages().size());
+        assertEquals("folder1/job1", pipeline.getStages().get(0).getTasks().get(0).getId());
+        assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
+
 
     }
 

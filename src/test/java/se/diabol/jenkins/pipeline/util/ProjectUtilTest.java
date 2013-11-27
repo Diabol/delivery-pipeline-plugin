@@ -23,6 +23,8 @@ import hudson.util.ListBoxModel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
+import org.mortbay.jetty.security.UserRealm;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
 import java.util.Map;
@@ -35,24 +37,6 @@ public class ProjectUtilTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
-
-    @Test
-    public void testGetStageNames() throws Exception {
-        FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
-        FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
-
-        Set<String> stageNames = ProjectUtil.getStageNames();
-        assertNotNull(stageNames);
-        assertEquals(0, stageNames.size());
-        build1.addProperty(new PipelineProperty(null, "Build"));
-        build2.addProperty(new PipelineProperty(null, "QA"));
-
-        stageNames = ProjectUtil.getStageNames();
-        assertNotNull(stageNames);
-        assertEquals(2, stageNames.size());
-        assertTrue(stageNames.contains("Build"));
-        assertTrue(stageNames.contains("QA"));
-    }
 
 
     @Test
