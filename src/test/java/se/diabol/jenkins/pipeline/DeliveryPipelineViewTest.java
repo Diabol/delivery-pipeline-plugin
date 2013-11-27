@@ -246,11 +246,11 @@ public class DeliveryPipelineViewTest {
     @Test
     @WithoutJenkins
     public void testDoCheckRegexpFirstJob() {
-        DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
-        assertEquals(FormValidation.Kind.OK, d.doCheckRegexpFirstJob(null).kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexpFirstJob("*").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexpFirstJob("^build-.+?-project").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckRegexpFirstJob("^build-(.+?)-project").kind);
+        DeliveryPipelineView.RegExpSpec.DescriptorImpl d = new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
+        assertEquals(FormValidation.Kind.OK, d.doCheckRegexp(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("*").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-.+?-project").kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckRegexp("^build-(.+?)-project").kind);
     }
 
     @Test
