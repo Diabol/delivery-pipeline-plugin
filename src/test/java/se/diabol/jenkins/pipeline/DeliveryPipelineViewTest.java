@@ -304,4 +304,41 @@ public class DeliveryPipelineViewTest {
         assertTrue(model.size() != 0);
     }
 
+    @Test
+    public void testGetPipelinesRegExp() throws Exception {
+        jenkins.createFreeStyleProject("compile-Project1");
+        jenkins.createFreeStyleProject("compile-Project2");
+        jenkins.createFreeStyleProject("compile-Project3");
+        jenkins.createFreeStyleProject("compile");
+
+        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)");
+        List<DeliveryPipelineView.RegExpSpec> regExpSpecs = new ArrayList<DeliveryPipelineView.RegExpSpec>();
+        regExpSpecs.add(regExpSpec);
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        view.setRegexpFirstJobs(regExpSpecs);
+
+        jenkins.getInstance().addView(view);
+
+        List<Component> components = view.getPipelines();
+        assertEquals(3, components.size());
+
+        List<String> names = new ArrayList<String>();
+
+        for (Component component : components) {
+            names.add(component.getName());
+        }
+
+        assertTrue(names.contains("Project1"));
+        assertTrue(names.contains("Project2"));
+        assertTrue(names.contains("Project3"));
+
+        assertEquals(3, view.getItems().size());
+
+
+
+
+    }
+
+
 }
