@@ -590,7 +590,7 @@ public class PipelineFactoryTest {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        List<UserInfo> users = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
         assertEquals(1, users.size());
         UserInfo user = users.get(0);
         assertEquals("SYSTEM", user.getName());
@@ -605,14 +605,20 @@ public class PipelineFactoryTest {
         project.setScm(scm);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        List<UserInfo> users = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
         assertEquals(2, users.size());
-        UserInfo user1 = users.get(0);
-        assertEquals("test-user", user1.getName());
-        UserInfo user2 = users.get(1);
-        assertEquals("SYSTEM", user2.getName());
-
+        assertTrue(users.contains(new UserInfo("test-user")));
+        assertTrue(users.contains(new UserInfo("SYSTEM")));
     }
+
+    @Test
+    public void testGetTriggeredByWithNoUserIdCause() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        jenkins.buildAndAssertSuccess(project);
+        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
+        assertEquals(0, users.size());
+    }
+
 
     @Test
     public void testGetTriggeredByWithCulprits() throws Exception {
@@ -636,12 +642,10 @@ public class PipelineFactoryTest {
 
         assertEquals(3, build.getCulprits().size());
 
-        List<UserInfo> users = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
         assertEquals(2, users.size());
-        UserInfo user1 = users.get(0);
-        assertEquals("test-user", user1.getName());
-        UserInfo user2 = users.get(1);
-        assertEquals("SYSTEM", user2.getName());
+        assertTrue(users.contains(new UserInfo("test-user")));
+        assertTrue(users.contains(new UserInfo("SYSTEM")));
 
     }
 

@@ -24,6 +24,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
 
@@ -33,7 +34,7 @@ public class Pipeline extends AbstractItem {
 
     private String version;
 
-    private List<UserInfo> triggeredBy;
+    private Set<UserInfo> triggeredBy;
 
     private boolean aggregated;
 
@@ -41,7 +42,7 @@ public class Pipeline extends AbstractItem {
 
     private List<Change> changes;
 
-    public Pipeline(String name, String version, List<Change> changes, String timestamp, List<UserInfo> triggeredBy,
+    public Pipeline(String name, String version, List<Change> changes, String timestamp, Set<UserInfo> triggeredBy,
                     List<Stage> stages, boolean aggregated) {
         super(name);
         this.version = version;
@@ -73,7 +74,7 @@ public class Pipeline extends AbstractItem {
     }
 
     @Exported
-    public List<UserInfo> getTriggeredBy() {
+    public Set<UserInfo> getTriggeredBy() {
         return triggeredBy;
     }
 
