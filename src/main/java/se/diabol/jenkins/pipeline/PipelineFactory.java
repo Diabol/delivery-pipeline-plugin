@@ -216,17 +216,19 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    protected static List<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
-        List<UserInfo> triggeredBy = new ArrayList<UserInfo>();
+    protected static Set<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
+        Set<UserInfo> triggeredBy = new HashSet<UserInfo>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
             triggeredBy.add(getUser(entry.getAuthor()));
         }
         Cause.UserIdCause cause = build.getCause(Cause.UserIdCause.class);
-        if (cause != null && cause.getUserName() != null) {
-            UserInfo user = getUser(Jenkins.getInstance().getUser(cause.getUserName()));
-            triggeredBy.add(user);
-        } else {
-            triggeredBy.add(new UserInfo("anonymous"));
+        if (cause != null) {
+            if (cause.getUserName() != null) {
+                UserInfo user = getUser(Jenkins.getInstance().getUser(cause.getUserName()));
+                triggeredBy.add(user);
+            } else {
+                triggeredBy.add(new UserInfo("anonymous"));
+            }
         }
         return triggeredBy;
     }

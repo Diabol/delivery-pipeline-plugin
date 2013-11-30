@@ -27,7 +27,7 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
                             html = html + "<section class=\"pipe\">";
 
                             var triggered = "";
-                            if (pipeline.triggeredBy) {
+                            if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
                                 for (var t = 0; t < pipeline.triggeredBy.length; t++) {
                                     var user = pipeline.triggeredBy[t];
                                     if (user.avatarUrl && showAvatars) {
@@ -44,7 +44,11 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
                             if (pipeline.aggregated) {
                                 html = html + '<h1>Aggregated view</h1>'
                             } else {
-                                html = html + '<h1>' + pipeline.version + ' by ' + triggered + ', started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>'
+                                html = html + '<h1>' + pipeline.version;
+                                if (triggered != "") {
+                                    html = html + ' by ' + triggered + ', ';
+                                }
+                                html = html + 'started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
 
                                 if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                                     html = html + '<div class="changes">';

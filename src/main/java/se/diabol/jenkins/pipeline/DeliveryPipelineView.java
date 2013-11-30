@@ -293,7 +293,7 @@ public class DeliveryPipelineView extends View {
 
         public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
-            for (int i = 0; i <= 10; i++) {
+            for (int i = 0; i <= MAX_NO_OF_PIPELINES; i++) {
                 String opt = String.valueOf(i);
                 options.add(opt, opt);
             }
