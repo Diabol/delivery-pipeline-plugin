@@ -26,8 +26,8 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
                             var pipeline = component.pipelines[i];
                             html = html + "<section class=\"pipe\">";
 
-                            var triggered;
-                            if (pipeline.triggeredBy) {
+                            var triggered = "";
+                            if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
                                 for (var t = 0; t < pipeline.triggeredBy.length; t++) {
                                     var user = pipeline.triggeredBy[t];
                                     if (user.avatarUrl && showAvatars) {
@@ -45,8 +45,8 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
                                 html = html + '<h1>Aggregated view</h1>'
                             } else {
                                 html = html + '<h1>' + pipeline.version;
-                                if (triggered) {
-                                    html = html + ' by ' + triggered + ',';
+                                if (triggered != "") {
+                                    html = html + ' by ' + triggered + ', ';
                                 }
                                 html = html + 'started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
 
