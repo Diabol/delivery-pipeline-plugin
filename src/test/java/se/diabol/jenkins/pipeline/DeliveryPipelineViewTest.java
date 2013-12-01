@@ -25,6 +25,7 @@ import hudson.util.ListBoxModel;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.model.Component;
 import se.diabol.jenkins.pipeline.model.Pipeline;
@@ -147,37 +148,6 @@ public class DeliveryPipelineViewTest {
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
-        folder.addView(view);
-
-        assertTrue(view.contains(build));
-        assertTrue(view.contains(sonar));
-        assertTrue(view.contains(packaging));
-
-        Collection<TopLevelItem> items =  view.getItems();
-        assertEquals(3, items.size());
-
-    }
-
-
-    @Test
-    public void testGetItemsAndContainsWithFolders() throws Exception {
-        MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject build = folder.createProject(FreeStyleProject.class, "build");
-        FreeStyleProject sonar = folder.createProject(FreeStyleProject.class, "sonar");
-        FreeStyleProject packaging = folder.createProject(FreeStyleProject.class,"packaging");
-
-
-        //FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        //FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
-        build.getPublishersList().add(new BuildTrigger("sonar", false));
-        build.getPublishersList().add(new BuildTrigger("packaging", false));
-
-        jenkins.getInstance().rebuildDependencyGraph();
-
-
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
-        DeliveryPipelineView view = new DeliveryPipelineView("name", specs);
         folder.addView(view);
 
         assertTrue(view.contains(build));

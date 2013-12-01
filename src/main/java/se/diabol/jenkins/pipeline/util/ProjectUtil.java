@@ -99,9 +99,6 @@ public abstract class ProjectUtil {
             LOG.log(Level.WARNING, "Could not find projects on regular expression", e);
             return Collections.emptyMap();
         }
-    public static AbstractProject<?, ?> getProject(String name, ItemGroup context) {
-        return Jenkins.getInstance().getItem(name, context, AbstractProject.class);
     }
-
 
 }
