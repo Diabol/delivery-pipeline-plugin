@@ -27,6 +27,8 @@ import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
 import hudson.plugins.parameterizedtrigger.TriggerBuilder;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.test.AggregatedTestResultAction;
+import hudson.triggers.SCMTrigger;
+import hudson.triggers.TimerTrigger;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -78,7 +81,7 @@ public class PipelineFactoryTest {
         Pipeline pipeline = PipelineFactory.extractPipeline("Piper", compile);
 
         assertEquals(pipeline,
-                new Pipeline("Piper", null, null, null, null,
+                new Pipeline("Piper", null, null, null, null, null,
                         asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null))),
                                 new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null))),
                                 new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null)))), false));
@@ -306,7 +309,7 @@ public class PipelineFactoryTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        assertEquals(new Pipeline("Pipeline", null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
+        assertEquals(new Pipeline("Pipeline", null, null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
 
 
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
@@ -314,7 +317,7 @@ public class PipelineFactoryTest {
 
         Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
 
-        assertEquals(new Pipeline("Pipeline", null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
+        assertEquals(new Pipeline("Pipeline", null, null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
@@ -590,11 +593,11 @@ public class PipelineFactoryTest {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
-        assertEquals(1, users.size());
-        UserInfo user = users.get(0);
-        assertEquals("SYSTEM", user.getName());
-
+        Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
+        assertEquals(0, contributors.size());
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals("Started by SYSTEM", triggeredBy.iterator().next());
     }
 
     @Test
@@ -605,20 +608,65 @@ public class PipelineFactoryTest {
         project.setScm(scm);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
-        assertEquals(2, users.size());
-        assertTrue(users.contains(new UserInfo("test-user")));
-        assertTrue(users.contains(new UserInfo("SYSTEM")));
+        Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
+        assertEquals(1, contributors.size());
+        assertTrue(contributors.contains(new UserInfo("test-user")));
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals("Started by SYSTEM", triggeredBy.iterator().next());
     }
 
     @Test
     public void testGetTriggeredByWithNoUserIdCause() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         jenkins.buildAndAssertSuccess(project);
-        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
-        assertEquals(0, users.size());
+        Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
+        assertEquals(0, contributors.size());
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals("Triggered by Unknown", triggeredBy.iterator().next());
     }
 
+    @Test
+    public void testGetTriggeredByTimer() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        project.scheduleBuild(new TimerTrigger.TimerTriggerCause());
+        jenkins.waitUntilNoActivity();
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals("Triggered by Timer", triggeredBy.iterator().next());
+    }
+
+    @Test
+    public void testGetTriggeredBySCMChange() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        project.scheduleBuild(new SCMTrigger.SCMTriggerCause("SCM"));
+        jenkins.waitUntilNoActivity();
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals("Triggered by SCM Change", triggeredBy.iterator().next());
+    }
+
+    @Test
+    public void testGetTriggeredByUpStreamJob() throws Exception {
+        FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        jenkins.buildAndAssertSuccess(upstream);
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        project.scheduleBuild(new Cause.UpstreamCause(upstream.getLastBuild()));
+        jenkins.waitUntilNoActivity();
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals("Triggered by Upstream Build", triggeredBy.iterator().next());
+    }
 
     @Test
     public void testGetTriggeredByWithCulprits() throws Exception {
@@ -642,11 +690,12 @@ public class PipelineFactoryTest {
 
         assertEquals(3, build.getCulprits().size());
 
-        List<UserInfo> users = new ArrayList<UserInfo>(PipelineFactory.getTriggeredBy(project.getLastBuild()));
-        assertEquals(2, users.size());
-        assertTrue(users.contains(new UserInfo("test-user")));
-        assertTrue(users.contains(new UserInfo("SYSTEM")));
-
+        Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
+        assertEquals(1, contributors.size());
+        assertTrue(contributors.contains(new UserInfo("test-user")));
+        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1,triggeredBy.size());
+        assertEquals("Started by SYSTEM",triggeredBy.iterator().next());
     }
 
 

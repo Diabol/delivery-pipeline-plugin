@@ -23,6 +23,8 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
 import hudson.tasks.UserAvatarResolver;
 import hudson.tasks.test.AggregatedTestResultAction;
+import hudson.triggers.SCMTrigger;
+import hudson.triggers.TimerTrigger;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.model.*;
@@ -68,7 +70,7 @@ public abstract class PipelineFactory {
                     new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
 
-        return new Pipeline(name, null, null, null, null, newArrayList(stages.values()), false);
+        return new Pipeline(name, null, null, null, null, null, newArrayList(stages.values()), false);
     }
 
     private static Task getPrototypeTask(AbstractProject project) {
@@ -119,7 +121,7 @@ public abstract class PipelineFactory {
             }
             stages.add(new Stage(stage.getName(), tasks, version));
         }
-        return new Pipeline(pipeline.getName(), null, null, null, null, stages, true);
+        return new Pipeline(pipeline.getName(), null, null, null, null,null, stages, true);
     }
 
     private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
@@ -169,7 +171,7 @@ public abstract class PipelineFactory {
             }
 
             result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), changes, timestamp,
-                    getTriggeredBy(firstBuild), stages, false));
+                    getTriggeredBy(firstBuild), getContributors(firstBuild), stages, false));
         }
         return result;
     }
@@ -216,21 +218,39 @@ public abstract class PipelineFactory {
         return null;
     }
 
-    protected static Set<UserInfo> getTriggeredBy(AbstractBuild<?, ?> build) {
-        Set<UserInfo> triggeredBy = new HashSet<UserInfo>();
+    protected static Set<UserInfo> getContributors(AbstractBuild<?, ?> build) {
+        Set<UserInfo> contributors = new HashSet<UserInfo>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
-            triggeredBy.add(getUser(entry.getAuthor()));
+            contributors.add(getUser(entry.getAuthor()));
         }
-        Cause.UserIdCause cause = build.getCause(Cause.UserIdCause.class);
-        if (cause != null) {
-            if (cause.getUserName() != null) {
-                UserInfo user = getUser(Jenkins.getInstance().getUser(cause.getUserName()));
-                triggeredBy.add(user);
-            } else {
-                triggeredBy.add(new UserInfo("anonymous"));
-            }
+        return contributors;
+    }
+
+    protected static List<String> getTriggeredBy(AbstractBuild<?, ?> build) {
+        List<String> result = new ArrayList<String>();
+        List<Cause> causes = build.getCauses();
+        for (Cause cause : causes) {
+           if(cause instanceof Cause.UserIdCause){
+               result.add("Started by "+getDisplayName(((Cause.UserIdCause) cause).getUserName()));
+           } else if(cause instanceof Cause.RemoteCause){
+               result.add("Triggered by Remote Action");
+           } else if(cause instanceof Cause.UpstreamCause){
+               result.add("Triggered by Upstream Build");
+           } else if(cause instanceof SCMTrigger.SCMTriggerCause){
+               result.add("Triggered by SCM Change");
+           } else if(cause instanceof TimerTrigger.TimerTriggerCause){
+               result.add("Triggered by Timer");
+           } else if(cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause){
+               result.add("Triggered by Upstream Build");
+           } else {
+               result.add("Triggered by Unknown");
+           }
         }
-        return triggeredBy;
+        return result;
+    }
+
+    private static String getDisplayName(String userName) {
+        return Jenkins.getInstance().getUser(userName).getDisplayName();
     }
 
     private static UserInfo getUser(User user) {

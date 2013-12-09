@@ -181,7 +181,8 @@ public class DeliveryPipelineViewTest {
         assertEquals("#1", pipeline.getVersion());
         assertNotNull(pipeline.getTimestamp());
         assertFalse(pipeline.isAggregated());
-        assertEquals(0, pipeline.getTriggeredBy().size());
+        assertEquals(1, pipeline.getTriggeredBy().size());
+        assertEquals(0, pipeline.getContributors().size());
         assertEquals(1, pipeline.getStages().size());
         assertEquals(0, pipeline.getChanges().size());
 
@@ -209,6 +210,7 @@ public class DeliveryPipelineViewTest {
         assertNull(pipeline.getTimestamp());
         assertTrue(pipeline.isAggregated());
         assertNull(pipeline.getTriggeredBy());
+        assertNull(pipeline.getContributors());
         assertEquals(1, pipeline.getStages().size());
         assertNull(pipeline.getChanges());
 
@@ -218,7 +220,8 @@ public class DeliveryPipelineViewTest {
         assertEquals("#1", pipeline.getVersion());
         assertNotNull(pipeline.getTimestamp());
         assertFalse(pipeline.isAggregated());
-        assertEquals(0, pipeline.getTriggeredBy().size());
+        assertEquals(1, pipeline.getTriggeredBy().size());
+        assertEquals(0, pipeline.getContributors().size());
         assertEquals(1, pipeline.getStages().size());
         assertEquals(0, pipeline.getChanges().size());
 
