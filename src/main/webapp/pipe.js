@@ -28,16 +28,12 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
 
                             var triggered = "";
                             if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
-                                for (var t = 0; t < pipeline.triggeredBy.length; t++) {
-                                    var user = pipeline.triggeredBy[t];
-                                    if (user.avatarUrl && showAvatars) {
-                                        triggered = triggered + "<img src=\"" + user.avatarUrl + "\" alt=\"" + user.name + "\" title=\"" + user.name + "\"/>"
-                                    } else {
-                                        triggered = triggered + user.name;
-                                    }
-                                    if (t < pipeline.triggeredBy.length - 1) {
-                                        triggered = triggered + ", ";
-                                    }
+                                for (var y = 0; y < pipeline.triggeredBy.length; y++) {
+                                    var trigger = pipeline.triggeredBy[y];
+                                    triggered = triggered + ' <span class="' + trigger.type + '">' + trigger.description + '</span>';
+                                }
+                                if (y < pipeline.triggeredBy.length - 1) {
+                                    triggered = triggered + ", ";
                                 }
                             }
 
@@ -46,9 +42,9 @@ function renderPipelines(divNames, errorDiv, view, showAvatars, showChanges) {
                             } else {
                                 html = html + '<h1>' + pipeline.version;
                                 if (triggered != "") {
-                                    html = html + ' by ' + triggered + ', ';
+                                    html = html + " triggered by " + triggered;
                                 }
-                                html = html + 'started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
+                                html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
 
                                 if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                                     html = html + '<div class="changes">';

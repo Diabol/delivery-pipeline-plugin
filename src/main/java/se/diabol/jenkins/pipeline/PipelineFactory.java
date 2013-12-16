@@ -226,24 +226,26 @@ public abstract class PipelineFactory {
         return contributors;
     }
 
-    protected static List<String> getTriggeredBy(AbstractBuild<?, ?> build) {
-        List<String> result = new ArrayList<String>();
+    protected static List<Trigger> getTriggeredBy(AbstractBuild<?, ?> build) {
+        List<Trigger> result = new ArrayList<Trigger>();
         List<Cause> causes = build.getCauses();
         for (Cause cause : causes) {
            if(cause instanceof Cause.UserIdCause){
-               result.add("Started by "+getDisplayName(((Cause.UserIdCause) cause).getUserName()));
+               result.add(new Trigger("MANUAL", "user " + getDisplayName(((Cause.UserIdCause) cause).getUserName())));
            } else if(cause instanceof Cause.RemoteCause){
-               result.add("Triggered by Remote Action");
+               result.add(new Trigger("REMOTE", "remote trigger"));
            } else if(cause instanceof Cause.UpstreamCause){
-               result.add("Triggered by Upstream Build");
+               //TODO add which project!
+               result.add(new Trigger("UPSTREAM", "upstream"));
            } else if(cause instanceof SCMTrigger.SCMTriggerCause){
-               result.add("Triggered by SCM Change");
+               result.add(new Trigger("SCM", "SCM change"));
            } else if(cause instanceof TimerTrigger.TimerTriggerCause){
-               result.add("Triggered by Timer");
+               result.add(new Trigger("TIMER", "timer"));
            } else if(cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause){
-               result.add("Triggered by Upstream Build");
+               //TODO add which project!
+               result.add(new Trigger("UPSTREAM", "upstream"));
            } else {
-               result.add("Triggered by Unknown");
+               result.add(new Trigger("UNKNOWN", "unknown cause"));
            }
         }
         return result;

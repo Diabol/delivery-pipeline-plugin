@@ -34,7 +34,7 @@ public class Pipeline extends AbstractItem {
 
     private String version;
 
-    private List<String> triggeredBy;
+    private List<Trigger> triggeredBy;
     private Set<UserInfo> contributors;
 
     private boolean aggregated;
@@ -47,7 +47,7 @@ public class Pipeline extends AbstractItem {
                     String version,
                     List<Change> changes,
                     String timestamp,
-                    List<String> triggeredBy,
+                    List<Trigger> triggeredBy,
                     Set<UserInfo> contributors,
                     List<Stage> stages, boolean aggregated) {
         super(name);
@@ -120,7 +120,7 @@ public class Pipeline extends AbstractItem {
     }
 
     @Exported
-    public List<String> getTriggeredBy() {
+    public List<Trigger> getTriggeredBy() {
         return triggeredBy;
     }
 }

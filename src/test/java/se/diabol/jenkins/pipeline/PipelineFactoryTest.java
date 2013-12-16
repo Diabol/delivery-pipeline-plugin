@@ -595,9 +595,9 @@ public class PipelineFactoryTest {
         jenkins.waitUntilNoActivity();
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
         assertEquals(0, contributors.size());
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("Started by SYSTEM", triggeredBy.iterator().next());
+        assertEquals("MANUAL", triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -611,9 +611,9 @@ public class PipelineFactoryTest {
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
         assertEquals(1, contributors.size());
         assertTrue(contributors.contains(new UserInfo("test-user")));
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("Started by SYSTEM", triggeredBy.iterator().next());
+        assertEquals("MANUAL", triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -622,9 +622,9 @@ public class PipelineFactoryTest {
         jenkins.buildAndAssertSuccess(project);
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
         assertEquals(0, contributors.size());
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("Triggered by Unknown", triggeredBy.iterator().next());
+        assertEquals("UNKNOWN", triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -635,9 +635,9 @@ public class PipelineFactoryTest {
         project.setScm(scm);
         project.scheduleBuild(new TimerTrigger.TimerTriggerCause());
         jenkins.waitUntilNoActivity();
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("Triggered by Timer", triggeredBy.iterator().next());
+        assertEquals("TIMER", triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -648,9 +648,9 @@ public class PipelineFactoryTest {
         project.setScm(scm);
         project.scheduleBuild(new SCMTrigger.SCMTriggerCause("SCM"));
         jenkins.waitUntilNoActivity();
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("Triggered by SCM Change", triggeredBy.iterator().next());
+        assertEquals("SCM", triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -663,9 +663,9 @@ public class PipelineFactoryTest {
         project.setScm(scm);
         project.scheduleBuild(new Cause.UpstreamCause(upstream.getLastBuild()));
         jenkins.waitUntilNoActivity();
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("Triggered by Upstream Build", triggeredBy.iterator().next());
+        assertEquals("UPSTREAM", triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -693,9 +693,9 @@ public class PipelineFactoryTest {
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
         assertEquals(1, contributors.size());
         assertTrue(contributors.contains(new UserInfo("test-user")));
-        List<String> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1,triggeredBy.size());
-        assertEquals("Started by SYSTEM",triggeredBy.iterator().next());
+        assertEquals("MANUAL",triggeredBy.iterator().next().getType());
     }
 
 
