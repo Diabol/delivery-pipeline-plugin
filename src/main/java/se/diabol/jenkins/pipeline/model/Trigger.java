@@ -26,6 +26,14 @@ public class Trigger {
     private String type;
     private String description;
 
+    public static final String TYPE_UPSTREAM = "UPSTREAM";
+    public static final String TYPE_MANUAL = "MANUAL";
+    public static final String TYPE_REMOTE = "REMOTE";
+    public static final String TYPE_SCM = "SCM";
+    public static final String TYPE_TIMER = "TIMER";
+    public static final String TYPE_UNKNOWN = "UNKNOWN";
+
+
     public Trigger(String type, String description) {
         this.type = type;
         this.description = description;

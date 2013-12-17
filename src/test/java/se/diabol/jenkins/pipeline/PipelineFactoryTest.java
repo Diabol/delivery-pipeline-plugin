@@ -30,6 +30,7 @@ import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import hudson.util.OneShotEvent;
+import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -390,6 +391,11 @@ public class PipelineFactoryTest {
         assertNotNull(build.getLastBuild());
 
         assertEquals(build.getLastBuild(), PipelineFactory.getFirstUpstreamBuild(build.getLastBuild(), build));
+        Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
+        List<Pipeline> pipelines = PipelineFactory.createPipelineLatest(pipeline, 1, Jenkins.getInstance());
+        assertEquals(1, pipelines.size());
+        assertEquals(1,pipelines.get(0).getTriggeredBy().size());
+        assertEquals(Trigger.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
 
     }
 
@@ -597,7 +603,7 @@ public class PipelineFactoryTest {
         assertEquals(0, contributors.size());
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("MANUAL", triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_MANUAL, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -613,7 +619,7 @@ public class PipelineFactoryTest {
         assertTrue(contributors.contains(new UserInfo("test-user")));
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("MANUAL", triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_MANUAL, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -624,7 +630,7 @@ public class PipelineFactoryTest {
         assertEquals(0, contributors.size());
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("UNKNOWN", triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_UNKNOWN, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -637,7 +643,7 @@ public class PipelineFactoryTest {
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("TIMER", triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_TIMER, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -650,7 +656,7 @@ public class PipelineFactoryTest {
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("SCM", triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_SCM, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -665,7 +671,7 @@ public class PipelineFactoryTest {
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals("UPSTREAM", triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -695,7 +701,7 @@ public class PipelineFactoryTest {
         assertTrue(contributors.contains(new UserInfo("test-user")));
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1,triggeredBy.size());
-        assertEquals("MANUAL",triggeredBy.iterator().next().getType());
+        assertEquals(Trigger.TYPE_MANUAL,triggeredBy.iterator().next().getType());
     }
 
 

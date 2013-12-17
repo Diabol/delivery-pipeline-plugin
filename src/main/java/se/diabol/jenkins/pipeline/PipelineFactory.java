@@ -231,21 +231,21 @@ public abstract class PipelineFactory {
         List<Cause> causes = build.getCauses();
         for (Cause cause : causes) {
            if(cause instanceof Cause.UserIdCause){
-               result.add(new Trigger("MANUAL", "user " + getDisplayName(((Cause.UserIdCause) cause).getUserName())));
+               result.add(new Trigger(Trigger.TYPE_MANUAL, "user " + getDisplayName(((Cause.UserIdCause) cause).getUserName())));
            } else if(cause instanceof Cause.RemoteCause){
-               result.add(new Trigger("REMOTE", "remote trigger"));
+               result.add(new Trigger(Trigger.TYPE_REMOTE, "remote trigger"));
            } else if(cause instanceof Cause.UpstreamCause){
                //TODO add which project!
-               result.add(new Trigger("UPSTREAM", "upstream"));
+               result.add(new Trigger(Trigger.TYPE_UPSTREAM, "upstream"));
            } else if(cause instanceof SCMTrigger.SCMTriggerCause){
-               result.add(new Trigger("SCM", "SCM change"));
+               result.add(new Trigger(Trigger.TYPE_SCM, "SCM change"));
            } else if(cause instanceof TimerTrigger.TimerTriggerCause){
-               result.add(new Trigger("TIMER", "timer"));
+               result.add(new Trigger(Trigger.TYPE_TIMER, "timer"));
            } else if(cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause){
                //TODO add which project!
-               result.add(new Trigger("UPSTREAM", "upstream"));
+               result.add(new Trigger(Trigger.TYPE_UPSTREAM, "upstream"));
            } else {
-               result.add(new Trigger("UNKNOWN", "unknown cause"));
+               result.add(new Trigger(Trigger.TYPE_UNKNOWN, "unknown cause"));
            }
         }
         return result;
