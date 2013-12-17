@@ -57,7 +57,11 @@
             <name>Rickard von Essen</name>
             <organization>Diabol AB</organization>
         </developer>
-
+        <developer>
+            <id>gusran</id>
+            <name>Gustav Rånby</name>
+            <organization>Diabol AB</organization>
+        </developer>
     </developers>
 
     <repositories>

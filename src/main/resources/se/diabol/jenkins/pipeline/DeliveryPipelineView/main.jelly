@@ -44,8 +44,9 @@
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
 
     <script type="text/javascript">
-        renderPipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars}, ${it.isShowChanges()});
-        setInterval(function() {renderPipelines(pipelineContainers, "pipelineerror", view, ${it.getShowAvatars()}, ${it.isShowChanges()});}, ${it.updateInterval * 1000});
+
+        updatePipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars}, ${it.isShowChanges()}, ${it.updateInterval * 1000});
+
     </script>
 
     <!--<st:include page="legend.jelly"/>-->

@@ -34,7 +34,8 @@ public class Pipeline extends AbstractItem {
 
     private String version;
 
-    private Set<UserInfo> triggeredBy;
+    private List<Trigger> triggeredBy;
+    private Set<UserInfo> contributors;
 
     private boolean aggregated;
 
@@ -42,11 +43,17 @@ public class Pipeline extends AbstractItem {
 
     private List<Change> changes;
 
-    public Pipeline(String name, String version, List<Change> changes, String timestamp, Set<UserInfo> triggeredBy,
+    public Pipeline(String name,
+                    String version,
+                    List<Change> changes,
+                    String timestamp,
+                    List<Trigger> triggeredBy,
+                    Set<UserInfo> contributors,
                     List<Stage> stages, boolean aggregated) {
         super(name);
         this.version = version;
         this.triggeredBy = triggeredBy;
+        this.contributors = contributors;
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
         this.timestamp = timestamp;
@@ -74,8 +81,8 @@ public class Pipeline extends AbstractItem {
     }
 
     @Exported
-    public Set<UserInfo> getTriggeredBy() {
-        return triggeredBy;
+    public Set<UserInfo> getContributors() {
+        return contributors;
     }
 
     @Exported
@@ -110,5 +117,10 @@ public class Pipeline extends AbstractItem {
                 .add("version", getVersion())
                 .add("stages", getStages())
                 .toString();
+    }
+
+    @Exported
+    public List<Trigger> getTriggeredBy() {
+        return triggeredBy;
     }
 }
