@@ -37,6 +37,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             var component = data.pipelines[c];
             var html = "<section class='component'>";
             html = html + "<h1>" + component.name + "</h1>";
+            if (component.pipelines.length == 0) {
+                html = html + "No builds done yet.";
+            }
             for (var i = 0; i < component.pipelines.length; i++) {
                 var pipeline = component.pipelines[i];
                 html = html + "<section class=\"pipe\">";
