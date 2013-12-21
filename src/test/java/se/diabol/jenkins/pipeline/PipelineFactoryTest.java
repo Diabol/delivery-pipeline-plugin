@@ -552,7 +552,7 @@ public class PipelineFactoryTest {
         assertEquals(1, result.getFailed());
         assertEquals(0, result.getSkipped());
         assertEquals(11, result.getTotal());
-
+        assertNotNull(result.getUrl());
 
 
     }
@@ -672,6 +672,7 @@ public class PipelineFactoryTest {
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
         assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertNotNull(triggeredBy.iterator().next().getDescription());
     }
 
     @Test

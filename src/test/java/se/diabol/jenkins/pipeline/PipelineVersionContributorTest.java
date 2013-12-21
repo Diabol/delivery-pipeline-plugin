@@ -22,10 +22,8 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBu
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.EnvVars;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
+import hudson.cli.BuildCommand;
+import hudson.model.*;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
 import org.apache.commons.io.FileUtils;
@@ -147,6 +145,20 @@ public class PipelineVersionContributorTest {
         assertTrue(log.contains("Error creating version"));
     }
 
+
+    @Test
+    public void testGetVersionFound() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"), new StringParameterValue("PIPELINE_VERSION", "1.1"))).get();
+        assertEquals("1.1", PipelineVersionContributor.getVersion(build));
+    }
+
+    @Test
+    public void testGetVersionNotFound() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"))).get();
+        assertNull(PipelineVersionContributor.getVersion(build));
+    }
 
 
     private class AssertNoPipelineVersion extends TestBuilder {
