@@ -18,10 +18,10 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
-
-import java.util.List;
 
 @Extension
 @SuppressWarnings("UnusedDeclaration")
@@ -33,21 +33,12 @@ public class PipelineEnvironmentContributor extends RunListener<Run> {
             AbstractBuild build = (AbstractBuild) run;
             AbstractBuild upstreamBuild = PipelineFactory.getUpstreamBuild(build);
             if (upstreamBuild != null) {
-                List<ParametersAction> parameters = upstreamBuild.getActions(ParametersAction.class);
-                for (ParametersAction parameter : parameters) {
-                    ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
-                    if (value instanceof StringParameterValue) {
-                        String version = ((StringParameterValue) value).value;
-                        ParametersAction action = new ParametersAction(
-                                new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));
-                        build.addAction(action);
-
-                        listener.getLogger().println("Setting version to: " + version + " from upstream version");
-
-                    }
+                String version = PipelineVersionContributor.getVersion(upstreamBuild);
+                if (version != null) {
+                    PipelineVersionContributor.setVersion(build, version);
+                    listener.getLogger().println("Setting version to: " + version + " from upstream version");
                 }
             }
-
         }
 
     }

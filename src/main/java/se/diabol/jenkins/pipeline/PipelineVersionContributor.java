@@ -27,12 +27,9 @@ import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 
 public class PipelineVersionContributor extends BuildWrapper {
-
-    private static final Logger LOG = Logger.getLogger(PipelineVersionContributor.class.getName());
 
     public static final String VERSION_PARAMETER = "PIPELINE_VERSION";
 
@@ -64,13 +61,11 @@ public class PipelineVersionContributor extends BuildWrapper {
         };
     }
 
-    public void onStarted(AbstractBuild build, BuildListener listener) {
+    public void onStarted(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
         try {
 
             String version = TokenMacro.expand(build, listener, getVersionTemplate());
-            ParametersAction action = new ParametersAction(new StringParameterValue(VERSION_PARAMETER, version));
-            build.addAction(action);
-
+            setVersion(build, version);
             listener.getLogger().println("Creating version: " + version);
 
             if (isUpdateDisplayName()) {
@@ -78,12 +73,25 @@ public class PipelineVersionContributor extends BuildWrapper {
             }
 
         } catch (MacroEvaluationException e) {
-            LOG.log(Level.WARNING, "Error creating version", e);
-        } catch (InterruptedException e) {
-            LOG.log(Level.WARNING, "Error creating version", e);
-        } catch (IOException e) {
-            LOG.log(Level.WARNING, "Error creating version", e);
+            listener.getLogger().println("Error creating version: " + e.getMessage());
         }
+    }
+
+    public static String getVersion(AbstractBuild build)  {
+        List<ParametersAction> parameters = build.getActions(ParametersAction.class);
+        for (ParametersAction parameter : parameters) {
+            ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
+            if (value instanceof StringParameterValue) {
+                return  ((StringParameterValue) value).value;
+            }
+        }
+        return null;
+    }
+
+    public static void setVersion(AbstractBuild build, String version) {
+        ParametersAction action = new ParametersAction(
+                new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));
+        build.addAction(action);
     }
 
 

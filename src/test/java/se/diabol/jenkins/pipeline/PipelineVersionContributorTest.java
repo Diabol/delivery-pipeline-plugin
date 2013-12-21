@@ -24,11 +24,14 @@ import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
@@ -119,6 +122,31 @@ public class PipelineVersionContributorTest {
         assertNotNull(secondProject.getLastBuild());
 
     }
+
+    @Test
+    public void testIsApplicable() throws Exception {
+        PipelineVersionContributor.DescriptorImpl d = new PipelineVersionContributor.DescriptorImpl();
+        assertTrue(d.isApplicable(jenkins.createFreeStyleProject("a")));
+
+    }
+
+    @Test
+    @Bug(21070)
+    public void testVersionContributorErrorInPattern() throws Exception {
+
+        FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
+
+        project.getBuildWrappersList().add(new PipelineVersionContributor(true, "${GFGFGFG}"));
+
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
+
+        assertNotNull(build);
+
+        assertEquals("#1", project.getLastBuild().getDisplayName());
+        String log = FileUtils.readFileToString(build.getLogFile());
+        assertTrue(log.contains("Error creating version"));
+    }
+
 
 
     private class AssertNoPipelineVersion extends TestBuilder {
