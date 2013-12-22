@@ -273,6 +273,9 @@ public class DeliveryPipelineView extends View {
     @Override
     protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
         req.bindJSON(this, req.getSubmittedForm());
+        componentSpecs = req.bindJSONToList(ComponentSpec.class, req.getSubmittedForm().get("componentSpecs"));
+        regexpFirstJobs = req.bindJSONToList(RegExpSpec.class, req.getSubmittedForm().get("regexpFirstJobs"));
+
     }
 
     @Override
