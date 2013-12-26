@@ -667,7 +667,7 @@ public class PipelineFactoryTest {
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
-        project.scheduleBuild(new Cause.UpstreamCause(upstream.getLastBuild()));
+        project.scheduleBuild(new Cause.UpstreamCause((Run) upstream.getLastBuild()));
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
@@ -747,5 +747,39 @@ public class PipelineFactoryTest {
 
 
     }
+
+
+
+
+    @Test
+    @Bug(21149)
+    public void testVersionContributorConfiguredAndUpdated() throws Exception {
+
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
+
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
+        secondProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "2.0.0.${BUILD_NUMBER}"));
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(firstProject.getLastBuild());
+        assertNotNull(secondProject.getLastBuild());
+
+        assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
+        assertEquals("2.0.0.1", secondProject.getLastBuild().getDisplayName());
+
+        Pipeline pipeline = PipelineFactory.createPipelineLatest(PipelineFactory.extractPipeline("Pipeline", firstProject), jenkins.getInstance());
+        assertNotNull(pipeline);
+        assertEquals("2.0.0.1", pipeline.getVersion());
+
+
+    }
+
+
 
 }
