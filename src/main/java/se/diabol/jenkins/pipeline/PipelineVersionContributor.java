@@ -19,7 +19,9 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
@@ -27,7 +29,6 @@ import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
-import java.util.List;
 
 public class PipelineVersionContributor extends BuildWrapper {
 
@@ -78,20 +79,23 @@ public class PipelineVersionContributor extends BuildWrapper {
     }
 
     public static String getVersion(AbstractBuild build)  {
-        List<ParametersAction> parameters = build.getActions(ParametersAction.class);
-        for (ParametersAction parameter : parameters) {
-            ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
-            if (value instanceof StringParameterValue) {
-                return  ((StringParameterValue) value).value;
-            }
+        PipelineVersionAction version = build.getAction(PipelineVersionAction.class);
+        if (version != null) {
+            return version.getVersion();
         }
         return null;
     }
 
-    public static void setVersion(AbstractBuild build, String version) {
-        ParametersAction action = new ParametersAction(
-                new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));
-        build.addAction(action);
+    public static void setVersion(AbstractBuild build, String version) throws IOException {
+
+        PipelineVersionAction versionAction = build.getAction(PipelineVersionAction.class);
+        if (versionAction != null) {
+            versionAction.setVersion(version);
+        } else {
+            build.addAction(new PipelineVersionAction(version));
+        }
+        build.save();
+
     }
 
 

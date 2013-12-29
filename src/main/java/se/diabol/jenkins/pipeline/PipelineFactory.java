@@ -190,7 +190,7 @@ public abstract class PipelineFactory {
             if (versionContributor != null && build != null) {
                 String pipelineVersion = PipelineVersionContributor.getVersion(build);
                 if (pipelineVersion != null) {
-                    return build.getDisplayName();
+                    return pipelineVersion;
                 }
             }
         }
