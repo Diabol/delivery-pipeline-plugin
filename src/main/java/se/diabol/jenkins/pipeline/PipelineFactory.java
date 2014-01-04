@@ -32,6 +32,7 @@ import se.diabol.jenkins.pipeline.model.status.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
+import se.diabol.jenkins.pipeline.util.StageUtil;
 
 import java.io.IOException;
 import java.net.URL;
@@ -64,21 +65,31 @@ public abstract class PipelineFactory {
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null) {
-                stage = new Stage(stageName, Collections.<Task>emptyList());
+                stage = new Stage(stageName, Collections.<Task>emptyList(), null);
             }
             stages.put(stageName,
-                    new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
+                    new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task))), null));
         }
+        Collection<Stage> stagesResult = stages.values();
 
-        return new Pipeline(name, null, null, null, null, null, newArrayList(stages.values()), false);
+        stagesResult = StageUtil.placeStages(firstProject, stagesResult);
+
+        return new Pipeline(name, null, null, null, null, null, newArrayList(stagesResult), false);
     }
+
 
     private static Task getPrototypeTask(AbstractProject project) {
         PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
         Status status = project.isDisabled() ? disabled() : idle();
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, project.getUrl(), false, null);
+        List<AbstractProject> downstreams = ProjectUtil.getDownstreamProjects(project);
+        List<String> downStreamTasks = new ArrayList<String>();
+        for (AbstractProject downstreamProject : downstreams) {
+            downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
+        }
+
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, project.getUrl(), false, null, downStreamTasks);
     }
 
     /**
@@ -114,12 +125,12 @@ public abstract class PipelineFactory {
                 if (currentBuild != null) {
                     Status status = resolveStatus(taskProject, currentBuild);
                     String link = status.isIdle() ? task.getLink() : currentBuild.getUrl();
-                    tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), getTestResult(currentBuild)));
+                    tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), getTestResult(currentBuild), task.getDownstreamTasks()));
                 } else {
-                    tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null));
+                    tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null, task.getDownstreamTasks()));
                 }
             }
-            stages.add(new Stage(stage.getName(), tasks, version));
+            stages.add(new Stage(stage.getName(), tasks, stage.getTaskConnections(), version, stage.getRow(), stage.getColumn()));
         }
         return new Pipeline(pipeline.getName(), null, null, null, null,null, stages, true);
     }
@@ -167,7 +178,7 @@ public abstract class PipelineFactory {
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     tasks.add(getTask(task, currentBuild, context));
                 }
-                stages.add(new Stage(stage.getName(), tasks));
+                stages.add(new Stage(stage.getName(), tasks, stage.getTaskConnections(), null, stage.getRow(), stage.getColumn()));
             }
 
             result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), changes, timestamp,
@@ -203,7 +214,8 @@ public abstract class PipelineFactory {
         Status status = resolveStatus(project, build);
         String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
         String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
-        return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(build));
+        return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(build),
+                task.getDownstreamTasks());
     }
 
 

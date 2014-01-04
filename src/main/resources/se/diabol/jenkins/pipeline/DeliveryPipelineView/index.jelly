@@ -30,6 +30,9 @@
                     </script>
                     <st:adjunct includes="org.kohsuke.stapler.jquery"/>
                     <script>var Q=jQuery.noConflict()</script>
+                    <j:forEach var="pd" items="${h.pageDecorators}">
+                        <st:include it="${pd}" page="header.jelly" optional="true" />
+                    </j:forEach>
                 </head>
                 <body>
                 <st:include page="main.jelly"/>

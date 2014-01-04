@@ -141,6 +141,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-jdk1.5</artifactId>
+            <version>0.7.3</version>
+        </dependency>
+
 
         <!-- Test Dependencies -->
         <dependency>
@@ -184,6 +190,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jquery</artifactId>
             <version>1.7.2-1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jquery-ui</artifactId>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
