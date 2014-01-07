@@ -770,9 +770,6 @@ public class PipelineFactoryTest {
         assertNotNull(firstProject.getLastBuild());
         assertNotNull(secondProject.getLastBuild());
 
-//        assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
-//        assertEquals("2.0.0.1", secondProject.getLastBuild().getDisplayName());
-
         Pipeline pipeline = PipelineFactory.createPipelineLatest(PipelineFactory.extractPipeline("Pipeline", firstProject), jenkins.getInstance());
         assertNotNull(pipeline);
         assertEquals("2.0.0.1", pipeline.getVersion());
