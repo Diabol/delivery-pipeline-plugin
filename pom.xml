@@ -4,7 +4,7 @@
 
     <groupId>se.diabol.jenkins.pipeline</groupId>
     <artifactId>delivery-pipeline-plugin</artifactId>
-    <version>0.6.8-SNAPSHOT</version>
+    <version>0.6.9-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>Delivery Pipeline Plugin</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Delivery+Pipeline+Plugin</url>
