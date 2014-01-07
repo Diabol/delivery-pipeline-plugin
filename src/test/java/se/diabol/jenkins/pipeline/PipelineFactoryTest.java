@@ -748,35 +748,4 @@ public class PipelineFactoryTest {
 
     }
 
-
-
-
-    @Test
-    @Bug(21149)
-    public void testVersionContributorConfiguredAndUpdated() throws Exception {
-
-        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
-        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
-        firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
-
-        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
-        secondProject.getBuildWrappersList().add(new PipelineVersionContributor(false, "2.0.0.${BUILD_NUMBER}"));
-
-        jenkins.setQuietPeriod(0);
-        jenkins.getInstance().rebuildDependencyGraph();
-        jenkins.buildAndAssertSuccess(firstProject);
-        jenkins.waitUntilNoActivity();
-
-        assertNotNull(firstProject.getLastBuild());
-        assertNotNull(secondProject.getLastBuild());
-
-        Pipeline pipeline = PipelineFactory.createPipelineLatest(PipelineFactory.extractPipeline("Pipeline", firstProject), jenkins.getInstance());
-        assertNotNull(pipeline);
-        assertEquals("2.0.0.1", pipeline.getVersion());
-
-
-    }
-
-
-
 }

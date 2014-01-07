@@ -19,9 +19,7 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
+import hudson.model.*;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
@@ -29,6 +27,7 @@ import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.List;
 
 public class PipelineVersionContributor extends BuildWrapper {
 
@@ -78,11 +77,20 @@ public class PipelineVersionContributor extends BuildWrapper {
         }
     }
 
-    public static String getVersion(AbstractBuild build)  {
+    public static String getVersion(AbstractBuild build) {
         PipelineVersionAction version = build.getAction(PipelineVersionAction.class);
         if (version != null) {
             return version.getVersion();
         }
+        //Old way for backwards compatibility
+        List<ParametersAction> parameters = build.getActions(ParametersAction.class);
+        for (ParametersAction parameter : parameters) {
+            ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
+            if (value instanceof StringParameterValue) {
+                return ((StringParameterValue) value).value;
+            }
+        }
+
         return null;
     }
 

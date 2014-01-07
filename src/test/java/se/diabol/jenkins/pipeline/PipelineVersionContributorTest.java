@@ -22,10 +22,8 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBu
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.EnvVars;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
+import hudson.cli.BuildCommand;
+import hudson.model.*;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
 import org.apache.commons.io.FileUtils;
@@ -34,6 +32,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import se.diabol.jenkins.pipeline.model.Pipeline;
 
 import java.io.IOException;
 
@@ -147,6 +146,45 @@ public class PipelineVersionContributorTest {
         assertTrue(log.contains("Error creating version"));
     }
 
+    @Test
+    public void testGetVersionFoundBackwardsCompatibility() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"), new StringParameterValue("PIPELINE_VERSION", "1.1"))).get();
+        assertEquals("1.1", PipelineVersionContributor.getVersion(build));
+    }
+
+    @Test
+    public void testGetVersionNotFoundBackwardsCompatibility() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"))).get();
+        assertNull(PipelineVersionContributor.getVersion(build));
+    }
+
+    @Test
+    @Bug(21149)
+    public void testVersionContributorConfiguredAndUpdated() throws Exception {
+
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
+
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(false, "1.0.0.${BUILD_NUMBER}"));
+        secondProject.getBuildWrappersList().add(new PipelineVersionContributor(false, "2.0.0.${BUILD_NUMBER}"));
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(firstProject.getLastBuild());
+        assertNotNull(secondProject.getLastBuild());
+
+        Pipeline pipeline = PipelineFactory.createPipelineLatest(PipelineFactory.extractPipeline("Pipeline", firstProject), jenkins.getInstance());
+        assertNotNull(pipeline);
+        assertEquals("2.0.0.1", pipeline.getVersion());
+
+
+    }
 
 
     private class AssertNoPipelineVersion extends TestBuilder {
