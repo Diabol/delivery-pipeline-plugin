@@ -44,8 +44,11 @@
     </f:section>
 
     <f:section title="Pipelines">
-        <f:entry>
-            <f:repeatableProperty minimum="1" field="componentSpecs"/>
+        <f:entry title="Components">
+            <f:repeatableProperty minimum="0" field="componentSpecs"/>
+        </f:entry>
+        <f:entry title="Regular Expression">
+            <f:repeatableProperty minimum="0" field="regexpFirstJobs"/>
         </f:entry>
     </f:section>
 
