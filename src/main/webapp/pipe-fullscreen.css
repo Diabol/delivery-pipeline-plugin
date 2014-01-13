@@ -203,6 +203,11 @@ div.pipelineerror {
     display: none;
 }
 
+div.pipeline-message {
+    font-size: 20px;
+    text-align: center;
+}
+
 div.left {
     float: left;
 }
