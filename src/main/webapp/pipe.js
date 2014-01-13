@@ -26,12 +26,15 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
     var lastUpdate = data.lastUpdated;
     if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
 
-
         for (var z = 0; z < divNames.length; z++) {
             Q("#" + divNames[z]).html('');
         }
 
         var tasks = [];
+
+        if (data.pipelines.length == 0) {
+            Q("#pipeline-message").html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
+        }
 
         for (var c = 0; c < data.pipelines.length; c++) {
             var component = data.pipelines[c];
@@ -134,6 +137,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             html = html + "</section>";
 
             Q("#" + divNames[c % divNames.length]).append(html);
+            Q("#pipeline-message").html('');
         }
         lastResponse = data;
         equalheight(".stage");
