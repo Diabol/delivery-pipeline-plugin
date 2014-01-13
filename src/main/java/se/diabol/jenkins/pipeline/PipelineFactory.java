@@ -21,10 +21,12 @@ import hudson.ExtensionList;
 import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
+import hudson.tasks.BuildWrapper;
 import hudson.tasks.UserAvatarResolver;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
+import hudson.util.DescribableList;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.model.*;
@@ -156,6 +158,7 @@ public abstract class PipelineFactory {
 
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
+            String version = null;
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> changes = getChanges(firstBuild);
             String timestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
@@ -166,14 +169,32 @@ public abstract class PipelineFactory {
                     AbstractProject<?, ?> taskProject = getProject(task, context);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     tasks.add(getTask(task, currentBuild, context));
+                    version = getBuildVersion(taskProject, currentBuild);
                 }
                 stages.add(new Stage(stage.getName(), tasks));
             }
+            if (version == null) {
+                version = firstBuild.getDisplayName();
+            }
 
-            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), changes, timestamp,
+            result.add(new Pipeline(pipeline.getName(), version, changes, timestamp,
                     getTriggeredBy(firstBuild), getContributors(firstBuild), stages, false));
         }
         return result;
+    }
+
+    protected static String getBuildVersion(AbstractProject<?,?> project, AbstractBuild build) {
+        if (project instanceof Project<?,?>) {
+            DescribableList<BuildWrapper, Descriptor<BuildWrapper>> wrappers = ((Project<?,?>) project).getBuildWrappersList();
+            PipelineVersionContributor versionContributor = wrappers.get(PipelineVersionContributor.class);
+            if (versionContributor != null && build != null) {
+                String pipelineVersion = PipelineVersionContributor.getVersion(build);
+                if (pipelineVersion != null) {
+                    return pipelineVersion;
+                }
+            }
+        }
+        return null;
     }
 
     protected static List<Change> getChanges(AbstractBuild<?, ?> build) {

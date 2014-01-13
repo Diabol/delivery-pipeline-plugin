@@ -23,22 +23,33 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Extension
 @SuppressWarnings("UnusedDeclaration")
 public class PipelineEnvironmentContributor extends RunListener<Run> {
 
+    private static final Logger LOG = Logger.getLogger(PipelineEnvironmentContributor.class.getName());
+
     @Override
     public void onStarted(Run run, TaskListener listener) {
-        if (run instanceof AbstractBuild) {
-            AbstractBuild build = (AbstractBuild) run;
-            AbstractBuild upstreamBuild = PipelineFactory.getUpstreamBuild(build);
-            if (upstreamBuild != null) {
-                String version = PipelineVersionContributor.getVersion(upstreamBuild);
-                if (version != null) {
-                    PipelineVersionContributor.setVersion(build, version);
-                    listener.getLogger().println("Setting version to: " + version + " from upstream version");
+        try {
+            if (run instanceof AbstractBuild) {
+                AbstractBuild build = (AbstractBuild) run;
+                AbstractBuild upstreamBuild = PipelineFactory.getUpstreamBuild(build);
+                if (upstreamBuild != null) {
+                    String version = PipelineVersionContributor.getVersion(upstreamBuild);
+                    if (version != null) {
+                        PipelineVersionContributor.setVersion(build, version);
+                        listener.getLogger().println("Setting version to: " + version + " from upstream version");
+                    }
                 }
             }
+        } catch (IOException e) {
+            listener.getLogger().println("Could not set pipeline version! " + e.getMessage());
+            LOG.log(Level.WARNING, "Could not set pipeline version!", e);
         }
 
     }

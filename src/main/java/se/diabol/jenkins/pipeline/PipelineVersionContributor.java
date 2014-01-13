@@ -77,21 +77,33 @@ public class PipelineVersionContributor extends BuildWrapper {
         }
     }
 
-    public static String getVersion(AbstractBuild build)  {
+    public static String getVersion(AbstractBuild build) {
+        PipelineVersionAction version = build.getAction(PipelineVersionAction.class);
+        if (version != null) {
+            return version.getVersion();
+        }
+        //Old way for backwards compatibility
         List<ParametersAction> parameters = build.getActions(ParametersAction.class);
         for (ParametersAction parameter : parameters) {
             ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
             if (value instanceof StringParameterValue) {
-                return  ((StringParameterValue) value).value;
+                return ((StringParameterValue) value).value;
             }
         }
+
         return null;
     }
 
-    public static void setVersion(AbstractBuild build, String version) {
-        ParametersAction action = new ParametersAction(
-                new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));
-        build.addAction(action);
+    public static void setVersion(AbstractBuild build, String version) throws IOException {
+
+        PipelineVersionAction versionAction = build.getAction(PipelineVersionAction.class);
+        if (versionAction != null) {
+            versionAction.setVersion(version);
+        } else {
+            build.addAction(new PipelineVersionAction(version));
+        }
+        build.save();
+
     }
 
 

@@ -667,7 +667,7 @@ public class PipelineFactoryTest {
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
-        project.scheduleBuild(new Cause.UpstreamCause(upstream.getLastBuild()));
+        project.scheduleBuild(new Cause.UpstreamCause((Run) upstream.getLastBuild()));
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
