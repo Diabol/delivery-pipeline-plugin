@@ -205,6 +205,10 @@ div.pipelineerror {
     display: none;
 }
 
+div.pipeline-message {
+    font-size: 15px;
+}
+
 div.left {
     float: left;
 }

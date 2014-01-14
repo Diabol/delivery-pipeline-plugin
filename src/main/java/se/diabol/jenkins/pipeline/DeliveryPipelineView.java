@@ -35,6 +35,8 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 @SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
@@ -60,10 +62,19 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
 
+    private List<RegExpSpec> regexpFirstJobs;
+
     @DataBoundConstructor
-    public DeliveryPipelineView(String name, List<ComponentSpec> componentSpecs) {
+    public DeliveryPipelineView(String name) {
         super(name);
-        this.componentSpecs = componentSpecs;
+    }
+
+    public List<RegExpSpec> getRegexpFirstJobs() {
+        return regexpFirstJobs;
+    }
+
+    public void setRegexpFirstJobs(List<RegExpSpec> regexpFirstJobs) {
+        this.regexpFirstJobs = regexpFirstJobs;
     }
 
     public boolean getShowAvatars() {
@@ -194,15 +205,19 @@ public class DeliveryPipelineView extends View {
     public List<Component> getPipelines() {
         LOG.fine("Getting pipelines!");
         List<Component> components = new ArrayList<Component>();
-        for (ComponentSpec componentSpec : componentSpecs) {
-            AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-            Pipeline prototype = PipelineFactory.extractPipeline(componentSpec.getName(), firstJob);
-            List<Pipeline> pipelines = new ArrayList<Pipeline>();
-            if (showAggregatedPipeline) {
-                pipelines.add(PipelineFactory.createPipelineAggregated(prototype, getOwnerItemGroup()));
+        if (componentSpecs != null) {
+            for (ComponentSpec componentSpec : componentSpecs) {
+                AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+                components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
             }
-            pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines, getOwnerItemGroup()));
-            components.add(new Component(componentSpec.getName(), pipelines));
+        }
+        if (regexpFirstJobs != null) {
+            for (RegExpSpec regexp : regexpFirstJobs) {
+                Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
+                for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
+                    components.add(getComponent(entry.getKey(), entry.getValue(), showAggregatedPipeline));
+                }
+            }
         }
         if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
             ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
@@ -214,18 +229,39 @@ public class DeliveryPipelineView extends View {
         return components;
     }
 
+    private Component getComponent(String name, AbstractProject firstJob, boolean showAggregatedPipeline) {
+        Pipeline prototype = PipelineFactory.extractPipeline(name, firstJob);
+        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        if (showAggregatedPipeline) {
+            pipelines.add(PipelineFactory.createPipelineAggregated(prototype, getOwnerItemGroup()));
+        }
+        pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines, getOwnerItemGroup()));
+        return new Component(name, pipelines);
+    }
+
     @Override
     public Collection<TopLevelItem> getItems() {
         List<TopLevelItem> result = new ArrayList<TopLevelItem>();
-        for (ComponentSpec componentSpec : componentSpecs) {
-
-            AbstractProject project = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-            Collection<AbstractProject<?, ?>> projects = ProjectUtil.getAllDownstreamProjects(project).values();
-            for (AbstractProject<?, ?> abstractProject : projects) {
-                result.add(getItem(abstractProject.getName()));
+        Set<AbstractProject> projects = new HashSet<AbstractProject>();
+        if (componentSpecs != null) {
+            for (ComponentSpec componentSpec : componentSpecs) {
+                projects.add(ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup()));
+            }
+        }
+        if (regexpFirstJobs != null) {
+            for (RegExpSpec regexp : regexpFirstJobs) {
+                Map<String, AbstractProject> projectMap = ProjectUtil.getProjects(regexp.getRegexp());
+                projects.addAll(projectMap.values());
             }
 
         }
+        for (AbstractProject project : projects) {
+            Collection<AbstractProject<?, ?>> downstreamProjects = ProjectUtil.getAllDownstreamProjects(project).values();
+            for (AbstractProject<?, ?> abstractProject : downstreamProjects) {
+                result.add(getItem(abstractProject.getName()));
+            }
+        }
+
         return result;
     }
 
@@ -237,6 +273,9 @@ public class DeliveryPipelineView extends View {
     @Override
     protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
         req.bindJSON(this, req.getSubmittedForm());
+        componentSpecs = req.bindJSONToList(ComponentSpec.class, req.getSubmittedForm().get("componentSpecs"));
+        regexpFirstJobs = req.bindJSONToList(RegExpSpec.class, req.getSubmittedForm().get("regexpFirstJobs"));
+
     }
 
     @Override
@@ -247,7 +286,6 @@ public class DeliveryPipelineView extends View {
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
-
         public ListBoxModel doFillNoOfColumnsItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
             options.add("1", "1");
@@ -294,6 +332,44 @@ public class DeliveryPipelineView extends View {
         }
     }
 
+    public static class RegExpSpec extends AbstractDescribableImpl<RegExpSpec> {
+
+        private String regexp;
+
+        @DataBoundConstructor
+        public RegExpSpec(String regexp) {
+            this.regexp = regexp;
+        }
+
+        public String getRegexp() {
+            return regexp;
+        }
+
+        @Extension
+        public static class DescriptorImpl extends Descriptor<RegExpSpec> {
+
+            @Override
+            public String getDisplayName() {
+                return "RegExp";
+            }
+
+            public FormValidation doCheckRegexp(@QueryParameter String value) {
+                if (value != null) {
+                    try {
+                        Pattern pattern = Pattern.compile(value);
+                        if (pattern.matcher("").groupCount() == 1) {
+                            return FormValidation.ok();
+                        } else {
+                            return FormValidation.error("No capture group defined");
+                        }
+                    } catch (PatternSyntaxException e) {
+                        return FormValidation.error("Syntax error in regular-expression pattern");
+                    }
+                }
+                return FormValidation.ok();
+            }
+        }
+    }
 
     public static class ComponentSpec extends AbstractDescribableImpl<ComponentSpec> {
         private String name;

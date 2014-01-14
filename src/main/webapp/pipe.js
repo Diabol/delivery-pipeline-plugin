@@ -37,6 +37,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
         var tasks = [];
 
+        if (data.pipelines.length == 0) {
+            Q("#pipeline-message").html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
+        }
+
         for (var c = 0; c < data.pipelines.length; c++) {
             var component = data.pipelines[c];
             var html = "<section class='component'>";
@@ -162,6 +166,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             html = html + "</section>";
             var index = 0;
             Q("#" + divNames[c % divNames.length]).append(html);
+            Q("#pipeline-message").html('');
             lastResponse = data;
             equalheight(".stage");
 

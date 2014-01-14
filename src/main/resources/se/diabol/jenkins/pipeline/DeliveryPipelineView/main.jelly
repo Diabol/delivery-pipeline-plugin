@@ -32,6 +32,8 @@
 
     <div id="pipelineerror" class="pipelineerror"/>
 
+    <div id="pipeline-message" class="pipeline-message"/>
+
     <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
         <script type="text/javascript">
             pipelineContainers[${i-1}] = 'pipelines-${i}';

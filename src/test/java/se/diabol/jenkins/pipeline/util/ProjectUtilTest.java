@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.util.ListBoxModel;
 import org.junit.Rule;
@@ -26,6 +27,7 @@ import org.jvnet.hudson.test.MockFolder;
 import org.mortbay.jetty.security.UserRealm;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -51,6 +53,24 @@ public class ProjectUtilTest {
         assertEquals(build2.getDisplayName(), option2.name);
 
 
+    }
+
+    @Test
+    public void testGetProjects() throws Exception {
+        jenkins.createFreeStyleProject("build-comp1project");
+        jenkins.createFreeStyleProject("build-comp1-project");
+        jenkins.createFreeStyleProject("build-comp2-project");
+        jenkins.createFreeStyleProject("build-comp3-project");
+        Map<String, AbstractProject> result = ProjectUtil.getProjects("^build-(.+?)-project");
+        assertEquals(3, result.size());
+        assertTrue(result.containsKey("comp1"));
+        assertTrue(result.containsKey("comp2"));
+        assertTrue(result.containsKey("comp3"));
+
+        Map<String, AbstractProject> result2 = ProjectUtil.getProjects("^build-.+?-project");
+        assertEquals(0, result2.size());
+        Map<String, AbstractProject> result3 = ProjectUtil.getProjects("*");
+        assertEquals(0, result3.size());
     }
 
 }
