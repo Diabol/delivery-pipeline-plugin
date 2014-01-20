@@ -115,6 +115,10 @@ section.stage a:hover {
     text-decoration: underline;
 }
 
+.stage-version {
+    float: right;
+}
+
 .IDLE {
     border-left: 7px solid #d3d3d3;
     color: lightgray;
