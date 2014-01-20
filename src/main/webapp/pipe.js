@@ -118,14 +118,16 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage">';
 
 
+                    html = html + '<section class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<h1><span class="stage-name">' + stage.name + '</span>';
                     if (!pipeline.aggregated) {
-                        html = html + '<h1>' + stage.name + '</h1>'
+                        html = html + '</h1>'
                     } else {
-                        if (stage.version) {
-                            html = html + '<h1>' + stage.name + ' - ' + stage.version + '</h1>'
-                        } else {
-                            html = html + '<h1>' + stage.name + ' - N/A</h1>'
+                        var stageversion = stage.version;
+                        if (!stageversion) {
+                            stageversion = "N/A"
                         }
+                        html = html + ' <span class="stage-version">' + stageversion + '</span></h1>'
                     }
                     for (var k = 0; k < stage.tasks.length; k++) {
                         var task = stage.tasks[k];
@@ -149,6 +151,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html = html + "</div>"
 
                     }
+
                     html = html + "</section>";
                     column++;
                     if (stage.row > row) {
@@ -229,9 +232,20 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 }
 
 function getTaskId(taskname, count) {
+function getStageClassName(stagename) {
+    return "stage_" + replace(stagename, " ", "_");
+}
+
+function getTaskId(pipeline, task) {
     var re = new RegExp(' ', 'g');
     return "task-" + taskname.replace(re, '_') + "_" + count;
 }
+
+function replace(string, replace, replaceWith) {
+    var re = new RegExp(replace, 'g');
+    return string.replace(re, replaceWith);
+}
+
 
 function formatDate(date, currentTime) {
     if (date != null) {
