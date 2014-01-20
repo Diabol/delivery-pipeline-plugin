@@ -195,6 +195,7 @@ section.hide {
 
 div.pipeline-row {
     display: table-row;
+    white-space: nowrap;
     margin-top: 20px;
 }
 
