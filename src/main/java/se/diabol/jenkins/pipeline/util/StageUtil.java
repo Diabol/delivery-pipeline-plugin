@@ -39,10 +39,13 @@ public abstract class StageUtil {
             stage.setTaskConnections(getStageConnections(stage, stages));
             graph.addVertex(stage);
             List<Stage> downstreamStages = getDownstreamStages(stage, stages);
+            List<String> downstreamStageNames = new ArrayList<String>();
             for (Stage downstream : downstreamStages) {
+                downstreamStageNames.add(downstream.getName());
                 graph.addVertex(downstream);
                 graph.addEdge(stage, downstream, new Edge(stage, downstream));
             }
+            stage.setDownstreamStages(downstreamStageNames);
         }
 
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(Jenkins.getInstance()), stages), graph);

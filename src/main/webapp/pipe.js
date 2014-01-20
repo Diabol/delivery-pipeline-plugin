@@ -115,7 +115,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     }
 
-                    html = html + "<section class=\"stage\">";
+                    html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage">';
 
 
                     if (!pipeline.aggregated) {
@@ -174,32 +174,29 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 Q.each(component.pipelines, function (j, pipeline) {
                     var index = j;
                     Q.each(pipeline.stages, function (k, stage) {
-                        if (stage.taskConnections) {
-                            Q.each(stage.taskConnections, function (key, value) {
-                                var task = key;
-                                Q.each(value, function (l, downstream) {
-                                    console.log(task + " " + downstream)
-                                    var source = getTaskId(task, index);
-                                    var target = getTaskId(downstream, index);
-                                    plumb.connect({
-                                        source: source,
-                                        target: target,
-                                        anchors: ["RightMiddle", "LeftMiddle"],
-                                        overlays: [
-                                            [ "Arrow", { location: 1}]
-                                        ],
-                                        cssClass: "relation",
-                                        connector: ["Flowchart", { stub: 10, gap: 10 } ],
-                                        paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
-                                        drawEndpoints: false
-                                    });
+                        if (stage.downstreamStages) {
+                            Q.each(stage.downstreamStages, function (l, value) {
+                                var source = getStageId(stage.name, index);
+                                var target = getStageId(value, index);
 
-
+                                plumb.connect({
+                                    source: source,
+                                    target: target,
+                                    anchors: ["RightMiddle", "LeftMiddle"],
+                                    overlays: [
+                                        [ "Arrow", { location: 1}]
+                                    ],
+                                    cssClass: "relation",
+                                    connector: ["Flowchart", { stub: 10, gap: 10 } ],
+                                    paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
+                                    drawEndpoints: false
                                 });
+
 
                             });
                         }
                     });
+
                 });
             });
 
@@ -260,6 +257,11 @@ function formatDuration(millis) {
 
         return minstr + secstr;
     }
+}
+
+function getStageId(name, count) {
+    var re = new RegExp(' ', 'g');
+    return name.replace(re, '_') + "_" + count;
 }
 
 function equalheight(container) {

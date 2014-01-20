@@ -36,26 +36,22 @@ public class Stage extends AbstractItem {
     private int row;
     private int column;
     private Map<String, List<String>> taskConnections;
+    private List<String> downstreamStages;
 
-    public Stage(String name, List<Task> tasks, Map<String, List<String>> taskConnections, String version) {
-        super(name);
-        this.tasks = tasks;
-        this.version = version;
-        this.taskConnections = taskConnections;
-    }
-
-    public Stage(String name, List<Task> tasks, Map<String, List<String>> taskConnections) {
+    public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections) {
         super(name);
         this.tasks = ImmutableList.copyOf(tasks);
+        this.downstreamStages = downstreamStages;
         this.taskConnections = taskConnections;
     }
 
-    public Stage(String name, List<Task> tasks, Map<String, List<String>> taskConnections, String version, int row, int column) {
+    public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections, String version, int row, int column) {
         super(name);
         this.tasks = tasks;
         this.version = version;
         this.row = row;
         this.column = column;
+        this.downstreamStages = downstreamStages;
         this.taskConnections = taskConnections;
     }
 
@@ -85,6 +81,15 @@ public class Stage extends AbstractItem {
 
     public void setColumn(int column) {
         this.column = column;
+    }
+
+    @Exported
+    public List<String> getDownstreamStages() {
+        return downstreamStages;
+    }
+
+    public void setDownstreamStages(List<String> downstreamStages) {
+        this.downstreamStages = downstreamStages;
     }
 
     @Exported

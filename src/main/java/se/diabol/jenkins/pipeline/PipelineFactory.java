@@ -65,10 +65,10 @@ public abstract class PipelineFactory {
                     ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null) {
-                stage = new Stage(stageName, Collections.<Task>emptyList(), null);
+                stage = new Stage(stageName, Collections.<Task>emptyList(), null, null);
             }
             stages.put(stageName,
-                    new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task))), null));
+                    new Stage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task))), null, null));
         }
         Collection<Stage> stagesResult = stages.values();
 
@@ -130,7 +130,7 @@ public abstract class PipelineFactory {
                     tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null, task.getDownstreamTasks()));
                 }
             }
-            stages.add(new Stage(stage.getName(), tasks, stage.getTaskConnections(), version, stage.getRow(), stage.getColumn()));
+            stages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), version, stage.getRow(), stage.getColumn()));
         }
         return new Pipeline(pipeline.getName(), null, null, null, null,null, stages, true);
     }
@@ -178,7 +178,7 @@ public abstract class PipelineFactory {
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
                     tasks.add(getTask(task, currentBuild, context));
                 }
-                stages.add(new Stage(stage.getName(), tasks, stage.getTaskConnections(), null, stage.getRow(), stage.getColumn()));
+                stages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), null, stage.getRow(), stage.getColumn()));
             }
 
             result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), changes, timestamp,
