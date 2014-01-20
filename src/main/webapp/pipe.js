@@ -115,10 +115,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     }
 
-                    html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage">';
-
-
-                    html = html + '<section class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
                     html = html + '<h1><span class="stage-name">' + stage.name + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</h1>'
@@ -151,7 +148,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html = html + "</div>"
 
                     }
-
                     html = html + "</section>";
                     column++;
                     if (stage.row > row) {
@@ -231,12 +227,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
 }
 
-function getTaskId(taskname, count) {
 function getStageClassName(stagename) {
     return "stage_" + replace(stagename, " ", "_");
 }
 
-function getTaskId(pipeline, task) {
+function getTaskId(taskname, count) {
     var re = new RegExp(' ', 'g');
     return "task-" + taskname.replace(re, '_') + "_" + count;
 }
