@@ -5,14 +5,18 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
         async: true,
         cache: false,
         timeout: 20000,
-        success: function(data) {
+        success: function (data) {
             refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges);
-            setTimeout(function () {updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)}, timeout);
+            setTimeout(function () {
+                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+            }, timeout);
         },
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + error);
             Q("#" + errorDiv).show();
-            setTimeout(function () {updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)}, timeout);
+            setTimeout(function () {
+                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+            }, timeout);
         }
     });
 
@@ -75,7 +79,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             var change = pipeline.changes[o];
                             html = html + '<div class="change-author">' + change.author.name + '</div>';
                             if (change.changeLink) {
-                                html = html + '<div class="change-message"><a href="' + change.changeLink + '">'  + change.message + '</a></div>';
+                                html = html + '<div class="change-message"><a href="' + change.changeLink + '">' + change.message + '</a></div>';
                             } else {
                                 html = html + '<div class="change-message">' + change.message + '</div>';
                             }
@@ -90,19 +94,18 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 }
 
 
-
-
                 for (var j = 0; j < pipeline.stages.length; j++) {
                     var stage = pipeline.stages[j];
-                    html = html + "<section class=\"stage\">";
+                    html = html + '<section class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<h1><span class="stage-name">' + stage.name + '</span>';
                     if (!pipeline.aggregated) {
-                        html = html + '<h1>' + stage.name + '</h1>'
+                        html = html + '</h1>'
                     } else {
-                        if (stage.version) {
-                            html = html + '<h1>' + stage.name + ' - ' + stage.version + '</h1>'
-                        } else {
-                            html = html + '<h1>' + stage.name + ' - N/A</h1>'
+                        var stageversion = stage.version;
+                        if (!stageversion) {
+                            stageversion = "N/A"
                         }
+                        html = html + ' <span class="stage-version">' + stageversion + '</span></h1>'
                     }
                     for (var k = 0; k < stage.tasks.length; k++) {
                         var task = stage.tasks[k];
@@ -167,6 +170,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
 }
 
+function getStageClassName(stagename) {
+    return "stage_" + replace(stagename, " ", "_");
+}
+
 function getTaskId(pipeline, task) {
     var re = new RegExp(' ', 'g');
     var id = "task-" + task.id.replace(re, '_') + "_" + task.buildId;
@@ -175,6 +182,12 @@ function getTaskId(pipeline, task) {
     }
     return id;
 }
+
+function replace(string, replace, replaceWith) {
+    var re = new RegExp(replace, 'g');
+    return string.replace(re, replaceWith);
+}
+
 
 function formatDate(date, currentTime) {
     if (date != null) {
