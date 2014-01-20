@@ -143,6 +143,9 @@
                 <configuration>
                     <jsSrcDir>src/main/webapp</jsSrcDir>
                     <jsTestSrcDir>src/test/javascript</jsTestSrcDir>
+                    <sourceExcludes>
+                        <exclude>jquery.*.js</exclude>
+                    </sourceExcludes>
                 </configuration>
                 <executions>
                     <execution>
