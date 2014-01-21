@@ -31,6 +31,7 @@ import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import hudson.util.OneShotEvent;
 import jenkins.model.Jenkins;
+import join.JoinTrigger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -330,6 +331,9 @@ public class PipelineFactoryTest {
         assertTrue(latest.getStages().get(0).getTasks().get(1).getStatus().isSuccess());
         assertTrue(latest.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
         assertEquals("job/build/1/", latest.getStages().get(0).getTasks().get(0).getLink());
+        assertEquals(0, latest.getStages().get(0).getColumn());
+        assertEquals(1, latest.getStages().get(1).getColumn());
+
     }
 
 
@@ -746,6 +750,33 @@ public class PipelineFactoryTest {
         assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
         assertEquals(0, pipeline.getStages().get(0).getColumn());
         assertEquals(1, pipeline.getStages().get(1).getColumn());
+
+    }
+
+    @Test
+    public void testForkJoin() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        FreeStyleProject d = jenkins.createFreeStyleProject("D");
+        a.getPublishersList().add(new BuildTrigger("B,C", false));
+        b.getPublishersList().add(new BuildTrigger("D", false));
+        c.getPublishersList().add(new BuildTrigger("D", false));
+        d.getPublishersList().add(new JoinTrigger(null, null, false));
+        jenkins.getInstance().rebuildDependencyGraph();
+        Pipeline prototype = PipelineFactory.extractPipeline("ForkJoin", a);
+        assertNotNull(prototype);
+        assertEquals(4, prototype.getStages().size());
+
+        assertEquals(0, prototype.getStages().get(0).getColumn());
+        assertEquals(0, prototype.getStages().get(0).getRow());
+        assertEquals(1, prototype.getStages().get(1).getColumn());
+        assertEquals(0, prototype.getStages().get(1).getRow());
+        assertEquals(2, prototype.getStages().get(2).getColumn());
+        assertEquals(0, prototype.getStages().get(2).getRow());
+        assertEquals(1, prototype.getStages().get(3).getColumn());
+        assertEquals(1, prototype.getStages().get(3).getRow());
+
 
 
     }

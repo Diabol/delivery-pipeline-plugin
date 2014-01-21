@@ -219,6 +219,12 @@
             <artifactId>parameterized-trigger</artifactId>
             <version>2.21</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>join</artifactId>
+            <version>1.15</version>
+            <optional>true</optional>
+        </dependency>
 
     </dependencies>
 
