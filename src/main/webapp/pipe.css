@@ -116,6 +116,10 @@ section.stage a:hover {
     text-decoration: underline;
 }
 
+.stage-version {
+    float: right;
+}
+
 .IDLE {
     border-left: 6px solid #d3d3d3;
 }
