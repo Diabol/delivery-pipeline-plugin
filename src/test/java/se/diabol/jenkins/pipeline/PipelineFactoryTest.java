@@ -777,8 +777,6 @@ public class PipelineFactoryTest {
         assertEquals(1, prototype.getStages().get(3).getColumn());
         assertEquals(1, prototype.getStages().get(3).getRow());
 
-
-
     }
 
 }
