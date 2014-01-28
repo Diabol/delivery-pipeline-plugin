@@ -13,3 +13,6 @@ libsrc/*
 
 work*
 README.html
+
+# Gradle
+.gradle
