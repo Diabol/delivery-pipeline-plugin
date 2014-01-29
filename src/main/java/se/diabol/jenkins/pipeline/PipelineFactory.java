@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionList;
+import hudson.Util;
 import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
@@ -368,7 +369,7 @@ public abstract class PipelineFactory {
             for (Cause cause : causes) {
                 if (cause instanceof Cause.UpstreamCause) {
                     Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                    AbstractProject upstreamProject = (AbstractProject) Jenkins.getInstance().getItemMap().get(upstreamCause.getUpstreamProject());
+                    AbstractProject upstreamProject = ProjectUtil.getProject(upstreamCause.getUpstreamProject());
                     //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
                     if (upstreamProject == null) {
                         return null;
@@ -380,6 +381,5 @@ public abstract class PipelineFactory {
         return null;
 
     }
-
 
 }
