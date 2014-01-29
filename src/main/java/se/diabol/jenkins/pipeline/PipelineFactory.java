@@ -18,7 +18,6 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionList;
-import hudson.Util;
 import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
