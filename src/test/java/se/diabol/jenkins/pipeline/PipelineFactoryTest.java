@@ -612,6 +612,7 @@ public class PipelineFactoryTest {
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
+        jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
@@ -638,6 +639,7 @@ public class PipelineFactoryTest {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        jenkins.setQuietPeriod(0);
         project.setScm(scm);
         project.scheduleBuild(new TimerTrigger.TimerTriggerCause());
         jenkins.waitUntilNoActivity();
@@ -682,6 +684,7 @@ public class PipelineFactoryTest {
         scm.addChange().withAuthor("test-user-fail").withMsg("Fixed bug");
         scm.addChange().withAuthor("test-user-fail2").withMsg("Fixed bug");
         project.setScm(scm);
+        jenkins.setQuietPeriod(0);
         project.getBuildersList().add(new FailureBuilder());
         project.scheduleBuild2(0);
         jenkins.waitUntilNoActivity();
@@ -728,6 +731,7 @@ public class PipelineFactoryTest {
 
         job1.getPublishersList().add(new BuildTrigger("folder2/job2", false));
         jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
 
         Pipeline prototype = PipelineFactory.extractPipeline("Folders", job1);
 
