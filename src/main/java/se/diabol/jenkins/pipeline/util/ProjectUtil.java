@@ -20,6 +20,7 @@ package se.diabol.jenkins.pipeline.util;
 import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
+import hudson.model.TopLevelItem;
 import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.SubProjectsAction;
 import hudson.util.ListBoxModel;
@@ -79,6 +80,45 @@ public abstract class ProjectUtil {
         return Jenkins.getInstance().getItem(name, context, AbstractProject.class);
     }
 
+    public static AbstractProject getProject(String name) {
+        Map<String, TopLevelItem> items = Jenkins.getInstance().getItemMap();
+        if (items.containsKey(name)) {
+            return (AbstractProject) items.get(name);
+        } else {
+            List<ItemGroup> groups = Util.createSubList(items.values(), ItemGroup.class);
+            for (int i = 0; i < groups.size(); i++) {
+                ItemGroup group = groups.get(i);
+                AbstractProject project = find(group, name);
+                if (project != null) {
+                    return project;
+                }
+            }
+
+        }
+        return null;
+    }
+
+
+    private static AbstractProject find(ItemGroup group, String name) {
+
+        List<AbstractProject> projects = Util.createSubList(group.getItems(), AbstractProject.class);
+        for (AbstractProject project : projects) {
+            if (project.getRelativeNameFrom(Jenkins.getInstance()).equals(name)) {
+                return project;
+            }
+        }
+
+        List<ItemGroup> groups = Util.createSubList(group.getItems(), ItemGroup.class);
+        for (ItemGroup itemGroup : groups) {
+            AbstractProject project = find(itemGroup, name);
+            if (project != null) {
+                return project;
+            }
+        }
+        return null;
+    }
+
+
     public static Map<String, AbstractProject> getProjects(String regExp) {
         try {
             Pattern pattern = Pattern.compile(regExp);
@@ -86,7 +126,7 @@ public abstract class ProjectUtil {
             for (AbstractProject<?, ?> project : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
                 Matcher matcher = pattern.matcher(project.getName());
                 if (matcher.find()) {
-                    if (matcher.groupCount() >=1) {
+                    if (matcher.groupCount() >= 1) {
                         String name = matcher.group(1);
                         result.put(name, project);
                     } else {

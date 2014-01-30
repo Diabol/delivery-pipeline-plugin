@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionList;
+import hudson.Util;
 import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
@@ -89,7 +90,7 @@ public abstract class PipelineFactory {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
 
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, project.getUrl(), false, null, downStreamTasks);
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(), false, null, downStreamTasks);
     }
 
     /**
@@ -124,7 +125,7 @@ public abstract class PipelineFactory {
 
                 if (currentBuild != null) {
                     Status status = resolveStatus(taskProject, currentBuild);
-                    String link = status.isIdle() ? task.getLink() : currentBuild.getUrl();
+                    String link = status.isIdle() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
                     tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), getTestResult(currentBuild), task.getDownstreamTasks()));
                 } else {
                     tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null, task.getDownstreamTasks()));
@@ -212,7 +213,7 @@ public abstract class PipelineFactory {
     private static Task getTask(Task task, AbstractBuild build, ItemGroup context) {
         AbstractProject project = getProject(task, context);
         Status status = resolveStatus(project, build);
-        String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
+        String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
         String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
         return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(build),
                 task.getDownstreamTasks());
@@ -380,7 +381,7 @@ public abstract class PipelineFactory {
             for (Cause cause : causes) {
                 if (cause instanceof Cause.UpstreamCause) {
                     Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                    AbstractProject upstreamProject = (AbstractProject) Jenkins.getInstance().getItemMap().get(upstreamCause.getUpstreamProject());
+                    AbstractProject upstreamProject = ProjectUtil.getProject(upstreamCause.getUpstreamProject());
                     //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
                     if (upstreamProject == null) {
                         return null;
@@ -392,6 +393,5 @@ public abstract class PipelineFactory {
         return null;
 
     }
-
 
 }
