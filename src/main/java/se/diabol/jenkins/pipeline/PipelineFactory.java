@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionList;
+import hudson.Util;
 import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
@@ -78,7 +79,7 @@ public abstract class PipelineFactory {
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
         Status status = project.isDisabled() ? disabled() : idle();
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, project.getUrl(), false, null);
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status, Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(), false, null);
     }
 
     /**
@@ -113,12 +114,13 @@ public abstract class PipelineFactory {
 
                 if (currentBuild != null) {
                     Status status = resolveStatus(taskProject, currentBuild);
-                    String link = status.isIdle() ? task.getLink() : currentBuild.getUrl();
+                    String link = status.isIdle() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
                     tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), getTestResult(currentBuild)));
                 } else {
                     tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null));
                 }
             }
+
             stages.add(new Stage(stage.getName(), tasks, version));
         }
         return new Pipeline(pipeline.getName(), null, null, null, null,null, stages, true);
@@ -201,7 +203,7 @@ public abstract class PipelineFactory {
     private static Task getTask(Task task, AbstractBuild build, ItemGroup context) {
         AbstractProject project = getProject(task, context);
         Status status = resolveStatus(project, build);
-        String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : build.getUrl();
+        String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
         String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
         return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), getTestResult(build));
     }
