@@ -86,8 +86,7 @@ public abstract class ProjectUtil {
             return (AbstractProject) items.get(name);
         } else {
             List<ItemGroup> groups = Util.createSubList(items.values(), ItemGroup.class);
-            for (int i = 0; i < groups.size(); i++) {
-                ItemGroup group = groups.get(i);
+            for (ItemGroup group : groups) {
                 AbstractProject project = find(group, name);
                 if (project != null) {
                     return project;
