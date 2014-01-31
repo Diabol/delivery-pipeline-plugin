@@ -367,6 +367,7 @@ public class PipelineFactoryTest {
         upstream.getPublishersList().add(new BuildTrigger("build", false));
         build.getPublishersList().add(new BuildTrigger("package", false));
         jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(upstream);
         jenkins.waitUntilNoActivity();
 
@@ -570,6 +571,7 @@ public class PipelineFactoryTest {
         FakeChangeLogSCM scm = new FakeChangeLogSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(project);
         AbstractBuild build = project.getLastBuild();
         List<Change> changes = PipelineFactory.getChanges(build);
@@ -588,6 +590,7 @@ public class PipelineFactoryTest {
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(project);
         AbstractBuild build = project.getLastBuild();
         List<Change> changes = PipelineFactory.getChanges(build);
@@ -603,6 +606,7 @@ public class PipelineFactoryTest {
     @Test
     public void testGetTriggeredBy() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
@@ -632,6 +636,7 @@ public class PipelineFactoryTest {
     @Test
     public void testGetTriggeredByWithNoUserIdCause() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(project);
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
         assertEquals(0, contributors.size());
@@ -660,6 +665,7 @@ public class PipelineFactoryTest {
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
+        jenkins.setQuietPeriod(0);
         project.scheduleBuild(new SCMTrigger.SCMTriggerCause("SCM"));
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
@@ -668,8 +674,31 @@ public class PipelineFactoryTest {
     }
 
     @Test
+    public void testGetTriggeredByRemoteCause() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        jenkins.setQuietPeriod(0);
+        project.scheduleBuild(new Cause.RemoteCause("localhost", "Remote"));
+        jenkins.waitUntilNoActivity();
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals(Trigger.TYPE_REMOTE, triggeredBy.iterator().next().getType());
+    }
+
+    @Test
+    public void testGetTriggeredByDeeplyNestedUpstreamCause() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        jenkins.setQuietPeriod(0);
+        project.scheduleBuild(new Cause.UpstreamCause.DeeplyNestedUpstreamCause());
+        jenkins.waitUntilNoActivity();
+        List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+    }
+
+    @Test
     public void testGetTriggeredByUpStreamJob() throws Exception {
         FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(upstream);
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();

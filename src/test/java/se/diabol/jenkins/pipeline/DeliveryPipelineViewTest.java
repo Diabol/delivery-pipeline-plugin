@@ -176,6 +176,7 @@ public class DeliveryPipelineViewTest {
         assertEquals(0, component.getPipelines().size());
         assertEquals("Comp", component.getName());
 
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(build);
 
         components = view.getPipelines();
