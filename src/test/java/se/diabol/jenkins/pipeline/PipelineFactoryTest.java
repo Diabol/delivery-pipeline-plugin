@@ -361,6 +361,7 @@ public class PipelineFactoryTest {
         upstream.getPublishersList().add(new BuildTrigger("build", false));
         build.getPublishersList().add(new BuildTrigger("package", false));
         jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(upstream);
         jenkins.waitUntilNoActivity();
 
@@ -597,6 +598,7 @@ public class PipelineFactoryTest {
     @Test
     public void testGetTriggeredBy() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
         Set<UserInfo> contributors = PipelineFactory.getContributors(project.getLastBuild());
@@ -654,6 +656,7 @@ public class PipelineFactoryTest {
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
+        jenkins.setQuietPeriod(0);
         project.scheduleBuild(new SCMTrigger.SCMTriggerCause("SCM"));
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = PipelineFactory.getTriggeredBy(project.getLastBuild());
@@ -664,6 +667,7 @@ public class PipelineFactoryTest {
     @Test
     public void testGetTriggeredByUpStreamJob() throws Exception {
         FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(upstream);
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
