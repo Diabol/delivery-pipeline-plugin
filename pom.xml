@@ -143,6 +143,9 @@
                 <configuration>
                     <jsSrcDir>src/main/webapp</jsSrcDir>
                     <jsTestSrcDir>src/test/javascript</jsTestSrcDir>
+                    <sourceExcludes>
+                        <exclude>jquery.*.js</exclude>
+                    </sourceExcludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -156,6 +159,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-jdk1.5</artifactId>
+            <version>0.7.3</version>
+        </dependency>
+
 
         <!-- Test Dependencies -->
         <dependency>
@@ -202,8 +211,19 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jquery-ui</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>parameterized-trigger</artifactId>
             <version>2.21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>join</artifactId>
+            <version>1.15</version>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>

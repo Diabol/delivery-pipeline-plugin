@@ -24,6 +24,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Objects.toStringHelper;
 
@@ -32,16 +33,26 @@ public class Stage extends AbstractItem {
     private List<Task> tasks;
 
     private String version;
+    private int row;
+    private int column;
+    private Map<String, List<String>> taskConnections;
+    private List<String> downstreamStages;
 
-    public Stage(String name, List<Task> tasks, String version) {
+    public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections) {
+        super(name);
+        this.tasks = ImmutableList.copyOf(tasks);
+        this.downstreamStages = downstreamStages;
+        this.taskConnections = taskConnections;
+    }
+
+    public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections, String version, int row, int column) {
         super(name);
         this.tasks = tasks;
         this.version = version;
-    }
-
-    public Stage(String name, List<Task> tasks) {
-        super(name);
-        this.tasks = ImmutableList.copyOf(tasks);
+        this.row = row;
+        this.column = column;
+        this.downstreamStages = downstreamStages;
+        this.taskConnections = taskConnections;
     }
 
     @Exported
@@ -52,6 +63,42 @@ public class Stage extends AbstractItem {
     @Exported
     public String getVersion() {
         return version;
+    }
+
+    @Exported
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    @Exported
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
+    @Exported
+    public List<String> getDownstreamStages() {
+        return downstreamStages;
+    }
+
+    public void setDownstreamStages(List<String> downstreamStages) {
+        this.downstreamStages = downstreamStages;
+    }
+
+    @Exported
+    public Map<String, List<String>> getTaskConnections() {
+        return taskConnections;
+    }
+
+    public void setTaskConnections(Map<String, List<String>> taskConnections) {
+        this.taskConnections = taskConnections;
     }
 
     @Override

@@ -14,6 +14,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + error);
             Q("#" + errorDiv).show();
+            plumb.repaintEverything();
             setTimeout(function () {
                 updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
             }, timeout);
@@ -49,7 +50,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             }
             for (var i = 0; i < component.pipelines.length; i++) {
                 var pipeline = component.pipelines[i];
-                html = html + "<section class=\"pipe\">";
+                html = html + '<section class="pipeline">';
 
                 var triggered = "";
                 if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
@@ -94,9 +95,27 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 }
 
 
+                var row = 0;
+                var column = 0;
+
+                html = html + '<div class="pipeline-row">';
+
                 for (var j = 0; j < pipeline.stages.length; j++) {
                     var stage = pipeline.stages[j];
-                    html = html + '<section class="stage ' + getStageClassName(stage.name) + '">';
+                    if (stage.row > row) {
+
+                        html = html + '</div><div class="pipeline-row">';
+                        column = 0;
+                    }
+
+                    if (stage.column > column) {
+                        for (var as = column; as < stage.column; as++) {
+                            html = html + '<section class="stage hide"></section>';
+                        }
+
+                    }
+
+                    html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
                     html = html + '<h1><span class="stage-name">' + stage.name + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</h1>'
@@ -110,7 +129,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     for (var k = 0; k < stage.tasks.length; k++) {
                         var task = stage.tasks[k];
 
-                        var id = getTaskId(pipeline, task);
+                        var id = getTaskId(task.id, i);
 
                         var timestamp = formatDate(task.status.timestamp, lastUpdate);
 
@@ -129,21 +148,59 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html = html + "</div>"
 
                     }
-
                     html = html + "</section>";
-                }
+                    column++;
+                    if (stage.row > row) {
+                        html = html + '</div>';
+                        row++;
+                        column = 0;
+                    }
 
+                }
+                html = html + '</div>';
 
                 html = html + "</section>";
 
             }
             html = html + "</section>";
-
+            var index = 0;
             Q("#" + divNames[c % divNames.length]).append(html);
             Q("#pipeline-message").html('');
+            lastResponse = data;
+            equalheight(".stage");
+
+            Q.each(data.pipelines, function (i, component) {
+                Q.each(component.pipelines, function (j, pipeline) {
+                    var index = j;
+                    Q.each(pipeline.stages, function (k, stage) {
+                        if (stage.downstreamStages) {
+                            Q.each(stage.downstreamStages, function (l, value) {
+                                var source = getStageId(stage.name, index);
+                                var target = getStageId(value, index);
+
+                                plumb.connect({
+                                    source: source,
+                                    target: target,
+                                    anchors: ["RightMiddle", "LeftMiddle"],
+                                    overlays: [
+                                        [ "Arrow", { location: 1}]
+                                    ],
+                                    cssClass: "relation",
+                                    connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs:true } ],
+                                    paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
+                                    drawEndpoints: false
+                                });
+
+
+                            });
+                        }
+                    });
+
+                });
+            });
+
+
         }
-        lastResponse = data;
-        equalheight(".stage");
     } else {
         for (var p = 0; p < data.pipelines.length; p++) {
             var comp = data.pipelines[p];
@@ -158,7 +215,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     var st = pipe.stages[l];
                     for (var m = 0; m < st.tasks.length; m++) {
                         var ta = st.tasks[m];
-                        var time = document.getElementById(getTaskId(pipe, ta) + ".timestamp");
+                        var time = document.getElementById(getTaskId(ta.id, d) + ".timestamp");
                         if (time) {
                             time.innerHTML = formatDate(ta.status.timestamp, lastUpdate);
                         }
@@ -174,13 +231,9 @@ function getStageClassName(stagename) {
     return "stage_" + replace(stagename, " ", "_");
 }
 
-function getTaskId(pipeline, task) {
+function getTaskId(taskname, count) {
     var re = new RegExp(' ', 'g');
-    var id = "task-" + task.id.replace(re, '_') + "_" + task.buildId;
-    if (pipeline.aggregated) {
-        id = "aggregated-task-" + task.id.replace(re, '_') + "_" + task.buildId;
-    }
-    return id;
+    return "task-" + taskname.replace(re, '_') + "_" + count;
 }
 
 function replace(string, replace, replaceWith) {
@@ -213,6 +266,11 @@ function formatDuration(millis) {
 
         return minstr + secstr;
     }
+}
+
+function getStageId(name, count) {
+    var re = new RegExp(' ', 'g');
+    return name.replace(re, '_') + "_" + count;
 }
 
 function equalheight(container) {

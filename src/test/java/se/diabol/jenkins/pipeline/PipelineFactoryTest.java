@@ -26,11 +26,14 @@ import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
 import hudson.plugins.parameterizedtrigger.TriggerBuilder;
 import hudson.tasks.BuildTrigger;
+import hudson.tasks.Publisher;
 import hudson.tasks.test.AggregatedTestResultAction;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
+import hudson.util.DescribableList;
 import hudson.util.OneShotEvent;
 import jenkins.model.Jenkins;
+import join.JoinTrigger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,9 +86,9 @@ public class PipelineFactoryTest {
 
         assertEquals(pipeline,
                 new Pipeline("Piper", null, null, null, null, null,
-                        asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null))),
-                                new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null))),
-                                new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null)))), false));
+                        asList(new Stage("Build", asList(new Task("comp", "Compile", null, idle(), "", false, null, null)), null, null),
+                                new Stage("Test", asList(new Task("test", "Test", null, idle(), "", false, null, null)),null, null),
+                                new Stage("Deploy", asList(new Task("deploy", "Deploy", null, idle(), "", false, null, null)),null, null)), false));
 
 
     }
@@ -310,7 +313,7 @@ public class PipelineFactoryTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        assertEquals(new Pipeline("Pipeline", null, null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null)))), false), PipelineFactory.extractPipeline("Pipeline", build));
+        assertEquals(new Pipeline("Pipeline", null, null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null,false, null, null)), null, null)), false), PipelineFactory.extractPipeline("Pipeline", build));
 
 
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
@@ -318,7 +321,7 @@ public class PipelineFactoryTest {
 
         Pipeline pipeline = PipelineFactory.extractPipeline("Pipeline", build);
 
-        assertEquals(new Pipeline("Pipeline", null, null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null), new Task("sonar", "Sonar",null, idle(), null, false, null))), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null)))), false), pipeline);
+        assertEquals(new Pipeline("Pipeline", null, null, null, null, null, asList(new Stage("Build", asList(new Task("build", "build", null, idle(), null, false, null, null), new Task("sonar", "Sonar",null, idle(), null, false, null, null)), null, null), new Stage("CI", asList(new Task("deploy", "Deploy", null, idle(), null, false, null, null)), null, null)), false), pipeline);
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
@@ -330,6 +333,9 @@ public class PipelineFactoryTest {
         assertTrue(latest.getStages().get(0).getTasks().get(1).getStatus().isSuccess());
         assertTrue(latest.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
         assertEquals("job/build/1/", latest.getStages().get(0).getTasks().get(0).getLink());
+        assertEquals(0, latest.getStages().get(0).getColumn());
+        assertEquals(1, latest.getStages().get(1).getColumn());
+
     }
 
 
@@ -777,7 +783,34 @@ public class PipelineFactoryTest {
         assertEquals(2, pipeline.getStages().size());
         assertEquals("folder1/job1", pipeline.getStages().get(0).getTasks().get(0).getId());
         assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
+        assertEquals(0, pipeline.getStages().get(0).getColumn());
+        assertEquals(1, pipeline.getStages().get(1).getColumn());
 
+    }
+
+    @Test
+    public void testForkJoin() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        FreeStyleProject d = jenkins.createFreeStyleProject("D");
+        a.getPublishersList().add(new BuildTrigger("B,C", false));
+        b.getPublishersList().add(new BuildTrigger("D", false));
+        c.getPublishersList().add(new BuildTrigger("D", false));
+        d.getPublishersList().add(new JoinTrigger(new DescribableList<Publisher, Descriptor<Publisher>>(Saveable.NOOP), "", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+        Pipeline prototype = PipelineFactory.extractPipeline("ForkJoin", a);
+        assertNotNull(prototype);
+        assertEquals(4, prototype.getStages().size());
+
+        assertEquals(0, prototype.getStages().get(0).getColumn());
+        assertEquals(0, prototype.getStages().get(0).getRow());
+        assertEquals(1, prototype.getStages().get(1).getColumn());
+        assertEquals(0, prototype.getStages().get(1).getRow());
+        assertEquals(2, prototype.getStages().get(2).getColumn());
+        assertEquals(0, prototype.getStages().get(2).getRow());
+        assertEquals(1, prototype.getStages().get(3).getColumn());
+        assertEquals(1, prototype.getStages().get(3).getRow());
 
     }
 

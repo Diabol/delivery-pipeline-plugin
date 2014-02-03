@@ -17,17 +17,17 @@ section.component h1 {
     margin-top: 0;
 }
 
-section.pipe {
-    display: block;
+section.pipeline {
+    display: table;
     background-color: #f0f0f0;
     margin: 10px;
 }
 
-section.pipe img {
+section.pipeline img {
     height: 18px;
 }
 
-section.pipe h1 {
+section.pipeline h1 {
     font-size: 18px;
     font-weight: bold;
     font-stretch: expanded;
@@ -84,8 +84,8 @@ section.stage {
     background: white;
     border-radius: 10px;
     border: solid 2px black;
-    padding: 0 3px 3px 0px;
-    margin: 0 5px;
+    padding: 0 3px 3px 0;
+    margin: 0 30px 60px;
 }
 
 section.stage h1 {
@@ -99,7 +99,7 @@ section.stage h1 {
 section.stage div.task {
     display: block;
     border-radius: 3px;
-    margin: 0 5px 1px 5px;
+    margin: 0 0 1px 5px;
     padding-left: 5px;
 }
 
@@ -125,24 +125,20 @@ section.stage a:hover {
 }
 
 .QUEUED {
-    /*background-color: lightgray;*/
     border-left: 6px solid #0092ef;
 }
 
 .FAILED {
     border-left: 6px solid #8b0000;
-    /*background-color: tomato;*/
     background-color: #ff6347;
     font-weight: bold;
 }
 
 .SUCCESS {
-    /*background-color: lightgreen;*/
     border-left: 6px solid #228b22;
 }
 
 .UNSTABLE {
-    /*background-color: orange;*/
     border-left: 6px solid #fcae3f;
     background-color: #fad42e;
     font-weight: bold;
@@ -195,6 +191,16 @@ section.legend span {
     margin: 0 5px;
     padding: 1px 5px;
     min-width: 75px;
+}
+
+section.hide {
+    visibility: hidden;
+}
+
+div.pipeline-row {
+    display: table-row;
+    white-space: nowrap;
+    margin-top: 20px;
 }
 
 div.pipelineerror {

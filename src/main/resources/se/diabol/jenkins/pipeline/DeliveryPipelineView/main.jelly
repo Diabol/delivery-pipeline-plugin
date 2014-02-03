@@ -44,8 +44,15 @@
 
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/moment.min.js"/>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.jsPlumb-1.3.16-all-min.js"/>
 
     <script type="text/javascript">
+        var plumb = jsPlumb.getInstance();
+
+        Q(window).resize(function () {
+            plumb.repaintEverything();
+        });
+
 
         updatePipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars}, ${it.isShowChanges()}, ${it.updateInterval * 1000});
 

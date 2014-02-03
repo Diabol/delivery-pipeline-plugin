@@ -17,22 +17,22 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.model;
 
-import org.junit.Test;
-import se.diabol.jenkins.pipeline.model.status.StatusFactory;
+public class Edge {
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+    private Stage source;
+    private Stage target;
 
-public class TaskTest {
-
-    @Test
-    public void testEquals() {
-        Task a1 = new Task( "A", "unimportant_name", null, StatusFactory.idle(), "unimportant_link", false, null, null );
-        Task b = new Task( "B", "unimportant_name", null, StatusFactory.idle(), "unimportant_link", false, null, null );
-        Task a2 = new Task( "A", "unimportant_name", null, StatusFactory.idle(), "unimportant_link", false, null, null );
-
-        assertThat( a1, is( a1 ) );
-        assertThat( a1, is( a2 ) );
-        assertThat( a1.equals( b ), is( false ));
+    public Edge(Stage source, Stage target) {
+        this.source = source;
+        this.target = target;
     }
+
+    public Stage getSource() {
+        return source;
+    }
+
+    public Stage getTarget() {
+        return target;
+    }
+
 }
