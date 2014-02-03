@@ -108,7 +108,7 @@ public class PipelinePropertyTest {
         assertEquals(c2.getValues().size(), 0);
 
         AutoCompletionCandidates c3 = d.doAutoCompleteStageName(null);
-        assertEquals(c2.getValues().size(), 0);
+        assertEquals(c3.getValues().size(), 0);
 
 
     }
