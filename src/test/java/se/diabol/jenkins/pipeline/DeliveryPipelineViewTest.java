@@ -103,6 +103,25 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
+    @WithoutJenkins
+    public void testCssUrl() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setEmbeddedCss("");
+        view.setFullScreenCss("");
+        assertNull(view.getEmbeddedCss());
+        assertNull(view.getFullScreenCss());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testOldSorter() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setSorting("se.diabol.jenkins.pipeline.sort.NoOpComparator");
+        assertEquals("none", view.getSorting());
+    }
+
+
+    @Test
     public void testGetItemsAndContains() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");

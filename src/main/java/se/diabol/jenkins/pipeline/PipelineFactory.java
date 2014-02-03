@@ -38,6 +38,8 @@ import se.diabol.jenkins.pipeline.util.StageUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.Iterables.concat;
@@ -53,6 +55,8 @@ import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 public abstract class PipelineFactory {
 
     private static final int AVATAR_SIZE = 16;
+
+    private static final Logger LOG = Logger.getLogger(PipelineFactory.class.getName());
 
     /**
      * Created a pipeline prototype for the supplied first project
@@ -201,7 +205,7 @@ public abstract class PipelineFactory {
                         changeLink = link.toExternalForm();
                     }
                 } catch (IOException e) {
-                    //Ignore
+                   LOG.log(Level.WARNING, "Could not get changeset link", e);
                 }
             }
             result.add(new Change(user, entry.getMsg(), entry.getCommitId(), changeLink));

@@ -318,7 +318,7 @@ public class DeliveryPipelineView extends View {
             try {
                 valueAsInt = Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                return FormValidation.error("Value must be a integer");
+                return FormValidation.error(e, "Value must be a integer");
             }
             if (valueAsInt <= 0) {
                 return FormValidation.error("Value must be greater that 0");
@@ -363,7 +363,7 @@ public class DeliveryPipelineView extends View {
                             return FormValidation.error("No capture group defined");
                         }
                     } catch (PatternSyntaxException e) {
-                        return FormValidation.error("Syntax error in regular-expression pattern");
+                        return FormValidation.error(e, "Syntax error in regular-expression pattern");
                     }
                 }
                 return FormValidation.ok();
