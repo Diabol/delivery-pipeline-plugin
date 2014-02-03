@@ -29,7 +29,6 @@ import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.Set;
 
