@@ -111,10 +111,10 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         }
 
         protected FormValidation checkValue(String value) {
-            if (value == null || value.equals("")) {
+            if (value == null || "".equals(value)) {
                 return FormValidation.ok();
             }
-            if (value.trim().equals("")) {
+            if ("".equals(value.trim())) {
                 return FormValidation.error("Value needs to be empty or include characters and/or numbers");
             }
             return FormValidation.ok();
