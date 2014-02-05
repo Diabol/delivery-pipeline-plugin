@@ -29,7 +29,7 @@ import hudson.triggers.TimerTrigger;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.model.*;
-import se.diabol.jenkins.pipeline.model.status.Status;
+import se.diabol.jenkins.pipeline.model.Status;
 import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;

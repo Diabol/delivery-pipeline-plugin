@@ -41,7 +41,7 @@ import org.jvnet.hudson.test.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.model.*;
 import se.diabol.jenkins.pipeline.model.status.Running;
-import se.diabol.jenkins.pipeline.model.status.Status;
+import se.diabol.jenkins.pipeline.model.Status;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 
 import java.io.IOException;

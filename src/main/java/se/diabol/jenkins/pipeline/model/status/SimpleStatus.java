@@ -20,6 +20,7 @@ package se.diabol.jenkins.pipeline.model.status;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.model.AbstractItem;
+import se.diabol.jenkins.pipeline.model.Status;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
