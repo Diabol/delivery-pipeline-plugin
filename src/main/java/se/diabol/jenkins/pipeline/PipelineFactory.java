@@ -105,7 +105,7 @@ public abstract class PipelineFactory {
 
     public static Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup context) {
         List<Pipeline> pipelines = createPipelineLatest(pipeline, 1, context);
-        return pipelines.size() > 0 ? pipelines.get(0) : null;
+        return !pipelines.isEmpty() ? pipelines.get(0) : null;
     }
 
     public static Pipeline createPipelineAggregated(Pipeline pipeline, ItemGroup context) {

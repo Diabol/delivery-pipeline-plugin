@@ -126,10 +126,10 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         public PipelineProperty newInstance(StaplerRequest sr, JSONObject formData) throws FormException {
             String task = sr.getParameter("taskName");
             String stage = sr.getParameter("stageName");
-            if (task != null && task.equals("")) {
+            if ("".equals(task)) {
                 task = null;
             }
-            if (stage != null && stage.equals("")) {
+            if ("".equals(stage)) {
                 stage = null;
             }
             if (task == null && stage == null) {

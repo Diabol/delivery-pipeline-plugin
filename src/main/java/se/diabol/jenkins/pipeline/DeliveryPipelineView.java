@@ -161,7 +161,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public void setFullScreenCss(String fullScreenCss) {
-        if (fullScreenCss != null && fullScreenCss.trim().equals("")) {
+        if (fullScreenCss != null && "".equals(fullScreenCss.trim())) {
             this.fullScreenCss = null;
         } else {
             this.fullScreenCss = fullScreenCss;
@@ -173,7 +173,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public void setEmbeddedCss(String embeddedCss) {
-        if (embeddedCss != null && embeddedCss.trim().equals("")) {
+        if (embeddedCss != null && "".equals(embeddedCss.trim())) {
             this.embeddedCss = null;
         } else {
             this.embeddedCss = embeddedCss;
@@ -410,7 +410,7 @@ public class DeliveryPipelineView extends View {
             }
 
             public FormValidation doCheckName(@QueryParameter String value) {
-                if (value != null && !value.trim().equals("")) {
+                if (value != null && !"".equals(value.trim())) {
                     return FormValidation.ok();
                 } else {
                     return FormValidation.error("Please supply a title!");

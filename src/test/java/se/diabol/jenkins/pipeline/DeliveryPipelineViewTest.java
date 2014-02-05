@@ -261,6 +261,7 @@ public class DeliveryPipelineViewTest {
         DeliveryPipelineView.ComponentSpec.DescriptorImpl d = new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
         assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(null).kind);
         assertEquals(FormValidation.Kind.ERROR,  d.doCheckName("").kind);
+        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(" ").kind);
         assertEquals(FormValidation.Kind.OK,  d.doCheckName("Component").kind);
 
 

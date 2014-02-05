@@ -83,6 +83,30 @@ public class PipelinePropertyTest {
 
     @Test
     @WithoutJenkins
+    public void testNewInstanceNull() throws Exception {
+        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getParameter("taskName")).thenReturn(null);
+        when(request.getParameter("stageName")).thenReturn(null);
+        assertNull(d.newInstance(request, null));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testNewInstanceTaskNull() throws Exception {
+        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getParameter("taskName")).thenReturn(null);
+        when(request.getParameter("stageName")).thenReturn("Stage");
+        PipelineProperty p = d.newInstance(request, null);
+        assertNotNull(p);
+        assertNull(p.getTaskName());
+        assertEquals("Stage", p.getStageName());
+    }
+
+
+    @Test
+    @WithoutJenkins
     public void testNewInstanceBothSet() throws Exception {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
