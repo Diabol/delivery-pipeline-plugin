@@ -17,18 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.junit.Test;
+import se.diabol.jenkins.pipeline.test.TestUtil;
 
-public final class PipelineUtils {
+public class StageUtilTest {
 
-    private PipelineUtils() {
-    }
-
-    public static String formatTimestamp(long timestamp) {
-        DateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        return f.format(new Date(timestamp));
+    @Test
+    public void testValidUtilClass() throws Exception {
+        TestUtil.assertUtilityClassWellDefined(StageUtil.class);
     }
 
 }

@@ -31,7 +31,10 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.singleton;
 
 
-public abstract class StageUtil {
+public final class StageUtil {
+
+    private StageUtil() {
+    }
 
     public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) {
         DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(Edge.class);

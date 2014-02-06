@@ -43,6 +43,8 @@ import se.diabol.jenkins.pipeline.model.*;
 import se.diabol.jenkins.pipeline.model.status.Running;
 import se.diabol.jenkins.pipeline.model.Status;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
+import se.diabol.jenkins.pipeline.test.TestUtil;
+import se.diabol.jenkins.pipeline.util.StageUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +63,12 @@ public class PipelineFactoryTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
+
+    @Test
+    public void testValidUtilClass() throws Exception {
+        TestUtil.assertUtilityClassWellDefined(PipelineFactory.class);
+    }
+
 
     @Test
     public void testExtractPipeline() throws Exception {

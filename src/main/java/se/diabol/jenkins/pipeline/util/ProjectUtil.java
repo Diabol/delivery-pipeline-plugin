@@ -36,9 +36,12 @@ import java.util.regex.PatternSyntaxException;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 
-public abstract class ProjectUtil {
+public final class ProjectUtil {
 
     private static final Logger LOG = Logger.getLogger(ProjectUtil.class.getName());
+
+    private ProjectUtil() {
+    }
 
     public static ListBoxModel fillAllProjects(ItemGroup<?> context) {
         ListBoxModel options = new ListBoxModel();

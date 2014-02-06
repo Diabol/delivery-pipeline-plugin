@@ -52,11 +52,14 @@ import static java.util.Collections.singleton;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.disabled;
 import static se.diabol.jenkins.pipeline.model.status.StatusFactory.idle;
 
-public abstract class PipelineFactory {
+public final class PipelineFactory {
 
     private static final int AVATAR_SIZE = 16;
 
     private static final Logger LOG = Logger.getLogger(PipelineFactory.class.getName());
+
+    private PipelineFactory() {
+    }
 
     /**
      * Created a pipeline prototype for the supplied first project

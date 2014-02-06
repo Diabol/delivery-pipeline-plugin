@@ -24,8 +24,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.WithoutJenkins;
 import org.mortbay.jetty.security.UserRealm;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.test.TestUtil;
 
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +39,11 @@ public class ProjectUtilTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
-
+    @WithoutJenkins
+    @Test
+    public void testValidUtilClass() throws Exception {
+        TestUtil.assertUtilityClassWellDefined(ProjectUtil.class);
+    }
 
     @Test
     public void testFillAllProjects() throws Exception {
