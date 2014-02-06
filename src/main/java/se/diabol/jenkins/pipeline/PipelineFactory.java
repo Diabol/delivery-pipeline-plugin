@@ -251,16 +251,13 @@ public abstract class PipelineFactory {
                result.add(new Trigger(Trigger.TYPE_MANUAL, "user " + getDisplayName(((Cause.UserIdCause) cause).getUserName())));
            } else if(cause instanceof Cause.RemoteCause){
                result.add(new Trigger(Trigger.TYPE_REMOTE, "remote trigger"));
-           } else if(cause instanceof Cause.UpstreamCause){
+           } else if(cause instanceof Cause.UpstreamCause || cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause){
                //TODO add which project!
                result.add(new Trigger(Trigger.TYPE_UPSTREAM, "upstream"));
            } else if(cause instanceof SCMTrigger.SCMTriggerCause){
                result.add(new Trigger(Trigger.TYPE_SCM, "SCM change"));
            } else if(cause instanceof TimerTrigger.TimerTriggerCause){
                result.add(new Trigger(Trigger.TYPE_TIMER, "timer"));
-           } else if(cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause){
-               //TODO add which project!
-               result.add(new Trigger(Trigger.TYPE_UPSTREAM, "upstream"));
            } else {
                result.add(new Trigger(Trigger.TYPE_UNKNOWN, "unknown cause"));
            }
@@ -381,17 +378,15 @@ public abstract class PipelineFactory {
     public static AbstractBuild getUpstreamBuild(AbstractBuild build) {
         List<CauseAction> actions = build.getActions(CauseAction.class);
         for (CauseAction action : actions) {
-            List<Cause> causes = action.getCauses();
-            for (Cause cause : causes) {
-                if (cause instanceof Cause.UpstreamCause) {
-                    Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                    AbstractProject upstreamProject = ProjectUtil.getProject(upstreamCause.getUpstreamProject());
-                    //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
-                    if (upstreamProject == null) {
-                        return null;
-                    }
-                    return upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
+            List<Cause.UpstreamCause> causes = Util.filter(action.getCauses(), Cause.UpstreamCause.class);
+
+            for (Cause.UpstreamCause upstreamCause : causes) {
+                AbstractProject upstreamProject = ProjectUtil.getProject(upstreamCause.getUpstreamProject());
+                //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
+                if (upstreamProject == null) {
+                    return null;
                 }
+                return upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
             }
         }
         return null;
