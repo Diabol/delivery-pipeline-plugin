@@ -82,7 +82,7 @@ public final class PipelineFactory {
 
         stagesResult = StageUtil.placeStages(firstProject, stagesResult);
 
-        return new Pipeline(name, null, null, null, null, null, newArrayList(stagesResult), false);
+        return new Pipeline(name, null, null, null, null, newArrayList(stagesResult), false);
     }
 
 
@@ -140,7 +140,7 @@ public final class PipelineFactory {
             }
             stages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), version, stage.getRow(), stage.getColumn()));
         }
-        return new Pipeline(pipeline.getName(), null, null, null, null,null, stages, true);
+        return new Pipeline(pipeline.getName(), null, null, null, null, stages, true);
     }
 
     private static AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
@@ -188,9 +188,10 @@ public final class PipelineFactory {
                 }
                 stages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), null, stage.getRow(), stage.getColumn()));
             }
-
-            result.add(new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), changes, timestamp,
-                    getTriggeredBy(firstBuild), getContributors(firstBuild), stages, false));
+            Pipeline pipelineLatest = new Pipeline(pipeline.getName(), firstBuild.getDisplayName(), timestamp,
+                                getTriggeredBy(firstBuild), getContributors(firstBuild), stages, false);
+            pipelineLatest.setChanges(changes);
+            result.add(pipelineLatest);
         }
         return result;
     }

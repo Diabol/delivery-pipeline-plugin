@@ -55,17 +55,8 @@ public class PipelineVersionContributor extends BuildWrapper {
     }
 
     @Override
-    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
-        onStarted(build, listener);
-        return new Environment() {
-            @Override
-            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
-                return true;
-            }
-        };
-    }
-
-    public void onStarted(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+    public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException,
+            InterruptedException {
         try {
 
             String version = TokenMacro.expand(build, listener, getVersionTemplate());
@@ -80,6 +71,12 @@ public class PipelineVersionContributor extends BuildWrapper {
             listener.getLogger().println("Error creating version: " + e.getMessage());
             LOG.log(Level.WARNING, "Error creating version", e);
         }
+        return new Environment() {
+            @Override
+            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+                return true;
+            }
+        };
     }
 
     public static String getVersion(AbstractBuild build)  {

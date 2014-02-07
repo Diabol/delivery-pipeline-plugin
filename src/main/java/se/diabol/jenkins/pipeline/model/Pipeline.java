@@ -45,7 +45,6 @@ public class Pipeline extends AbstractItem {
 
     public Pipeline(String name,
                     String version,
-                    List<Change> changes,
                     String timestamp,
                     List<Trigger> triggeredBy,
                     Set<UserInfo> contributors,
@@ -57,7 +56,6 @@ public class Pipeline extends AbstractItem {
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
         this.timestamp = timestamp;
-        this.changes = changes;
     }
 
     @Exported
@@ -88,6 +86,10 @@ public class Pipeline extends AbstractItem {
     @Exported
     public int getId() {
         return hashCode();
+    }
+
+    public void setChanges(List<Change> changes) {
+        this.changes = changes;
     }
 
     @Exported

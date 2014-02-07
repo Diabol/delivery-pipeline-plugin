@@ -266,6 +266,7 @@ function formatDuration(millis) {
 
         return minstr + secstr;
     }
+    return "0 sec";
 }
 
 function getStageId(name, count) {
