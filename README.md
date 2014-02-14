@@ -9,3 +9,7 @@ For info see the [Delivery Pipeline Plugin - Wiki](https://wiki.jenkins-ci.org/d
 
 Contributed by [Diabol AB](http://www.diabol.se)
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Diabol/delivery-pipeline-plugin/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
