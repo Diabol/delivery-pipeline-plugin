@@ -116,15 +116,15 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
 
                     html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
-                    html = html + '<h1><span class="stage-name">' + stage.name + '</span>';
+                    html = html + '<div class="stage-header"><span class="stage-name">' + stage.name + '</span>';
                     if (!pipeline.aggregated) {
-                        html = html + '</h1>'
+                        html = html + '</div>'
                     } else {
                         var stageversion = stage.version;
                         if (!stageversion) {
                             stageversion = "N/A"
                         }
-                        html = html + ' <span class="stage-version">' + stageversion + '</span></h1>'
+                        html = html + ' <span class="stage-version">' + stageversion + '</span></div>'
                     }
                     for (var k = 0; k < stage.tasks.length; k++) {
                         var task = stage.tasks[k];
@@ -199,7 +199,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 });
             });
 
-
         }
     } else {
         for (var p = 0; p < data.pipelines.length; p++) {
@@ -224,7 +223,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             }
         }
     }
-
+    plumb.repaintEverything();
 }
 
 function getStageClassName(stagename) {

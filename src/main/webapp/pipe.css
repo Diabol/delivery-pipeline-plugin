@@ -88,12 +88,13 @@ section.stage {
     margin: 0 30px 60px;
 }
 
-section.stage h1 {
+section.stage div.stage-header {
     font-size: medium;
     border-bottom: black solid 2px;
     margin: 0;
     margin-bottom: 3px;
     padding: 5px 10px;
+    height: 20px;
 }
 
 section.stage div.task {
@@ -119,6 +120,11 @@ section.stage a:hover {
 .stage-version {
     float: right;
 }
+
+.stage-name {
+    float: left;
+}
+
 
 .IDLE {
     border-left: 6px solid #d3d3d3;
