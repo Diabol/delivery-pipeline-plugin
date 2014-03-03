@@ -104,7 +104,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     var stage = pipeline.stages[j];
                     if (stage.row > row) {
 
-                        html = html + '</div><div class="pipeline-row">';
+                        html = html + '</div><div class="pipeline-row-spacer"></div><div class="pipeline-row">';
                         column = 0;
                     }
 

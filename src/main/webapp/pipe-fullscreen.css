@@ -38,6 +38,10 @@ div.pipeline-row {
     margin-top: 20px;
 }
 
+div.pipeline-row-spacer {
+    white-space: nowrap;
+    height: 20px;
+}
 
 section.pipeline {
     display: table;
@@ -91,7 +95,7 @@ section.stage {
     min-width: 180px;
     vertical-align: top;
     background: #404040;
-    margin: 0 30px 60px;
+    margin: 0 30px 0;
 }
 
 section.stage div.stage-header {

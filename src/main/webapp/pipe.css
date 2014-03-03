@@ -85,7 +85,7 @@ section.stage {
     border-radius: 10px;
     border: solid 2px black;
     padding: 0 3px 3px 0;
-    margin: 0 30px 60px;
+    margin: 0 30px 0px;
 }
 
 section.stage div.stage-header {
@@ -206,7 +206,10 @@ section.hide {
 div.pipeline-row {
     display: table-row;
     white-space: nowrap;
-    margin-top: 20px;
+}
+div.pipeline-row-spacer {
+    white-space: nowrap;
+    height: 20px;
 }
 
 div.pipelineerror {
