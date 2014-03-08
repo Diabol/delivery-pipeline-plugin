@@ -135,8 +135,14 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
+                        var progress = 0;
+
+                        if (task.status.percentage) {
+                            progress = task.status.percentage;
+                        }
+
                         html = html + "<div id=\"" + id + "\" class=\"task " + task.status.type +
-                            "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
+                            "\"><div class=\"task-progress\" style=\"width: " + progress + "%;\"><div class=\"task-content\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
 
                         if (timestamp != "") {
                             html = html + "<span id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</span>"
@@ -145,7 +151,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         if (task.status.duration >= 0)
                             html = html + "<span class='duration'>" + formatDuration(task.status.duration) + "</span>";
 
-                        html = html + "</div>"
+                        html = html + "</div></div></div>"
 
                     }
                     html = html + "</section>";

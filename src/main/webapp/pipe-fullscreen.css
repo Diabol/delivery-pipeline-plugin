@@ -114,6 +114,38 @@ section.stage div.task {
     padding-left: 5px;
 }
 
+
+div.task-progress {
+    position: relative;
+    height: 34px;
+    width: 0;
+    background-color: #0197fe;
+    -webkit-animation-name: bluePulse;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes bluePulse {
+    from { background-color: #0197fe; -webkit-box-shadow: 0 0 9px #333; }
+    50% { background-color: #2daebf; -webkit-box-shadow: 0 0 18px #2daebf; }
+    to { background-color: #0197fe; -webkit-box-shadow: 0 0 9px #333; }
+}
+
+div.task-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+
+div.taskname {
+    position: relative;
+}
+
 section.stage a {
     text-decoration: none;
     color: inherit;
@@ -179,7 +211,6 @@ section.hide {
 }
 
 .RUNNING {
-    background: url("running.gif") no-repeat right;
     border-left: 6px solid #0197fe;
     color: lightgray;
 }

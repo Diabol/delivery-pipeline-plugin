@@ -53,14 +53,12 @@ div.changes a:hover {
     text-decoration: underline;
 }
 
-
 div.changes h1 {
     font-size: 14px;
     line-height: 14px;
     padding: 0;
     margin: 0;
 }
-
 
 div.change {
     clear: both;
@@ -104,6 +102,30 @@ section.stage div.task {
     padding-left: 5px;
 }
 
+
+div.task-progress {
+    position: relative;
+    height: 30px;
+    width: 0;
+    background-color: lightskyblue;
+    border-radius: 3px;
+}
+
+div.task-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+
+div.taskname {
+    position: relative;
+}
+
 section.stage a {
     text-decoration: none;
     color: inherit;
@@ -124,7 +146,6 @@ section.stage a:hover {
 .stage-name {
     float: left;
 }
-
 
 .IDLE {
     border-left: 6px solid #d3d3d3;
@@ -162,7 +183,6 @@ section.stage a:hover {
 }
 
 .RUNNING {
-    background: url("running.gif") no-repeat right;
     border-left: 6px solid #0092ef;
 }
 
@@ -207,6 +227,7 @@ div.pipeline-row {
     display: table-row;
     white-space: nowrap;
 }
+
 div.pipeline-row-spacer {
     white-space: nowrap;
     height: 20px;
