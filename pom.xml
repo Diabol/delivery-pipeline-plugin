@@ -223,7 +223,7 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>join</artifactId>
             <version>1.15</version>
-            <optional>true</optional>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
