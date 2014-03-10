@@ -12,7 +12,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
             }, timeout);
         },
         error: function (xhr, status, error) {
-            Q("#" + errorDiv).html('Error communicating to server! ' + error);
+            Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error));
             Q("#" + errorDiv).show();
             plumb.repaintEverything();
             setTimeout(function () {
@@ -44,7 +44,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
         for (var c = 0; c < data.pipelines.length; c++) {
             var component = data.pipelines[c];
             var html = "<section class='component'>";
-            html = html + "<h1>" + component.name + "</h1>";
+            html = html + "<h1>" + htmlEncode(component.name) + "</h1>";
             if (component.pipelines.length == 0) {
                 html = html + "No builds done yet.";
             }
@@ -56,7 +56,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
                     for (var y = 0; y < pipeline.triggeredBy.length; y++) {
                         var trigger = pipeline.triggeredBy[y];
-                        triggered = triggered + ' <span class="' + trigger.type + '">' + trigger.description + '</span>';
+                        triggered = triggered + ' <span class="' + trigger.type + '">' + htmlEncode(trigger.description) + '</span>';
                     }
                     if (y < pipeline.triggeredBy.length - 1) {
                         triggered = triggered + ", ";
@@ -66,34 +66,16 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 if (pipeline.aggregated) {
                     html = html + '<h1>Aggregated view</h1>'
                 } else {
-                    html = html + '<h1>' + pipeline.version;
+                    html = html + '<h1>' + htmlEncode(pipeline.version);
                     if (triggered != "") {
                         html = html + " triggered by " + triggered;
                     }
                     html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
 
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
-                        html = html + '<div class="changes">';
-                        html = html + '<h1>Changes:</h1>';
-                        for (var o = 0; o < pipeline.changes.length; o++) {
-                            html = html + '<div class="change">';
-                            var change = pipeline.changes[o];
-                            html = html + '<div class="change-author">' + change.author.name + '</div>';
-                            if (change.changeLink) {
-                                html = html + '<div class="change-message"><a href="' + change.changeLink + '">' + change.message + '</a></div>';
-                            } else {
-                                html = html + '<div class="change-message">' + change.message + '</div>';
-                            }
-                            html = html + '</div>';
-                        }
-                        html = html + '</div>';
-
-
+                        html = html + generateChangeLog(pipeline.changes);
                     }
-
-
                 }
-
 
                 var row = 0;
                 var column = 0;
@@ -116,7 +98,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
 
                     html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
-                    html = html + '<div class="stage-header"><span class="stage-name">' + stage.name + '</span>';
+                    html = html + '<div class="stage-header"><span class="stage-name">' + htmlEncode(stage.name) + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</div>'
                     } else {
@@ -124,7 +106,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         if (!stageversion) {
                             stageversion = "N/A"
                         }
-                        html = html + ' <span class="stage-version">' + stageversion + '</span></div>'
+                        html = html + ' <span class="stage-version">' + htmlEncode(stageversion) + '</span></div>'
                     }
                     for (var k = 0; k < stage.tasks.length; k++) {
                         var task = stage.tasks[k];
@@ -142,7 +124,8 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         }
 
                         html = html + "<div id=\"" + id + "\" class=\"task " + task.status.type +
-                            "\"><div class=\"task-progress\" style=\"width: " + progress + "%;\"><div class=\"task-content\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + task.name + "</a></div>";
+                            "\"><div class=\"task-progress\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
+                            "<div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
 
                         if (timestamp != "") {
                             html = html + "<span id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</span>"
@@ -192,7 +175,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                                         [ "Arrow", { location: 1}]
                                     ],
                                     cssClass: "relation",
-                                    connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs:true } ],
+                                    connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
                                     paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
                                     drawEndpoints: false
                                 });
@@ -230,6 +213,24 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
         }
     }
     plumb.repaintEverything();
+}
+
+function generateChangeLog(changes) {
+    var html = '<div class="changes">';
+    html = html + '<h1>Changes:</h1>';
+    for (var i = 0; i < changes.length; i++) {
+        html = html + '<div class="change">';
+        var change = changes[i];
+        html = html + '<div class="change-author">' + htmlEncode(change.author.name) + '</div>';
+        if (change.changeLink) {
+            html = html + '<div class="change-message"><a href="' + change.changeLink + '">' + htmlEncode(change.message) + '</a></div>';
+        } else {
+            html = html + '<div class="change-message">' + htmlEncode(change.message) + '</div>';
+        }
+        html = html + '</div>';
+    }
+    html = html + '</div>';
+    return html;
 }
 
 function getStageClassName(stagename) {
@@ -274,6 +275,11 @@ function formatDuration(millis) {
     return "0 sec";
 }
 
+function htmlEncode(html) {
+    html = document.createElement('a').appendChild(
+        document.createTextNode(html)).parentNode.innerHTML;
+    return html.replace(/\n/g, '<br/>');
+}
 function getStageId(name, count) {
     var re = new RegExp(' ', 'g');
     return name.replace(re, '_') + "_" + count;

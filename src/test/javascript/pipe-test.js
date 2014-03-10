@@ -23,3 +23,29 @@ describe("getStageClassName", function() {
         expect(getStageClassName("QA 1")).toEqual("stage_QA_1");
     });
 });
+
+describe("htmlEncode", function() {
+    it("correctly returns html safe strings", function() {
+        expect(htmlEncode("Line1\nLine2")).toEqual("Line1<br/>Line2");
+        expect(htmlEncode("<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>")).toEqual("&lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;");
+    });
+});
+
+describe("generateChangeLog", function() {
+    it("Linebreak in changelog comment", function() {
+        var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"Firstline\\nSecondLine"}]}');
+        expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-author">Firstname Lastname</div><div class="change-message">Firstline<br/>SecondLine</div></div></div>');
+    });
+    it("XML in changelog comment", function() {
+        var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"<xml>data</xml>"}]}');
+        expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-author">Firstname Lastname</div><div class="change-message">&lt;xml&gt;data&lt;/xml&gt;</div></div></div>');
+    });
+    it("Swedish characters in changelog comment", function() {
+        var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"Räksmörgås"}]}');
+        expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-author">Firstname Lastname</div><div class="change-message">Räksmörgås</div></div></div>');
+    });
+    it("Multiple changelogs", function() {
+        var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"First change"}, {"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"Second change"}]}');
+        expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-author">Firstname Lastname</div><div class="change-message">First change</div></div><div class="change"><div class="change-author">Firstname Lastname</div><div class="change-message">Second change</div></div></div>');
+    });
+});

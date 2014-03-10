@@ -57,7 +57,7 @@ div.changes h1 {
     font-size: 14px;
     line-height: 14px;
     padding: 0;
-    margin: 0;
+    margin-bottom: 5px;
 }
 
 div.change {
@@ -67,6 +67,8 @@ div.change {
 
 div.change-author {
     display: inline-block;
+    vertical-align: top;
+    min-width: 75px;
 }
 
 div.change-message {
@@ -83,7 +85,7 @@ section.stage {
     border-radius: 10px;
     border: solid 2px black;
     padding: 0 3px 3px 0;
-    margin: 0 30px 0px;
+    margin: 0 60px 0 0;
 }
 
 section.stage div.stage-header {

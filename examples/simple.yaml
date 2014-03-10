@@ -1,0 +1,69 @@
+- job:
+    name: 'simple-build'
+    properties:
+      - delivery-pipeline:
+          stage: Build
+          task: Build
+    wrappers:
+        - delivery-pipeline:
+            version-template: 1.0.0-${BUILD_NUMBER}
+            set-display-name: true
+    publishers:
+      - trigger:
+          project: simple-deploy-CI
+- job:
+    name: 'simple-deploy-CI'
+    properties:
+      - delivery-pipeline:
+          stage: CI
+          task: Deploy
+    publishers:
+      - trigger:
+          project: simple-test-CI
+
+- job:
+    name: 'simple-test-CI'
+    properties:
+      - delivery-pipeline:
+          stage: CI
+          task: Test
+    publishers:
+      - trigger:
+          project: simple-deploy-QA
+
+- job:
+    name: 'simple-deploy-QA'
+    properties:
+      - delivery-pipeline:
+          stage: QA
+          task: Deploy
+    publishers:
+      - trigger:
+          project: simple-test-QA
+
+- job:
+    name: 'simple-test-QA'
+    properties:
+      - delivery-pipeline:
+          stage: QA
+          task: Test
+    publishers:
+      - trigger:
+          project: simple-deploy-PROD
+
+- job:
+    name: 'simple-deploy-PROD'
+    properties:
+      - delivery-pipeline:
+          stage: PROD
+          task: Deploy
+    publishers:
+      - trigger:
+          project: simple-test-PROD
+
+- job:
+    name: 'simple-test-PROD'
+    properties:
+      - delivery-pipeline:
+          stage: PROD
+          task: Smoke Test

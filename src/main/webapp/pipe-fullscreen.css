@@ -62,15 +62,15 @@ section.pipeline h1 {
 
 div.changes {
     padding-top: 0;
-    padding-bottom: 10px;
     padding-left: 20px;
+    padding-bottom: 10px;
 }
 
 div.changes h1 {
     font-size: 14px;
     line-height: 14px;
     padding: 0;
-    margin: 0;
+    margin-bottom: 5px;
 }
 
 
@@ -81,6 +81,8 @@ div.change {
 
 div.change-author {
     display: inline-block;
+    vertical-align: top;
+    min-width: 75px;
 }
 
 div.change-message {
@@ -95,7 +97,7 @@ section.stage {
     min-width: 180px;
     vertical-align: top;
     background: #404040;
-    margin: 0 30px 0;
+    margin: 0 60px 0 0;
 }
 
 section.stage div.stage-header {
