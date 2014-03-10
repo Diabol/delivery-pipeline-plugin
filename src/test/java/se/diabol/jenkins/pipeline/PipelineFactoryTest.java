@@ -183,7 +183,6 @@ public class PipelineFactoryTest {
 
         assertEquals(4, pipe1.getStages().size());
         assertEquals(2, pipe2.getStages().size());
-        assertNotNull(sonar.getBuild("1"));
 
         aggregated1 = PipelineFactory.createPipelineAggregated(pipe1, jenkins.getInstance());
         aggregated2 = PipelineFactory.createPipelineAggregated(pipe2, jenkins.getInstance());
