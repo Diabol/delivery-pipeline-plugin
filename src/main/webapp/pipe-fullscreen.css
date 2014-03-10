@@ -62,7 +62,6 @@ section.pipeline h1 {
 
 div.changes {
     padding-top: 0;
-    padding-bottom: 10px;
     padding-left: 20px;
 }
 
@@ -70,7 +69,7 @@ div.changes h1 {
     font-size: 14px;
     line-height: 14px;
     padding: 0;
-    margin: 0;
+    margin-bottom: 5px;
 }
 
 
@@ -81,6 +80,7 @@ div.change {
 
 div.change-author {
     display: inline-block;
+    vertical-align: top;
 }
 
 div.change-message {
