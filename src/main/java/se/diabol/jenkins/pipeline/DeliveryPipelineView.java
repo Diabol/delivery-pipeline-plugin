@@ -24,8 +24,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.export.Exported;
-import se.diabol.jenkins.pipeline.model.Component;
-import se.diabol.jenkins.pipeline.model.Pipeline;
+import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -230,12 +230,12 @@ public class DeliveryPipelineView extends View {
     }
 
     private Component getComponent(String name, AbstractProject firstJob, boolean showAggregatedPipeline) {
-        Pipeline prototype = PipelineFactory.extractPipeline(name, firstJob);
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
-            pipelines.add(PipelineFactory.createPipelineAggregated(prototype, getOwnerItemGroup()));
+            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
         }
-        pipelines.addAll(PipelineFactory.createPipelineLatest(prototype, noOfPipelines, getOwnerItemGroup()));
+        pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
         return new Component(name, pipelines);
     }
 

@@ -15,15 +15,20 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model.status;
+package se.diabol.jenkins.pipeline.domain.status;
 
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.model.AbstractItem;
-import se.diabol.jenkins.pipeline.model.Status;
+import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.pipeline.domain.Status;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
-import static se.diabol.jenkins.pipeline.model.status.StatusType.*;
+import static java.lang.Math.round;
+import static java.lang.System.currentTimeMillis;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.*;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class SimpleStatus implements Status {
@@ -106,6 +111,40 @@ public class SimpleStatus implements Status {
     public int hashCode() {
         return type.hashCode();
     }
+
+    public static Status resolveStatus(AbstractProject project, AbstractBuild build) {
+        if (build == null) {
+            if (project.isInQueue()) {
+                return StatusFactory.queued(project.getQueueItem().getInQueueSince());
+            } else if (project.isDisabled()) {
+                return StatusFactory.disabled();
+            } else {
+                return StatusFactory.idle();
+            }
+        }
+
+        if (build.isBuilding()) {
+            return StatusFactory.running((int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
+                    / build.getEstimatedDuration()), build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
+        }
+
+        Result result = build.getResult();
+        if (Result.ABORTED.equals(result)) {
+            return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
+        }
+        if (Result.SUCCESS.equals(result)) {
+            return StatusFactory.success(build.getTimeInMillis(), build.getDuration());
+        }
+        if (Result.FAILURE.equals(result)) {
+            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration());
+        }
+        if (Result.UNSTABLE.equals(result)) {
+            return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
+        } else {
+            throw new IllegalStateException("Result " + result + " not recognized.");
+        }
+    }
+
 
     @Override
     public boolean equals(Object obj) {

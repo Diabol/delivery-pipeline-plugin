@@ -27,10 +27,10 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
-import se.diabol.jenkins.pipeline.model.Component;
-import se.diabol.jenkins.pipeline.model.Pipeline;
-import se.diabol.jenkins.pipeline.model.Stage;
-import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.domain.Stage;
+import se.diabol.jenkins.pipeline.domain.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 
 import java.util.ArrayList;

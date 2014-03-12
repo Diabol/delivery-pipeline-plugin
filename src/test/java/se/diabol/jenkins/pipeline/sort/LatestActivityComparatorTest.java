@@ -18,11 +18,11 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.sort;
 
 import org.junit.Test;
-import se.diabol.jenkins.pipeline.model.Component;
-import se.diabol.jenkins.pipeline.model.Pipeline;
-import se.diabol.jenkins.pipeline.model.Stage;
-import se.diabol.jenkins.pipeline.model.Task;
-import se.diabol.jenkins.pipeline.model.status.StatusFactory;
+import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.domain.Stage;
+import se.diabol.jenkins.pipeline.domain.Task;
+import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;

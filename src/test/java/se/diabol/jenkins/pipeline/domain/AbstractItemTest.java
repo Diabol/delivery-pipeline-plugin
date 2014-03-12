@@ -15,24 +15,29 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
 import org.junit.Test;
-import se.diabol.jenkins.pipeline.model.status.StatusFactory;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class TaskTest {
+public class AbstractItemTest {
+
+    class AbstractItemTester extends AbstractItem {
+        protected AbstractItemTester( String name ) {
+            super( name );
+        }
+    }
+
+    @Test
+    public void testHashCode() {
+        assertThat(new AbstractItemTester("name").hashCode(), is("name".hashCode()));
+    }
 
     @Test
     public void testEquals() {
-        Task a1 = new Task( "A", "unimportant_name", null, StatusFactory.idle(), "unimportant_link", false, null, null );
-        Task b = new Task( "B", "unimportant_name", null, StatusFactory.idle(), "unimportant_link", false, null, null );
-        Task a2 = new Task( "A", "unimportant_name", null, StatusFactory.idle(), "unimportant_link", false, null, null );
-
-        assertThat( a1, is( a1 ) );
-        assertThat( a1, is( a2 ) );
-        assertThat( a1.equals( b ), is( false ));
+        assertThat( new AbstractItemTester( "A" ), is( new AbstractItemTester( "A") ) );
+        assertThat( new AbstractItemTester( "A" ).equals( new AbstractItemTester( "B" )), is( false ));
     }
 }

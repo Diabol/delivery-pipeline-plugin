@@ -21,9 +21,9 @@ import hudson.model.AbstractProject;
 import jenkins.model.Jenkins;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
-import se.diabol.jenkins.pipeline.model.Edge;
-import se.diabol.jenkins.pipeline.model.Stage;
-import se.diabol.jenkins.pipeline.model.Task;
+import se.diabol.jenkins.pipeline.domain.Edge;
+import se.diabol.jenkins.pipeline.domain.Stage;
+import se.diabol.jenkins.pipeline.domain.Task;
 
 import java.util.*;
 

@@ -15,37 +15,43 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain.status;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.domain.AbstractItem;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Trigger {
+public class Running extends SimpleStatus {
+    private final int percentage;
 
-    private String type;
-    private String description;
-
-    public static final String TYPE_UPSTREAM = "UPSTREAM";
-    public static final String TYPE_MANUAL = "MANUAL";
-    public static final String TYPE_REMOTE = "REMOTE";
-    public static final String TYPE_SCM = "SCM";
-    public static final String TYPE_TIMER = "TIMER";
-    public static final String TYPE_UNKNOWN = "UNKNOWN";
-
-
-    public Trigger(String type, String description) {
-        this.type = type;
-        this.description = description;
+    Running(int percentage, long lastActivity, long duration) {
+        super(StatusType.RUNNING, lastActivity, duration);
+        this.percentage = percentage;
     }
 
     @Exported
-    public String getType() {
-        return type;
+    public int getPercentage() {
+        return percentage;
     }
 
-    @Exported
-    public String getDescription() {
-        return description;
+    @Override
+    public boolean isRunning() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RUNNING " + percentage + "%";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof Running && percentage == ((Running) o).percentage;
+    }
+
+    @Override
+    public int hashCode() {
+        return percentage;
     }
 }

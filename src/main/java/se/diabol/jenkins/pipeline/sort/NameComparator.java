@@ -18,7 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.sort;
 
 import hudson.Extension;
-import se.diabol.jenkins.pipeline.model.Component;
+import se.diabol.jenkins.pipeline.domain.Component;
 
 public class NameComparator extends ComponentComparator {
 

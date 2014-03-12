@@ -15,16 +15,28 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
+import hudson.Util;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.ItemGroup;
+import jenkins.model.Jenkins;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.disabled;
+import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.idle;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Task extends AbstractItem {
@@ -83,6 +95,31 @@ public class Task extends AbstractItem {
     public List<String> getDownstreamTasks() {
         return downstreamTasks;
     }
+
+    public static Task getPrototypeTask(AbstractProject project) {
+        PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+        String taskName = property != null && !isNullOrEmpty(property.getTaskName())
+                ? property.getTaskName() : project.getDisplayName();
+        Status status = project.isDisabled() ? disabled() : idle();
+        List<AbstractProject> downstreams = ProjectUtil.getDownstreamProjects(project);
+        List<String> downStreamTasks = new ArrayList<String>();
+        for (AbstractProject downstreamProject : downstreams) {
+            downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
+        }
+
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status,
+                Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(), false, null, downStreamTasks);
+    }
+
+    public static Task getTask(Task task, AbstractBuild build, ItemGroup context) {
+        AbstractProject project = ProjectUtil.getProject(task.getId(), context);
+        Status status = SimpleStatus.resolveStatus(project, build);
+        String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
+        String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
+        return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), TestResult.getTestResult(build),
+                task.getDownstreamTasks());
+    }
+
 
     @Override
     public int hashCode() {
