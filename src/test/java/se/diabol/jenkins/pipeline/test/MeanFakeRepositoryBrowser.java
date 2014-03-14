@@ -15,27 +15,17 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain;
+package se.diabol.jenkins.pipeline.test;
 
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
+import hudson.scm.RepositoryBrowser;
+import org.jvnet.hudson.test.FakeChangeLogSCM;
 
-/**
- * This is the common abstraction for all the entities that makes a pipeline.
- */
-@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public abstract class AbstractItem {
-    private final String name;
+import java.io.IOException;
+import java.net.URL;
 
-    public static final int VISIBILITY = 100;
-
-    protected AbstractItem(String name) {
-        this.name = name;
+public class MeanFakeRepositoryBrowser extends RepositoryBrowser<FakeChangeLogSCM.EntryImpl> {
+    @Override
+    public URL getChangeSetLink(FakeChangeLogSCM.EntryImpl changeSet) throws IOException {
+        throw new IOException("I can get changeset link");
     }
-
-    @Exported
-    public String getName() {
-        return name;
-    }
-
 }

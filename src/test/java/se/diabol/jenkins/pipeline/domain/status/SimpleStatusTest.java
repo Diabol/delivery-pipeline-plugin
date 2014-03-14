@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.diabol.jenkins.pipeline.domain.Status;
 
 import java.io.IOException;
 
@@ -41,13 +40,6 @@ public class SimpleStatusTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
-
-    @Test
-    public void textEqualsHashCode() {
-        assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1), new SimpleStatus(StatusType.DISABLED, -1, -1));
-        assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode(), new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode());
-    }
-
     @Test
     public void testResolveStatusIdle() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
@@ -57,6 +49,7 @@ public class SimpleStatusTest {
         assertEquals(-1, status.getLastActivity());
         assertEquals(-1, status.getDuration());
         assertNull(status.getTimestamp());
+        assertTrue(status.getType().equals(StatusType.IDLE));
     }
 
     @Test
@@ -69,6 +62,7 @@ public class SimpleStatusTest {
         assertEquals(-1, status.getLastActivity());
         assertEquals(-1, status.getDuration());
         assertNull(status.getTimestamp());
+        assertTrue(status.getType().equals(StatusType.DISABLED));
     }
 
     @Test
@@ -82,6 +76,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
+        assertTrue(status.getType().equals(StatusType.SUCCESS));
     }
 
     @Test
@@ -96,6 +91,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
+        assertTrue(status.getType().equals(StatusType.FAILED));
     }
 
 
@@ -111,6 +107,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
+        assertTrue(status.getType().equals(StatusType.UNSTABLE));
     }
 
 
@@ -127,6 +124,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
+        assertTrue(status.getType().equals(StatusType.CANCELLED));
     }
 
     @Test
@@ -151,10 +149,12 @@ public class SimpleStatusTest {
         Status status = SimpleStatus.resolveStatus(project, null);
         assertTrue(status.isQueued());
         assertFalse(status.isRunning());
+        assertTrue(status.getType().equals(StatusType.QUEUED));
         assertEquals("QUEUED", status.toString());
         jenkins.waitUntilNoActivity();
         status = SimpleStatus.resolveStatus(project, project.getLastBuild());
         assertTrue(status.isSuccess());
+        assertTrue(status.getType().equals(StatusType.SUCCESS));
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
     }
@@ -182,7 +182,10 @@ public class SimpleStatusTest {
         assertTrue(status instanceof Running);
         Running running = (Running) status;
         assertFalse(running.getPercentage() == 0);
-        assertTrue(running.equals(running));
+        assertTrue(running.isRunning());
+        assertTrue(status.getType().equals(StatusType.RUNNING));
+        assertNotNull(status.toString());
+
     }
 
 }

@@ -24,12 +24,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UserInfoTest {
 
@@ -88,6 +88,22 @@ public class UserInfoTest {
         Set<UserInfo> contributors = UserInfo.getContributors(project.getLastBuild());
         assertEquals(1, contributors.size());
         assertTrue(contributors.contains(new UserInfo("test-user", null, null)));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testEqualsHashCode() {
+        UserInfo userInfo1 = new UserInfo("name", null, null);
+        assertTrue(userInfo1.equals(userInfo1));
+        UserInfo userInfo2 = new UserInfo("name", "http://nowhere.com", null);
+        assertTrue(userInfo2.equals(userInfo1));
+
+        assertFalse(userInfo2.equals(null));
+        assertFalse(userInfo2.equals("name"));
+
+        UserInfo userInfo3 = new UserInfo("name1", "http://nowhere.com", null);
+        assertEquals(userInfo1.hashCode(), userInfo2.hashCode());
+        assertNotEquals(userInfo1.hashCode(), userInfo3.hashCode());
     }
 
 }

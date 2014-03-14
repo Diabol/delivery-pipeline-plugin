@@ -34,20 +34,20 @@ public class LatestActivityComparatorTest {
 
     @Test
     public void testCompare() {
-        Task taskA = new Task("task", "Build", "#1", StatusFactory.success(0, 20), "", false, null, null);
+        Task taskA = new Task("task", "Build", StatusFactory.success(0, 20), null, null);
         List<Task> tasksA = new ArrayList<Task>();
         tasksA.add(taskA);
-        Stage stageA = new Stage("Build", tasksA, null, null);
+        Stage stageA = new Stage("Build", tasksA);
         List<Stage> stagesA = new ArrayList<Stage>();
         stagesA.add(stageA);
         Pipeline pipelineA = new Pipeline("Pipeline A", "1.0.0.1", null, Collections.EMPTY_LIST, null, stagesA, false);
         List<Pipeline> pipelinesA = new ArrayList<Pipeline>();
         pipelinesA.add(pipelineA);
 
-        Task taskB = new Task("task", "Build", "#1", StatusFactory.success(10, 20), "", false, null, null);
+        Task taskB = new Task("task", "Build", StatusFactory.success(10, 20), null, null);
         List<Task> tasksB = new ArrayList<Task>();
         tasksB.add(taskB);
-        Stage stageB = new Stage("Build", tasksB, null, null);
+        Stage stageB = new Stage("Build", tasksB);
         List<Stage> stagesB = new ArrayList<Stage>();
         stagesB.add(stageB);
         Pipeline pipelineB = new Pipeline("Pipeline B", "1.0.0.1", null, Collections.EMPTY_LIST, null, stagesB, false);

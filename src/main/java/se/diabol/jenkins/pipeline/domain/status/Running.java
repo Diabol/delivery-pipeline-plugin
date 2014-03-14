@@ -44,14 +44,4 @@ public class Running extends SimpleStatus {
     public String toString() {
         return "RUNNING " + percentage + "%";
     }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o || o instanceof Running && percentage == ((Running) o).percentage;
-    }
-
-    @Override
-    public int hashCode() {
-        return percentage;
-    }
 }

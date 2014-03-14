@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.FakeChangeLogSCM;
 import org.jvnet.hudson.test.JenkinsRule;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
+import se.diabol.jenkins.pipeline.test.MeanFakeRepositoryBrowserSCM;
 
 import java.util.List;
 
@@ -74,6 +75,24 @@ public class ChangeTest {
         assertEquals("http://somewhere.com/test-user", change.getChangeLink());
     }
 
+    @Test
+    public void testGetChangesWithBrowserThrowIOException() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        MeanFakeRepositoryBrowserSCM scm = new MeanFakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        jenkins.setQuietPeriod(0);
+        jenkins.buildAndAssertSuccess(project);
+        AbstractBuild build = project.getLastBuild();
+        List<Change> changes = Change.getChanges(build);
+        assertNotNull(changes);
+        assertEquals(1, changes.size());
+        Change change = changes.get(0);
+        assertEquals("Fixed bug", change.getMessage());
+        assertEquals("test-user", change.getAuthor().getName());
+        assertNull(change.getCommitId());
+        assertNull(change.getChangeLink());
+    }
 
 
 

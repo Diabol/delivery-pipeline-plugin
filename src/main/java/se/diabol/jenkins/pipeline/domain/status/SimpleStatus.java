@@ -23,7 +23,6 @@ import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
-import se.diabol.jenkins.pipeline.domain.Status;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import static java.lang.Math.round;
@@ -107,11 +106,6 @@ public class SimpleStatus implements Status {
         return DISABLED.equals(type);
     }
 
-    @Override
-    public int hashCode() {
-        return type.hashCode();
-    }
-
     public static Status resolveStatus(AbstractProject project, AbstractBuild build) {
         if (build == null) {
             if (project.isInQueue()) {
@@ -146,10 +140,6 @@ public class SimpleStatus implements Status {
     }
 
 
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj || obj instanceof SimpleStatus && type.equals(((SimpleStatus) obj).getType());
-    }
 
     @Override
     public String toString() {

@@ -43,18 +43,4 @@ public class Component extends AbstractItem {
     public String toString() {
         return toStringHelper(this).add("name", getName()).add("pipelines", pipelines).toString();
     }
-
-    @Override
-    public int hashCode() {
-        return pipelines.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o || o instanceof Component && equalsSelf((Component) o);
-    }
-
-    private boolean equalsSelf(Component o) {
-        return super.equals(o) && pipelines.equals(o.pipelines);
-    }
 }

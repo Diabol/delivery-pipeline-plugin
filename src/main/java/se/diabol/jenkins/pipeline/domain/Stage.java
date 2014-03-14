@@ -18,15 +18,27 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.ItemGroup;
+import hudson.util.RunList;
+import jenkins.model.Jenkins;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.util.BuildUtil;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static java.util.Collections.singleton;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
@@ -38,11 +50,9 @@ public class Stage extends AbstractItem {
     private Map<String, List<String>> taskConnections;
     private List<String> downstreamStages;
 
-    public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections) {
+    public Stage(String name, List<Task> tasks) {
         super(name);
         this.tasks = ImmutableList.copyOf(tasks);
-        this.downstreamStages = downstreamStages;
-        this.taskConnections = taskConnections;
     }
 
     public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections, String version, int row, int column) {
@@ -101,18 +111,189 @@ public class Stage extends AbstractItem {
         this.taskConnections = taskConnections;
     }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(tasks).append(version).appendSuper(super.hashCode()).toHashCode();
+    public static Stage getPrototypeStage(String name, List<Task> tasks) {
+        return new Stage(name, tasks);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof Stage && equalsSelf((Stage) o);
+    public static List<Stage> extractStages(AbstractProject firstProject) {
+        Map<String, Stage> stages = newLinkedHashMap();
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject).values()) {
+            Task task = Task.getPrototypeTask(project);
+            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            String stageName = property != null && !isNullOrEmpty(property.getStageName())
+                    ? property.getStageName() : project.getDisplayName();
+            Stage stage = stages.get(stageName);
+            if (stage == null) {
+                stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
+            }
+            stages.put(stageName,
+                    Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
+        }
+        Collection<Stage> stagesResult = stages.values();
+
+        return Stage.placeStages(firstProject, stagesResult);
     }
 
-    private boolean equalsSelf(Stage o) {
-        return new EqualsBuilder().append(tasks, o.tasks).append(version, o.version).appendSuper(super.equals(o)).isEquals();
+
+
+    public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
+        List<Task> stageTasks = new ArrayList<Task>();
+
+        //The version build for this stage is the highest first task build
+        AbstractBuild versionBuild = getHighestBuild(getTasks(), firstProject, context);
+
+        String stageVersion = null;
+        if (versionBuild != null) {
+            stageVersion = versionBuild.getDisplayName();
+        }
+        for (Task task : getTasks()) {
+            stageTasks.add(task.getAggregatedTask(versionBuild, context));
+        }
+        return new Stage(getName(), stageTasks, getDownstreamStages(), getTaskConnections(), stageVersion, getRow(), getColumn());
+    }
+
+
+    public Stage createLatestStage(ItemGroup context, AbstractBuild firstBuild) {
+        List<Task> tasks = new ArrayList<Task>();
+        for (Task task : getTasks()) {
+            tasks.add(task.getLatestTask(context, firstBuild));
+        }
+        return new Stage(getName(), tasks, getDownstreamStages(), getTaskConnections(), null, getRow(), getColumn());
+
+    }
+
+
+
+    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) {
+        DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(Edge.class);
+        for (Stage stage : stages) {
+            stage.setTaskConnections(getStageConnections(stage, stages));
+            graph.addVertex(stage);
+            List<Stage> downstreamStages = getDownstreamStages(stage, stages);
+            List<String> downstreamStageNames = new ArrayList<String>();
+            for (Stage downstream : downstreamStages) {
+                downstreamStageNames.add(downstream.getName());
+                graph.addVertex(downstream);
+                graph.addEdge(stage, downstream, new Edge(stage, downstream));
+            }
+            stage.setDownstreamStages(downstreamStageNames);
+        }
+
+        List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(Jenkins.getInstance()), stages), graph);
+        Collections.sort(allPaths, new Comparator<List<Stage>>() {
+            public int compare(List<Stage> stages1, List<Stage> stages2) {
+                return stages2.size() - stages1.size();
+            }
+        });
+        for (int row = allPaths.size() - 1; row >= 0; row--) {
+            List<Stage> path = allPaths.get(row);
+            for (int column = 0; column < path.size(); column++) {
+                Stage stage = path.get(column);
+                stage.setColumn(Math.max(stage.getColumn(), column));
+                stage.setRow(row);
+            }
+        }
+
+        return new ArrayList<Stage>(stages);
+    }
+
+    private static Map<String, List<String>> getStageConnections(Stage stage, Collection<Stage> stages) {
+        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        for (int i = 0; i < stage.getTasks().size(); i++) {
+            Task task = stage.getTasks().get(i);
+            for (int j = 0; j < task.getDownstreamTasks().size(); j++) {
+                String downstreamTask = task.getDownstreamTasks().get(j);
+                Stage target = findStageForJob(downstreamTask, stages);
+                if (!stage.equals(target)) {
+                    if (result.get(task.getId()) == null) {
+                        result.put(task.getId(), new ArrayList<String>(singleton(downstreamTask)));
+                    } else {
+                        result.get(task.getId()).add(downstreamTask);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static List<List<Stage>> findAllRunnablePaths(Stage start, DirectedGraph<Stage, Edge> graph) {
+        List<List<Stage>> paths = new LinkedList<List<Stage>>();
+        if (graph.outDegreeOf(start) == 0) {
+            List<Stage> path = new LinkedList<Stage>();
+            path.add(start);
+            paths.add(path);
+        } else {
+            for (Edge edge : graph.outgoingEdgesOf(start)) {
+                List<List<Stage>> allPathsFromTarget = findAllRunnablePaths(edge.getTarget(), graph);
+                for (List<Stage> path : allPathsFromTarget) {
+                    path.add(0, start);
+                }
+                paths.addAll(allPathsFromTarget);
+            }
+        }
+        return paths;
+    }
+
+
+    private static List<Stage> getDownstreamStages(Stage stage, Collection<Stage> stages) {
+        List<Stage> result = newArrayList();
+        for (int i = 0; i < stage.getTasks().size(); i++) {
+            Task task = stage.getTasks().get(i);
+            for (int j = 0; j < task.getDownstreamTasks().size(); j++) {
+                String jobName = task.getDownstreamTasks().get(j);
+                Stage target = findStageForJob(jobName, stages);
+                if (target != null && !target.getName().equals(stage.getName())) {
+                    result.add(target);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static Stage findStageForJob(String name, Collection<Stage> stages) {
+        for (Stage stage : stages) {
+            for (int j = 0; j < stage.getTasks().size(); j++) {
+                Task task = stage.getTasks().get(j);
+                if (task.getId().equals(name)) {
+                    return stage;
+                }
+            }
+        }
+        return null;
+
+    }
+
+    private AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
+        int highest = -1;
+        for (Task task : tasks) {
+            AbstractProject project = getProject(task, context);
+            AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject);
+            if (firstBuild != null && firstBuild.getNumber() > highest) {
+                highest = firstBuild.getNumber();
+            }
+        }
+
+        if (highest > 0) {
+            return firstProject.getBuildByNumber(highest);
+        } else {
+            return null;
+        }
+    }
+
+    private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first) {
+        RunList<? extends AbstractBuild> builds = project.getBuilds();
+        for (AbstractBuild build : builds) {
+            AbstractBuild upstream = BuildUtil.getFirstUpstreamBuild(build, first);
+            if (upstream != null && upstream.getProject().equals(first)) {
+                return upstream;
+            }
+        }
+        return null;
+    }
+
+
+    private AbstractProject getProject(Task task, ItemGroup context) {
+        return ProjectUtil.getProject(task.getId(), context);
     }
 
     @Override
