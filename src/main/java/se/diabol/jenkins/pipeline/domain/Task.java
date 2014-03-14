@@ -20,14 +20,13 @@ package se.diabol.jenkins.pipeline.domain;
 import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.ItemGroup;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
+import se.diabol.jenkins.pipeline.domain.status.Status;
+import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.ArrayList;
@@ -48,16 +47,28 @@ public class Task extends AbstractItem {
     private final String buildId;
     private final List<String> downstreamTasks;
 
-    public Task(String id, String name, String buildId, Status status, String link, boolean manual,
-                TestResult testResult, List<String> downstreamTasks) {
+    public Task(String id, String name, Status status, String link, List<String> downstreamTasks) {
         super(name);
         this.id = id;
         this.link = link;
-        this.testResult = testResult;
+        this.testResult = null;
         this.status = status;
-        this.manual = manual;
-        this.buildId = buildId;
+        this.manual = false;
+        this.buildId = null;
         this.downstreamTasks = downstreamTasks;
+    }
+
+
+    public Task(Task task, String buildId, Status status, String link, boolean manual,
+                    TestResult testResult) {
+        super(task.getName());
+        this.id = task.id;
+        this.downstreamTasks = task.getDownstreamTasks();
+        this.buildId = buildId;
+        this.status = status;
+        this.link = link;
+        this.manual = manual;
+        this.testResult = testResult;
     }
 
     @Exported
@@ -107,32 +118,26 @@ public class Task extends AbstractItem {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
 
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, null, status,
-                Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(), false, null, downStreamTasks);
+        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
+                Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(), downStreamTasks);
     }
 
-    public static Task getTask(Task task, AbstractBuild build, ItemGroup context) {
-        AbstractProject project = ProjectUtil.getProject(task.getId(), context);
+    public static Task getLatestTask(Task task, AbstractProject project, AbstractBuild build) {
         Status status = SimpleStatus.resolveStatus(project, build);
         String link = build == null || status.isIdle() || status.isQueued() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
         String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
-        return new Task(task.getId(), task.getName(), buildId, status, link, task.isManual(), TestResult.getTestResult(build),
-                task.getDownstreamTasks());
+        return new Task(task, buildId, status, link, task.isManual(), TestResult.getTestResult(build));
     }
 
+    public static Task getAggregatedTask(Task task, AbstractBuild currentBuild, AbstractProject taskProject) {
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(id).append(status).appendSuper(super.hashCode()).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj || obj instanceof Task && equalsSelf((Task) obj);
-    }
-
-    private boolean equalsSelf(Task o) {
-        return new EqualsBuilder().append(id, o.id).append(status, o.status).appendSuper(super.equals(o)).isEquals();
+        if (currentBuild != null) {
+            Status status = SimpleStatus.resolveStatus(taskProject, currentBuild);
+            String link = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
+            return new Task(task, String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), TestResult.getTestResult(currentBuild));
+        } else {
+            return new Task(task, null, StatusFactory.idle(), task.getLink(), task.isManual(), null);
+        }
     }
 
     @Override

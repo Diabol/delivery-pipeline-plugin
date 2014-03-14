@@ -17,8 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
-import se.diabol.jenkins.pipeline.domain.Status;
-
 public final class StatusFactory {
 
     private StatusFactory() {

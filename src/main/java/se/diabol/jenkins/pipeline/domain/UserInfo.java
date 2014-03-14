@@ -66,12 +66,30 @@ public class UserInfo extends AbstractItem {
         return null;
     }
 
-
     public static Set<UserInfo> getContributors(AbstractBuild<?, ?> build) {
         Set<UserInfo> contributors = new HashSet<UserInfo>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
             contributors.add(UserInfo.getUser(entry.getAuthor()));
         }
         return contributors;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        UserInfo userInfo = (UserInfo) o;
+
+        return userInfo.getName().equals(userInfo.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
     }
 }

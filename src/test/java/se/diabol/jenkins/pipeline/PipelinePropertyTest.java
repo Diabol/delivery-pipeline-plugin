@@ -52,6 +52,7 @@ public class PipelinePropertyTest {
         assertEquals(FormValidation.Kind.OK, d.doCheckStageName("").kind);
         assertEquals(FormValidation.Kind.ERROR, d.doCheckStageName(" ").kind);
         assertEquals(FormValidation.Kind.OK, d.doCheckStageName("Stage").kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckStageName(null).kind);
     }
 
     @Test
@@ -61,6 +62,7 @@ public class PipelinePropertyTest {
         assertEquals(FormValidation.Kind.OK, d.doCheckTaskName("").kind);
         assertEquals(FormValidation.Kind.ERROR, d.doCheckTaskName(" ").kind);
         assertEquals(FormValidation.Kind.OK, d.doCheckTaskName("Task").kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckTaskName(null).kind);
     }
 
     @Test

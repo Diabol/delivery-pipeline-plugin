@@ -15,31 +15,14 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain;
+package se.diabol.jenkins.pipeline.test;
 
-import org.kohsuke.stapler.export.ExportedBean;
+import hudson.scm.RepositoryBrowser;
+import org.jvnet.hudson.test.FakeChangeLogSCM;
 
-@ExportedBean
-public interface Status {
-    boolean isIdle();
-
-    boolean isQueued();
-
-    boolean isRunning();
-
-    boolean isSuccess();
-
-    boolean isFailed();
-
-    boolean isUnstable();
-
-    boolean isCancelled();
-
-    boolean isDisabled();
-
-    long getLastActivity();
-
-    String getTimestamp();
-
-    long getDuration();
+public class MeanFakeRepositoryBrowserSCM extends FakeChangeLogSCM {
+    @Override
+    public RepositoryBrowser<?> getBrowser() {
+        return new MeanFakeRepositoryBrowser();
+    }
 }

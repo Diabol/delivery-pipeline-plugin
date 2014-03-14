@@ -15,16 +15,34 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.util;
+package se.diabol.jenkins.pipeline.domain.status;
 
-import org.junit.Test;
-import se.diabol.jenkins.pipeline.test.TestUtil;
+import org.kohsuke.stapler.export.ExportedBean;
 
-public class StageUtilTest {
+@ExportedBean
+public interface Status {
 
-    @Test
-    public void testValidUtilClass() throws Exception {
-        TestUtil.assertUtilityClassWellDefined(StageUtil.class);
-    }
+    StatusType getType();
 
+    boolean isIdle();
+
+    boolean isQueued();
+
+    boolean isRunning();
+
+    boolean isSuccess();
+
+    boolean isFailed();
+
+    boolean isUnstable();
+
+    boolean isCancelled();
+
+    boolean isDisabled();
+
+    long getLastActivity();
+
+    String getTimestamp();
+
+    long getDuration();
 }

@@ -18,21 +18,16 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
-import hudson.Util;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.ItemGroup;
 import hudson.util.RunList;
-import jenkins.model.Jenkins;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.PipelineProperty;
-import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
-import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
-import se.diabol.jenkins.pipeline.util.StageUtil;
 
 import java.util.*;
 
@@ -133,7 +128,7 @@ public class Pipeline extends AbstractItem {
         }
         Collection<Stage> stagesResult = stages.values();
 
-        stagesResult = StageUtil.placeStages(firstProject, stagesResult);
+        stagesResult = Stage.placeStages(firstProject, stagesResult);
 
         return new Pipeline(name, null, null, null, null, newArrayList(stagesResult), false);
     }
@@ -141,7 +136,7 @@ public class Pipeline extends AbstractItem {
     public Pipeline createPipelineAggregated(ItemGroup context) {
 
         AbstractProject firstProject = getProject(getStages().get(0).getTasks().get(0), context);
-        List<Stage> stages = new ArrayList<Stage>();
+        List<Stage> pipelineStages = new ArrayList<Stage>();
         for (Stage stage : getStages()) {
 
             List<Task> tasks = new ArrayList<Task>();
@@ -149,36 +144,20 @@ public class Pipeline extends AbstractItem {
             //The version build for this stage is the highest first task build
             AbstractBuild versionBuild = getHighestBuild(stage.getTasks(), firstProject, context);
 
-            String version = null;
+            String stageVersion = null;
             if (versionBuild != null) {
-                version = versionBuild.getDisplayName();
+                stageVersion = versionBuild.getDisplayName();
             }
             for (Task task : stage.getTasks()) {
                 AbstractProject<?, ?> taskProject = getProject(task, context);
                 AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
 
-                if (currentBuild != null) {
-                    Status status = SimpleStatus.resolveStatus(taskProject, currentBuild);
-                    String link = status.isIdle() ? task.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
-                    tasks.add(new Task(task.getId(), task.getName(), String.valueOf(currentBuild.getNumber()), status, link, task.isManual(), TestResult.getTestResult(currentBuild), task.getDownstreamTasks()));
-                } else {
-                    tasks.add(new Task(task.getId(), task.getName(), null, StatusFactory.idle(), task.getLink(), task.isManual(), null, task.getDownstreamTasks()));
-                }
+                tasks.add(Task.getAggregatedTask(task, currentBuild, taskProject));
             }
-            stages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), version, stage.getRow(), stage.getColumn()));
+            pipelineStages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), stageVersion, stage.getRow(), stage.getColumn()));
         }
-        return new Pipeline(getName(), null, null, null, null, stages, true);
+        return new Pipeline(getName(), null, null, null, null, pipelineStages, true);
     }
-
-
-    /**
-     * Helper method
-     */
-    public Pipeline createPipelineLatest(ItemGroup context) {
-        List<Pipeline> pipelines = createPipelineLatest(1, context);
-        return !pipelines.isEmpty() ? pipelines.get(0) : null;
-    }
-
 
     /**
      * Populates and return pipelines for the supplied pipeline prototype with the current status.
@@ -194,21 +173,21 @@ public class Pipeline extends AbstractItem {
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
-            List<Change> changes = Change.getChanges(firstBuild);
-            String timestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
-            List<Stage> stages = new ArrayList<Stage>();
+            List<Change> pipelineChanges = Change.getChanges(firstBuild);
+            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
+            List<Stage> pipelineStages = new ArrayList<Stage>();
             for (Stage stage : getStages()) {
                 List<Task> tasks = new ArrayList<Task>();
                 for (Task task : stage.getTasks()) {
                     AbstractProject<?, ?> taskProject = getProject(task, context);
                     AbstractBuild currentBuild = match(taskProject.getBuilds(), firstBuild);
-                    tasks.add(Task.getTask(task, currentBuild, context));
+                    tasks.add(Task.getLatestTask(task, taskProject, currentBuild));
                 }
-                stages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), null, stage.getRow(), stage.getColumn()));
+                pipelineStages.add(new Stage(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), null, stage.getRow(), stage.getColumn()));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstBuild.getDisplayName(), timestamp,
-                                Trigger.getTriggeredBy(firstBuild), UserInfo.getContributors(firstBuild), stages, false);
-            pipelineLatest.setChanges(changes);
+            Pipeline pipelineLatest = new Pipeline(getName(), firstBuild.getDisplayName(), pipeLineTimestamp,
+                                Trigger.getTriggeredBy(firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
+            pipelineLatest.setChanges(pipelineChanges);
             result.add(pipelineLatest);
         }
         return result;
@@ -263,23 +242,6 @@ public class Pipeline extends AbstractItem {
             }
         }
         return null;
-    }
-
-
-
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(version).append(stages).toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof Pipeline && equalsSelf((Pipeline) o);
-    }
-
-    private boolean equalsSelf(Pipeline o) {
-        return super.equals(o) && new EqualsBuilder().appendSuper(super.equals(o)).append(stages, o.stages).append(version, o.version).isEquals();
     }
 
     @Override
