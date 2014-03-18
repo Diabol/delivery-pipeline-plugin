@@ -34,6 +34,7 @@ import jenkins.model.Jenkins;
 import join.JoinTrigger;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.PipelineProperty;
@@ -189,7 +190,7 @@ public class PipelineTest {
 
         assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
 
-        assertEquals("job/sonar1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1/", aggregated1.getStages().get(3).getTasks().get(0).getLink());
 
         jenkins.buildAndAssertSuccess(build1);
         jenkins.waitUntilNoActivity();
@@ -202,17 +203,17 @@ public class PipelineTest {
         aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
-        assertEquals("job/sonar1/1/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
+        assertEquals("job/sonar1/1/", aggregated1.getStages().get(3).getTasks().get(0).getLink());
         assertEquals("1", aggregated1.getStages().get(1).getTasks().get(0).getBuildId());
 
-        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
+        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isSuccess());
 
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isIdle());
         assertEquals("job/sonar1/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
         assertNull(aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
 
 
-        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
+        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
         jenkins.buildAndAssertSuccess(build2);
         jenkins.waitUntilNoActivity();
@@ -237,28 +238,28 @@ public class PipelineTest {
         assertEquals("#2", aggregated1.getStages().get(1).getVersion());
         assertEquals("#1", aggregated2.getStages().get(1).getVersion());
 
-        assertEquals("job/sonar1/3/", aggregated1.getStages().get(1).getTasks().get(0).getLink());
-        assertEquals("3", aggregated1.getStages().get(1).getTasks().get(0).getBuildId());
+        assertEquals("job/sonar1/3/", aggregated1.getStages().get(3).getTasks().get(0).getLink());
+        assertEquals("3", aggregated1.getStages().get(3).getTasks().get(0).getBuildId());
 
         assertEquals("job/sonar1/2/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
         assertEquals("2", aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
 
 
-        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
+        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
         jenkins.buildAndAssertSuccess(build1);
         jenkins.waitUntilNoActivity();
-        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
-        assertEquals("#2", aggregated1.getStages().get(2).getVersion());
-        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isIdle());
+        assertTrue(aggregated1.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
+        assertEquals("#2", aggregated1.getStages().get(1).getVersion());
+        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
 
         BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
         view.triggerManualBuild(1, "prod", "test");
         jenkins.waitUntilNoActivity();
         aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
-        assertTrue(aggregated1.getStages().get(3).getTasks().get(0).getStatus().isSuccess());
-        assertEquals("#1", aggregated1.getStages().get(3).getVersion());
+        assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
+        assertEquals("#1", aggregated1.getStages().get(2).getVersion());
 
 
     }
@@ -534,6 +535,54 @@ public class PipelineTest {
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
 
     }
+
+    /**
+     * A -> B -> D -> E
+     *        -> C
+     *
+     * Javascript in view needs to have a sorted list of stages based
+     * on row and column the stage has been placed in.
+     */
+    @Bug(22211)
+    @Test
+    public void testGetPipelinesWhereRowsWillBeGambled() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        jenkins.createFreeStyleProject("c");
+        FreeStyleProject d = jenkins.createFreeStyleProject("d");
+        jenkins.createFreeStyleProject("e");
+
+        a.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("b", new BlockingBehaviour("never", "never", "never"), null)));
+        b.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("c,d", new BlockingBehaviour("never", "never", "never"), null)));
+        d.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("e", new BlockingBehaviour("never", "never", "never"), null)));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+
+        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+
+        assertEquals("a", pipeline.getStages().get(0).getName());
+        assertEquals(0, pipeline.getStages().get(0).getRow());
+        assertEquals(0, pipeline.getStages().get(0).getColumn());
+
+        assertEquals("b", pipeline.getStages().get(1).getName());
+        assertEquals(0, pipeline.getStages().get(1).getRow());
+        assertEquals(1, pipeline.getStages().get(1).getColumn());
+
+        assertEquals("d", pipeline.getStages().get(2).getName());
+        assertEquals(0, pipeline.getStages().get(2).getRow());
+        assertEquals(2, pipeline.getStages().get(2).getColumn());
+
+        assertEquals("e", pipeline.getStages().get(3).getName());
+        assertEquals(0, pipeline.getStages().get(3).getRow());
+        assertEquals(3, pipeline.getStages().get(3).getColumn());
+
+        assertEquals("c", pipeline.getStages().get(4).getName());
+        assertEquals(1, pipeline.getStages().get(4).getRow());
+        assertEquals(2, pipeline.getStages().get(4).getColumn());
+
+    }
+
 
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {

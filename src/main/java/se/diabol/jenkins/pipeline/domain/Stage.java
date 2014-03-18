@@ -193,8 +193,11 @@ public class Stage extends AbstractItem {
                 stage.setRow(row);
             }
         }
+        List<Stage> result = new ArrayList<Stage>(stages);
 
-        return new ArrayList<Stage>(stages);
+        sortByRowsCols(result);
+
+        return result;
     }
 
     private static Map<String, List<String>> getStageConnections(Stage stage, Collection<Stage> stages) {
@@ -233,6 +236,21 @@ public class Stage extends AbstractItem {
         }
         return paths;
     }
+
+    protected static void sortByRowsCols(List<Stage> stages) {
+        Collections.sort(stages, new Comparator<Stage>() {
+            @Override
+            public int compare(Stage stage1, Stage stage2) {
+                int result = Integer.valueOf(stage1.getRow()).compareTo(stage2.getRow());
+                if (result == 0) {
+                    return Integer.valueOf(stage1.getColumn()).compareTo(stage2.getColumn());
+                } else {
+                    return result;
+                }
+            }
+        });
+    }
+
 
 
     private static List<Stage> getDownstreamStages(Stage stage, Collection<Stage> stages) {

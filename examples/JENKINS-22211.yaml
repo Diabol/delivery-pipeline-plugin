@@ -1,0 +1,29 @@
+- job:
+    name: 'A'
+    builders:
+        - trigger-builds:
+          - project: 'B'
+- job:
+    name: 'B'
+    builders:
+        - trigger-builds:
+          - project: 'C,D'
+- job:
+    name: 'C'
+    parameters:
+      - string:
+          name: BUILD_NUM
+
+- job:
+    name: 'D'
+    parameters:
+      - string:
+          name: BUILD_NUM
+    builders:
+        - trigger-builds:
+          - project: 'E'
+- job:
+    name: 'E'
+    parameters:
+      - string:
+          name: BUILD_NUM
