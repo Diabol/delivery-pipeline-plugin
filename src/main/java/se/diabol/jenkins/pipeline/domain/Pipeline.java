@@ -21,25 +21,23 @@ import com.google.common.collect.ImmutableList;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
-import hudson.util.RunList;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.PipelineProperty;
-import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
-import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-import static java.util.Collections.singleton;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Pipeline extends AbstractItem {
+
+    private AbstractProject firstProject;
+
     private List<Stage> stages;
 
     private String version;
@@ -53,13 +51,22 @@ public class Pipeline extends AbstractItem {
 
     private List<Change> changes;
 
+
+    public Pipeline(String name, AbstractProject firstProject, List<Stage> stages) {
+        super(name);
+        this.firstProject = firstProject;
+        this.stages = stages;
+    }
+
     public Pipeline(String name,
+                    AbstractProject firstProject,
                     String version,
                     String timestamp,
                     List<Trigger> triggeredBy,
                     Set<UserInfo> contributors,
                     List<Stage> stages, boolean aggregated) {
         super(name);
+        this.firstProject = firstProject;
         this.version = version;
         this.triggeredBy = triggeredBy;
         this.contributors = contributors;
@@ -113,16 +120,15 @@ public class Pipeline extends AbstractItem {
      * Created a pipeline prototype for the supplied first project
      */
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
-        return new Pipeline(name, null, null, null, null, newArrayList(Stage.extractStages(firstProject)), false);
+        return new Pipeline(name, firstProject, newArrayList(Stage.extractStages(firstProject)));
     }
 
     public Pipeline createPipelineAggregated(ItemGroup context) {
-        AbstractProject firstProject = getProject(getStages().get(0).getTasks().get(0), context);
         List<Stage> pipelineStages = new ArrayList<Stage>();
         for (Stage stage : getStages()) {
             pipelineStages.add(stage.createAggregatedStage(context, firstProject));
         }
-        return new Pipeline(getName(), null, null, null, null, pipelineStages, true);
+        return new Pipeline(getName(), firstProject, null, null, null, null, pipelineStages, true);
     }
 
     /**
@@ -131,9 +137,6 @@ public class Pipeline extends AbstractItem {
      * @param noOfPipelines number of pipeline instances
      */
     public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context) {
-        Task firstTask = getStages().get(0).getTasks().get(0);
-        AbstractProject firstProject = getProject(firstTask, context);
-
         List<Pipeline> result = new ArrayList<Pipeline>();
 
         Iterator it = firstProject.getBuilds().iterator();
@@ -145,18 +148,13 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstBuild.getDisplayName(), pipeLineTimestamp,
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, firstBuild.getDisplayName(), pipeLineTimestamp,
                                 Trigger.getTriggeredBy(firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
             result.add(pipelineLatest);
         }
         return result;
     }
-
-    private AbstractProject getProject(Task task, ItemGroup context) {
-        return ProjectUtil.getProject(task.getId(), context);
-    }
-
 
     @Override
     public String toString() {

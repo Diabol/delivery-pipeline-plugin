@@ -55,7 +55,13 @@ public class Stage extends AbstractItem {
         this.tasks = ImmutableList.copyOf(tasks);
     }
 
-    public Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String, List<String>> taskConnections, String version, int row, int column) {
+    private Stage(Stage stage, List<Task> tasks, String version) {
+        this(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), version,
+                stage.getRow(), stage.getColumn());
+    }
+
+    private Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String,
+            List<String>> taskConnections, String version, int row, int column) {
         super(name);
         this.tasks = tasks;
         this.version = version;
@@ -135,7 +141,6 @@ public class Stage extends AbstractItem {
     }
 
 
-
     public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
         List<Task> stageTasks = new ArrayList<Task>();
 
@@ -149,7 +154,7 @@ public class Stage extends AbstractItem {
         for (Task task : getTasks()) {
             stageTasks.add(task.getAggregatedTask(versionBuild, context));
         }
-        return new Stage(getName(), stageTasks, getDownstreamStages(), getTaskConnections(), stageVersion, getRow(), getColumn());
+        return new Stage(this, stageTasks, stageVersion);
     }
 
 
@@ -158,10 +163,9 @@ public class Stage extends AbstractItem {
         for (Task task : getTasks()) {
             tasks.add(task.getLatestTask(context, firstBuild));
         }
-        return new Stage(getName(), tasks, getDownstreamStages(), getTaskConnections(), null, getRow(), getColumn());
+        return new Stage(this, tasks, null);
 
     }
-
 
 
     public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) {
@@ -252,7 +256,6 @@ public class Stage extends AbstractItem {
     }
 
 
-
     private static List<Stage> getDownstreamStages(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();
         for (int i = 0; i < stage.getTasks().size(); i++) {
@@ -284,7 +287,7 @@ public class Stage extends AbstractItem {
     private AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
         int highest = -1;
         for (Task task : tasks) {
-            AbstractProject project = getProject(task, context);
+            AbstractProject project = ProjectUtil.getProject(task.getId(), context);
             AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject);
             if (firstBuild != null && firstBuild.getNumber() > highest) {
                 highest = firstBuild.getNumber();
@@ -307,11 +310,6 @@ public class Stage extends AbstractItem {
             }
         }
         return null;
-    }
-
-
-    private AbstractProject getProject(Task task, ItemGroup context) {
-        return ProjectUtil.getProject(task.getId(), context);
     }
 
     @Override
