@@ -129,19 +129,19 @@ public class Task extends AbstractItem {
         AbstractProject<?, ?> project = getProject(this, context);
         AbstractBuild build = match(project.getBuilds(), firstBuild);
 
-        Status status = SimpleStatus.resolveStatus(project, build);
-        String link = build == null || status.isIdle() || status.isQueued() ? this.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
-        String buildId = build == null || status.isIdle() || status.isQueued() ? null : String.valueOf(build.getNumber());
-        return new Task(this, buildId, status, link, this.isManual(), TestResult.getTestResult(build));
+        Status taskStatus = SimpleStatus.resolveStatus(project, build);
+        String taskLink = build == null || taskStatus.isIdle() || taskStatus.isQueued() ? this.getLink() : Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
+        String taskBuildId = build == null || taskStatus.isIdle() || taskStatus.isQueued() ? null : String.valueOf(build.getNumber());
+        return new Task(this, taskBuildId, taskStatus, taskLink, this.isManual(), TestResult.getTestResult(build));
     }
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
         AbstractProject<?, ?> taskProject = getProject(this, context);
         AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
         if (currentBuild != null) {
-            Status status = SimpleStatus.resolveStatus(taskProject, currentBuild);
-            String link = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
-            return new Task(this, String.valueOf(currentBuild.getNumber()), status, link, this.isManual(), TestResult.getTestResult(currentBuild));
+            Status taskStatus = SimpleStatus.resolveStatus(taskProject, currentBuild);
+            String taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
+            return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.isManual(), TestResult.getTestResult(currentBuild));
         } else {
             return new Task(this, null, StatusFactory.idle(), this.getLink(), this.isManual(), null);
         }

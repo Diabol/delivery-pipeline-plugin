@@ -159,11 +159,11 @@ public class Stage extends AbstractItem {
 
 
     public Stage createLatestStage(ItemGroup context, AbstractBuild firstBuild) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> stageTasks = new ArrayList<Task>();
         for (Task task : getTasks()) {
-            tasks.add(task.getLatestTask(context, firstBuild));
+            stageTasks.add(task.getLatestTask(context, firstBuild));
         }
-        return new Stage(this, tasks, null);
+        return new Stage(this, stageTasks, null);
 
     }
 

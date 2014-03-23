@@ -20,6 +20,7 @@ package se.diabol.jenkins.pipeline.domain;
 import hudson.model.AbstractBuild;
 import hudson.model.Cause;
 import hudson.model.FreeStyleProject;
+import hudson.model.Run;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import org.junit.Rule;
@@ -31,7 +32,6 @@ import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TriggerTest {
 
@@ -125,20 +125,53 @@ public class TriggerTest {
 
     @Test
     public void testGetTriggeredByUpStreamJob() throws Exception {
-        FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        FreeStyleProject upstream = jenkins.createFreeStyleProject("up");
         jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(upstream);
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
-        project.scheduleBuild(new Cause.UpstreamCause(upstream.getLastBuild()));
+        project.scheduleBuild(new Cause.UpstreamCause((Run)upstream.getLastBuild()));
         jenkins.waitUntilNoActivity();
         List<Trigger> triggeredBy = Trigger.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
         assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
-        assertNotNull(triggeredBy.iterator().next().getDescription());
+        assertEquals("upstream project up build #1", triggeredBy.iterator().next().getDescription());
     }
+
+    @Test
+    public void testGetTriggeredByUpStreamJobNotExists() throws Exception {
+        FreeStyleProject upstream = jenkins.createFreeStyleProject("up");
+        jenkins.setQuietPeriod(0);
+        jenkins.buildAndAssertSuccess(upstream);
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        project.scheduleBuild(new Cause.UpstreamCause((Run)upstream.getLastBuild()));
+        jenkins.waitUntilNoActivity();
+        upstream.delete();
+
+        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertEquals("upstream project", triggeredBy.iterator().next().getDescription());
+    }
+
+    @Test
+    public void testGetTriggeredByUpStreamJobBuildNotExist() throws Exception {
+        FreeStyleProject upstream = jenkins.createFreeStyleProject("up");
+        jenkins.setQuietPeriod(0);
+        jenkins.buildAndAssertSuccess(upstream);
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        project.scheduleBuild(new Cause.UpstreamCause((Run)upstream.getLastBuild()));
+        jenkins.waitUntilNoActivity();
+        upstream.getLastBuild().delete();
+
+        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertEquals("upstream project up", triggeredBy.iterator().next().getDescription());
+    }
+
 
     @Test
     public void testGetTriggeredByWithCulprits() throws Exception {
