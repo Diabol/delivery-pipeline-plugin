@@ -15,24 +15,14 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.test;
 
-public class Edge {
+import hudson.scm.RepositoryBrowser;
+import org.jvnet.hudson.test.FakeChangeLogSCM;
 
-    private Stage source;
-    private Stage target;
-
-    public Edge(Stage source, Stage target) {
-        this.source = source;
-        this.target = target;
+public class MeanFakeRepositoryBrowserSCM extends FakeChangeLogSCM {
+    @Override
+    public RepositoryBrowser<?> getBrowser() {
+        return new MeanFakeRepositoryBrowser();
     }
-
-    public Stage getSource() {
-        return source;
-    }
-
-    public Stage getTarget() {
-        return target;
-    }
-
 }

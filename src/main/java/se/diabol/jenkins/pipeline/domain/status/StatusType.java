@@ -15,31 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain.status;
 
-import org.kohsuke.stapler.export.ExportedBean;
-
-@ExportedBean
-public interface Status {
-    boolean isIdle();
-
-    boolean isQueued();
-
-    boolean isRunning();
-
-    boolean isSuccess();
-
-    boolean isFailed();
-
-    boolean isUnstable();
-
-    boolean isCancelled();
-
-    boolean isDisabled();
-
-    long getLastActivity();
-
-    String getTimestamp();
-
-    long getDuration();
+public enum StatusType {
+    IDLE, RUNNING, QUEUED, SUCCESS, UNSTABLE, FAILED, CANCELLED, DISABLED
 }

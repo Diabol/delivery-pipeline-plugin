@@ -15,8 +15,17 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model.status;
+package se.diabol.jenkins.pipeline.test;
 
-public enum StatusType {
-    IDLE, RUNNING, QUEUED, SUCCESS, UNSTABLE, FAILED, CANCELLED, DISABLED
+import hudson.scm.RepositoryBrowser;
+import org.jvnet.hudson.test.FakeChangeLogSCM;
+
+import java.io.IOException;
+import java.net.URL;
+
+public class MeanFakeRepositoryBrowser extends RepositoryBrowser<FakeChangeLogSCM.EntryImpl> {
+    @Override
+    public URL getChangeSetLink(FakeChangeLogSCM.EntryImpl changeSet) throws IOException {
+        throw new IOException("I can get changeset link");
+    }
 }

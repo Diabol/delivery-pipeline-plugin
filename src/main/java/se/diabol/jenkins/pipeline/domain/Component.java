@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
 import org.kohsuke.stapler.export.Exported;
@@ -42,19 +42,5 @@ public class Component extends AbstractItem {
     @Override
     public String toString() {
         return toStringHelper(this).add("name", getName()).add("pipelines", pipelines).toString();
-    }
-
-    @Override
-    public int hashCode() {
-        return pipelines.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o || o instanceof Component && equalsSelf((Component) o);
-    }
-
-    private boolean equalsSelf(Component o) {
-        return super.equals(o) && pipelines.equals(o.pipelines);
     }
 }

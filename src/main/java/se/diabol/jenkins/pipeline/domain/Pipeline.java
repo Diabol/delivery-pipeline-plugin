@@ -15,21 +15,29 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.ItemGroup;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.collect.Lists.newArrayList;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Pipeline extends AbstractItem {
+
+    private AbstractProject firstProject;
+
     private List<Stage> stages;
 
     private String version;
@@ -43,13 +51,22 @@ public class Pipeline extends AbstractItem {
 
     private List<Change> changes;
 
+
+    public Pipeline(String name, AbstractProject firstProject, List<Stage> stages) {
+        super(name);
+        this.firstProject = firstProject;
+        this.stages = stages;
+    }
+
     public Pipeline(String name,
+                    AbstractProject firstProject,
                     String version,
                     String timestamp,
                     List<Trigger> triggeredBy,
                     Set<UserInfo> contributors,
                     List<Stage> stages, boolean aggregated) {
         super(name);
+        this.firstProject = firstProject;
         this.version = version;
         this.triggeredBy = triggeredBy;
         this.contributors = contributors;
@@ -97,18 +114,46 @@ public class Pipeline extends AbstractItem {
         return changes;
     }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().appendSuper(super.hashCode()).append(version).append(stages).toHashCode();
+
+
+    /**
+     * Created a pipeline prototype for the supplied first project
+     */
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) {
+        return new Pipeline(name, firstProject, newArrayList(Stage.extractStages(firstProject)));
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o == this || o instanceof Pipeline && equalsSelf((Pipeline) o);
+    public Pipeline createPipelineAggregated(ItemGroup context) {
+        List<Stage> pipelineStages = new ArrayList<Stage>();
+        for (Stage stage : getStages()) {
+            pipelineStages.add(stage.createAggregatedStage(context, firstProject));
+        }
+        return new Pipeline(getName(), firstProject, null, null, null, null, pipelineStages, true);
     }
 
-    private boolean equalsSelf(Pipeline o) {
-        return super.equals(o) && new EqualsBuilder().appendSuper(super.equals(o)).append(stages, o.stages).append(version, o.version).isEquals();
+    /**
+     * Populates and return pipelines for the supplied pipeline prototype with the current status.
+     *
+     * @param noOfPipelines number of pipeline instances
+     */
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context) {
+        List<Pipeline> result = new ArrayList<Pipeline>();
+
+        Iterator it = firstProject.getBuilds().iterator();
+        for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
+            AbstractBuild firstBuild = (AbstractBuild) it.next();
+            List<Change> pipelineChanges = Change.getChanges(firstBuild);
+            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
+            List<Stage> pipelineStages = new ArrayList<Stage>();
+            for (Stage stage : getStages()) {
+                pipelineStages.add(stage.createLatestStage(context, firstBuild));
+            }
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, firstBuild.getDisplayName(), pipeLineTimestamp,
+                                Trigger.getTriggeredBy(firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
+            pipelineLatest.setChanges(pipelineChanges);
+            result.add(pipelineLatest);
+        }
+        return result;
     }
 
     @Override

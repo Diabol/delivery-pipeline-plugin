@@ -22,6 +22,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import se.diabol.jenkins.pipeline.util.BuildUtil;
 
 @Extension
 @SuppressWarnings("UnusedDeclaration")
@@ -31,7 +32,7 @@ public class PipelineEnvironmentContributor extends RunListener<Run> {
     public void onStarted(Run run, TaskListener listener) {
         if (run instanceof AbstractBuild) {
             AbstractBuild build = (AbstractBuild) run;
-            AbstractBuild upstreamBuild = PipelineFactory.getUpstreamBuild(build);
+            AbstractBuild upstreamBuild = BuildUtil.getUpstreamBuild(build);
             if (upstreamBuild != null) {
                 String version = PipelineVersionContributor.getVersion(upstreamBuild);
                 if (version != null) {

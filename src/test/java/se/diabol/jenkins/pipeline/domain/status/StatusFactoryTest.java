@@ -15,17 +15,16 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model.status;
+package se.diabol.jenkins.pipeline.domain.status;
 
 import org.junit.Test;
+import se.diabol.jenkins.pipeline.test.TestUtil;
 
-import static org.junit.Assert.*;
-
-public class SimpleStatusTest {
+public class StatusFactoryTest {
 
     @Test
-    public void textEqualsHashCode() {
-        assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1), new SimpleStatus(StatusType.DISABLED, -1, -1));
-        assertEquals(new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode(), new SimpleStatus(StatusType.DISABLED, -1, -1).hashCode());
+    public void testValidUtilClass() throws Exception {
+        TestUtil.assertUtilityClassWellDefined(StatusFactory.class);
     }
+
 }

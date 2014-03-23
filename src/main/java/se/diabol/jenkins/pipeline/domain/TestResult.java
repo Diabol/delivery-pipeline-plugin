@@ -15,8 +15,10 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
+import hudson.model.AbstractBuild;
+import hudson.tasks.test.AggregatedTestResultAction;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -55,4 +57,16 @@ public class TestResult {
     public int getTotal() {
         return total;
     }
+
+    public static TestResult getTestResult(AbstractBuild build) {
+        if (build != null) {
+            AggregatedTestResultAction tests = build.getAction(AggregatedTestResultAction.class);
+            if (tests != null) {
+                return new TestResult(tests.getFailCount(), tests.getSkipCount(), tests.getTotalCount(),
+                        build.getUrl() + tests.getUrlName());
+            }
+        }
+        return null;
+    }
+
 }
