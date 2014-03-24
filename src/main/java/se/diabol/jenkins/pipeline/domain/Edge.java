@@ -15,29 +15,24 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
-import org.junit.Test;
+public class Edge {
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+    private Stage source;
+    private Stage target;
 
-public class AbstractItemTest {
-
-    class AbstractItemTester extends AbstractItem {
-        protected AbstractItemTester( String name ) {
-            super( name );
-        }
+    public Edge(Stage source, Stage target) {
+        this.source = source;
+        this.target = target;
     }
 
-    @Test
-    public void testHashCode() {
-        assertThat(new AbstractItemTester("name").hashCode(), is("name".hashCode()));
+    public Stage getSource() {
+        return source;
     }
 
-    @Test
-    public void testEquals() {
-        assertThat( new AbstractItemTester( "A" ), is( new AbstractItemTester( "A") ) );
-        assertThat( new AbstractItemTester( "A" ).equals( new AbstractItemTester( "B" )), is( false ));
+    public Stage getTarget() {
+        return target;
     }
+
 }

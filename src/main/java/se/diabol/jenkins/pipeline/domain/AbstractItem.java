@@ -15,43 +15,27 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model.status;
+package se.diabol.jenkins.pipeline.domain;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.model.AbstractItem;
 
+/**
+ * This is the common abstraction for all the entities that makes a pipeline.
+ */
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Running extends SimpleStatus {
-    private final int percentage;
+public abstract class AbstractItem {
+    private final String name;
 
-    Running(int percentage, long lastActivity, long duration) {
-        super(StatusType.RUNNING, lastActivity, duration);
-        this.percentage = percentage;
+    public static final int VISIBILITY = 100;
+
+    protected AbstractItem(String name) {
+        this.name = name;
     }
 
     @Exported
-    public int getPercentage() {
-        return percentage;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public boolean isRunning() {
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "RUNNING " + percentage + "%";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return this == o || o instanceof Running && percentage == ((Running) o).percentage;
-    }
-
-    @Override
-    public int hashCode() {
-        return percentage;
-    }
 }

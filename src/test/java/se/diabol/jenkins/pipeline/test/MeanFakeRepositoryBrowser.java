@@ -15,16 +15,17 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.util;
+package se.diabol.jenkins.pipeline.test;
 
-import org.junit.Test;
-import se.diabol.jenkins.pipeline.test.TestUtil;
+import hudson.scm.RepositoryBrowser;
+import org.jvnet.hudson.test.FakeChangeLogSCM;
 
-public class StageUtilTest {
+import java.io.IOException;
+import java.net.URL;
 
-    @Test
-    public void testValidUtilClass() throws Exception {
-        TestUtil.assertUtilityClassWellDefined(StageUtil.class);
+public class MeanFakeRepositoryBrowser extends RepositoryBrowser<FakeChangeLogSCM.EntryImpl> {
+    @Override
+    public URL getChangeSetLink(FakeChangeLogSCM.EntryImpl changeSet) throws IOException {
+        throw new IOException("I can get changeset link");
     }
-
 }

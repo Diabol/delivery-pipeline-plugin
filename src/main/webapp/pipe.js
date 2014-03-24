@@ -152,43 +152,43 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
             }
             html = html + "</section>";
-            var index = 0;
             Q("#" + divNames[c % divNames.length]).append(html);
-            Q("#pipeline-message").html('');
-            lastResponse = data;
-            equalheight(".stage");
-
-            Q.each(data.pipelines, function (i, component) {
-                Q.each(component.pipelines, function (j, pipeline) {
-                    var index = j;
-                    Q.each(pipeline.stages, function (k, stage) {
-                        if (stage.downstreamStages) {
-                            Q.each(stage.downstreamStages, function (l, value) {
-                                var source = getStageId(stage.name, index);
-                                var target = getStageId(value, index);
-
-                                plumb.connect({
-                                    source: source,
-                                    target: target,
-                                    anchors: ["RightMiddle", "LeftMiddle"],
-                                    overlays: [
-                                        [ "Arrow", { location: 1}]
-                                    ],
-                                    cssClass: "relation",
-                                    connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
-                                    paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
-                                    drawEndpoints: false
-                                });
-
-
-                            });
-                        }
-                    });
-
-                });
-            });
-
         }
+        var index = 0;
+        Q("#pipeline-message").html('');
+        lastResponse = data;
+        equalheight(".stage");
+
+        Q.each(data.pipelines, function (i, component) {
+            Q.each(component.pipelines, function (j, pipeline) {
+                var index = j;
+                Q.each(pipeline.stages, function (k, stage) {
+                    if (stage.downstreamStages) {
+                        Q.each(stage.downstreamStages, function (l, value) {
+                            var source = getStageId(stage.name, index);
+                            var target = getStageId(value, index);
+
+                            plumb.connect({
+                                source: source,
+                                target: target,
+                                anchors: ["RightMiddle", "LeftMiddle"],
+                                overlays: [
+                                    [ "Arrow", { location: 1}]
+                                ],
+                                cssClass: "relation",
+                                connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
+                                paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
+                                drawEndpoints: false
+                            });
+
+
+                        });
+                    }
+                });
+
+            });
+        });
+
     } else {
         for (var p = 0; p < data.pipelines.length; p++) {
             var comp = data.pipelines[p];

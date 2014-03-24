@@ -15,32 +15,34 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain.status;
 
-import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
-public class UserInfo extends AbstractItem {
+@ExportedBean
+public interface Status {
 
-    private final String avatarUrl;
-    private final String url;
+    StatusType getType();
 
-    public UserInfo(String name) {
-        this(name, null, null);
-    }
+    boolean isIdle();
 
-    public UserInfo(String name, String url, String avatarUrl) {
-        super(name);
-        this.avatarUrl = avatarUrl;
-        this.url = url;
-    }
+    boolean isQueued();
 
-    @Exported
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
+    boolean isRunning();
 
-    @Exported
-    public String getUrl() {
-        return url;
-    }
+    boolean isSuccess();
+
+    boolean isFailed();
+
+    boolean isUnstable();
+
+    boolean isCancelled();
+
+    boolean isDisabled();
+
+    long getLastActivity();
+
+    String getTimestamp();
+
+    long getDuration();
 }

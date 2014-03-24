@@ -22,7 +22,7 @@ import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
-import se.diabol.jenkins.pipeline.model.Component;
+import se.diabol.jenkins.pipeline.domain.Component;
 
 import java.util.Comparator;
 

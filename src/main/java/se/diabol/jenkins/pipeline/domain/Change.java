@@ -15,10 +15,20 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model;
+package se.diabol.jenkins.pipeline.domain;
 
+import hudson.model.AbstractBuild;
+import hudson.scm.ChangeLogSet;
+import hudson.scm.RepositoryBrowser;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Change {
@@ -26,6 +36,9 @@ public class Change {
     private String message;
     private String commitId;
     private String changeLink;
+
+    private static final Logger LOG = Logger.getLogger(Change.class.getName());
+
 
     public Change(UserInfo author, String message, String commitId, String changeLink) {
         this.author = author;
@@ -53,4 +66,28 @@ public class Change {
     public String getChangeLink() {
         return changeLink;
     }
+
+    public static List<Change> getChanges(AbstractBuild<?, ?> build) {
+        RepositoryBrowser repositoryBrowser = build.getProject().getScm().getBrowser();
+        List<Change> result = new ArrayList<Change>();
+        for (ChangeLogSet.Entry entry : build.getChangeSet()) {
+            UserInfo user = UserInfo.getUser(entry.getAuthor());
+            String changeLink = null;
+            if (repositoryBrowser != null) {
+                try {
+                    URL link = repositoryBrowser.getChangeSetLink(entry);
+                    if (link != null) {
+                        changeLink = link.toExternalForm();
+                    }
+                } catch (IOException e) {
+                   LOG.log(Level.WARNING, "Could not get changeset link", e);
+                }
+            }
+            result.add(new Change(user, entry.getMsg(), entry.getCommitId(), changeLink));
+        }
+        return result;
+    }
+
+
+
 }

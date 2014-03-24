@@ -15,9 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.model.status;
-
-import se.diabol.jenkins.pipeline.model.Status;
+package se.diabol.jenkins.pipeline.domain.status;
 
 public final class StatusFactory {
 
