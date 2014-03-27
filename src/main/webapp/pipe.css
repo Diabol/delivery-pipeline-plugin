@@ -80,53 +80,57 @@ div.change-message {
     padding-left: 10px;
 }
 
-section.stage {
+div.stage {
     display: inline-block;
     min-height: 100px;
     min-width: 180px;
     vertical-align: top;
     background: white;
-    border-radius: 10px;
+    border-radius: 7px;
     border: solid 2px black;
-    padding: 0 3px 3px 0;
-    margin: 0 60px 0 0;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
 }
 
-section.stage div.stage-header {
+div.stage div.stage-header {
     font-size: medium;
     border-bottom: black solid 2px;
-    margin: 0;
     margin-bottom: 3px;
-    padding: 5px 10px;
     height: 20px;
+    white-space: nowrap;
+    display: table;
+    width: 100%;
 }
 
-section.stage div.task {
+div.stage div.task {
     display: block;
     border-radius: 3px;
     margin: 0 0 1px 5px;
     padding-left: 5px;
 }
 
-section.stage a {
+div.stage a {
     text-decoration: none;
     color: inherit;
 }
 
-section.stage a:visited {
+div.stage a:visited {
     color: inherit;
 }
 
-section.stage a:hover {
+div.stage a:hover {
     text-decoration: underline;
 }
 
 .stage-version {
-    float: right;
+    display: table-cell;
+    text-align: right;
+    padding: 3px 10px 3px 3px;
 }
 
 .stage-name {
-    float: left;
+    display: table-cell;
+    padding: 3px 3px 3px 10px;
 }
 
 
@@ -203,7 +207,7 @@ section.legend span {
     min-width: 75px;
 }
 
-section.hide {
+div.hide {
     visibility: hidden;
 }
 
@@ -214,6 +218,12 @@ div.pipeline-row {
 div.pipeline-row-spacer {
     white-space: nowrap;
     height: 20px;
+}
+
+div.pipeline-cell {
+    display: table-cell;
+    width: auto;
+    padding: 0 60px 0 0;
 }
 
 div.pipelineerror {
