@@ -295,7 +295,7 @@ public class Stage extends AbstractItem {
         return result;
     }
 
-    private static Stage findStageForJob(String name, Collection<Stage> stages) {
+    protected static Stage findStageForJob(String name, Collection<Stage> stages) {
         for (Stage stage : stages) {
             for (int j = 0; j < stage.getTasks().size(); j++) {
                 Task task = stage.getTasks().get(j);

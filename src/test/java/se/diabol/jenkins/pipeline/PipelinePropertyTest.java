@@ -126,7 +126,7 @@ public class PipelinePropertyTest {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
         jenkins.createFreeStyleProject("build3");
-        build2.addProperty(new PipelineProperty(null, null));
+        build2.addProperty(new PipelineProperty());
         build.addProperty(new PipelineProperty("Build", "Build"));
 
 

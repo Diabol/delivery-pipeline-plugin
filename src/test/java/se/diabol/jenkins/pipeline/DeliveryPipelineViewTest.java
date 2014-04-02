@@ -104,6 +104,20 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    public void testSettersAndGetters() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setNoOfPipelines(17);
+        assertEquals(17, view.getNoOfPipelines());
+        view.setShowChanges(true);
+        assertTrue(view.isShowChanges());
+        view.setShowChanges(false);
+        assertFalse(view.isShowChanges());
+        view.setNoOfColumns(2);
+        assertEquals(2, view.getNoOfColumns());
+    }
+
+    @Test
+    @WithoutJenkins
     public void testCssUrl() {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setEmbeddedCss("");
@@ -353,6 +367,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setRegexpFirstJobs(regExpSpecs);
+        assertEquals(regExpSpecs, view.getRegexpFirstJobs());
 
         jenkins.getInstance().addView(view);
 
