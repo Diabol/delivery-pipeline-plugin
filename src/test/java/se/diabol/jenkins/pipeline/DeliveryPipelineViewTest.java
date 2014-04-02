@@ -100,6 +100,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowAggregatedPipeline());
         assertFalse(view.getShowAvatars());
         assertFalse(view.isShowChanges());
+        assertFalse(view.isShowTotalBuildTime());
     }
 
     @Test
