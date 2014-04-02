@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.Random;
 
 public final class PipelineUtils {
-    private static final Random rnd = new Random(System.currentTimeMillis());
+    private static final Random RANDOM = new Random(System.currentTimeMillis());
 
 
     private PipelineUtils() {
@@ -35,7 +35,7 @@ public final class PipelineUtils {
     }
 
     public static long getRandom() {
-        return rnd.nextLong();
+        return RANDOM.nextLong();
     }
 
 }

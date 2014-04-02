@@ -120,6 +120,14 @@ public class DeliveryPipelineViewTest {
         assertEquals("none", view.getSorting());
     }
 
+    @Test
+    @WithoutJenkins
+    public void testSetSorting() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setSorting("se.diabol.jenkins.pipeline.sort.NameComparator");
+        assertEquals("se.diabol.jenkins.pipeline.sort.NameComparator", view.getSorting());
+    }
+
 
     @Test
     public void testGetItemsAndContains() throws Exception {
@@ -293,6 +301,8 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getFullScreenCss());
         view.setFullScreenCss(" ");
         assertNull(view.getFullScreenCss());
+        view.setFullScreenCss("http://somewhere.com");
+        assertEquals("http://somewhere.com", view.getFullScreenCss());
 
     }
 
@@ -304,6 +314,8 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getEmbeddedCss());
         view.setEmbeddedCss(" ");
         assertNull(view.getEmbeddedCss());
+        view.setEmbeddedCss("http://somewhere.com");
+        assertEquals("http://somewhere.com", view.getEmbeddedCss());
 
     }
 
