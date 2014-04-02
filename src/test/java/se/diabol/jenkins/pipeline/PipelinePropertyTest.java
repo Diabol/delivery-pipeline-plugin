@@ -124,7 +124,11 @@ public class PipelinePropertyTest {
     public void testDoAutoCompleteStageName() throws Exception {
         PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
+        jenkins.createFreeStyleProject("build3");
+        build2.addProperty(new PipelineProperty());
         build.addProperty(new PipelineProperty("Build", "Build"));
+
 
         AutoCompletionCandidates c1 = d.doAutoCompleteStageName("B");
         assertEquals(c1.getValues().size(), 1);

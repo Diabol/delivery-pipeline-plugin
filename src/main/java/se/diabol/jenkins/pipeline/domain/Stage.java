@@ -29,6 +29,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
+import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.*;
@@ -49,19 +50,22 @@ public class Stage extends AbstractItem {
     private int column;
     private Map<String, List<String>> taskConnections;
     private List<String> downstreamStages;
+    private List<Long> downstreamStageIds;
+    private long id;
 
     public Stage(String name, List<Task> tasks) {
         super(name);
         this.tasks = ImmutableList.copyOf(tasks);
+        this.id = PipelineUtils.getRandom();
     }
 
-    private Stage(Stage stage, List<Task> tasks, String version) {
-        this(stage.getName(), tasks, stage.getDownstreamStages(), stage.getTaskConnections(), version,
-                stage.getRow(), stage.getColumn());
+    private Stage(Stage stage, List<Task> tasks, String version, long id) {
+        this(stage.getName(), tasks, stage.getDownstreamStages(), stage.getDownstreamStageIds(), stage.getTaskConnections(), version,
+                stage.getRow(), stage.getColumn(), id);
     }
 
-    private Stage(String name, List<Task> tasks, List<String> downstreamStages, Map<String,
-            List<String>> taskConnections, String version, int row, int column) {
+    private Stage(String name, List<Task> tasks, List<String> downstreamStages, List<Long> downstreamStageIds, Map<String,
+            List<String>> taskConnections, String version, int row, int column, long id) {
         super(name);
         this.tasks = tasks;
         this.version = version;
@@ -69,6 +73,8 @@ public class Stage extends AbstractItem {
         this.column = column;
         this.downstreamStages = downstreamStages;
         this.taskConnections = taskConnections;
+        this.downstreamStageIds = downstreamStageIds;
+        this.id = id;
     }
 
     @Exported
@@ -113,6 +119,20 @@ public class Stage extends AbstractItem {
         return taskConnections;
     }
 
+    @Exported
+    public long getId() {
+        return id;
+    }
+
+    @Exported
+    public List<Long> getDownstreamStageIds() {
+        return downstreamStageIds;
+    }
+
+    public void setDownstreamStageIds(List<Long> downstreamStageIds) {
+        this.downstreamStageIds = downstreamStageIds;
+    }
+
     public void setTaskConnections(Map<String, List<String>> taskConnections) {
         this.taskConnections = taskConnections;
     }
@@ -154,7 +174,7 @@ public class Stage extends AbstractItem {
         for (Task task : getTasks()) {
             stageTasks.add(task.getAggregatedTask(versionBuild, context));
         }
-        return new Stage(this, stageTasks, stageVersion);
+        return new Stage(this, stageTasks, stageVersion, id);
     }
 
 
@@ -163,7 +183,7 @@ public class Stage extends AbstractItem {
         for (Task task : getTasks()) {
             stageTasks.add(task.getLatestTask(context, firstBuild));
         }
-        return new Stage(this, stageTasks, null);
+        return new Stage(this, stageTasks, null, id);
 
     }
 
@@ -175,12 +195,16 @@ public class Stage extends AbstractItem {
             graph.addVertex(stage);
             List<Stage> downstreamStages = getDownstreamStages(stage, stages);
             List<String> downstreamStageNames = new ArrayList<String>();
+            List<Long> downstreamStageIds = new ArrayList<Long>();
             for (Stage downstream : downstreamStages) {
                 downstreamStageNames.add(downstream.getName());
+                downstreamStageIds.add(downstream.getId());
                 graph.addVertex(downstream);
                 graph.addEdge(stage, downstream, new Edge(stage, downstream));
             }
             stage.setDownstreamStages(downstreamStageNames);
+            stage.setDownstreamStageIds(downstreamStageIds);
+
         }
 
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(Jenkins.getInstance()), stages), graph);
@@ -271,7 +295,7 @@ public class Stage extends AbstractItem {
         return result;
     }
 
-    private static Stage findStageForJob(String name, Collection<Stage> stages) {
+    protected static Stage findStageForJob(String name, Collection<Stage> stages) {
         for (Stage stage : stages) {
             for (int j = 0; j < stage.getTasks().size(); j++) {
                 Task task = stage.getTasks().get(j);

@@ -104,6 +104,20 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    public void testSettersAndGetters() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setNoOfPipelines(17);
+        assertEquals(17, view.getNoOfPipelines());
+        view.setShowChanges(true);
+        assertTrue(view.isShowChanges());
+        view.setShowChanges(false);
+        assertFalse(view.isShowChanges());
+        view.setNoOfColumns(2);
+        assertEquals(2, view.getNoOfColumns());
+    }
+
+    @Test
+    @WithoutJenkins
     public void testCssUrl() {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setEmbeddedCss("");
@@ -118,6 +132,14 @@ public class DeliveryPipelineViewTest {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setSorting("se.diabol.jenkins.pipeline.sort.NoOpComparator");
         assertEquals("none", view.getSorting());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testSetSorting() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setSorting("se.diabol.jenkins.pipeline.sort.NameComparator");
+        assertEquals("se.diabol.jenkins.pipeline.sort.NameComparator", view.getSorting());
     }
 
 
@@ -293,6 +315,8 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getFullScreenCss());
         view.setFullScreenCss(" ");
         assertNull(view.getFullScreenCss());
+        view.setFullScreenCss("http://somewhere.com");
+        assertEquals("http://somewhere.com", view.getFullScreenCss());
 
     }
 
@@ -304,6 +328,8 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getEmbeddedCss());
         view.setEmbeddedCss(" ");
         assertNull(view.getEmbeddedCss());
+        view.setEmbeddedCss("http://somewhere.com");
+        assertEquals("http://somewhere.com", view.getEmbeddedCss());
 
     }
 
@@ -341,6 +367,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setRegexpFirstJobs(regExpSpecs);
+        assertEquals(regExpSpecs, view.getRegexpFirstJobs());
 
         jenkins.getInstance().addView(view);
 

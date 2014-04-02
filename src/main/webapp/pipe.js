@@ -40,7 +40,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
         if (data.pipelines.length == 0) {
             Q("#pipeline-message").html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
         }
-
+        plumb.reset();
         for (var c = 0; c < data.pipelines.length; c++) {
             var component = data.pipelines[c];
             var html = "<section class='component'>";
@@ -97,7 +97,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     }
 
-                    html = html + '<section id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<section id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">';
                     html = html + '<div class="stage-header"><span class="stage-name">' + htmlEncode(stage.name) + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</div>'
@@ -164,9 +164,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 var index = j;
                 Q.each(pipeline.stages, function (k, stage) {
                     if (stage.downstreamStages) {
-                        Q.each(stage.downstreamStages, function (l, value) {
-                            var source = getStageId(stage.name, index);
-                            var target = getStageId(value, index);
+                        Q.each(stage.downstreamStageIds, function (l, value) {
+                            var source = getStageId(stage.id + "", index);
+                            var target = getStageId(value + "", index);
 
                             plumb.connect({
                                 source: source,

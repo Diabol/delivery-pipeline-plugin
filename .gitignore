@@ -8,6 +8,7 @@
 .idea/*
 target/*
 libsrc/*
+classes
 
 # Jenkins workplace files
 
