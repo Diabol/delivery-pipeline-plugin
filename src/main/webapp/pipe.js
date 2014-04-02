@@ -70,7 +70,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     if (triggered != "") {
                         html = html + " triggered by " + triggered;
                     }
-                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
+                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span>TOTAL_DURATION_PLACEHOLDER</h1>';
 
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html = html + generateChangeLog(pipeline.changes);
@@ -82,6 +82,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                 html = html + '<div class="pipeline-row">';
 
+                var totalDuration = 0;
                 for (var j = 0; j < pipeline.stages.length; j++) {
                     var stage = pipeline.stages[j];
                     if (stage.row > row) {
@@ -124,10 +125,12 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             html = html + "<span id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</span>"
                         }
 
-                        if (task.status.duration >= 0)
+                        if (task.status.duration >= 0) {
                             html = html + "<span class='duration'>" + formatDuration(task.status.duration) + "</span>";
+                            totalDuration += task.status.duration;
+                        }
 
-                        html = html + "</div>"
+                        html = html + "</div>";
 
                     }
                     html = html + "</section>";
@@ -139,6 +142,13 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
 
                 }
+
+                if (totalDuration > 0) {
+                    html = html.replace('TOTAL_DURATION_PLACEHOLDER', ', total duration '   + formatDuration(totalDuration));
+                } else {
+                    html = html.replace('TOTAL_DURATION_PLACEHOLDER', '');
+                }
+
                 html = html + '</div>';
 
                 html = html + "</section>";
