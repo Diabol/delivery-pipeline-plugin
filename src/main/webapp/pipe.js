@@ -1,4 +1,4 @@
-function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout) {
+function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout, showTotalBuildTime) {
     Q.ajax({
         url: 'api/json',
         dataType: 'json',
@@ -6,9 +6,9 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
         cache: false,
         timeout: 20000,
         success: function (data) {
-            refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges);
+            refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, showTotalBuildTime);
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout, showTotalBuildTime);
             }, timeout);
         },
         error: function (xhr, status, error) {
@@ -16,7 +16,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
             Q("#" + errorDiv).show();
             plumb.repaintEverything();
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout, showTotalBuildTime);
             }, timeout);
         }
     });
@@ -25,7 +25,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
 }
 
 
-function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges) {
+function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, showTotalBuildTime) {
     Q("#" + errorDiv).html('');
     Q("#" + errorDiv).hide();
     var lastUpdate = data.lastUpdated;
@@ -70,7 +70,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     if (triggered != "") {
                         html = html + " triggered by " + triggered;
                     }
-                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span>TOTAL_DURATION_PLACEHOLDER</h1>';
+                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span>TOTAL_BUILD_TIME</h1>';
 
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html = html + generateChangeLog(pipeline.changes);
@@ -143,10 +143,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                 }
 
-                if (totalDuration > 0) {
-                    html = html.replace('TOTAL_DURATION_PLACEHOLDER', ', total duration '   + formatDuration(totalDuration));
+                if (totalDuration > 0 && showTotalBuildTime) {
+                    html = replace(html, 'TOTAL_BUILD_TIME', '. Total build time '   + formatDuration(totalDuration));
                 } else {
-                    html = html.replace('TOTAL_DURATION_PLACEHOLDER', '');
+                    html = replace(html, 'TOTAL_BUILD_TIME', '');
                 }
 
                 html = html + '</div>';
