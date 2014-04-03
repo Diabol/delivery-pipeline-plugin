@@ -45,4 +45,6 @@ public interface Status {
     String getTimestamp();
 
     long getDuration();
+
+    long getTimestampInMs();
 }

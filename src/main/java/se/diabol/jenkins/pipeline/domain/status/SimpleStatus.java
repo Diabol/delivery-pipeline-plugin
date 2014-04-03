@@ -61,6 +61,11 @@ public class SimpleStatus implements Status {
     }
 
     @Exported
+    public long getTimestampInMs() {
+        return lastActivity;
+    }
+
+    @Exported
     @Override
     public long getDuration() {
         return duration;
