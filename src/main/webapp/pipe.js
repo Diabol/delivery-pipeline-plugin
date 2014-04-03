@@ -49,6 +49,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 html = html + "No builds done yet.";
             }
             for (var i = 0; i < component.pipelines.length; i++) {
+                var pipelineEndTime = 0;
                 var pipeline = component.pipelines[i];
                 html = html + '<section class="pipeline">';
 
@@ -82,7 +83,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                 html = html + '<div class="pipeline-row">';
 
-                var totalDuration = 0;
+                var pipelineStartTime = 0;
                 for (var j = 0; j < pipeline.stages.length; j++) {
                     var stage = pipeline.stages[j];
                     if (stage.row > row) {
@@ -127,7 +128,14 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         if (task.status.duration >= 0) {
                             html = html + "<span class='duration'>" + formatDuration(task.status.duration) + "</span>";
-                            totalDuration += task.status.duration;
+                        }
+
+                        if (j == 0 && k == 0) {
+                            pipelineStartTime = task.status.timestampInMs;
+                        }
+
+                        if (task.status.duration > 0 ) {
+                            pipelineEndTime = task.status.timestampInMs + task.status.duration;
                         }
 
                         html = html + "</div>";
@@ -142,9 +150,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
 
                 }
-
-                if (totalDuration > 0 && showTotalBuildTime) {
-                    html = replace(html, 'TOTAL_BUILD_TIME', '. Total build time '   + formatDuration(totalDuration));
+                var totalPipelineBuildTime = pipelineEndTime - pipelineStartTime;
+                if (totalPipelineBuildTime > 0 && showTotalBuildTime) {
+                    html = replace(html, 'TOTAL_BUILD_TIME', '. Total build time '   + formatDuration(totalPipelineBuildTime));
                 } else {
                     html = replace(html, 'TOTAL_BUILD_TIME', '');
                 }
