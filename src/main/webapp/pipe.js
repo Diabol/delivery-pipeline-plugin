@@ -49,6 +49,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 html = html + "No builds done yet.";
             }
             for (var i = 0; i < component.pipelines.length; i++) {
+                var pipelineStartTime = 0;
                 var pipelineEndTime = 0;
                 var pipeline = component.pipelines[i];
                 html = html + '<section class="pipeline">';
@@ -83,7 +84,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                 html = html + '<div class="pipeline-row">';
 
-                var pipelineStartTime = 0;
                 for (var j = 0; j < pipeline.stages.length; j++) {
                     var stage = pipeline.stages[j];
                     if (stage.row > row) {
