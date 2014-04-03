@@ -61,6 +61,7 @@ public class DeliveryPipelineView extends View {
     private boolean showAvatars = false;
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
+    private boolean showTotalBuildTime = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -129,6 +130,10 @@ public class DeliveryPipelineView extends View {
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
     }
+
+    public boolean isShowTotalBuildTime() { return showTotalBuildTime; }
+
+    public void setShowTotalBuildTime(boolean showTotalBuildTime) { this.showTotalBuildTime = showTotalBuildTime; }
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
         this.showAggregatedPipeline = showAggregatedPipeline;

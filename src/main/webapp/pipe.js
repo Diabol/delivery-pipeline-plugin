@@ -1,4 +1,4 @@
-function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout) {
+function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout, showTotalBuildTime) {
     Q.ajax({
         url: 'api/json',
         dataType: 'json',
@@ -6,9 +6,9 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
         cache: false,
         timeout: 20000,
         success: function (data) {
-            refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges);
+            refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, showTotalBuildTime);
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout, showTotalBuildTime);
             }, timeout);
         },
         error: function (xhr, status, error) {
@@ -16,7 +16,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
             Q("#" + errorDiv).show();
             plumb.repaintEverything();
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout, showTotalBuildTime);
             }, timeout);
         }
     });
@@ -25,7 +25,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
 }
 
 
-function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges) {
+function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, showTotalBuildTime) {
     Q("#" + errorDiv).html('');
     Q("#" + errorDiv).hide();
     var lastUpdate = data.lastUpdated;
@@ -49,6 +49,8 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 html = html + "No builds done yet.";
             }
             for (var i = 0; i < component.pipelines.length; i++) {
+                var pipelineStartTime = 0;
+                var pipelineEndTime = 0;
                 var pipeline = component.pipelines[i];
                 html = html + '<section class="pipeline">';
 
@@ -70,7 +72,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     if (triggered != "") {
                         html = html + " triggered by " + triggered;
                     }
-                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
+                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span>TOTAL_BUILD_TIME</h1>';
 
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html = html + generateChangeLog(pipeline.changes);
@@ -124,10 +126,19 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             html = html + "<span id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</span>"
                         }
 
-                        if (task.status.duration >= 0)
+                        if (task.status.duration >= 0) {
                             html = html + "<span class='duration'>" + formatDuration(task.status.duration) + "</span>";
+                        }
 
-                        html = html + "</div>"
+                        if (j == 0 && k == 0) {
+                            pipelineStartTime = task.status.timestampInMs;
+                        }
+
+                        if (task.status.duration > 0 ) {
+                            pipelineEndTime = task.status.timestampInMs + task.status.duration;
+                        }
+
+                        html = html + "</div>";
 
                     }
                     html = html + "</section>";
@@ -139,6 +150,13 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
 
                 }
+                var totalPipelineBuildTime = pipelineEndTime - pipelineStartTime;
+                if (totalPipelineBuildTime > 0 && showTotalBuildTime) {
+                    html = replace(html, 'TOTAL_BUILD_TIME', '. Total build time '   + formatDuration(totalPipelineBuildTime));
+                } else {
+                    html = replace(html, 'TOTAL_BUILD_TIME', '');
+                }
+
                 html = html + '</div>';
 
                 html = html + "</section>";
@@ -253,17 +271,26 @@ function formatDuration(millis) {
     if (millis > 0) {
         var seconds = Math.floor(millis / 1000);
         var minutes = Math.floor(seconds / 60);
+        var hours = Math.floor(minutes / 60);
         seconds = seconds % 60;
+        minutes = minutes % 60;
 
         var minstr;
-        if (minutes == 0)
+        var hrstr;
+
+        if (hours == 0)
+            hrstr = '';
+        else
+            hrstr = hours + ' hr ';
+
+        if (minutes == 0 && hours == 0)
             minstr = "";
         else
-            minstr = minutes + " min ";
+            minstr = minutes + " min ";  // display # hr 0 min # sec
 
         var secstr = "" + seconds + " sec";
 
-        return minstr + secstr;
+        return hrstr + minstr + secstr;
     }
     return "0 sec";
 }
