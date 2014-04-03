@@ -271,17 +271,26 @@ function formatDuration(millis) {
     if (millis > 0) {
         var seconds = Math.floor(millis / 1000);
         var minutes = Math.floor(seconds / 60);
+        var hours = Math.floor(minutes / 60);
         seconds = seconds % 60;
+        minutes = minutes % 60;
 
         var minstr;
-        if (minutes == 0)
+        var hrstr;
+
+        if (hours == 0)
+            hrstr = '';
+        else
+            hrstr = hours + ' hr ';
+
+        if (minutes == 0 && hours == 0)
             minstr = "";
         else
-            minstr = minutes + " min ";
+            minstr = minutes + " min ";  // display # hr 0 min # sec
 
         var secstr = "" + seconds + " sec";
 
-        return minstr + secstr;
+        return hrstr + minstr + secstr;
     }
     return "0 sec";
 }
