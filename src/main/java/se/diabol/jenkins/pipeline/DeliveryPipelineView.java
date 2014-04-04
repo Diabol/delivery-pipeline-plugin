@@ -389,10 +389,6 @@ public class DeliveryPipelineView extends View {
             return firstJob;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public void setFirstJob(String firstJob) {
             this.firstJob = firstJob;
         }

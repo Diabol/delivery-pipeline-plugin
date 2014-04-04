@@ -33,6 +33,7 @@ import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -114,6 +115,11 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowChanges());
         view.setNoOfColumns(2);
         assertEquals(2, view.getNoOfColumns());
+        view.setShowAvatars(true);
+        assertTrue(view.getShowAvatars());
+        view.setShowAvatars(false);
+        assertFalse(view.getShowAvatars());
+        assertNotNull(view.getLastUpdated());
     }
 
     @Test
@@ -128,8 +134,13 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
-    public void testOldSorter() {
+    public void testOldSorter() throws Exception {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
+        Field field = view.getClass().getDeclaredField("sorting");
+        field.setAccessible(true);
+        field.set(view, "se.diabol.jenkins.pipeline.sort.NoOpComparator");
+        assertEquals("none", view.getSorting());
+
         view.setSorting("se.diabol.jenkins.pipeline.sort.NoOpComparator");
         assertEquals("none", view.getSorting());
     }
@@ -177,8 +188,6 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject packaging = folder.createProject(FreeStyleProject.class,"packaging");
 
 
-        //FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        //FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
         build.getPublishersList().add(new BuildTrigger("sonar", false));
         build.getPublishersList().add(new BuildTrigger("packaging", false));
 
