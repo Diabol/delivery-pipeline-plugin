@@ -204,13 +204,13 @@ section.stage a:hover {
     border-left: 6px solid #0092ef;
 }
 
-.timestamp {
+span.timestamp {
     display: inline-block;
     font-size: 0.8em;
     font-weight: lighter;
 }
 
-.duration {
+span.duration {
     display: inline-block;
     font-size: 0.8em;
     margin-left: 15px;
