@@ -22,11 +22,16 @@ import hudson.model.TopLevelItem;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
+import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
@@ -39,7 +44,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
 
     @Rule
@@ -74,6 +81,19 @@ public class DeliveryPipelineViewTest {
         assertEquals(1, view.getComponentSpecs().size());
 
     }
+
+    @Test
+    @WithoutJenkins
+    public void testSubmit() throws Exception {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getSubmittedForm()).thenReturn(new JSONObject());
+        view.submit(request);
+        verify(request, times(1)).bindJSON(view, new JSONObject());
+        verify(request, times(1)).bindJSONToList(DeliveryPipelineView.ComponentSpec.class, null);
+        verify(request, times(1)).bindJSONToList(DeliveryPipelineView.RegExpSpec.class, null);
+    }
+
 
     @Test
     @WithoutJenkins
