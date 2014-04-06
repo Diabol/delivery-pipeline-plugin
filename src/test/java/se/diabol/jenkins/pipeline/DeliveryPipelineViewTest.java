@@ -22,23 +22,31 @@ import hudson.model.TopLevelItem;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
+import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
 
     @Rule
@@ -73,6 +81,19 @@ public class DeliveryPipelineViewTest {
         assertEquals(1, view.getComponentSpecs().size());
 
     }
+
+    @Test
+    @WithoutJenkins
+    public void testSubmit() throws Exception {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getSubmittedForm()).thenReturn(new JSONObject());
+        view.submit(request);
+        verify(request, times(1)).bindJSON(view, new JSONObject());
+        verify(request, times(1)).bindJSONToList(DeliveryPipelineView.ComponentSpec.class, null);
+        verify(request, times(1)).bindJSONToList(DeliveryPipelineView.RegExpSpec.class, null);
+    }
+
 
     @Test
     @WithoutJenkins
@@ -114,6 +135,11 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowChanges());
         view.setNoOfColumns(2);
         assertEquals(2, view.getNoOfColumns());
+        view.setShowAvatars(true);
+        assertTrue(view.getShowAvatars());
+        view.setShowAvatars(false);
+        assertFalse(view.getShowAvatars());
+        assertNotNull(view.getLastUpdated());
     }
 
     @Test
@@ -128,8 +154,13 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
-    public void testOldSorter() {
+    public void testOldSorter() throws Exception {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
+        Field field = view.getClass().getDeclaredField("sorting");
+        field.setAccessible(true);
+        field.set(view, "se.diabol.jenkins.pipeline.sort.NoOpComparator");
+        assertEquals("none", view.getSorting());
+
         view.setSorting("se.diabol.jenkins.pipeline.sort.NoOpComparator");
         assertEquals("none", view.getSorting());
     }
@@ -177,8 +208,6 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject packaging = folder.createProject(FreeStyleProject.class,"packaging");
 
 
-        //FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        //FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
         build.getPublishersList().add(new BuildTrigger("sonar", false));
         build.getPublishersList().add(new BuildTrigger("packaging", false));
 
