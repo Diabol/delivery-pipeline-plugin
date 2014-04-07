@@ -82,11 +82,9 @@ div.stage {
     vertical-align: top;
     background: white;
     border-radius: 7px;
-    border: solid 2px black;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
     border: solid 1px #C8C8C8 ;
-    margin: 0 60px 0 0;
 }
 
 div.stage div.stage-header {

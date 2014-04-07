@@ -101,8 +101,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
 
                     html = html + '<div class="pipeline-cell">';
-                    html = html + '<div id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
-                    html = html + '<section id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<div id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">';
                     html = html + '<div class="stage-header"><span class="stage-name">' + htmlEncode(stage.name) + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</div>'
