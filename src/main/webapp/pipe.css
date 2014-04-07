@@ -4,14 +4,12 @@ body {
 
 section.component {
     display: block;
-    background-color: #f0f0f0;
-    border-radius: 20px;
     padding: 10px;
     margin: 20px;
 }
 
 section.component h1 {
-    font-size: large;
+    font-size: 20px;
     font-weight: bold;
     font-stretch: expanded;
     margin-top: 0;
@@ -19,7 +17,6 @@ section.component h1 {
 
 section.pipeline {
     display: table;
-    background-color: #f0f0f0;
     margin: 10px;
 }
 
@@ -28,7 +25,7 @@ section.pipeline img {
 }
 
 section.pipeline h1 {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: bold;
     font-stretch: expanded;
     margin-top: 0;
@@ -54,14 +51,12 @@ div.changes a:hover {
     text-decoration: underline;
 }
 
-
 div.changes h1 {
     font-size: 14px;
     line-height: 14px;
     padding: 0;
     margin-bottom: 5px;
 }
-
 
 div.change {
     clear: both;
@@ -85,16 +80,14 @@ section.stage {
     min-height: 100px;
     min-width: 180px;
     vertical-align: top;
-    background: white;
-    border-radius: 10px;
-    border: solid 2px black;
-    padding: 0 3px 3px 0;
+    border: solid 1px #C8C8C8 ;
     margin: 0 60px 0 0;
 }
 
 section.stage div.stage-header {
     font-size: medium;
-    border-bottom: black solid 2px;
+    border-bottom: solid 1px #C8C8C8;
+    background: #E8E8E8;
     margin: 0;
     margin-bottom: 3px;
     padding: 5px 10px;
@@ -103,9 +96,52 @@ section.stage div.stage-header {
 
 section.stage div.task {
     display: block;
-    border-radius: 3px;
-    margin: 0 0 1px 5px;
+    margin: 0 5px 1px 5px;
     padding-left: 5px;
+}
+
+
+div.task-progress {
+    position: relative;
+    height: 30px;
+    width: 0;
+    background-color: lightskyblue;
+    animation-duration: 1s;
+    animation-name: bluePulse;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: bluePulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+
+}
+
+@keyframes bluePulse {
+    0% { background-color: #0197fe; }
+    50% { background-color: #2daebf;}
+    100% { background-color: #0197fe;}
+}
+
+@-webkit-keyframes bluePulse {
+    from { background-color: #0197fe; }
+    50% { background-color: #2daebf; }
+    to { background-color: #0197fe; }
+}
+
+
+div.task-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+
+div.taskname {
+    position: relative;
 }
 
 section.stage a {
@@ -128,7 +164,6 @@ section.stage a:hover {
 .stage-name {
     float: left;
 }
-
 
 .IDLE {
     border-left: 6px solid #d3d3d3;
@@ -166,7 +201,6 @@ section.stage a:hover {
 }
 
 .RUNNING {
-    background: url("running.gif") no-repeat right;
     border-left: 6px solid #0092ef;
 }
 
@@ -211,6 +245,7 @@ div.pipeline-row {
     display: table-row;
     white-space: nowrap;
 }
+
 div.pipeline-row-spacer {
     white-space: nowrap;
     height: 20px;

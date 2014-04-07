@@ -27,9 +27,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.*;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -185,6 +187,20 @@ public class SimpleStatusTest {
         assertTrue(running.isRunning());
         assertTrue(status.getType().equals(StatusType.RUNNING));
         assertNotNull(status.toString());
+
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testBuildingProgressGreaterThanEstimated() {
+        AbstractBuild build = Mockito.mock(AbstractBuild.class);
+        Mockito.when(build.isBuilding()).thenReturn(true);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MILLISECOND, -10000);
+        Mockito.when(build.getTimestamp()).thenReturn(calendar);
+        Mockito.when(build.getEstimatedDuration()).thenReturn(10l);
+
+        assertEquals(99, ((Running)SimpleStatus.resolveStatus(null, build)).getPercentage());
 
     }
 
