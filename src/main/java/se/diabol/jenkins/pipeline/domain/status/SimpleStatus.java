@@ -118,7 +118,6 @@ public class SimpleStatus implements Status {
         }
 
         if (build.isBuilding()) {
-            //build.getEstimatedDuration()
             int progress = (int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
                                 / build.getEstimatedDuration());
             if (progress > 100) {
