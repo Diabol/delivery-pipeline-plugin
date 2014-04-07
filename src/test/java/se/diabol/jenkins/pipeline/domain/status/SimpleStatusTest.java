@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.*;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import sun.util.resources.CalendarData;
 
 import java.io.IOException;
 import java.util.Calendar;
