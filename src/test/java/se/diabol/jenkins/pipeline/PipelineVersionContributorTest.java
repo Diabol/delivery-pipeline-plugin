@@ -65,6 +65,29 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
+    public void testVersionNoDisplayname() throws Exception {
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
+
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(false, "1.0.0.${BUILD_NUMBER}"));
+
+        firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+        secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(firstProject.getLastBuild());
+        assertNotNull(secondProject.getLastBuild());
+        assertEquals("#1", firstProject.getLastBuild().getDisplayName());
+
+
+    }
+
+    @Test
     public void testVersionContributorConfigured() throws Exception {
 
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");

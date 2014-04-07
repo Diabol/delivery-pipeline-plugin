@@ -25,12 +25,9 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
-import org.mortbay.jetty.security.UserRealm;
-import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -77,6 +74,21 @@ public class ProjectUtilTest {
         assertEquals(0, result2.size());
         Map<String, AbstractProject> result3 = ProjectUtil.getProjects("*");
         assertEquals(0, result3.size());
+    }
+
+    @Test
+    public void testGetProject() throws Exception {
+        MockFolder folder1 = jenkins.createFolder("Folder1");
+        MockFolder subFolder1 = folder1.createProject(MockFolder.class, "SubFolder1");
+        subFolder1.createProject(FreeStyleProject.class, "project3");
+        MockFolder folder2 = jenkins.createFolder("Folder2");
+        folder2.createProject(FreeStyleProject.class, "project1");
+        jenkins.createFreeStyleProject("project2");
+        assertNull(ProjectUtil.getProject("p"));
+        assertNotNull(ProjectUtil.getProject("Folder2/project1"));
+        assertNotNull(ProjectUtil.getProject("project2"));
+        assertNotNull(ProjectUtil.getProject("Folder1/SubFolder1/project3"));
+
     }
 
 }

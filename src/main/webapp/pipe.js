@@ -40,7 +40,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
         if (data.pipelines.length == 0) {
             Q("#pipeline-message").html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
         }
-
+        plumb.reset();
         for (var c = 0; c < data.pipelines.length; c++) {
             var component = data.pipelines[c];
             var html = "<section class='component'>";
@@ -102,6 +102,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     html = html + '<div class="pipeline-cell">';
                     html = html + '<div id="' + getStageId(stage.name, i) + '" class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<section id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">';
                     html = html + '<div class="stage-header"><span class="stage-name">' + htmlEncode(stage.name) + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</div>'
@@ -121,8 +122,15 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
+                        var progress = 0;
+
+                        if (task.status.percentage) {
+                            progress = task.status.percentage;
+                        }
+
                         html = html + "<div id=\"" + id + "\" class=\"task " + task.status.type +
-                            "\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
+                            "\"><div class=\"task-progress\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
+                            "<div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
 
                         if (timestamp != "") {
                             html = html + "<span id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</span>"
@@ -131,7 +139,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         if (task.status.duration >= 0)
                             html = html + "<span class='duration'>" + formatDuration(task.status.duration) + "</span>";
 
-                        html = html + "</div>"
+                        html = html + "</div></div></div>"
 
                     }
                     html = html + "</div>";
@@ -162,9 +170,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 var index = j;
                 Q.each(pipeline.stages, function (k, stage) {
                     if (stage.downstreamStages) {
-                        Q.each(stage.downstreamStages, function (l, value) {
-                            var source = getStageId(stage.name, index);
-                            var target = getStageId(value, index);
+                        Q.each(stage.downstreamStageIds, function (l, value) {
+                            var source = getStageId(stage.id + "", index);
+                            var target = getStageId(value + "", index);
 
                             plumb.connect({
                                 source: source,
