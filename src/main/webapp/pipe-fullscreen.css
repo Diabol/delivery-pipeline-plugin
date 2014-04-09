@@ -22,7 +22,7 @@ section.component {
     background: #000000;
     border-radius: 20px;
     padding: 10px;
-    margin: 20px;
+    margin: 0;
 }
 
 section.component h1 {
@@ -38,6 +38,13 @@ div.pipeline-row {
     margin-top: 20px;
 }
 
+div.pipeline-cell {
+    display: table-cell;
+    width: auto;
+    margin: 0 60px 0 0;
+}
+
+
 div.pipeline-row-spacer {
     white-space: nowrap;
     height: 20px;
@@ -45,7 +52,6 @@ div.pipeline-row-spacer {
 
 section.pipeline {
     display: table;
-    margin: 10px;
 }
 
 section.pipeline img {
@@ -54,6 +60,7 @@ section.pipeline img {
 
 
 section.pipeline h1 {
+    display: inline-table;
     font-size: 18px;
     font-weight: bold;
     font-stretch: expanded;
@@ -93,7 +100,7 @@ div.change-message {
 }
 
 
-section.stage {
+div.stage {
     display: inline-block;
     min-height: 100px;
     min-width: 180px;
@@ -102,17 +109,20 @@ section.stage {
     margin: 0 60px 0 0;
 }
 
-section.stage div.stage-header {
+div.stage div.stage-header {
     font-size: medium;
     margin: 0;
     margin-bottom: 3px;
-    padding: 5px 10px;
     border: 0;
     background: #808080;
     height: 20px;
+    white-space: nowrap;
+    display: table;
+    width: 180px;
+    min-width: 180px;
 }
 
-section.stage div.task {
+div.stage div.task {
     display: block;
     margin: 0 5px 2px 5px;
     padding-left: 5px;
@@ -150,28 +160,31 @@ div.taskname {
     position: relative;
 }
 
-section.stage a {
+div.stage a {
     text-decoration: none;
     color: inherit;
 }
 
-section.stage a:visited {
+div.stage a:visited {
     color: inherit;
 }
 
-section.stage a:hover {
+div.stage a:hover {
     text-decoration: underline;
 }
 
 .stage-version {
-    float: right;
+    display: table-cell;
+    text-align: right;
+    padding: 10px 10px 10px 10px;
 }
 
 .stage-name {
-    float: left;
+    display: table-cell;
+    padding: 10px 10px 10px 10px;
 }
 
-section.hide {
+div.hide {
     visibility: hidden;
 }
 

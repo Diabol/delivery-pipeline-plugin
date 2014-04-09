@@ -50,7 +50,8 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             }
             for (var i = 0; i < component.pipelines.length; i++) {
                 var pipeline = component.pipelines[i];
-                html = html + '<section class="pipeline">';
+
+
 
                 var triggered = "";
                 if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
@@ -64,21 +65,23 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 }
 
                 if (pipeline.aggregated) {
-                    html = html + '<h1>Aggregated view</h1>'
+                    html = html + '<h2>Aggregated view</h2>'
                 } else {
-                    html = html + '<h1>' + htmlEncode(pipeline.version);
+                    html = html + '<h2>' + htmlEncode(pipeline.version);
                     if (triggered != "") {
                         html = html + " triggered by " + triggered;
                     }
-                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h1>';
+                    html = html + ' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h2>';
 
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html = html + generateChangeLog(pipeline.changes);
                     }
                 }
+                html = html + '<section class="pipeline">';
 
                 var row = 0;
                 var column = 0;
+                var maxColumn = 0;
 
                 html = html + '<div class="pipeline-row">';
 
@@ -92,12 +95,13 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     if (stage.column > column) {
                         for (var as = column; as < stage.column; as++) {
-                            html = html + '<section class="stage hide"></section>';
+                            html = html + '<div class="pipeline-cell"><div class="stage hide"></div></div>';
                         }
 
                     }
 
-                    html = html + '<section id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">';
+                    html = html + '<div class="pipeline-cell">';
+                    html = html + '<div id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">';
                     html = html + '<div class="stage-header"><span class="stage-name">' + htmlEncode(stage.name) + '</span>';
                     if (!pipeline.aggregated) {
                         html = html + '</div>'
@@ -137,7 +141,8 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html = html + "</div></div></div>"
 
                     }
-                    html = html + "</section>";
+                    html = html + "</div>";
+                    html = html + '</div>';
                     column++;
                     if (stage.row > row) {
                         html = html + '</div>';
