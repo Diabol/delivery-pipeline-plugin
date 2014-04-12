@@ -22,6 +22,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
+import hudson.util.RunList;
 
 import java.util.List;
 
@@ -72,5 +73,20 @@ public final class BuildUtil {
 
         return build;
     }
+
+    /**
+     * Returns the build for a projects that has been triggered by the supplied upstream project.
+     */
+    public static AbstractBuild match(RunList<? extends AbstractBuild> runList, AbstractBuild firstBuild) {
+        if (firstBuild != null) {
+            for (AbstractBuild currentBuild : runList) {
+                if (firstBuild.equals(BuildUtil.getFirstUpstreamBuild(currentBuild, firstBuild.getProject()))) {
+                    return currentBuild;
+                }
+            }
+        }
+        return null;
+    }
+
 
 }

@@ -21,7 +21,6 @@ import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
-import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -126,9 +125,9 @@ public class Task extends AbstractItem {
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
         AbstractProject<?, ?> project = getProject(this, context);
-        AbstractBuild build = match(project.getBuilds(), firstBuild);
+        AbstractBuild build = BuildUtil.match(project.getBuilds(), firstBuild);
 
-        Status taskStatus = SimpleStatus.resolveStatus(project, build);
+        Status taskStatus = SimpleStatus.resolveStatus(project, build, firstBuild);
         String taskLink;
         if (build == null || taskStatus.isIdle() || taskStatus.isQueued()) {
             taskLink = this.getLink();
@@ -146,9 +145,9 @@ public class Task extends AbstractItem {
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
         AbstractProject<?, ?> taskProject = getProject(this, context);
-        AbstractBuild currentBuild = match(taskProject.getBuilds(), versionBuild);
+        AbstractBuild currentBuild = BuildUtil.match(taskProject.getBuilds(), versionBuild);
         if (currentBuild != null) {
-            Status taskStatus = SimpleStatus.resolveStatus(taskProject, currentBuild);
+            Status taskStatus = SimpleStatus.resolveStatus(taskProject, currentBuild, null);
             String taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
             if (taskStatus.isRunning()) {
                 taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl() + "console";
@@ -162,22 +161,6 @@ public class Task extends AbstractItem {
     private AbstractProject getProject(Task task, ItemGroup context) {
         return ProjectUtil.getProject(task.getId(), context);
     }
-
-
-    /**
-     * Returns the build for a projects that has been triggered by the supplied upstream project.
-     */
-    private AbstractBuild match(RunList<? extends AbstractBuild> runList, AbstractBuild firstBuild) {
-        if (firstBuild != null) {
-            for (AbstractBuild currentBuild : runList) {
-                if (firstBuild.equals(BuildUtil.getFirstUpstreamBuild(currentBuild, firstBuild.getProject()))) {
-                    return currentBuild;
-                }
-            }
-        }
-        return null;
-    }
-
 
     @Override
     public String toString() {
