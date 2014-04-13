@@ -64,6 +64,17 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     }
                 }
 
+                var contributors = [];
+                if (pipeline.contributors) {
+		    Q.each(pipeline.contributors, function (index, contributor) {
+			contributors.push(contributor.name);
+		    });
+                }
+		
+		if (contributors.length > 0) {
+		    triggered = contributors.join(", ");
+		}
+
                 if (pipeline.aggregated) {
                     html = html + '<h2>Aggregated view</h2>'
                 } else {
