@@ -182,10 +182,15 @@ public class Task extends AbstractItem {
 
     @Override
     public String toString() {
-        return toStringHelper(this)
-                .add("id", getId())
-                .add("name", getName())
-                .add("status", getStatus())
-                .toString();
+        final StringBuilder sb = new StringBuilder("Task{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", link='").append(link).append('\'');
+        sb.append(", testResult=").append(testResult);
+        sb.append(", status=").append(status);
+        sb.append(", manual=").append(manual);
+        sb.append(", buildId='").append(buildId).append('\'');
+        sb.append(", downstreamTasks=").append(downstreamTasks);
+        sb.append('}');
+        return sb.toString();
     }
 }
