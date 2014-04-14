@@ -35,7 +35,6 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.disabled;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.idle;
