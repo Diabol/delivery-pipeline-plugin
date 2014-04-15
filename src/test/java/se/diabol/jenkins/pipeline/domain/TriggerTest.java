@@ -17,14 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import hudson.model.AbstractBuild;
-import hudson.model.Cause;
-import hudson.model.FreeStyleProject;
-import hudson.model.Run;
+import hudson.model.*;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
@@ -32,6 +30,7 @@ import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class TriggerTest {
 
@@ -100,6 +99,28 @@ public class TriggerTest {
         assertEquals(1, triggeredBy.size());
         assertEquals(Trigger.TYPE_SCM, triggeredBy.iterator().next().getType());
     }
+
+    @Test
+    @Bug(22611)
+    public void testGetTriggeredByMultipleSCMChange() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        jenkins.setQuietPeriod(0);
+        CauseAction action = new CauseAction(new SCMTrigger.SCMTriggerCause(""));
+        action.getCauses().add(new SCMTrigger.SCMTriggerCause(""));
+        action.getCauses().add(new SCMTrigger.SCMTriggerCause(""));
+        action.getCauses().add(new SCMTrigger.SCMTriggerCause(""));
+
+
+        project.scheduleBuild(0, null, action);
+        jenkins.waitUntilNoActivity();
+        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project.getLastBuild());
+        assertEquals(1, triggeredBy.size());
+        assertEquals(Trigger.TYPE_SCM, triggeredBy.iterator().next().getType());
+    }
+
 
     @Test
     public void testGetTriggeredByRemoteCause() throws Exception {
@@ -199,6 +220,17 @@ public class TriggerTest {
         List<Trigger> triggeredBy = Trigger.getTriggeredBy(project.getLastBuild());
         assertEquals(1, triggeredBy.size());
         assertEquals(Trigger.TYPE_MANUAL, triggeredBy.iterator().next().getType());
+    }
+
+    @Test
+    public void testHashcodeEquals() {
+        Trigger trigger1 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
+        Trigger trigger2 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
+        Trigger trigger3 = new Trigger(Trigger.TYPE_MANUAL, "manual");
+        assertEquals(trigger1, trigger2);
+        assertEquals(trigger1.hashCode(), trigger2.hashCode());
+        assertNotEquals(trigger1, trigger3);
+        assertNotEquals(trigger1.hashCode(), trigger3.hashCode());
     }
 
 }

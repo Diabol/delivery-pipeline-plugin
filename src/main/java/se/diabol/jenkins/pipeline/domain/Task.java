@@ -35,7 +35,6 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.disabled;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.idle;
@@ -182,10 +181,15 @@ public class Task extends AbstractItem {
 
     @Override
     public String toString() {
-        return toStringHelper(this)
-                .add("id", getId())
-                .add("name", getName())
-                .add("status", getStatus())
-                .toString();
+        final StringBuilder sb = new StringBuilder("Task{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", link='").append(link).append('\'');
+        sb.append(", testResult=").append(testResult);
+        sb.append(", status=").append(status);
+        sb.append(", manual=").append(manual);
+        sb.append(", buildId='").append(buildId).append('\'');
+        sb.append(", downstreamTasks=").append(downstreamTasks);
+        sb.append('}');
+        return sb.toString();
     }
 }

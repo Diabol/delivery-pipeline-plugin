@@ -17,12 +17,23 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.util.OneShotEvent;
 import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.TestBuilder;
+import se.diabol.jenkins.pipeline.domain.status.Running;
+import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
+import se.diabol.jenkins.pipeline.domain.status.Status;
+import se.diabol.jenkins.pipeline.domain.status.StatusType;
+
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -53,5 +64,34 @@ public class TaskTest {
 
 
     }
+
+    @Test
+    public void testGetLatestRunning() throws Exception {
+        final OneShotEvent buildStarted = new OneShotEvent();
+
+        FreeStyleProject project = jenkins.createFreeStyleProject("test");
+        project.getBuildersList().add(new TestBuilder() {
+            public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+                                   BuildListener listener) throws InterruptedException, IOException {
+                buildStarted.signal();
+                Thread.currentThread().wait(1000);
+                return true;
+            }
+        });
+        Task prototype = Task.getPrototypeTask(project);
+
+        project.scheduleBuild2(0);
+        buildStarted.block(); // wait for the build to really start
+        Task latest = prototype.getLatestTask(jenkins.getInstance(), project.getLastBuild());
+        Task aggregated = prototype.getAggregatedTask(project.getLastBuild(), jenkins.getInstance());
+        assertEquals("job/test/1/console", latest.getLink());
+        assertTrue(latest.getStatus().isRunning());
+
+        assertEquals("job/test/1/console", aggregated.getLink());
+        assertTrue(aggregated.getStatus().isRunning());
+
+
+    }
+
 
 }

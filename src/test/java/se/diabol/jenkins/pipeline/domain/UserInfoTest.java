@@ -87,6 +87,11 @@ public class UserInfoTest {
 
         Set<UserInfo> contributors = UserInfo.getContributors(project.getLastBuild());
         assertEquals(1, contributors.size());
+        UserInfo user = contributors.iterator().next();
+        assertEquals("test-user", user.getName());
+        assertNotNull(user.getUrl());
+        assertNull(user.getAvatarUrl());
+
         assertTrue(contributors.contains(new UserInfo("test-user", null, null)));
     }
 

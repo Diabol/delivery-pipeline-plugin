@@ -27,7 +27,9 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Trigger {
@@ -59,7 +61,7 @@ public class Trigger {
     }
 
     public static List<Trigger> getTriggeredBy(AbstractBuild<?, ?> build) {
-        List<Trigger> result = new ArrayList<Trigger>();
+        Set<Trigger> result = new HashSet<Trigger>();
         List<Cause> causes = build.getCauses();
         for (Cause cause : causes) {
             if (cause instanceof Cause.UserIdCause) {
@@ -89,12 +91,28 @@ public class Trigger {
                 result.add(new Trigger(Trigger.TYPE_UNKNOWN, "unknown cause"));
             }
         }
-        return result;
+        return new ArrayList<Trigger>(result);
     }
 
     private static String getDisplayName(String userName) {
         return Jenkins.getInstance().getUser(userName).getDisplayName();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Trigger trigger = (Trigger) o;
+
+        return description.equals(trigger.description) && type.equals(trigger.type);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + description.hashCode();
+        return result;
+    }
 }
