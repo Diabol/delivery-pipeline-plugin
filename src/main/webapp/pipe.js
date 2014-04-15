@@ -67,7 +67,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 var contributors = [];
                 if (pipeline.contributors) {
 		    Q.each(pipeline.contributors, function (index, contributor) {
-			contributors.push(contributor.name);
+			contributors.push(htmlEncode(contributor.name));
 		    });
                 }
 		
