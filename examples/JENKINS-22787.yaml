@@ -1,0 +1,26 @@
+- job:
+    name: 'JENKINS-22787-A'
+    builders:
+        - trigger-builds:
+          - project: 'JENKINS-22787-B,JENKINS-22787-E,JENKINS-22787-F'
+- job:
+    name: 'JENKINS-22787-B'
+    builders:
+        - trigger-builds:
+          - project: 'JENKINS-22787-C,JENKINS-22787-D'
+- job:
+    name: 'JENKINS-22787-C'
+
+- job:
+    name: 'JENKINS-22787-D'
+
+- job:
+    name: 'JENKINS-22787-E'
+    builders:
+        - trigger-builds:
+          - project: 'JENKINS-22787-G'
+- job:
+    name: 'JENKINS-22787-F'
+
+- job:
+    name: 'JENKINS-22787-G'

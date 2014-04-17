@@ -69,6 +69,100 @@ public class StageTest {
 
     }
 
+    /**
+     *  A --> B --> C --> D --> E --> F --> G
+     *           |     |    |
+     *           |     -> H -
+     *           |
+     *           -> I --> J --> L --> M --> N
+     *                 |    |
+     *                 -> K -
+     *
+     */
+    @Test
+    public void testSortByRowsCols2() {
+        List<Stage> stages = new ArrayList<Stage>();
+        Stage stageA = new Stage("A", Collections.<Task>emptyList());
+        stageA.setRow(0);
+        stageA.setColumn(0);
+        Stage stageB = new Stage("B", Collections.<Task>emptyList());
+        stageB.setRow(0);
+        stageB.setColumn(1);
+        Stage stageC = new Stage("C", Collections.<Task>emptyList());
+        stageC.setRow(0);
+        stageC.setColumn(2);
+        Stage stageD = new Stage("D", Collections.<Task>emptyList());
+        stageD.setRow(0);
+        stageD.setColumn(3);
+        Stage stageE = new Stage("E", Collections.<Task>emptyList());
+        stageE.setRow(0);
+        stageE.setColumn(4);
+        Stage stageF = new Stage("F", Collections.<Task>emptyList());
+        stageF.setRow(0);
+        stageF.setColumn(5);
+        Stage stageG = new Stage("G", Collections.<Task>emptyList());
+        stageG.setRow(0);
+        stageG.setColumn(6);
+        Stage stageH = new Stage("H", Collections.<Task>emptyList());
+        stageH.setRow(1);
+        stageH.setColumn(3);
+        Stage stageI = new Stage("I", Collections.<Task>emptyList());
+        stageI.setRow(2);
+        stageI.setColumn(2);
+        Stage stageJ = new Stage("J", Collections.<Task>emptyList());
+        stageJ.setRow(2);
+        stageJ.setColumn(3);
+        Stage stageK = new Stage("K", Collections.<Task>emptyList());
+        stageK.setRow(3);
+        stageK.setColumn(3);
+        Stage stageL = new Stage("L", Collections.<Task>emptyList());
+        stageL.setRow(2);
+        stageL.setColumn(4);
+        Stage stageM = new Stage("M", Collections.<Task>emptyList());
+        stageM.setRow(2);
+        stageM.setColumn(5);
+        Stage stageN = new Stage("N", Collections.<Task>emptyList());
+        stageN.setRow(2);
+        stageN.setColumn(6);
+
+        stages.add(stageA);
+        stages.add(stageB);
+        stages.add(stageF);
+        stages.add(stageJ);
+        stages.add(stageK);
+        stages.add(stageL);
+        stages.add(stageM);
+        stages.add(stageN);
+        stages.add(stageG);
+        stages.add(stageH);
+        stages.add(stageI);
+        stages.add(stageC);
+        stages.add(stageD);
+        stages.add(stageE);
+
+
+
+        Stage.sortByRowsCols(stages);
+
+        assertEquals("A", stages.get(0).getName());
+        assertEquals("B", stages.get(1).getName());
+        assertEquals("C", stages.get(2).getName());
+        assertEquals("D", stages.get(3).getName());
+        assertEquals("E", stages.get(4).getName());
+        assertEquals("F", stages.get(5).getName());
+        assertEquals("G", stages.get(6).getName());
+        assertEquals("H", stages.get(7).getName());
+        assertEquals("I", stages.get(8).getName());
+        assertEquals("J", stages.get(9).getName());
+        assertEquals("L", stages.get(10).getName());
+        assertEquals("M", stages.get(11).getName());
+        assertEquals("N", stages.get(12).getName());
+        assertEquals("K", stages.get(13).getName());
+
+
+    }
+
+
     @Test
     public void testFindStageForJob() {
         Task task1 = new Task("build", "Build", StatusFactory.idle(), null, Collections.<String>emptyList());
