@@ -18,13 +18,12 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.util;
 
 import hudson.Util;
-import hudson.model.AbstractProject;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
+import hudson.model.*;
 import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.SubProjectsAction;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -141,6 +140,30 @@ public final class ProjectUtil {
             LOG.log(Level.WARNING, "Could not find projects on regular expression", e);
             return Collections.emptyMap();
         }
+    }
+
+    public static boolean isQueued(AbstractProject project, AbstractBuild firstBuild) {
+        if (project.isInQueue()) {
+            if (firstBuild == null) {
+                return true;
+            } else {
+                List<Cause.UpstreamCause> causes = Util.filter(project.getQueueItem().getCauses(), Cause.UpstreamCause.class);
+                List<AbstractProject<?,?>> upstreamProjects = project.getUpstreamProjects();
+                for (AbstractProject<?, ?> upstreamProject : upstreamProjects) {
+                    AbstractBuild upstreamBuild = BuildUtil.match(upstreamProject.getBuilds(), firstBuild);
+                    if (upstreamBuild != null) {
+                        for (Cause.UpstreamCause upstreamCause : causes) {
+                            if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild() && upstreamProject.getName().equals(upstreamCause.getUpstreamProject())) {
+                                return true;
+                            }
+
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+        return false;
     }
 
 }

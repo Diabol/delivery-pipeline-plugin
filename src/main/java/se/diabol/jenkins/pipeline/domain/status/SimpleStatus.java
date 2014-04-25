@@ -17,13 +17,19 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
+import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Cause;
 import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+import java.util.List;
 
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
@@ -106,9 +112,9 @@ public class SimpleStatus implements Status {
         return DISABLED.equals(type);
     }
 
-    public static Status resolveStatus(AbstractProject project, AbstractBuild build) {
+    public static Status resolveStatus(AbstractProject project, AbstractBuild build, AbstractBuild firstBuild) {
         if (build == null) {
-            if (project.isInQueue()) {
+            if (ProjectUtil.isQueued(project, firstBuild)) {
                 return StatusFactory.queued(project.getQueueItem().getInQueueSince());
             } else if (project.isDisabled()) {
                 return StatusFactory.disabled();
@@ -143,7 +149,6 @@ public class SimpleStatus implements Status {
             throw new IllegalStateException("Result " + result + " not recognized.");
         }
     }
-
 
 
     @Override

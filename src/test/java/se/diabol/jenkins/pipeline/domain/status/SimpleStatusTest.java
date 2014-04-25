@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -29,9 +32,11 @@ import org.junit.runner.RunWith;
 import org.jvnet.hudson.test.*;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.diabol.jenkins.pipeline.domain.Pipeline;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -45,7 +50,7 @@ public class SimpleStatusTest {
     @Test
     public void testResolveStatusIdle() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
-        Status status = SimpleStatus.resolveStatus(project, null);
+        Status status = SimpleStatus.resolveStatus(project, null, null);
         assertTrue(status.isIdle());
         assertEquals("IDLE", status.toString());
         assertEquals(-1, status.getLastActivity());
@@ -58,7 +63,7 @@ public class SimpleStatusTest {
     public void testResolveStatusDisabled() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         project.makeDisabled(true);
-        Status status = SimpleStatus.resolveStatus(project, null);
+        Status status = SimpleStatus.resolveStatus(project, null, null);
         assertTrue(status.isDisabled());
         assertEquals("DISABLED", status.toString());
         assertEquals(-1, status.getLastActivity());
@@ -72,7 +77,7 @@ public class SimpleStatusTest {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         jenkins.buildAndAssertSuccess(project);
         jenkins.waitUntilNoActivity();
-        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild());
+        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild(), null);
         assertTrue(status.isSuccess());
         assertEquals("SUCCESS", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
@@ -87,7 +92,7 @@ public class SimpleStatusTest {
         project.getBuildersList().add(new FailureBuilder());
         project.scheduleBuild2(0);
         jenkins.waitUntilNoActivity();
-        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild());
+        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild(), null);
         assertTrue(status.isFailed());
         assertEquals("FAILED", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
@@ -103,7 +108,7 @@ public class SimpleStatusTest {
         project.getBuildersList().add(new UnstableBuilder());
         project.scheduleBuild2(0);
         jenkins.waitUntilNoActivity();
-        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild());
+        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild(), null);
         assertTrue(status.isUnstable());
         assertEquals("UNSTABLE", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
@@ -120,7 +125,7 @@ public class SimpleStatusTest {
         project.getBuildersList().add(new MockBuilder(Result.ABORTED));
         project.scheduleBuild2(0);
         jenkins.waitUntilNoActivity();
-        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild());
+        Status status = SimpleStatus.resolveStatus(project, project.getLastBuild(), null);
         assertTrue(status.isCancelled());
         assertEquals("CANCELLED", status.toString());
         assertEquals(project.getLastBuild().getTimeInMillis(), status.getLastActivity());
@@ -137,7 +142,7 @@ public class SimpleStatusTest {
         project.scheduleBuild2(0);
         jenkins.waitUntilNoActivity();
         try {
-            SimpleStatus.resolveStatus(project, project.getLastBuild());
+            SimpleStatus.resolveStatus(project, project.getLastBuild(), null);
             fail("Should throw exception here");
         } catch (IllegalStateException e) {
         }
@@ -148,13 +153,13 @@ public class SimpleStatusTest {
     public void testResolveStatusQueued() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
         project.scheduleBuild2(2);
-        Status status = SimpleStatus.resolveStatus(project, null);
+        Status status = SimpleStatus.resolveStatus(project, null, null);
         assertTrue(status.isQueued());
         assertFalse(status.isRunning());
         assertTrue(status.getType().equals(StatusType.QUEUED));
         assertEquals("QUEUED", status.toString());
         jenkins.waitUntilNoActivity();
-        status = SimpleStatus.resolveStatus(project, project.getLastBuild());
+        status = SimpleStatus.resolveStatus(project, project.getLastBuild(), null);
         assertTrue(status.isSuccess());
         assertTrue(status.getType().equals(StatusType.SUCCESS));
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
@@ -177,7 +182,7 @@ public class SimpleStatusTest {
 
         project.scheduleBuild2(0);
         buildStarted.block(); // wait for the build to really start
-        Status status = SimpleStatus.resolveStatus(project, project.getFirstBuild());
+        Status status = SimpleStatus.resolveStatus(project, project.getFirstBuild(), null);
         jenkins.waitUntilNoActivity();
         assertTrue(status.isRunning());
         assertNotNull(status.getTimestamp());
@@ -200,7 +205,40 @@ public class SimpleStatusTest {
         Mockito.when(build.getTimestamp()).thenReturn(calendar);
         Mockito.when(build.getEstimatedDuration()).thenReturn(10l);
 
-        assertEquals(99, ((Running)SimpleStatus.resolveStatus(null, build)).getPercentage());
+        assertEquals(99, ((Running) SimpleStatus.resolveStatus(null, build, null)).getPercentage());
+
+    }
+
+    @Test
+    public void testCheckThatAllOnlyQueuedBuildIsResolvedAsQueued() throws Exception {
+        FreeStyleProject project1 = jenkins.createFreeStyleProject("project1");
+        jenkins.createFreeStyleProject("project2");
+        project1.getPublishersList().add(new BuildPipelineTrigger("project2", null));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        Pipeline pipeline = Pipeline.extractPipeline("name", project1);
+        jenkins.buildAndAssertSuccess(project1);
+        jenkins.buildAndAssertSuccess(project1);
+        jenkins.waitUntilNoActivity();
+
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
+        assertEquals(2, pipelines.size());
+        assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
+        assertEquals(StatusType.IDLE, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
+
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("project1"), "0", false, "");
+        project1.setQuietPeriod(3);
+        view.triggerManualBuild(1, "project2", "project1");
+        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
+        assertEquals(2, pipelines.size());
+        assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
+        assertEquals(StatusType.QUEUED, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
+
+        jenkins.waitUntilNoActivity();
+        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
+        assertEquals(2, pipelines.size());
+        assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
+        assertEquals(StatusType.SUCCESS, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
     }
 
