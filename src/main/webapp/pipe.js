@@ -26,9 +26,16 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
 
 
 function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges) {
-    Q("#" + errorDiv).html('');
-    Q("#" + errorDiv).hide();
     var lastUpdate = data.lastUpdated;
+
+    if (data.error) {
+        Q("#" + errorDiv).html('Error: ' + data.error);
+        Q("#" + errorDiv).show();
+    } else {
+        Q("#" + errorDiv).html('');
+        Q("#" + errorDiv).hide();
+    }
+
     if (lastResponse == null || JSON.stringify(data.pipelines) != JSON.stringify(lastResponse.pipelines)) {
 
         for (var z = 0; z < divNames.length; z++) {
