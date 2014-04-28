@@ -1,2 +1,2 @@
 #!/bin/bash
-jenkins-jobs --conf jenkins.ini update simple.yaml
+jenkins-jobs --conf jenkins.ini update $1

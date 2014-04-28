@@ -92,7 +92,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                 var row = 0;
                 var column = 0;
-                var maxColumn = 0;
 
                 html = html + '<div class="pipeline-row">';
 
@@ -102,11 +101,13 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         html = html + '</div><div class="pipeline-row-spacer"></div><div class="pipeline-row">';
                         column = 0;
+                        row++;
                     }
 
                     if (stage.column > column) {
                         for (var as = column; as < stage.column; as++) {
                             html = html + '<div class="pipeline-cell"><div class="stage hide"></div></div>';
+                            column++;
                         }
 
                     }
@@ -155,12 +156,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     html = html + "</div>";
                     html = html + '</div>';
                     column++;
-                    if (stage.row > row) {
-                        html = html + '</div>';
-                        row++;
-                        column = 0;
-                    }
-
                 }
                 html = html + '</div>';
 
