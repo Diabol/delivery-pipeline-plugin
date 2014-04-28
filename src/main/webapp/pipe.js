@@ -66,14 +66,14 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                 var contributors = [];
                 if (pipeline.contributors) {
-		    Q.each(pipeline.contributors, function (index, contributor) {
-			contributors.push(htmlEncode(contributor.name));
-		    });
+		            Q.each(pipeline.contributors, function (index, contributor) {
+			            contributors.push(htmlEncode(contributor.name));
+		            });
                 }
 		
-		if (contributors.length > 0) {
-		    triggered = contributors.join(", ");
-		}
+		        if (contributors.length > 0) {
+		            triggered = triggered + " changes by " + contributors.join(", ");
+		        }
 
                 if (pipeline.aggregated) {
                     html = html + '<h2>Aggregated view</h2>'

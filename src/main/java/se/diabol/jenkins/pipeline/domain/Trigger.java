@@ -84,7 +84,7 @@ public class Trigger {
             } else if (cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause) {
                 result.add(new Trigger(Trigger.TYPE_UPSTREAM, "upstream"));
             } else if (cause instanceof SCMTrigger.SCMTriggerCause) {
-                result.add(new Trigger(Trigger.TYPE_SCM, "SCM change"));
+                result.add(new Trigger(Trigger.TYPE_SCM, "SCM"));
             } else if (cause instanceof TimerTrigger.TimerTriggerCause) {
                 result.add(new Trigger(Trigger.TYPE_TIMER, "timer"));
             } else {
