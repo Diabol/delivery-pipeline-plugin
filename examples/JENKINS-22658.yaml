@@ -1,0 +1,33 @@
+- job:
+    name: 'JENKINS-22658-A'
+    properties:
+      - delivery-pipeline:
+          stage: A
+          task: A
+    builders:
+        - trigger-builds:
+          - project: 'JENKINS-22658-B'
+- job:
+    name: 'JENKINS-22658-B'
+    properties:
+      - delivery-pipeline:
+          stage: B
+          task: B
+    builders:
+        - trigger-builds:
+          - project: 'JENKINS-22658-C'
+- job:
+    name: 'JENKINS-22658-C'
+    properties:
+      - delivery-pipeline:
+          stage: C
+          task: C
+    builders:
+        - trigger-builds:
+          - project: 'JENKINS-22658-D'
+- job:
+    name: 'JENKINS-22658-D'
+    properties:
+      - delivery-pipeline:
+          stage: B
+          task: D

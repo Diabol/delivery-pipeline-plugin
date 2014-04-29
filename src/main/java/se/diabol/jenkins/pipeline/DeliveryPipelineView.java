@@ -26,6 +26,7 @@ import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -63,6 +64,8 @@ public class DeliveryPipelineView extends View {
     private boolean showChanges = false;
 
     private List<RegExpSpec> regexpFirstJobs;
+
+    private transient String error;
 
     @DataBoundConstructor
     public DeliveryPipelineView(String name) {
@@ -200,36 +203,46 @@ public class DeliveryPipelineView extends View {
         return PipelineUtils.formatTimestamp(System.currentTimeMillis());
     }
 
+    @Exported
+    public String getError() {
+        return error;
+    }
 
     @Exported
     public List<Component> getPipelines() {
-        LOG.fine("Getting pipelines!");
-        List<Component> components = new ArrayList<Component>();
-        if (componentSpecs != null) {
-            for (ComponentSpec componentSpec : componentSpecs) {
-                AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-                components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
-            }
-        }
-        if (regexpFirstJobs != null) {
-            for (RegExpSpec regexp : regexpFirstJobs) {
-                Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
-                for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
-                    components.add(getComponent(entry.getKey(), entry.getValue(), showAggregatedPipeline));
+        try {
+            LOG.fine("Getting pipelines!");
+            List<Component> components = new ArrayList<Component>();
+            if (componentSpecs != null) {
+                for (ComponentSpec componentSpec : componentSpecs) {
+                    AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+                    components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
                 }
             }
-        }
-        if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
-            ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
-            if (comparatorDescriptor != null) {
-                Collections.sort(components, comparatorDescriptor.createInstance());
+            if (regexpFirstJobs != null) {
+                for (RegExpSpec regexp : regexpFirstJobs) {
+                    Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
+                    for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
+                        components.add(getComponent(entry.getKey(), entry.getValue(), showAggregatedPipeline));
+                    }
+                }
             }
+            if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
+                ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
+                if (comparatorDescriptor != null) {
+                    Collections.sort(components, comparatorDescriptor.createInstance());
+                }
+            }
+            LOG.fine("Returning: " + components);
+            error = null;
+            return components;
+        } catch (PipelineException e) {
+            error = e.getMessage();
+            return new ArrayList<Component>();
         }
-        LOG.fine("Returning: " + components);
-        return components;
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, boolean showAggregatedPipeline) {
+    private Component getComponent(String name, AbstractProject firstJob, boolean showAggregatedPipeline) throws PipelineException {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {

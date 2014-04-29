@@ -24,6 +24,7 @@ import hudson.model.ItemGroup;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -141,7 +142,7 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject) {
+    public static List<Stage> extractStages(AbstractProject firstProject) throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject).values()) {
             Task task = Task.getPrototypeTask(project);
@@ -188,8 +189,8 @@ public class Stage extends AbstractItem {
     }
 
 
-    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) {
-        DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(Edge.class);
+    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) throws PipelineException {
+        DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(new StageEdgeFactory());
         for (Stage stage : stages) {
             stage.setTaskConnections(getStageConnections(stage, stages));
             graph.addVertex(stage);
@@ -206,6 +207,17 @@ public class Stage extends AbstractItem {
             stage.setDownstreamStageIds(downstreamStageIds);
 
         }
+
+        CycleDetector<Stage, Edge> cycleDetector = new CycleDetector<Stage, Edge>(graph);
+        if (cycleDetector.detectCycles()) {
+            Set<Stage> stageSet = cycleDetector.findCycles();
+            String message = "Circular dependencies between stages: ";
+            for (Stage stage : stageSet) {
+                message += stage.getName() + " ";
+            }
+            throw new PipelineException(message);
+        }
+
 
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(Jenkins.getInstance()), stages), graph);
         Collections.sort(allPaths, new Comparator<List<Stage>>() {

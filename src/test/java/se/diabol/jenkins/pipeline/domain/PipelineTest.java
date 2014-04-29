@@ -24,9 +24,7 @@ import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
 import hudson.model.ItemGroup;
 import hudson.model.Saveable;
-import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
-import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
-import hudson.plugins.parameterizedtrigger.TriggerBuilder;
+import hudson.plugins.parameterizedtrigger.*;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
@@ -40,6 +38,7 @@ import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -491,7 +490,7 @@ public class PipelineTest {
         assertNotNull(job1.getLastBuild());
         assertNotNull(job2.getLastBuild());
 
-        Pipeline pipeline = createPipelineLatest(prototype,folder1);
+        Pipeline pipeline = createPipelineLatest(prototype, folder1);
         assertNotNull(pipeline);
         assertEquals(2, pipeline.getStages().size());
         assertEquals("folder1/job1", pipeline.getStages().get(0).getTasks().get(0).getId());
@@ -538,8 +537,8 @@ public class PipelineTest {
 
     /**
      * A -> B -> D -> E
-     *        -> C
-     *
+     * -> C
+     * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
      */
@@ -583,6 +582,41 @@ public class PipelineTest {
 
     }
 
+
+    /**
+     * A --> B --> C --> D
+     *
+     * @throws Exception
+     */
+    @Test
+    @Bug(22658)
+    public void testRecursiveStages() throws Exception {
+
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        a.addProperty(new PipelineProperty("A", "A"));
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        b.addProperty(new PipelineProperty("B", "B"));
+        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        c.addProperty(new PipelineProperty("C", "C"));
+        FreeStyleProject d = jenkins.createFreeStyleProject("D");
+        d.addProperty(new PipelineProperty("D", "B"));
+
+        a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        c.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        try {
+            Pipeline.extractPipeline("Test", a);
+            fail();
+        } catch (StackOverflowError e) {
+            fail("Should not throw StackOverflowError");
+        } catch (PipelineException e) {
+            //Should throw this
+        }
+
+    }
 
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
