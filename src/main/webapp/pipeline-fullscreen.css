@@ -1,0 +1,48 @@
+body {
+    font-family: sans-serif;
+    background: #000000;
+    color: #fefefe;
+    font-size: 14px;
+}
+
+section.pipeline-component {
+    padding-left: 20px;
+}
+
+section.pipeline-component h1 {
+    font-size: 24px;
+}
+
+section.pipeline-component h2 {
+    font-size: 20px;
+}
+
+
+div.changes h1 {
+    font-size: 14px;
+}
+
+div.stage {
+    border-radius: 0;
+    border: solid #404040 1px;
+    background: #404040;
+}
+
+div.stage-header {
+    background: #808080;
+    border-bottom: solid #808080 1px;
+}
+
+.stage-name {
+    padding: 10px 10px 10px 10px;
+}
+
+.stage-version {
+    padding: 10px 10px 10px 10px;
+}
+
+
+svg.relation path {
+    stroke: #fefefe;
+    stroke-width:3;
+}

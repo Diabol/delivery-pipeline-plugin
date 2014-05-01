@@ -10,15 +10,16 @@
     <st:bind var="view" value="${it}"/>
 
     <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+    <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-common.css"/>
     <j:switch on="${fullscreen}">
         <j:case value="true">
-            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipe-fullscreen.css"/>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-fullscreen.css"/>
             <j:if test="${it.fullScreenCss != null}">
                 <link rel="stylesheet" href="${it.fullScreenCss}"/>
             </j:if>
         </j:case>
         <j:default>
-            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipe.css"/>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline.css"/>
             <j:if test="${it.embeddedCss != null}">
                 <link rel="stylesheet" href="${it.embeddedCss}"/>
             </j:if>

@@ -1,0 +1,235 @@
+div.hide {
+    visibility: hidden;
+}
+
+section.pipeline-component h1 {
+    font-size: 20px;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin-top: 0;
+}
+
+section.pipeline-component h2 {
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin-top: 0;
+}
+
+
+section.pipeline {
+    display: table;
+    border-collapse: separate;
+}
+
+div.changes {
+    padding-top: 0;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    display: table;
+}
+
+div.changes a {
+    text-decoration: none;
+    color: inherit;
+}
+
+div.changes a:visited {
+    color: inherit;
+}
+
+div.changes a:hover {
+    text-decoration: underline;
+}
+
+div.changes h1 {
+    font-size: 12px;
+    line-height: 12px;
+    padding: 0;
+    margin-bottom: 5px;
+}
+
+div.change {
+    clear: both;
+    padding-left: 5px;
+    display: table-row;
+}
+
+div.change-author {
+    vertical-align: top;
+    min-width: 75px;
+    display: table-cell;
+}
+
+div.change-message {
+    display: table-cell;
+    padding-left: 10px;
+}
+
+div.pipeline-row {
+    display: table-row;
+    padding: 10px 10px 10px 10px;
+}
+
+div.pipeline-cell {
+    display: table-cell;
+    padding-bottom: 30px;
+}
+
+div.stage {
+    margin-right: 60px;
+    min-width: 180px;
+    border: solid 1px #C8C8C8;
+    border-radius: 5px;
+}
+
+div.stage a {
+    text-decoration: none;
+    color: inherit;
+}
+
+div.stage a:visited {
+    color: inherit;
+}
+
+div.stage-task {
+    white-space: nowrap;
+    margin: 2px 2px 2px 2px;
+    min-height: 32px;
+}
+
+div.task-content {
+    padding: 3px 3px 3px 3px;
+}
+
+div.stage-header {
+    border-bottom: solid 1px #C8C8C8;
+    background: #E8E8E8;
+    font-size: 14px;
+    font-weight: bold;
+    display: table;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.stage-name {
+    padding: 3px 3px 3px 6px;
+    display: table-cell;
+    vertical-align: top;
+}
+
+.stage-version {
+    padding: 3px 6px 3px 3px;
+    display: table-cell;
+    float: right;
+    vertical-align: top;
+}
+
+.timestamp {
+    display: table-cell;
+}
+
+.duration {
+    display: table-cell;
+    padding-left: 20px;
+}
+
+div.task-progress {
+    width: 0;
+    background-color: lightskyblue;
+    animation-duration: 1s;
+    animation-name: bluePulse;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: bluePulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+
+}
+
+@keyframes bluePulse {
+    0% {
+        background-color: #0197fe;
+    }
+    50% {
+        background-color: #2daebf;
+    }
+    100% {
+        background-color: #0197fe;
+    }
+}
+
+@-webkit-keyframes bluePulse {
+    from {
+        background-color: #0197fe;
+    }
+    50% {
+        background-color: #2daebf;
+    }
+    to {
+        background-color: #0197fe;
+    }
+}
+
+.IDLE {
+    border-left: 6px solid #d3d3d3;
+}
+
+.QUEUED {
+    border-left: 6px solid #0092ef;
+}
+
+.FAILED {
+    border-left: 6px solid #8b0000;
+    background-color: #ff6347;
+}
+
+.SUCCESS {
+    border-left: 6px solid #228b22;
+}
+
+.UNSTABLE {
+    border-left: 6px solid #fcae3f;
+    background-color: #fad42e;
+    font-weight: bold;
+}
+
+.CANCELLED {
+    border-left: 6px solid #8b8989;
+    background-color: #d3d3d3;
+    font-weight: bold;
+}
+
+.DISABLED {
+    border-left: 6px solid transparent;
+    color: #a9a9a9;
+}
+
+.RUNNING {
+    border-left: 6px solid #0092ef;
+}
+
+div.left {
+    float: left;
+}
+
+div.right {
+    float: right;
+}
+
+div.clear {
+    clear: both;
+}
+
+div.pipelineerror {
+    background-color: red;
+    font-size: 22px;
+    color: #ffffff;
+    display: none;
+}
+
+div.pipeline-message {
+    font-size: 15px;
+}
+
+
