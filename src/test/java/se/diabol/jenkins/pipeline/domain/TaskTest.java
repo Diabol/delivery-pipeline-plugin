@@ -28,10 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
-import se.diabol.jenkins.pipeline.domain.status.Running;
-import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
-import se.diabol.jenkins.pipeline.domain.status.Status;
-import se.diabol.jenkins.pipeline.domain.status.StatusType;
 
 import java.io.IOException;
 
@@ -74,7 +70,7 @@ public class TaskTest {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                    BuildListener listener) throws InterruptedException, IOException {
                 buildStarted.signal();
-                Thread.currentThread().wait(1000);
+                Thread.currentThread().wait(3000);
                 return true;
             }
         });
