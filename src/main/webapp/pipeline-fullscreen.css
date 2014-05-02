@@ -10,11 +10,11 @@ section.pipeline-component {
 }
 
 section.pipeline-component h1 {
-    font-size: 24px;
+    font-size: 36px;
 }
 
 section.pipeline-component h2 {
-    font-size: 20px;
+    font-size: 26px;
 }
 
 
@@ -39,6 +39,57 @@ div.stage-header {
 
 .stage-version {
     padding: 10px 10px 10px 10px;
+}
+
+.timestamp {
+    font-size: 9px;
+}
+
+.duration {
+    font-size: 9px;
+}
+
+.IDLE {
+    border-left: 6px solid #d3d3d3;
+}
+
+.QUEUED {
+    border-left: 6px solid #0092ef;
+}
+
+.FAILED {
+    border-left: 6px solid red;
+    font-weight: bold;
+    color: red;
+    background-color: inherit;
+}
+
+.SUCCESS {
+    border-left: 6px solid #228b22;
+    background-color: inherit;
+}
+
+.UNSTABLE {
+    border-left: 6px solid #fcae3f;
+    font-weight: bold;
+    color: #fcae3f;
+    background-color: inherit;
+}
+
+.CANCELLED {
+    border-left: 6px solid #8b8989;
+    font-weight: bold;
+    background-color: inherit;
+}
+
+.DISABLED {
+    border-left: 6px solid transparent;
+    color: #a9a9a9;
+    background-color: inherit;
+}
+
+.RUNNING {
+    border-left: 6px solid #0092ef;
 }
 
 

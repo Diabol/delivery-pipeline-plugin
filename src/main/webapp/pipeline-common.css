@@ -95,7 +95,6 @@ div.stage a:visited {
 div.stage-task {
     white-space: nowrap;
     margin: 2px 2px 2px 2px;
-    min-height: 32px;
 }
 
 div.task-content {
