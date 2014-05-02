@@ -44,7 +44,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
         var tasks = [];
 
-        if (data.pipelines.length == 0) {
+        if (!data.pipelines || data.pipelines.length == 0) {
             Q("#pipeline-message").html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
         }
         plumb.reset();
@@ -171,9 +171,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             }
             html = html + "</section>";
             Q("#" + divNames[c % divNames.length]).append(html);
+            Q("#pipeline-message").html('');
         }
         var index = 0;
-        Q("#pipeline-message").html('');
         lastResponse = data;
         equalheight(".pipeline-row .stage");
 

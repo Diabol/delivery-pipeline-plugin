@@ -33,7 +33,7 @@
 
     <div id="pipelineerror" class="pipelineerror"/>
 
-    <div id="pipeline-message" class="pipeline-message"/>
+    <div id="pipeline-message" class="pipeline-message"></div>
 
     <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
         <script type="text/javascript">

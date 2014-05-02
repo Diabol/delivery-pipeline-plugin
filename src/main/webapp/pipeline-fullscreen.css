@@ -10,11 +10,12 @@ section.pipeline-component {
 }
 
 section.pipeline-component h1 {
-    font-size: 36px;
+    font-size: 38px;
+    font-weight: bold;
 }
 
 section.pipeline-component h2 {
-    font-size: 26px;
+    font-size: 24px;
 }
 
 
@@ -47,6 +48,21 @@ div.stage-header {
 
 .duration {
     font-size: 9px;
+}
+
+.pipeline-message {
+    position: fixed;
+    font-size: 36px;
+    top: 50%;
+    left: 50%;
+    width: 30em;
+    height: 18em;
+    margin-top: -9em; /*set to a negative number 1/2 of your height*/
+    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+}
+
+.pipeline-message a:visited {
+    color: inherit;
 }
 
 .IDLE {
