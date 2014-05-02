@@ -81,12 +81,12 @@ public class TaskTest {
         buildStarted.block(); // wait for the build to really start
         Task latest = prototype.getLatestTask(jenkins.getInstance(), project.getLastBuild());
         Task aggregated = prototype.getAggregatedTask(project.getLastBuild(), jenkins.getInstance());
-        buildBuilding.signal();
         assertEquals("job/test/1/console", latest.getLink());
         assertTrue(latest.getStatus().isRunning());
 
         assertEquals("job/test/1/console", aggregated.getLink());
         assertTrue(aggregated.getStatus().isRunning());
+        buildBuilding.signal();
         jenkins.waitUntilNoActivity();
 
     }
