@@ -16,7 +16,6 @@ section.pipeline-component h2 {
     margin-top: 0;
 }
 
-
 section.pipeline {
     display: table;
     border-collapse: separate;
@@ -99,6 +98,7 @@ div.stage-task {
 
 div.task-content {
     padding: 3px 3px 3px 3px;
+    width: 100%;
 }
 
 div.stage-header {
@@ -124,6 +124,24 @@ div.stage-header {
     vertical-align: top;
 }
 
+div.task-header {
+    display: table;
+    white-space: nowrap;
+    width: 100%;
+    border: none;
+}
+
+div.taskname {
+    display: table-cell;
+}
+
+div.task-manual {
+    display: table-cell;
+    content:url("play.gif");
+    float: right;
+    padding-right: 5px;
+}
+
 .timestamp {
     display: table-cell;
 }
@@ -133,8 +151,7 @@ div.stage-header {
     padding-left: 20px;
 }
 
-div.task-progress {
-    width: 0;
+div.task-progress-running {
     background-color: lightskyblue;
     animation-duration: 1s;
     animation-name: bluePulse;
@@ -175,7 +192,7 @@ div.task-progress {
 }
 
 .QUEUED {
-    border-left: 6px solid #0092ef;
+    border-left: 6px solid darkblue;
 }
 
 .FAILED {
@@ -225,6 +242,10 @@ div.pipelineerror {
     font-size: 22px;
     color: #ffffff;
     display: none;
+}
+
+div.button-start {
+    content:url("play.gif");
 }
 
 div.pipeline-message {

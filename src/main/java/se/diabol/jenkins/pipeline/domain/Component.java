@@ -28,15 +28,22 @@ import static com.google.common.base.Objects.toStringHelper;
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
     private final List<Pipeline> pipelines;
+    private final String firstJob;
 
-    public Component(String name, List<Pipeline> pipelines) {
+    public Component(String name, String firstJob, List<Pipeline> pipelines) {
         super(name);
         this.pipelines = ImmutableList.copyOf(pipelines);
+        this.firstJob = firstJob;
     }
 
     @Exported
     public List<Pipeline> getPipelines() {
         return pipelines;
+    }
+
+    @Exported
+    public String getFirstJob() {
+        return firstJob;
     }
 
     @Override

@@ -121,6 +121,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowAggregatedPipeline());
         assertFalse(view.getShowAvatars());
         assertFalse(view.isShowChanges());
+        assertFalse(view.isAllowManualTriggers());
     }
 
     @Test
@@ -140,6 +141,9 @@ public class DeliveryPipelineViewTest {
         view.setShowAvatars(false);
         assertFalse(view.getShowAvatars());
         assertNotNull(view.getLastUpdated());
+        view.setAllowManualTriggers(true);
+        assertTrue(view.isAllowManualTriggers());
+
     }
 
     @Test

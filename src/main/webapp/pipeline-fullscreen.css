@@ -43,11 +43,11 @@ div.stage-header {
 }
 
 .timestamp {
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .duration {
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .pipeline-message {

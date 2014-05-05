@@ -2,6 +2,18 @@
     font-size: 9px;
 }
 
+.duration {
+    font-size: 9px;
+}
+
+div.taskname {
+    display: table-cell;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+
+
 div.stage-task {
     min-height: 36px;
 }

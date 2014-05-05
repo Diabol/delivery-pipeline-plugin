@@ -8,6 +8,7 @@
     </div>
 
     <st:bind var="view" value="${it}"/>
+    <st:bind var="fullscreen" value='${request.getParameter("fullscreen")}'/>
 
     <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
     <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-common.css"/>
@@ -55,7 +56,7 @@
         });
 
 
-        updatePipelines(pipelineContainers, "pipelineerror", view, ${it.showAvatars}, ${it.isShowChanges()}, ${it.updateInterval * 1000});
+        updatePipelines(pipelineContainers, "pipelineerror", view, fullscreen, ${it.isShowChanges()}, ${it.updateInterval * 1000});
 
     </script>
 

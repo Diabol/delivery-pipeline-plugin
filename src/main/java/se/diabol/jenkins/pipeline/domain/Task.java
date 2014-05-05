@@ -44,23 +44,23 @@ public class Task extends AbstractItem {
     private final String link;
     private final TestResult testResult;
     private final Status status;
-    private final boolean manual;
+    private final ManualStep manual;
     private final String buildId;
     private final List<String> downstreamTasks;
 
-    public Task(String id, String name, Status status, String link, List<String> downstreamTasks) {
+    public Task(String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks) {
         super(name);
         this.id = id;
         this.link = link;
         this.testResult = null;
         this.status = status;
-        this.manual = false;
+        this.manual = manual;
         this.buildId = null;
         this.downstreamTasks = downstreamTasks;
     }
 
 
-    public Task(Task task, String buildId, Status status, String link, boolean manual,
+    public Task(Task task, String buildId, Status status, String link, ManualStep manual,
                     TestResult testResult) {
         super(task.getName());
         this.id = task.id;
@@ -73,8 +73,13 @@ public class Task extends AbstractItem {
     }
 
     @Exported
-    public boolean isManual() {
+    public ManualStep getManualStep() {
         return manual;
+    }
+
+    @Exported
+    public boolean isManual() {
+        return manual != null;
     }
 
     @Exported
@@ -118,9 +123,9 @@ public class Task extends AbstractItem {
         for (AbstractProject downstreamProject : downstreams) {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
-
         return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
-                Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(), downStreamTasks);
+                Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(),
+                ManualStep.resolveManualStep(project), downStreamTasks);
     }
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
@@ -140,7 +145,8 @@ public class Task extends AbstractItem {
         }
 
         String taskBuildId = build == null || taskStatus.isIdle() || taskStatus.isQueued() ? null : String.valueOf(build.getNumber());
-        return new Task(this, taskBuildId, taskStatus, taskLink, this.isManual(), TestResult.getTestResult(build));
+        ManualStep manualStep = ManualStep.getManualStepLatest(project, build, firstBuild);
+        return new Task(this, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build));
     }
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
@@ -152,15 +158,16 @@ public class Task extends AbstractItem {
             if (taskStatus.isRunning()) {
                 taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl() + "console";
             }
-            return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.isManual(), TestResult.getTestResult(currentBuild));
+            return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.getManualStep(), TestResult.getTestResult(currentBuild));
         } else {
-            return new Task(this, null, StatusFactory.idle(), this.getLink(), this.isManual(), null);
+            return new Task(this, null, StatusFactory.idle(), this.getLink(), this.getManualStep(), null);
         }
     }
 
     private AbstractProject getProject(Task task, ItemGroup context) {
         return ProjectUtil.getProject(task.getId(), context);
     }
+
 
     @Override
     public String toString() {

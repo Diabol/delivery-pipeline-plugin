@@ -169,13 +169,14 @@ public class SimpleStatusTest {
     @Test
     public void testResolveStatusBuilding() throws Exception {
         final OneShotEvent buildStarted = new OneShotEvent();
+        final OneShotEvent buildBuilding = new OneShotEvent();
 
         FreeStyleProject project = jenkins.createFreeStyleProject();
         project.getBuildersList().add(new TestBuilder() {
             public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                    BuildListener listener) throws InterruptedException, IOException {
                 buildStarted.signal();
-                Thread.currentThread().wait(1000);
+                buildBuilding.block();
                 return true;
             }
         });
@@ -183,8 +184,9 @@ public class SimpleStatusTest {
         project.scheduleBuild2(0);
         buildStarted.block(); // wait for the build to really start
         Status status = SimpleStatus.resolveStatus(project, project.getFirstBuild(), null);
-        jenkins.waitUntilNoActivity();
         assertTrue(status.isRunning());
+        buildBuilding.signal();
+        jenkins.waitUntilNoActivity();
         assertNotNull(status.getTimestamp());
         assertTrue(status instanceof Running);
         Running running = (Running) status;
