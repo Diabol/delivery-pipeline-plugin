@@ -1,5 +1,5 @@
 - job:
-    name: 'simple-build'
+    name: 'demo-build'
     properties:
       - delivery-pipeline:
           stage: Build
@@ -9,68 +9,60 @@
             version-template: 1.0.0-${BUILD_NUMBER}
             set-display-name: true
     publishers:
-      - trigger-parameterized-builds:
-          - project: "simple-deploy-CI"
-            fail-on-missing: false
-            predefined-parameters: foo=bar
+      - trigger:
+          project: demo-deploy-CI
 - job:
-    name: 'simple-deploy-CI'
+    name: 'demo-deploy-CI'
     properties:
       - delivery-pipeline:
           stage: CI
           task: Deploy
     publishers:
-      - trigger-parameterized-builds:
-          - project: "simple-test-CI"
-            fail-on-missing: false
-            predefined-parameters: foo=bar
+      - trigger:
+          project: demo-test-CI
 
 - job:
-    name: 'simple-test-CI'
+    name: 'demo-test-CI'
     properties:
       - delivery-pipeline:
           stage: CI
           task: Test
     publishers:
       - pipeline:
-          project: simple-deploy-QA
+          project: demo-deploy-QA
 
 - job:
-    name: 'simple-deploy-QA'
+    name: 'demo-deploy-QA'
     properties:
       - delivery-pipeline:
           stage: QA
           task: Deploy
     publishers:
-      - trigger-parameterized-builds:
-          - project: "simple-test-QA"
-            fail-on-missing: false
-            predefined-parameters: foo=bar
+      - trigger:
+          project: demo-test-QA
 
 - job:
-    name: 'simple-test-QA'
+    name: 'demo-test-QA'
     properties:
       - delivery-pipeline:
           stage: QA
           task: Test
     publishers:
       - pipeline:
-          project: "simple-deploy-PROD"
+          project: demo-deploy-PROD
 
 - job:
-    name: 'simple-deploy-PROD'
+    name: 'demo-deploy-PROD'
     properties:
       - delivery-pipeline:
           stage: PROD
           task: Deploy
     publishers:
-      - trigger-parameterized-builds:
-          - project: "simple-test-PROD"
-            fail-on-missing: false
-            predefined-parameters: foo=bar
+      - trigger:
+          project: demo-test-PROD
 
 - job:
-    name: 'simple-test-PROD'
+    name: 'demo-test-PROD'
     properties:
       - delivery-pipeline:
           stage: PROD

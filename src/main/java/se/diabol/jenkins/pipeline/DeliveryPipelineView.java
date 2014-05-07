@@ -22,19 +22,24 @@ import hudson.Extension;
 import hudson.model.*;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.trigger.ManualTrigger;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
+import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -62,6 +67,7 @@ public class DeliveryPipelineView extends View {
     private boolean showAvatars = false;
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
+    private boolean allowManualTriggers = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -70,6 +76,10 @@ public class DeliveryPipelineView extends View {
     @DataBoundConstructor
     public DeliveryPipelineView(String name) {
         super(name);
+    }
+
+    public DeliveryPipelineView(String name, ViewGroup owner) {
+        super(name, owner);
     }
 
     public List<RegExpSpec> getRegexpFirstJobs() {
@@ -105,6 +115,8 @@ public class DeliveryPipelineView extends View {
         }
     }
 
+
+
     public List<ComponentSpec> getComponentSpecs() {
         return componentSpecs;
     }
@@ -135,6 +147,15 @@ public class DeliveryPipelineView extends View {
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
         this.showAggregatedPipeline = showAggregatedPipeline;
+    }
+
+    @Exported
+    public boolean isAllowManualTriggers() {
+        return allowManualTriggers;
+    }
+
+    public void setAllowManualTriggers(boolean allowManualTriggers) {
+        this.allowManualTriggers = allowManualTriggers;
     }
 
     public int getNoOfColumns() {
@@ -208,6 +229,32 @@ public class DeliveryPipelineView extends View {
         return error;
     }
 
+    @JavaScriptMethod
+    public void startJob(String job) {
+        AbstractProject project = ProjectUtil.getProject(job, getOwnerItemGroup());
+        project.scheduleBuild(0, new Cause.UserIdCause());
+    }
+
+    @JavaScriptMethod
+    public void triggerManual(String projectName, String upstreamName, String buildId) {
+        try {
+            LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
+            AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+            AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
+            ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
+            if (trigger != null) {
+                trigger.triggerManual(project, upstream, buildId, getOwnerItemGroup());
+            } else {
+                LOG.log(Level.WARNING, "Trigger not found for manual build " + projectName + " for upstream " +
+                        upstreamName + " id: " + buildId);
+            }
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "Could not trigger manual build " + projectName + " for upstream " +
+                    upstreamName + " id: " + buildId, e);
+        }
+    }
+
+
     @Exported
     public List<Component> getPipelines() {
         try {
@@ -249,7 +296,7 @@ public class DeliveryPipelineView extends View {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
         }
         pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
-        return new Component(name, pipelines);
+        return new Component(name, firstJob.getName(), pipelines);
     }
 
     @Override

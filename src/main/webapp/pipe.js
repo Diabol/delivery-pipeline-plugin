@@ -1,4 +1,4 @@
-function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout) {
+function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout) {
     Q.ajax({
         url: 'api/json',
         dataType: 'json',
@@ -6,9 +6,9 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
         cache: false,
         timeout: 20000,
         success: function (data) {
-            refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges);
+            refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges);
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout)
             }, timeout);
         },
         error: function (xhr, status, error) {
@@ -16,7 +16,7 @@ function updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, tim
             Q("#" + errorDiv).show();
             plumb.repaintEverything();
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, showAvatars, showChanges, timeout)
+                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout)
             }, timeout);
         }
     });
@@ -140,16 +140,23 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
-                        var progress = 0;
+                        var progress = 100;
+                        var progressClass = "task-progress-notrunning";
 
                         if (task.status.percentage) {
                             progress = task.status.percentage;
+                            progressClass = "task-progress-running";
                         }
 
                         html = html + "<div id=\"" + id + "\" class=\"stage-task " + task.status.type +
-                            "\"><div class=\"task-progress\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
-                            "<div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
-
+                            "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
+                            "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
+                        if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
+                            html = html + '<div class="task-manual" id="manual-' + id +'" onclick="triggerManual(view, \'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId +'\');">';
+                            html = html + 'Manual!';
+                            html = html + "</div>"
+                        }
+                        html = html + '</div><div class="task-details">';
                         if (timestamp != "") {
                             html = html + "<div id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</div>"
                         }
@@ -157,7 +164,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         if (task.status.duration >= 0)
                             html = html + "<div class='duration'>" + formatDuration(task.status.duration) + "</div>";
 
-                        html = html + "</div></div></div>"
+                        html = html + "</div></div></div></div>"
 
                     }
                     html = html + "</div>";
@@ -256,8 +263,7 @@ function getStageClassName(stagename) {
 }
 
 function getTaskId(taskname, count) {
-    var re = new RegExp(' ', 'g');
-    return "task-" + taskname.replace(re, '_') + "_" + count;
+    return "task-" + replace(replace(taskname, " ", "_"), "/", "_") + count;
 }
 
 function replace(string, replace, replaceWith) {
@@ -291,6 +297,11 @@ function formatDuration(millis) {
         return minstr + secstr;
     }
     return "0 sec";
+}
+
+function triggerManual(view, taskId, downstreamProject, upstreamProject, upstreamBuild) {
+    Q("#manual-" + taskId).hide();
+    view.triggerManual(downstreamProject, upstreamProject, upstreamBuild);
 }
 
 function htmlEncode(html) {
