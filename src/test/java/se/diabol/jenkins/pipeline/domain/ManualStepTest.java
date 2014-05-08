@@ -191,4 +191,16 @@ public class ManualStepTest {
 
     }
 
+    @Test
+    public void getManualStepAggregatedNoTrigger() throws Exception {
+        FreeStyleProject a =  jenkins.createFreeStyleProject("a");
+        FreeStyleProject b =  jenkins.createFreeStyleProject("b");
+        assertNull(ManualStep.getManualStepAggregated(a, a));
+
+        a.getPublishersList().add(new BuildTrigger("b", false));
+        jenkins.getInstance().rebuildDependencyGraph();
+        assertNull(ManualStep.getManualStepAggregated(b, a));
+
+    }
+
 }

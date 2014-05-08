@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 
 import java.util.List;
@@ -223,13 +224,19 @@ public class TriggerTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testHashcodeEquals() {
-        Trigger trigger1 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
+       Trigger trigger1 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
         Trigger trigger2 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
         Trigger trigger3 = new Trigger(Trigger.TYPE_MANUAL, "manual");
+        Trigger trigger4 = new Trigger(Trigger.TYPE_SCM, "manual");
+        assertEquals(trigger1, trigger1);
         assertEquals(trigger1, trigger2);
         assertEquals(trigger1.hashCode(), trigger2.hashCode());
         assertNotEquals(trigger1, trigger3);
+        assertNotEquals(trigger3, trigger4);
+        assertNotEquals(trigger3, null);
+        assertNotEquals(trigger3, "");
         assertNotEquals(trigger1.hashCode(), trigger3.hashCode());
     }
 

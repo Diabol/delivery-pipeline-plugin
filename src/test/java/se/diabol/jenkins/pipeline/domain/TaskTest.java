@@ -45,6 +45,7 @@ public class TaskTest {
 
         Task task = Task.getPrototypeTask(project);
         assertNotNull(task);
+        assertFalse(task.isManual());
 
         Task aggregatedTask = task.getAggregatedTask(null, Jenkins.getInstance());
         assertNotNull(aggregatedTask);
