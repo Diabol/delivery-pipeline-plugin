@@ -17,13 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import hudson.model.*;
-import hudson.tasks.Publisher;
-import hudson.util.DescribableList;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Item;
+import hudson.model.Result;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.trigger.ManualTriggerResolver;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -58,17 +59,10 @@ public class ManualStep {
 
 
     protected static boolean isManualTrigger(AbstractProject<?, ?> project) {
-        List<AbstractProject> upstreamProjects = project.getUpstreamProjects();
-        if (upstreamProjects.size() == 1) {
-            AbstractProject<?,?> upstreamProject = upstreamProjects.get(0);
-            DescribableList<Publisher, Descriptor<Publisher>> upstreamPublishersLists = upstreamProject.getPublishersList();
-            for (Publisher upstreamPub : upstreamPublishersLists) {
-                if (upstreamPub instanceof BuildPipelineTrigger) {
-                    String names = ((BuildPipelineTrigger) upstreamPub).getDownstreamProjectNames();
-                    if (ProjectUtil.getProjectList(names, project.getParent(), null).contains(project)) {
-                        return true;
-                    }
-                }
+        List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
+        for (ManualTriggerResolver manualTriggerResolver : resolvers) {
+            if (manualTriggerResolver.isManualTrigger(project)) {
+                return true;
             }
         }
         return false;

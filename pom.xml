@@ -40,7 +40,7 @@
     <developers>
         <developer>
             <id>patbos</id>
-            <name>Patrik Boström</name>
+            <name>Patrik Bostrom</name>
             <organization>Diabol AB</organization>
         </developer>
         <developer>
@@ -60,7 +60,7 @@
         </developer>
         <developer>
             <id>gusran</id>
-            <name>Gustav Rånby</name>
+            <name>Gustav Ranby</name>
             <organization>Diabol AB</organization>
         </developer>
     </developers>
@@ -215,7 +215,7 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>build-pipeline-plugin</artifactId>
             <version>1.4</version>
-            <!--optional>true</optional-->
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

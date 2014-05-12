@@ -17,24 +17,19 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
+import hudson.ExtensionPoint;
 import hudson.model.AbstractProject;
+import jenkins.model.Jenkins;
 
 import java.util.List;
 
-public final class ManualTriggerFactory {
+public abstract class ManualTriggerResolver implements ExtensionPoint {
 
-    private ManualTriggerFactory() {
+    public abstract ManualTrigger getManualTrigger(AbstractProject<?, ?> project, AbstractProject<?, ?> downstream);
+
+    public abstract boolean isManualTrigger(AbstractProject<?, ?> project);
+
+    public static List<ManualTriggerResolver> all() {
+        return Jenkins.getInstance().getExtensionList(ManualTriggerResolver.class);
     }
-
-    public static ManualTrigger getManualTrigger(AbstractProject<?, ?> project, AbstractProject<?, ?> downstream) {
-        List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
-        for (ManualTriggerResolver resolver : resolvers) {
-            ManualTrigger trigger = resolver.getManualTrigger(project, downstream);
-            if (trigger != null) {
-                return trigger;
-            }
-        }
-        return null;
-    }
-
 }

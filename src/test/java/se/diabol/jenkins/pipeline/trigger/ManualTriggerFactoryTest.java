@@ -17,63 +17,16 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import hudson.model.FreeStyleProject;
-import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 public class ManualTriggerFactoryTest {
-
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
     @WithoutJenkins
     public void testValidUtilClass() throws Exception {
         TestUtil.assertUtilityClassWellDefined(ManualTriggerFactory.class);
-    }
-
-
-    @Test
-    public void testGetTriggerNoRelation() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        assertNull(ManualTriggerFactory.getManualTrigger(a, b));
-    }
-
-    @Test
-    public void testGetTriggerBPPManualTrigger() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        FreeStyleProject c = jenkins.createFreeStyleProject("c");
-        jenkins.createFreeStyleProject("d");
-
-
-        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
-        c.getPublishersList().add(new BuildPipelineTrigger("d", null));
-
-        jenkins.getInstance().rebuildDependencyGraph();
-
-        assertNotNull(ManualTriggerFactory.getManualTrigger(b, a));
-        assertNull(ManualTriggerFactory.getManualTrigger(b, c));
-    }
-
-    @Test
-    public void testGetTriggerBPPManualTriggerFolders() throws Exception {
-        MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "a");
-        FreeStyleProject b = folder.createProject(FreeStyleProject.class, "b");
-        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
-        jenkins.getInstance().rebuildDependencyGraph();
-
-        assertNotNull(ManualTriggerFactory.getManualTrigger(b, a));
     }
 
 }
