@@ -20,6 +20,7 @@ package se.diabol.jenkins.pipeline.domain;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Cause;
+import hudson.model.User;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import jenkins.model.Jenkins;
@@ -95,7 +96,12 @@ public class Trigger {
     }
 
     private static String getDisplayName(String userName) {
-        return Jenkins.getInstance().getUser(userName).getDisplayName();
+        User user = Jenkins.getInstance().getUser(userName);
+        if (user != null) {
+            return user.getDisplayName();
+        } else {
+            return "anonymous";
+        }
     }
 
     @Override

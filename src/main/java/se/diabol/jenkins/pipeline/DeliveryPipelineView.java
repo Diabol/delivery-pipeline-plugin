@@ -23,6 +23,8 @@ import hudson.model.*;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.BadCredentialsException;
 import org.kohsuke.stapler.*;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -33,6 +35,7 @@ import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
+import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -219,6 +222,11 @@ public class DeliveryPipelineView extends View {
         }
     }
 
+    @Override
+    public Api getApi() {
+        return new PipelineApi(this);
+    }
+
     @Exported
     public String getLastUpdated() {
         return PipelineUtils.formatTimestamp(System.currentTimeMillis());
@@ -236,21 +244,27 @@ public class DeliveryPipelineView extends View {
     }
 
     @JavaScriptMethod
-    public void triggerManual(String projectName, String upstreamName, String buildId) {
+    public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
             AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+            if (!project.hasPermission(Item.BUILD)) {
+                throw new BadCredentialsException("Not auth to build");
+            }
             AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
             ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
             if (trigger != null) {
-                trigger.triggerManual(project, upstream, buildId, getOwnerItemGroup());
+                trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
             } else {
                 LOG.log(Level.WARNING, "Trigger not found for manual build " + projectName + " for upstream " +
                         upstreamName + " id: " + buildId);
+                throw new TriggerException("Trigger not found for manual build " + projectName + " for upstream " +
+                                        upstreamName + " id: " + buildId);
             }
-        } catch (Exception e) {
+        } catch (TriggerException e) {
             LOG.log(Level.WARNING, "Could not trigger manual build " + projectName + " for upstream " +
                     upstreamName + " id: " + buildId, e);
+            throw e;
         }
     }
 

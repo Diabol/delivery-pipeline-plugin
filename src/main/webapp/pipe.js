@@ -59,7 +59,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 var pipeline = component.pipelines[i];
 
 
-
                 var triggered = "";
                 if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
                     for (var y = 0; y < pipeline.triggeredBy.length; y++) {
@@ -77,10 +76,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         contributors.push(htmlEncode(contributor.name));
                     });
                 }
-		
-		        if (contributors.length > 0) {
-		            triggered = triggered + " changes by " + contributors.join(", ");
-		        }
+
+                if (contributors.length > 0) {
+                    triggered = triggered + " changes by " + contributors.join(", ");
+                }
 
                 if (pipeline.aggregated) {
                     html = html + '<h2>Aggregated view</h2>'
@@ -152,7 +151,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
                             "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
-                            html = html + '<div class="task-manual" id="manual-' + id +'" onclick="triggerManual(view, \'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId +'\');">';
+                            html = html + '<div class="task-manual" id="manual-' + id + '" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">';
                             html = html + 'Manual!';
                             html = html + "</div>"
                         }
@@ -299,9 +298,21 @@ function formatDuration(millis) {
     return "0 sec";
 }
 
-function triggerManual(view, taskId, downstreamProject, upstreamProject, upstreamBuild) {
+function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild) {
     Q("#manual-" + taskId).hide();
-    view.triggerManual(downstreamProject, upstreamProject, upstreamBuild);
+    var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild};
+    Q.ajax({
+        url: "api/manualStep",
+        type: "POST",
+        data: formData,
+        timeout: 20000,
+        success: function (data, textStatus, jqXHR) {
+            console.log("Triggered build!")
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            window.alert("Could not trigger build!")
+        }
+    });
 }
 
 function htmlEncode(html) {

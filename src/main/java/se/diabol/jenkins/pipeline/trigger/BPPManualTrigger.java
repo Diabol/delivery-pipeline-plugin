@@ -26,9 +26,14 @@ import hudson.model.TopLevelItem;
 public class BPPManualTrigger implements ManualTrigger {
 
     @Override
-    public void triggerManual(AbstractProject<?, ?> project, AbstractProject<?, ?> upstream, String buildId, ItemGroup<? extends TopLevelItem> itemGroup) {
-        MyView view = new MyView(itemGroup);
-        view.triggerManualBuild(Integer.parseInt(buildId), project.getName(), upstream.getName());
+    public void triggerManual(AbstractProject<?, ?> project, AbstractProject<?, ?> upstream, String buildId,
+                              ItemGroup<? extends TopLevelItem> itemGroup) throws TriggerException {
+        try {
+            MyView view = new MyView(itemGroup);
+            view.triggerManualBuild(Integer.parseInt(buildId), project.getName(), upstream.getName());
+        } catch (Exception e) {
+            throw new TriggerException("Could not trigger", e);
+        }
 
     }
 

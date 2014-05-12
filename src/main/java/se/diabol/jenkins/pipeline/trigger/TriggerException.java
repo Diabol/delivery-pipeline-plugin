@@ -17,12 +17,13 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
-import hudson.model.AbstractProject;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
+public class TriggerException extends Exception {
 
-public interface ManualTrigger {
-    void triggerManual(AbstractProject<?,?> project, AbstractProject<?,?> upstream,
-                       String buildId, ItemGroup<? extends TopLevelItem> itemGroup) throws TriggerException;
+    public TriggerException(String message) {
+        super(message);
+    }
 
+    public TriggerException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
