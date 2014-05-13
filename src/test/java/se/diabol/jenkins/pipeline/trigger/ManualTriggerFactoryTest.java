@@ -17,16 +17,45 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import hudson.model.FreeStyleProject;
+import hudson.tasks.BuildTrigger;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 public class ManualTriggerFactoryTest {
+
+    @Rule
+    public JenkinsRule jenkins = new JenkinsRule();
+
 
     @Test
     @WithoutJenkins
     public void testValidUtilClass() throws Exception {
         TestUtil.assertUtilityClassWellDefined(ManualTriggerFactory.class);
+    }
+
+
+    @Test
+    public void testNotFound() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        assertNull(ManualTriggerFactory.getManualTrigger(b, a));
+    }
+
+    @Test
+    public void testFound() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        jenkins.getInstance().rebuildDependencyGraph();
+        assertNotNull(ManualTriggerFactory.getManualTrigger(b, a));
     }
 
 }

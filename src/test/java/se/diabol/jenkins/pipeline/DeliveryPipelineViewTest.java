@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import hudson.model.Api;
 import hudson.model.FreeStyleProject;
 import hudson.model.TopLevelItem;
 import hudson.tasks.BuildTrigger;
@@ -245,6 +246,7 @@ public class DeliveryPipelineViewTest {
         view.setSorting(NameComparator.class.getName());
         jenkins.getInstance().addView(view);
         List<Component> components = view.getPipelines();
+        assertNull(view.getError());
         assertEquals(1, components.size());
         Component component = components.get(0);
         assertEquals(0, component.getPipelines().size());
@@ -254,6 +256,7 @@ public class DeliveryPipelineViewTest {
         jenkins.buildAndAssertSuccess(build);
 
         components = view.getPipelines();
+        assertNull(view.getError());
         assertEquals(1, components.size());
         component = components.get(0);
         assertEquals(1, component.getPipelines().size());
@@ -279,6 +282,7 @@ public class DeliveryPipelineViewTest {
 
         view.setShowAggregatedPipeline(true);
         components = view.getPipelines();
+        assertNull(view.getError());
         assertEquals(1, components.size());
         component = components.get(0);
         assertEquals(2, component.getPipelines().size());
@@ -405,6 +409,7 @@ public class DeliveryPipelineViewTest {
         jenkins.getInstance().addView(view);
 
         List<Component> components = view.getPipelines();
+        assertNull(view.getError());
         assertEquals(3, components.size());
 
         List<String> names = new ArrayList<String>();
@@ -422,6 +427,14 @@ public class DeliveryPipelineViewTest {
 
 
 
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testGetApi() {
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        Api api = view.getApi();
+        assertTrue(api instanceof PipelineApi);
     }
 
 

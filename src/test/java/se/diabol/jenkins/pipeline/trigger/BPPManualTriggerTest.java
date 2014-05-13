@@ -19,12 +19,14 @@ package se.diabol.jenkins.pipeline.trigger;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleProject;
+import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class BPPManualTriggerTest {
 
@@ -49,6 +51,19 @@ public class BPPManualTriggerTest {
 
         jenkins.waitUntilNoActivity();
         assertNotNull(b.getLastBuild());
+
+    }
+
+    @Test
+    public void triggerManualWhenProjectNull() throws Exception {
+        BPPManualTrigger trigger = new BPPManualTrigger();
+        FreeStyleProject b = jenkins.createFreeStyleProject( "b");
+        try {
+            trigger.triggerManual(b, null, "1", Jenkins.getInstance());
+            fail();
+        } catch (TriggerException e) {
+            //Should throw exception
+        }
 
     }
 
