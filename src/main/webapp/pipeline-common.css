@@ -2,6 +2,13 @@ div.hide {
     visibility: hidden;
 }
 
+div.pipeline-loading-icon {
+    content: url("white-load.gif");
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
 section.pipeline-component h1 {
     font-size: 20px;
     font-weight: bold;
@@ -255,7 +262,7 @@ div.pipelineerror {
 }
 
 div.button-start {
-    content:url("play.gif");
+    content: url("play.gif");
 }
 
 div.pipeline-message {

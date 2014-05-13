@@ -48,7 +48,7 @@
 
     <div id="pipelineerror" class="pipelineerror"/>
 
-    <div id="pipeline-message" class="pipeline-message"></div>
+    <div id="pipeline-message" class="pipeline-message"><div class="pipeline-loading-icon"></div></div>
 
     <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
         <div id="pipelines-${i}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
