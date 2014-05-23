@@ -222,6 +222,12 @@ public class DeliveryPipelineView extends View {
         }
     }
 
+    // generate the base url for calls to getApi()
+    // support being the default view in Jenkins
+    public String getApiBaseUrl() {
+        return Jenkins.getInstance().getRootUrlFromRequest() + getViewUrl();
+    }
+    
     @Override
     public Api getApi() {
         return new PipelineApi(this);
