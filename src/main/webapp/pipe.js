@@ -1,6 +1,6 @@
 function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout) {
     Q.ajax({
-        url: 'api/json',
+        url: view.apiBaseUrl + 'api/json',
         dataType: 'json',
         async: true,
         cache: false,
@@ -302,7 +302,7 @@ function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild
     Q("#manual-" + taskId).hide();
     var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild};
     Q.ajax({
-        url: "api/manualStep",
+        url: view.apiBaseUrl + 'api/manualStep',
         type: "POST",
         data: formData,
         timeout: 20000,
