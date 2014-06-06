@@ -17,13 +17,22 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.Api;
 import hudson.model.FreeStyleProject;
 import hudson.model.TopLevelItem;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import net.sf.json.JSONObject;
+
+import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,20 +41,13 @@ import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
@@ -436,6 +438,28 @@ public class DeliveryPipelineViewTest {
         Api api = view.getApi();
         assertTrue(api instanceof PipelineApi);
     }
+    
+    @Ignore("Ignored due to JenkinsRule 404 for the URL /plugin/jquery-ui/js/jquery-ui-1.8.9.custom.min.js")
+    @Test
+    public void testDoCreateItem() throws Exception {
+        testDoCreateItem("testDoCreateItem", "");
 
+        DeliveryPipelineView view = new DeliveryPipelineView("Delivery Pipeline");
+        jenkins.hudson.addView(view);
+        
+        testDoCreateItem("testDoCreateItemAsTheDefaultViewFromTheViewUrl", "view/Delivery%20Pipeline/");
 
+        jenkins.hudson.setPrimaryView(view);
+        testDoCreateItem("testDoCreateItemAsTheDefaultView", "");
+    }
+
+    private void testDoCreateItem(String projectName, String baseUrl) throws Exception {
+        HtmlPage page = jenkins.createWebClient().goTo(baseUrl + "newJob");
+        HtmlForm form = page.getFormByName("createItem");
+        form.getInputByName("name").setValueAttribute(projectName);
+        form.getRadioButtonsByName("mode").get(0).setChecked(true);
+        jenkins.submit(form);
+        
+        assertTrue(jenkins.jenkins.getJobNames().contains(projectName));
+    }
 }
