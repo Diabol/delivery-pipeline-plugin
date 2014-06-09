@@ -36,6 +36,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
@@ -67,6 +68,18 @@ public class DeliveryPipelineViewTest {
         view.onJobRenamed(null, "build1", "newbuild");
         assertEquals("newbuild", view.getComponentSpecs().get(0).getFirstJob());
     }
+
+    @Test
+    @WithoutJenkins
+    @Bug(23373)
+    public void testOnJobRenamedNoComponentSpecs() {
+        DeliveryPipelineView view = new DeliveryPipelineView("Test");
+        //Rename
+        view.onJobRenamed(null, "build1", "newbuild");
+        //Delete
+        view.onJobRenamed(null, "build1", null);
+    }
+
 
     @Test
     @WithoutJenkins

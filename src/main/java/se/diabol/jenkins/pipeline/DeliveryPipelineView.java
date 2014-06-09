@@ -209,14 +209,16 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public void onJobRenamed(Item item, String oldName, String newName) {
-        Iterator<ComponentSpec> it = componentSpecs.iterator();
-        while (it.hasNext()) {
-            ComponentSpec componentSpec = it.next();
-            if (componentSpec.getFirstJob().equals(oldName)) {
-                if (newName == null) {
-                    it.remove();
-                } else {
-                    componentSpec.setFirstJob(newName);
+        if (componentSpecs != null) {
+            Iterator<ComponentSpec> it = componentSpecs.iterator();
+            while (it.hasNext()) {
+                ComponentSpec componentSpec = it.next();
+                if (componentSpec.getFirstJob().equals(oldName)) {
+                    if (newName == null) {
+                        it.remove();
+                    } else {
+                        componentSpec.setFirstJob(newName);
+                    }
                 }
             }
         }
