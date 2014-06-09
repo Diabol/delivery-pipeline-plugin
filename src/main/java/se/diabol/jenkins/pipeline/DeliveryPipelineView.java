@@ -360,7 +360,23 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        return getOwner().getPrimaryView().doCreateItem(req, rsp);
+        View allView;
+        
+        if (!isDefault()) {
+            return getOwner().getPrimaryView().doCreateItem(req, rsp);
+        }
+        
+        // when we are the default view, dynamically load the "All" view
+        // and defer to the "All" view's implemenation for creating a new item
+        try {
+            allView = new hudson.model.AllView("All" , getOwner());
+        } catch(Exception e) {
+            // return null in the unlikely event that the AllView class
+            // changes its constructor signatures, which would raise a NoSuchMethodException
+            return null;
+        }
+        
+        return allView.doCreateItem(req, rsp);
     }
 
 
