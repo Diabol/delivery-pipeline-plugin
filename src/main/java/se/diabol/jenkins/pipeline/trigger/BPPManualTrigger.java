@@ -42,7 +42,7 @@ public class BPPManualTrigger implements ManualTrigger {
         ItemGroup<? extends TopLevelItem> context;
 
         public MyView(ItemGroup<? extends TopLevelItem> context) {
-            super("", "", new DownstreamProjectGridBuilder(""), "1", false, "");
+            super("", "", new DownstreamProjectGridBuilder(""), "1", false, "", false);
             this.context = context;
         }
 

@@ -136,7 +136,7 @@ public class PipelineVersionContributorTest {
         secondProject.getBuildersList().clear();
         secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("firstProject"), "1", false, null);
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("firstProject"), "1", false, null, false);
         view.triggerManualBuild(1, "secondProject", "firstProject");
         jenkins.waitUntilNoActivity();
 
