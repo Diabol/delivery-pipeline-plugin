@@ -106,9 +106,12 @@ public class Trigger {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         Trigger trigger = (Trigger) o;
 
         return description.equals(trigger.description) && type.equals(trigger.type);

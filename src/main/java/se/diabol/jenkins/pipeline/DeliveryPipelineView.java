@@ -264,10 +264,10 @@ public class DeliveryPipelineView extends View {
             if (trigger != null) {
                 trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
             } else {
-                LOG.log(Level.WARNING, "Trigger not found for manual build " + projectName + " for upstream " +
-                        upstreamName + " id: " + buildId);
-                throw new TriggerException("Trigger not found for manual build " + projectName + " for upstream " +
-                                        upstreamName + " id: " + buildId);
+                String message = "Trigger not found for manual build " + projectName + " for upstream " +
+                                        upstreamName + " id: " + buildId;
+                LOG.log(Level.WARNING, message);
+                throw new TriggerException(message);
             }
         } catch (TriggerException e) {
             LOG.log(Level.WARNING, "Could not trigger manual build " + projectName + " for upstream " +

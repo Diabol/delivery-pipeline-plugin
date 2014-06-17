@@ -92,15 +92,13 @@ public class ManualStep {
         if (isManualTrigger(project)) {
             Map<String, String> versions = new HashMap<String, String>();
             AbstractProject<?, ?> upstream = (AbstractProject<?, ?>) project.getUpstreamProjects().get(0);
-            for (AbstractBuild build: upstream.getBuilds()) {
+            for (AbstractBuild build : upstream.getBuilds()) {
                 AbstractBuild versionBuild = BuildUtil.getFirstUpstreamBuild(build, firstProject);
-                if (versionBuild != null) {
-                    if (!versions.containsKey(versionBuild.getDisplayName())) {
-                        versions.put(versionBuild.getDisplayName(), String.valueOf(versionBuild.getNumber()));
-                    }
+                if (versionBuild != null && !versions.containsKey(versionBuild.getDisplayName())) {
+                    versions.put(versionBuild.getDisplayName(), String.valueOf(versionBuild.getNumber()));
                 }
             }
-            if (versions.size() == 0) {
+            if (versions.isEmpty()) {
                 return new ManualStep(upstream.getName(), null, false, project.hasPermission(Item.BUILD), versions);
             }
             return new ManualStep(upstream.getName(), null, true, project.hasPermission(Item.BUILD), versions);
