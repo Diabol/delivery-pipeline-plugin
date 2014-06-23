@@ -154,7 +154,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                             html = html + '<div class="task-manual" id="manual-' + id + '" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">';
-                            html = html + 'Manual!';
                             html = html + "</div>"
                         }
                         html = html + '</div><div class="task-details">';

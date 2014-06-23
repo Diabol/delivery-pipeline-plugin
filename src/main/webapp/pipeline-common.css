@@ -137,7 +137,9 @@ div.taskname {
 
 div.task-manual {
     display: table-cell;
-    content:url("play.gif");
+    background: url("play.gif") no-repeat;
+    height: 14px;
+    width: 14px;
     float: right;
     padding-right: 5px;
 }
