@@ -19,3 +19,8 @@ README.html
 .gradle
 
 build
+
+# Eclipse
+/.classpath
+/.project
+/.settings*
