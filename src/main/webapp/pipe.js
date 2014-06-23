@@ -82,7 +82,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 }
 
                 if (pipeline.aggregated) {
-                    html = html + '<h2>Aggregated view</h2>'
+                    if (component.pipelines.length > 1) {
+                        html = html + '<h2>Aggregated view</h2>'
+                    }
                 } else {
                     html = html + '<h2>' + htmlEncode(pipeline.version);
                     if (triggered != "") {
