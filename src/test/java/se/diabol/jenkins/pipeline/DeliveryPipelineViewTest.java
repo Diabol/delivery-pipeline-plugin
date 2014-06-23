@@ -438,10 +438,6 @@ public class DeliveryPipelineViewTest {
         assertTrue(names.contains("Project3"));
 
         assertEquals(3, view.getItems().size());
-
-
-
-
     }
 
     @Test
@@ -451,7 +447,32 @@ public class DeliveryPipelineViewTest {
         Api api = view.getApi();
         assertTrue(api instanceof PipelineApi);
     }
-    
+
+    @Test
+    @WithoutJenkins
+    public void withoutFolderPrefixShouldRemoveFolderPrefixIfPresentInProjectName() {
+        final String projectName = "Job1";
+        final String projectNameWithFolderPrefix = "Folder1/" + projectName;
+        assertEquals(projectName, DeliveryPipelineView.withoutFolderPrefix(projectNameWithFolderPrefix));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void withoutFolderPrefixShouldReturnProjectNameIfNoFolderPrefixIsPresent() {
+        final String projectNameWithoutFolderPrefix = "Job2";
+        assertEquals(projectNameWithoutFolderPrefix, DeliveryPipelineView.withoutFolderPrefix(projectNameWithoutFolderPrefix));
+    }
+
+    @Test // JENKINS-23532
+    @WithoutJenkins
+    public void triggerExceptionMessageShouldSuggestRemovingFolderPrefixIfPresent() {
+        final String projectName = "Job3";
+        final String projectNameWithFolderPrefix = "Folder2/" + projectName;
+        final String exceptionMessage = DeliveryPipelineView.triggerExceptionMessage(projectNameWithFolderPrefix, "upstream", "1");
+        assertTrue(exceptionMessage.contains(projectNameWithFolderPrefix));
+        assertTrue(exceptionMessage.contains("Did you mean to specify " + projectName + "?"));
+    }
+
     @Ignore("Ignored due to JenkinsRule 404 for the URL /plugin/jquery-ui/js/jquery-ui-1.8.9.custom.min.js")
     @Test
     public void testDoCreateItem() throws Exception {

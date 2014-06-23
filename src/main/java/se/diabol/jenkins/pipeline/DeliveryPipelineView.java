@@ -270,12 +270,22 @@ public class DeliveryPipelineView extends View {
                 throw new TriggerException(message);
             }
         } catch (TriggerException e) {
-            LOG.log(Level.WARNING, "Could not trigger manual build " + projectName + " for upstream " +
-                    upstreamName + " id: " + buildId, e);
+            LOG.log(Level.WARNING, triggerExceptionMessage(projectName, upstreamName, buildId), e);
             throw e;
         }
     }
 
+    protected static String triggerExceptionMessage(final String projectName, final String upstreamName, final String buildId) {
+        String message = "Could not trigger manual build " + projectName + " for upstream " + upstreamName + " id: " + buildId;
+        if (projectName.contains("/")) {
+            message += ". Did you mean to specify " + withoutFolderPrefix(projectName) + "?";
+        }
+        return message;
+    }
+
+    protected static String withoutFolderPrefix(final String projectName) {
+        return projectName.substring(projectName.indexOf("/") + 1);
+    }
 
     @Exported
     public List<Component> getPipelines() {
