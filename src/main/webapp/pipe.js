@@ -302,16 +302,27 @@ function formatDuration(millis) {
 function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild) {
     Q("#manual-" + taskId).hide();
     var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild};
+
+    var before;
+    if (crumb.value != "") {
+        console.info("Crumb found and will be added to request header");
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info("Crumb not needed");
+        before = function(xhr){}
+    }
+
     Q.ajax({
         url: view.apiBaseUrl + 'api/manualStep',
         type: "POST",
         data: formData,
+        beforeSend: before,
         timeout: 20000,
         success: function (data, textStatus, jqXHR) {
-            console.log("Triggered build!")
+            console.info("Triggered build of " + downstreamProject + " successfully!")
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            window.alert("Could not trigger build!")
+            window.alert("Could not trigger build! error: " + errorThrown + " status: " + textStatus)
         }
     });
 }
