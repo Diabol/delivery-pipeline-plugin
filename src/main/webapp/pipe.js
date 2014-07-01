@@ -304,7 +304,7 @@ function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild
     var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild};
 
     var before;
-    if (crumb.value != "") {
+    if (crumb.value != null && crumb.value != "") {
         console.info("Crumb found and will be added to request header");
         before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
     } else {
