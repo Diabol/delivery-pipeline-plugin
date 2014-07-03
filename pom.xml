@@ -63,6 +63,11 @@
             <name>Gustav Ranby</name>
             <organization>Diabol AB</organization>
         </developer>
+        <developer>
+            <id>tommysdk</id>
+            <name>Tommy Tynja</name>
+            <organization>Diabol AB</organization>
+        </developer>
     </developers>
 
     <repositories>
