@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.*;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -227,7 +228,7 @@ public class DeliveryPipelineView extends View {
     // generate the base url for calls to getApi()
     // support being the default view in Jenkins
     public String getApiBaseUrl() {
-        return Jenkins.getInstance().getRootUrlFromRequest() + getViewUrl();
+        return Util.fixNull(Jenkins.getInstance().getRootUrl()) + getViewUrl();
     }
     
     @Override
