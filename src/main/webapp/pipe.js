@@ -203,7 +203,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                                 cssClass: "relation",
                                 connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
                                 paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
-                                drawEndpoints: false
+                                endpoint: ["Blank"]
                             });
 
 
