@@ -18,3 +18,11 @@ div.stage-task {
     min-height: 36px;
 }
 
+div.pipeline-main {
+    padding: 10px;
+    border-width: 0 1px 1px;
+    border-style: none solid solid;
+    border-color: #BBBBBB;
+
+}
+
