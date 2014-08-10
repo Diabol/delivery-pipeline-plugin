@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import hudson.Util;
+import hudson.matrix.MatrixConfiguration;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -114,9 +115,19 @@ public class Task extends AbstractItem {
     }
 
     public static Task getPrototypeTask(AbstractProject project) {
-        PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
-        String taskName = property != null && !isNullOrEmpty(property.getTaskName())
-                ? property.getTaskName() : project.getDisplayName();
+        String taskName = null;
+        PipelineProperty property = null;
+        if (project instanceof MatrixConfiguration) {
+            MatrixConfiguration configuration = (MatrixConfiguration) project;
+            property = configuration.getParent().getProperty(PipelineProperty.class);
+            taskName = property != null && !isNullOrEmpty(property.getTaskName())
+                    ? property.getTaskName() + " " + project.getName() : project.getDisplayName();
+        } else {
+            property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            taskName = property != null && !isNullOrEmpty(property.getTaskName())
+                    ? property.getTaskName() : project.getDisplayName();
+        }
+
         Status status = project.isDisabled() ? disabled() : idle();
         List<AbstractProject> downstreams = ProjectUtil.getDownstreamProjects(project);
         List<String> downStreamTasks = new ArrayList<String>();
