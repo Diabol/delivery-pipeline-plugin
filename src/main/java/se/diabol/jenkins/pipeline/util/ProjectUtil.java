@@ -24,10 +24,9 @@ import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.*;
-import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
-import hudson.plugins.parameterizedtrigger.SubProjectsAction;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import se.diabol.jenkins.pipeline.RelationshipResolver;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -65,19 +64,9 @@ public final class ProjectUtil {
 
     public static List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?> project) {
         List<AbstractProject> result = new ArrayList<AbstractProject>();
-        result.addAll(getSubProjects(project));
-        result.addAll(project.getDownstreamProjects());
-        return result;
-    }
-
-    protected static List<AbstractProject> getSubProjects(AbstractProject project) {
-        List<AbstractProject> result = new ArrayList<AbstractProject>();
-        for (SubProjectsAction action : Util.filter(project.getActions(), SubProjectsAction.class)) {
-            for (BlockableBuildTriggerConfig config : action.getConfigs()) {
-                for (AbstractProject subProject : config.getProjectList(project.getParent(), null)) {
-                    result.add(subProject);
-                }
-            }
+        List<RelationshipResolver> resolvers= RelationshipResolver.all();
+        for (RelationshipResolver resolver : resolvers) {
+            result.addAll(resolver.getDownstreamProjects(project));
         }
         return result;
     }
