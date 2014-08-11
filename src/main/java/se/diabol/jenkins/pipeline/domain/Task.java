@@ -18,7 +18,6 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import hudson.Util;
-import hudson.matrix.MatrixConfiguration;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -115,11 +114,10 @@ public class Task extends AbstractItem {
     }
 
     public static Task getPrototypeTask(AbstractProject project) {
-        String taskName = null;
-        PipelineProperty property = null;
-        if (project instanceof MatrixConfiguration) {
-            MatrixConfiguration configuration = (MatrixConfiguration) project;
-            property = configuration.getParent().getProperty(PipelineProperty.class);
+        String taskName;
+        PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+        if (property == null && project.getParent() instanceof AbstractProject) {
+            property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
             taskName = property != null && !isNullOrEmpty(property.getTaskName())
                     ? property.getTaskName() + " " + project.getName() : project.getDisplayName();
         } else {
@@ -129,9 +127,9 @@ public class Task extends AbstractItem {
         }
 
         Status status = project.isDisabled() ? disabled() : idle();
-        List<AbstractProject> downstreams = ProjectUtil.getDownstreamProjects(project);
+        List<AbstractProject> downStreams = ProjectUtil.getDownstreamProjects(project);
         List<String> downStreamTasks = new ArrayList<String>();
-        for (AbstractProject downstreamProject : downstreams) {
+        for (AbstractProject downstreamProject : downStreams) {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
         return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
