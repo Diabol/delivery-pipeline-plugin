@@ -18,6 +18,10 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import hudson.Launcher;
+import hudson.matrix.Axis;
+import hudson.matrix.AxisList;
+import hudson.matrix.MatrixConfiguration;
+import hudson.matrix.MatrixProject;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
@@ -26,10 +30,14 @@ import hudson.util.OneShotEvent;
 import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import se.diabol.jenkins.pipeline.PipelineProperty;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -90,6 +98,23 @@ public class TaskTest {
         buildBuilding.signal();
         jenkins.waitUntilNoActivity();
 
+    }
+
+
+    @Test
+    @Bug(22654)
+    public void testTaskNameForMultiConfiguration() throws Exception {
+        MatrixProject project = jenkins.createMatrixProject("Multi");
+        project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));
+        project.addProperty(new PipelineProperty("task", "stage"));
+
+        Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
+
+        for (MatrixConfiguration configuration : configurations) {
+            Task task = Task.getPrototypeTask(configuration);
+            assertEquals("task "  + configuration.getName(), task.getName());
+
+        }
     }
 
 
