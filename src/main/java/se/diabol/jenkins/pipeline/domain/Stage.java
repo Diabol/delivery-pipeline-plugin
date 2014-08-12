@@ -18,10 +18,10 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
-import hudson.matrix.MatrixConfiguration;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
+import hudson.model.Project;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.jgrapht.DirectedGraph;
@@ -147,12 +147,9 @@ public class Stage extends AbstractItem {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject).values()) {
             Task task = Task.getPrototypeTask(project);
-            PipelineProperty property;
-            if (project instanceof MatrixConfiguration) {
-                MatrixConfiguration configuration = (MatrixConfiguration) project;
-                property = configuration.getParent().getProperty(PipelineProperty.class);
-            } else {
-                property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+            if (property == null && project.getParent() instanceof AbstractProject) {
+                property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
             }
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
