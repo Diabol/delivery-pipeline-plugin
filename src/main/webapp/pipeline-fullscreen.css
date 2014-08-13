@@ -34,6 +34,10 @@ div.stage-header {
     border-bottom: solid #808080 1px;
 }
 
+div.stage-task {
+    min-height: 36px;
+}
+
 .stage-name {
     padding: 10px 10px 10px 10px;
 }
