@@ -71,7 +71,7 @@
         plumb.repaintEverything();
         });
 
-        view.apiBaseUrl = '${it.getApiBaseUrl()}';
+        view.viewUrl = '${it.getViewUrl()}';
 
         updatePipelines(pipelineContainers, "pipelineerror", view, fullscreen, ${it.isShowChanges()},
         ${it.updateInterval * 1000});

@@ -17,7 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -133,8 +132,7 @@ public class Task extends AbstractItem {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
         return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
-                Util.fixNull(Jenkins.getInstance().getRootUrl()) + project.getUrl(),
-                ManualStep.resolveManualStep(project), downStreamTasks);
+                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks);
     }
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
@@ -147,9 +145,9 @@ public class Task extends AbstractItem {
             taskLink = this.getLink();
         } else {
             if (taskStatus.isRunning()) {
-                taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl() + "console";
+                taskLink = build.getUrl() + "console";
             } else {
-                taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + build.getUrl();
+                taskLink = build.getUrl();
             }
         }
 
@@ -163,9 +161,9 @@ public class Task extends AbstractItem {
         AbstractBuild currentBuild = BuildUtil.match(taskProject.getBuilds(), versionBuild);
         if (currentBuild != null) {
             Status taskStatus = SimpleStatus.resolveStatus(taskProject, currentBuild, null);
-            String taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl();
+            String taskLink = currentBuild.getUrl();
             if (taskStatus.isRunning()) {
-                taskLink = Util.fixNull(Jenkins.getInstance().getRootUrl()) + currentBuild.getUrl() + "console";
+                taskLink = currentBuild.getUrl() + "console";
             }
             return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.getManualStep(), TestResult.getTestResult(currentBuild));
         } else {

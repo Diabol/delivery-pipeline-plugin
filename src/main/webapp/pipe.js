@@ -1,6 +1,6 @@
 function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout) {
     Q.ajax({
-        url: view.apiBaseUrl + 'api/json',
+        url: rootURL + "/" + view.viewUrl + 'api/json',
         dataType: 'json',
         async: true,
         cache: false,
@@ -151,7 +151,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         html = html + "<div id=\"" + id + "\" class=\"stage-task " + task.status.type +
                             "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
-                            "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
+                            "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + rootURL + "/" + task.link + "\">" + htmlEncode(task.name) + "</a></div>";
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                             html = html + '<div class="task-manual" id="manual-' + id + '" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">';
                             html = html + "</div>"
@@ -313,7 +313,7 @@ function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild
     }
 
     Q.ajax({
-        url: view.apiBaseUrl + 'api/manualStep',
+        url: rootURL + "/" + view.viewUrl + 'api/manualStep',
         type: "POST",
         data: formData,
         beforeSend: before,

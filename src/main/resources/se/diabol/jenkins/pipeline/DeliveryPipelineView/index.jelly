@@ -33,6 +33,7 @@
                     <j:forEach var="pd" items="${h.pageDecorators}">
                         <st:include it="${pd}" page="header.jelly" optional="true" />
                     </j:forEach>
+                    <script>var isRunAsTest=${h.isUnitTest}; var rootURL="${rootURL}"; var resURL="${resURL}";</script>
                 </head>
                 <body>
                 <st:include page="main.jelly"/>
