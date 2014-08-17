@@ -17,11 +17,13 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import hudson.model.Api;
-import hudson.model.FreeStyleProject;
-import hudson.model.TopLevelItem;
+import hudson.model.*;
+import hudson.security.ACL;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.Permission;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -29,9 +31,15 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import static org.junit.Assert.*;
+
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,6 +57,7 @@ import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
+import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
@@ -496,4 +505,71 @@ public class DeliveryPipelineViewTest {
         
         assertTrue(jenkins.jenkins.getJobNames().contains(projectName));
     }
+
+    @Test
+    public void testTriggerManualNoTriggerFound() throws Exception {
+        jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+        DeliveryPipelineView view = new DeliveryPipelineView("View");
+        try {
+            view.triggerManual("B", "A", "#1");
+            fail();
+        } catch (TriggerException e) {
+            //Should throw this
+        } catch (AuthenticationException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testTriggerManualNoBuildFound() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        DeliveryPipelineView view = new DeliveryPipelineView("View");
+        jenkins.getInstance().addView(view);
+        try {
+            view.triggerManual("B", "A", "#1");
+            fail();
+        } catch (TriggerException e) {
+            //Should throw this
+        } catch (AuthenticationException e) {
+            fail();
+        }
+    }
+
+
+    @Test
+    public void testTriggerManualNotAuthorized() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        DeliveryPipelineView view = new DeliveryPipelineView("View");
+        jenkins.getInstance().addView(view);
+
+        jenkins.getInstance().setSecurityRealm(jenkins.createDummySecurityRealm());
+        GlobalMatrixAuthorizationStrategy gmas = new GlobalMatrixAuthorizationStrategy();
+        //gmas.add(Jenkins.READ, "devel");
+        gmas.add(Permission.READ, "devel");
+        /*for (Permission p : Item.PERMISSIONS.getPermissions()) {
+                    gmas.add(p, "devel");
+                }*/
+        jenkins.getInstance().setAuthorizationStrategy(gmas);
+
+        SecurityContext oldContext = ACL.impersonate(User.get("devel").impersonate());
+        try {
+            view.triggerManual("B", "A", "#1");
+            fail();
+        } catch (TriggerException e) {
+            fail();
+        } catch (AuthenticationException e) {
+            //Should throw this
+        }
+        SecurityContextHolder.setContext(oldContext);
+    }
+
 }

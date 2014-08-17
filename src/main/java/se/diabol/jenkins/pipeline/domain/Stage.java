@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
-import hudson.model.Project;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.jgrapht.DirectedGraph;
