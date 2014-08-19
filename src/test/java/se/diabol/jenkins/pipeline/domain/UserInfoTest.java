@@ -58,8 +58,8 @@ public class UserInfoTest {
         jenkins.waitUntilNoActivity();
         Set<UserInfo> contributors = UserInfo.getContributors(project.getLastBuild());
         assertEquals(2, contributors.size());
-        assertTrue(contributors.contains(new UserInfo("test-user1", null, null)));
-        assertTrue(contributors.contains(new UserInfo("test-user2", null, null)));
+        assertTrue(contributors.contains(new UserInfo("test-user1", null)));
+        assertTrue(contributors.contains(new UserInfo("test-user2", null)));
     }
 
     @Test
@@ -90,23 +90,22 @@ public class UserInfoTest {
         UserInfo user = contributors.iterator().next();
         assertEquals("test-user", user.getName());
         assertNotNull(user.getUrl());
-        assertNull(user.getAvatarUrl());
 
-        assertTrue(contributors.contains(new UserInfo("test-user", null, null)));
+        assertTrue(contributors.contains(new UserInfo("test-user", null)));
     }
 
     @Test
     @WithoutJenkins
     public void testEqualsHashCode() {
-        UserInfo userInfo1 = new UserInfo("name", null, null);
+        UserInfo userInfo1 = new UserInfo("name", null);
         assertTrue(userInfo1.equals(userInfo1));
-        UserInfo userInfo2 = new UserInfo("name", "http://nowhere.com", null);
+        UserInfo userInfo2 = new UserInfo("name", "http://nowhere.com");
         assertTrue(userInfo2.equals(userInfo1));
 
         assertFalse(userInfo2.equals(null));
         assertFalse(userInfo2.equals("name"));
 
-        UserInfo userInfo3 = new UserInfo("name1", "http://nowhere.com", null);
+        UserInfo userInfo3 = new UserInfo("name1", "http://nowhere.com");
         assertEquals(userInfo1.hashCode(), userInfo2.hashCode());
         assertNotEquals(userInfo1.hashCode(), userInfo3.hashCode());
     }

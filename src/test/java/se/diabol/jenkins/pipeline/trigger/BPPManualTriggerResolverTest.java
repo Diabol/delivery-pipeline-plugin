@@ -23,8 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
-import org.jvnet.hudson.test.WithoutJenkins;
-import se.diabol.jenkins.pipeline.test.TestUtil;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

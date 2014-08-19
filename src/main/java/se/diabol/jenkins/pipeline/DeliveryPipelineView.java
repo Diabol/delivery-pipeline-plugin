@@ -246,12 +246,6 @@ public class DeliveryPipelineView extends View {
     }
 
     @JavaScriptMethod
-    public void startJob(String job) {
-        AbstractProject project = ProjectUtil.getProject(job, getOwnerItemGroup());
-        project.scheduleBuild(0, new Cause.UserIdCause());
-    }
-
-    @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);

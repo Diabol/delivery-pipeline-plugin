@@ -21,6 +21,9 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTr
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.*;
+import hudson.plugins.parameterizedtrigger.AbstractBuildParameterFactory;
+import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.ResultCondition;
 import hudson.security.ACL;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.Permission;
@@ -32,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import static org.junit.Assert.*;
@@ -52,10 +54,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.diabol.jenkins.pipeline.domain.Component;
-import se.diabol.jenkins.pipeline.domain.Pipeline;
-import se.diabol.jenkins.pipeline.domain.Stage;
-import se.diabol.jenkins.pipeline.domain.Task;
+import se.diabol.jenkins.pipeline.domain.*;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
@@ -553,11 +552,7 @@ public class DeliveryPipelineViewTest {
 
         jenkins.getInstance().setSecurityRealm(jenkins.createDummySecurityRealm());
         GlobalMatrixAuthorizationStrategy gmas = new GlobalMatrixAuthorizationStrategy();
-        //gmas.add(Jenkins.READ, "devel");
         gmas.add(Permission.READ, "devel");
-        /*for (Permission p : Item.PERMISSIONS.getPermissions()) {
-                    gmas.add(p, "devel");
-                }*/
         jenkins.getInstance().setAuthorizationStrategy(gmas);
 
         SecurityContext oldContext = ACL.impersonate(User.get("devel").impersonate());
@@ -571,5 +566,128 @@ public class DeliveryPipelineViewTest {
         }
         SecurityContextHolder.setContext(oldContext);
     }
+
+    @Test
+    @Bug(22658)
+    public void testRecursiveStages() throws Exception {
+
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        a.addProperty(new PipelineProperty("A", "A"));
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        b.addProperty(new PipelineProperty("B", "B"));
+        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        c.addProperty(new PipelineProperty("C", "C"));
+        FreeStyleProject d = jenkins.createFreeStyleProject("D");
+        d.addProperty(new PipelineProperty("D", "B"));
+
+        a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        c.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp", "A"));
+        view.setComponentSpecs(componentSpecs);
+
+        jenkins.getInstance().addView(view);
+
+        List<Component> components = view.getPipelines();
+        assertEquals(0, components.size());
+        assertNotNull(view.getError());
+        assertTrue(view.getError().startsWith("Circular dependencies between stages: "));
+        assertTrue(view.getError().contains("B"));
+        assertTrue(view.getError().contains("C"));
+
+    }
+
+    @Test
+    public void testInvalidSorter() throws Exception {
+        jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B"));
+        view.setComponentSpecs(componentSpecs);
+        view.setShowAggregatedPipeline(true);
+        view.setSorting("this will not be found");
+        jenkins.getInstance().addView(view);
+
+        List<Component> components = view.getPipelines();
+        assertEquals(2, components.size());
+        assertEquals("Comp2", components.get(0).getName());
+        assertEquals("Comp1", components.get(1).getName());
+
+        view.setSorting(null);
+
+        components = view.getPipelines();
+        assertEquals(2, components.size());
+        assertEquals("Comp2", components.get(0).getName());
+        assertEquals("Comp1", components.get(1).getName());
+
+
+    }
+
+    @Test
+    public void testNoneSorter() throws Exception {
+        jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B"));
+        view.setComponentSpecs(componentSpecs);
+        view.setShowAggregatedPipeline(true);
+        view.setSorting("none");
+        jenkins.getInstance().addView(view);
+
+        List<Component> components = view.getPipelines();
+        assertEquals(2, components.size());
+        assertEquals("Comp2", components.get(0).getName());
+        assertEquals("Comp1", components.get(1).getName());
+        assertEquals("A", components.get(0).getFirstJob());
+        assertEquals("B", components.get(1).getFirstJob());
+    }
+
+    /**
+     * This testcase just validates the bug in BPP since BPP don´t handle folders very well
+     */
+    @Test
+    @Bug(23532)
+    public void testFolderInManualTrigger() throws Exception {
+        MockFolder folder = jenkins.createFolder("folder");
+        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "A");
+        folder.createProject(FreeStyleProject.class, "B");
+
+        a.getPublishersList().add(new BuildPipelineTrigger("folder/B", null));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline pipeline = Pipeline.extractPipeline("Pipe", a);
+        assertNotNull(pipeline);
+        assertEquals(2, pipeline.getStages().size());
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipe");
+
+        jenkins.getInstance().addView(view);
+
+        jenkins.buildAndAssertSuccess(a);
+        try {
+            view.triggerManual("Folder/B", "Folder/A", "1");
+            fail();
+        } catch (TriggerException e) {
+            //Should happen
+        } catch (AuthenticationException e) {
+            fail();
+        }
+
+    }
+
+
+
 
 }

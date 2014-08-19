@@ -17,11 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import hudson.ExtensionList;
 import hudson.model.AbstractBuild;
 import hudson.model.User;
 import hudson.scm.ChangeLogSet;
-import hudson.tasks.UserAvatarResolver;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.HashSet;
@@ -29,21 +27,11 @@ import java.util.Set;
 
 public class UserInfo extends AbstractItem {
 
-    private static final int AVATAR_SIZE = 16;
-
-
-    private final String avatarUrl;
     private final String url;
 
-    public UserInfo(String name, String url, String avatarUrl) {
+    public UserInfo(String name, String url) {
         super(name);
-        this.avatarUrl = avatarUrl;
         this.url = url;
-    }
-
-    @Exported
-    public String getAvatarUrl() {
-        return avatarUrl;
     }
 
     @Exported
@@ -52,18 +40,7 @@ public class UserInfo extends AbstractItem {
     }
 
     public static UserInfo getUser(User user) {
-        return new UserInfo(user.getDisplayName(), user.getUrl(), getAvatarUrl(user));
-    }
-
-    private static String getAvatarUrl(User user) {
-        ExtensionList<UserAvatarResolver> resolvers = UserAvatarResolver.all();
-        for (UserAvatarResolver resolver : resolvers) {
-            String avatarUrl = resolver.findAvatarFor(user, AVATAR_SIZE, AVATAR_SIZE);
-            if (avatarUrl != null) {
-                return avatarUrl;
-            }
-        }
-        return null;
+        return new UserInfo(user.getDisplayName(), user.getUrl());
     }
 
     public static Set<UserInfo> getContributors(AbstractBuild<?, ?> build) {
