@@ -22,6 +22,7 @@ import hudson.model.FreeStyleProject;
 import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
@@ -48,6 +49,26 @@ public class BPPManualTriggerTest {
         assertNotNull(a.getLastBuild());
 
         trigger.triggerManual(b, a, "1", folder);
+
+        jenkins.waitUntilNoActivity();
+        assertNotNull(b.getLastBuild());
+
+    }
+
+    @Test
+    @Bug(24392)
+    public void triggerManualWithFoldersViewInRoot() throws Exception {
+        BPPManualTrigger trigger = new BPPManualTrigger();
+        MockFolder folder = jenkins.createFolder("SubFolder");
+        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "JobA");
+        FreeStyleProject b = folder.createProject(FreeStyleProject.class, "JobB");
+        a.getPublishersList().add(new BuildPipelineTrigger("JobB", null));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+
+        jenkins.buildAndAssertSuccess(a);
+        assertNotNull(a.getLastBuild());
+        trigger.triggerManual(b, a, "1", jenkins.getInstance());
 
         jenkins.waitUntilNoActivity();
         assertNotNull(b.getLastBuild());
