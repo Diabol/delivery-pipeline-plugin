@@ -1,24 +1,23 @@
 # Mac OS X files
-
 .DS_Store
 
 # Intellij files
-
 *.iml
 .idea/*
-target/*
-libsrc/*
 classes
 
-# Jenkins workplace files
+# Maven
+target/*
+pom.xml.releaseBackup
+release.properties
 
+# Jenkins workplace files
 work*
-README.html
 
 # Gradle
 .gradle
-
 build
+libsrc/*
 
 # Eclipse
 /.classpath
