@@ -289,7 +289,11 @@ public class DeliveryPipelineView extends View {
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
                     AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-                    components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
+                    if (firstJob != null) {
+                        components.add(getComponent(componentSpec.getName(), firstJob, showAggregatedPipeline));
+                    } else {
+                        throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
+                    }
                 }
             }
             if (regexpFirstJobs != null) {
