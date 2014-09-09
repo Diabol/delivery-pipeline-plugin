@@ -1,11 +1,8 @@
 language: java
 jdk:
 - oraclejdk7
-cache:
-- $HOME/.m2
 notifications:
-  hipchat:
-    rooms:
-      secure: oSbQ5xr/I7a7Gun9GpqPWC1bO1ZP6zxObnbeE9CgsnzamGeqJiXJSO0TaV7NgKbTsfFHjRqZc9a5CKpZGb2qrfmUUu9WbhNosXQlliBF/LRkIig3UWcrMqgkk1aQC6SnadJWskhFdxbIS8J4LJ36TcDwXtkvdyUsq6gIkYMcu0k=
+  slack:
+    secure: UcdDkvMAJR0bPKgGGItUP+VUNesM7EnUG4KgTm7MG/8Y+VqO9HLLrtZDPhbwIeFn9Ji0ZfkOCQUDdoh1ZhdwIl2fQLpQ9YbdcL/bPkTvYtvMJ1LhxZiEKeA6Kkg9HCWxYAp4+9+nnr8S8VZGauyd+A2OjQ+5kH6bpBoZPT90hgk=
 after_success:
 - mvn jacoco:report coveralls:jacoco
