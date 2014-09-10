@@ -229,6 +229,24 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
+    public void testGetItemsGetPipelinesWhenNoProjectFound() throws Exception {
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setComponentSpecs(specs);
+        jenkins.getInstance().addView(view);
+        Collection<TopLevelItem> items = view.getItems();
+        assertNotNull(items);
+        assertEquals(0, items.size());
+
+        List<Component> components = view.getPipelines();
+        assertNotNull(components);
+        assertTrue(components.isEmpty());
+        assertNotNull(view.getError());
+
+    }
+
+    @Test
     public void testGetItemsAndContainsWithFolders() throws Exception {
         MockFolder folder = jenkins.createFolder("folder");
         FreeStyleProject build = folder.createProject(FreeStyleProject.class, "build");

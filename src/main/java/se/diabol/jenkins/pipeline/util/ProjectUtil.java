@@ -55,6 +55,9 @@ public final class ProjectUtil {
 
     public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first) {
         Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
+        if (first == null) {
+            return projects;
+        }
         projects.put(first.getName(), first);
         for (AbstractProject project : getDownstreamProjects(first)) {
             projects.putAll(getAllDownstreamProjects(project));
