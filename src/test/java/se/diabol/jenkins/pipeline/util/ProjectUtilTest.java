@@ -17,9 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import hudson.EnvVars;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -27,6 +29,7 @@ import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -88,6 +91,25 @@ public class ProjectUtilTest {
         assertNotNull(ProjectUtil.getProject("Folder2/project1"));
         assertNotNull(ProjectUtil.getProject("project2"));
         assertNotNull(ProjectUtil.getProject("Folder1/SubFolder1/project3"));
+
+    }
+
+    @Test
+    public void testGetProjectList() throws Exception {
+        jenkins.createFreeStyleProject("p1");
+        jenkins.createFreeStyleProject("p2");
+
+        List<AbstractProject> projects = ProjectUtil.getProjectList("p1,p2", jenkins.getInstance(), null);
+        assertEquals(2, projects.size());
+
+        projects = ProjectUtil.getProjectList("p1,p2,p3", jenkins.getInstance(), null);
+        assertEquals(2, projects.size());
+
+        projects = ProjectUtil.getProjectList("p1,p2,p3", jenkins.getInstance(), new EnvVars());
+        assertEquals(2, projects.size());
+
+        projects = ProjectUtil.getProjectList(",,", jenkins.getInstance(), new EnvVars());
+        assertEquals(0, projects.size());
 
     }
 

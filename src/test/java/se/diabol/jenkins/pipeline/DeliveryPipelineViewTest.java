@@ -499,7 +499,6 @@ public class DeliveryPipelineViewTest {
         assertTrue(exceptionMessage.contains("Did you mean to specify " + projectName + "?"));
     }
 
-    @Ignore("Ignored due to JenkinsRule 404 for the URL /plugin/jquery-ui/js/jquery-ui-1.8.9.custom.min.js")
     @Test
     public void testDoCreateItem() throws Exception {
         testDoCreateItem("testDoCreateItem", "");

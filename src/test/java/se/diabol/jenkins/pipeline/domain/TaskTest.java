@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
 import hudson.matrix.Axis;
 import hudson.matrix.AxisList;
@@ -67,6 +68,18 @@ public class TaskTest {
         assertNotNull(aggregatedTask);
         assertEquals("job/test/1/", aggregatedTask.getLink());
 
+
+    }
+
+    @Test
+    public void testManualTask() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Task task = Task.getPrototypeTask(b);
+        assertTrue(task.isManual());
 
     }
 
