@@ -19,14 +19,23 @@ package se.diabol.jenkins.pipeline.domain;
 
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FakeChangeLogSCM;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 import se.diabol.jenkins.pipeline.test.MeanFakeRepositoryBrowserSCM;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
+import java.util.logging.StreamHandler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -36,6 +45,24 @@ public class ChangeTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
+
+
+    private static Logger log = Logger.getLogger(Change.class.getName()); // matches the logger in the affected class
+    private static OutputStream logCapturingStream;
+    private static StreamHandler customLogHandler;
+
+    @Before
+    public void attachLogCapturer() {
+      logCapturingStream = new ByteArrayOutputStream();
+      Handler[] handlers = log.getParent().getHandlers();
+      customLogHandler = new StreamHandler(logCapturingStream, handlers[0].getFormatter());
+      log.addHandler(customLogHandler);
+    }
+
+    public String getTestCapturedLog() throws IOException {
+      customLogHandler.flush();
+      return logCapturingStream.toString();
+    }
 
     @Test
     public void testGetChangesNoBrowser() throws Exception {
@@ -77,7 +104,8 @@ public class ChangeTest {
 
     @Test
     public void testGetChangesWithBrowserThrowIOException() throws Exception {
-        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        MockFolder folder = jenkins.createFolder("Folder");
+        FreeStyleProject project = folder.createProject(FreeStyleProject.class, "build");
         MeanFakeRepositoryBrowserSCM scm = new MeanFakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
@@ -92,6 +120,9 @@ public class ChangeTest {
         assertEquals("test-user", change.getAuthor().getName());
         assertNull(change.getCommitId());
         assertNull(change.getChangeLink());
+
+        String capturedLog = getTestCapturedLog();
+        Assert.assertTrue(capturedLog.contains("Could not get changeset link for: Folder » build #1"));
     }
 
 
