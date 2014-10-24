@@ -38,6 +38,11 @@ div.stage-task {
     min-height: 36px;
 }
 
+div.task-progress {
+    min-height: 36px;
+}
+
+
 .stage-name {
     padding: 10px 10px 10px 10px;
 }
