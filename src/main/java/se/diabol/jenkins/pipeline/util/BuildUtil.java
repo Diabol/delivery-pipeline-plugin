@@ -80,12 +80,27 @@ public final class BuildUtil {
     public static AbstractBuild match(RunList<? extends AbstractBuild> runList, AbstractBuild firstBuild) {
         if (firstBuild != null) {
             for (AbstractBuild currentBuild : runList) {
-                if (firstBuild.equals(BuildUtil.getFirstUpstreamBuild(currentBuild, firstBuild.getProject()))) {
+                AbstractBuild build = BuildUtil.getFirstUpstreamBuild(currentBuild, firstBuild.getProject());
+                if (equals(build, firstBuild)) {
                     return currentBuild;
                 }
             }
         }
         return null;
+    }
+
+
+    public static boolean equals(AbstractBuild b1, AbstractBuild b2) {
+        if (b1 != null && b2 != null) {
+            if (b1.getProject().getFullName().equals(b2.getProject().getFullName()) && b1.getNumber() == b2.getNumber()) {
+                return true;
+            } else {
+               return false;
+            }
+        } else {
+            return false;
+        }
+
     }
 
 

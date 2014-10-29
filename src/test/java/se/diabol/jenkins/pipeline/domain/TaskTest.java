@@ -32,9 +32,13 @@ import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
+import se.diabol.jenkins.pipeline.domain.status.Status;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -128,6 +132,30 @@ public class TaskTest {
             assertEquals("task "  + configuration.getName(), task.getName());
 
         }
+    }
+
+
+    @Test
+    public void testFailedThenQueued() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        jenkins.setQuietPeriod(0);
+        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        b.getBuildersList().add(new FailureBuilder());
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        Task task = Task.getPrototypeTask(b);
+        assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isIdle());
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", jenkins.getInstance());
+        view.triggerManual("b", "a", "1");
+        jenkins.waitUntilNoActivity();
+        assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isFailed());
+        jenkins.getInstance().setNumExecutors(0);
+        jenkins.getInstance().reload();
+        view.triggerManual("b", "a", "1");
+
+        assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isQueued());
+
     }
 
 

@@ -137,7 +137,10 @@ public class Task extends AbstractItem {
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
         AbstractProject<?, ?> project = getProject(this, context);
-        AbstractBuild build = BuildUtil.match(project.getBuilds(), firstBuild);
+        AbstractBuild build = null;
+        if (!ProjectUtil.isQueued(project, firstBuild)) {
+            build = BuildUtil.match(project.getBuilds(), firstBuild);
+        }
 
         Status taskStatus = SimpleStatus.resolveStatus(project, build, firstBuild);
         String taskLink;
