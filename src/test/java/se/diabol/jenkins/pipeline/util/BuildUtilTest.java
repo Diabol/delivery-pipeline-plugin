@@ -25,6 +25,7 @@ import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
@@ -84,6 +85,23 @@ public class BuildUtilTest {
         when(build.getActions(CauseAction.class)).thenReturn(causeActions);
 
         assertNull(BuildUtil.getUpstreamBuild(build));
+
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        MockFolder folder1 = jenkins.createFolder("Folder1");
+        MockFolder folder2 = jenkins.createFolder("Folder2");
+        FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "a");
+        FreeStyleProject job2 = folder2.createProject(FreeStyleProject.class, "a");
+        AbstractBuild build1 = jenkins.buildAndAssertSuccess(job1);
+        AbstractBuild build2 = jenkins.buildAndAssertSuccess(job2);
+        assertFalse(BuildUtil.equals(build1, build2));
+        assertTrue(BuildUtil.equals(build1, build1));
+        AbstractBuild build3 = jenkins.buildAndAssertSuccess(job1);
+        assertFalse(BuildUtil.equals(build1, build3));
+        assertFalse(BuildUtil.equals(null, null));
+
 
     }
 
