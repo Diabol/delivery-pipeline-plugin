@@ -80,6 +80,7 @@ public class PipelinePropertyTest {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn("");
         when(request.getParameter("stageName")).thenReturn("");
+        when(request.getParameter("enabled")).thenReturn("on");
         assertNull(d.newInstance(request, null));
     }
 
@@ -90,6 +91,7 @@ public class PipelinePropertyTest {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn(null);
         when(request.getParameter("stageName")).thenReturn(null);
+        when(request.getParameter("enabled")).thenReturn("on");
         assertNull(d.newInstance(request, null));
     }
 
@@ -100,12 +102,21 @@ public class PipelinePropertyTest {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn(null);
         when(request.getParameter("stageName")).thenReturn("Stage");
+        when(request.getParameter("enabled")).thenReturn("on");
         PipelineProperty p = d.newInstance(request, null);
         assertNotNull(p);
         assertNull(p.getTaskName());
         assertEquals("Stage", p.getStageName());
     }
 
+    @Test
+    @WithoutJenkins
+    public void testNewInstanceTaskNullDisabled() throws Exception {
+        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        when(request.getParameter("enabled")).thenReturn(null);
+        assertNull(d.newInstance(request, null));
+    }
 
     @Test
     @WithoutJenkins
@@ -114,6 +125,7 @@ public class PipelinePropertyTest {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn("Task");
         when(request.getParameter("stageName")).thenReturn("Stage");
+        when(request.getParameter("enabled")).thenReturn("on");
         PipelineProperty p = d.newInstance(request, null);
         assertNotNull(p);
         assertEquals("Task", p.getTaskName());
@@ -138,8 +150,6 @@ public class PipelinePropertyTest {
 
         AutoCompletionCandidates c3 = d.doAutoCompleteStageName(null);
         assertEquals(c3.getValues().size(), 0);
-
-
     }
 
     @Test

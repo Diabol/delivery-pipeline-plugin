@@ -22,6 +22,8 @@ import hudson.model.*;
 import hudson.util.FormValidation;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
@@ -38,6 +40,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
     public PipelineProperty() {
     }
 
+    @DataBoundConstructor
     public PipelineProperty(String taskName, String stageName) {
         setStageName(stageName);
         setTaskName(taskName);
@@ -77,6 +80,8 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
     @Extension
     public static final class DescriptorImpl extends JobPropertyDescriptor {
+    	
+    	@Override
         public String getDisplayName() {
             return "Pipeline description";
         }
@@ -118,25 +123,26 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
                 return FormValidation.error("Value needs to be empty or include characters and/or numbers");
             }
             return FormValidation.ok();
-
         }
 
-
-        @Override
-        public PipelineProperty newInstance(StaplerRequest sr, JSONObject formData) throws FormException {
-            String task = sr.getParameter("taskName");
-            String stage = sr.getParameter("stageName");
-            if ("".equals(task)) {
-                task = null;
-            }
-            if ("".equals(stage)) {
-                stage = null;
-            }
-            if (task == null && stage == null) {
-                return null;
-            }
-            return new PipelineProperty(task,
-                    stage);
-        }
+		@Override
+		public PipelineProperty newInstance(StaplerRequest sr, JSONObject formData) throws FormException {
+			String task = sr.getParameter("taskName");
+			String stage = sr.getParameter("stageName");
+			boolean configEnabled = sr.getParameter("enabled") != null;
+			if (!configEnabled) {
+				return null;
+			}
+			if ("".equals(task)) {
+				task = null;
+			}
+			if ("".equals(stage)) {
+				stage = null;
+			}
+			if (task == null && stage == null) {
+				return null;
+			}
+			return new PipelineProperty(task, stage);
+		}
     }
 }
