@@ -254,7 +254,7 @@ public class PipelineTest {
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null, false);
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
         view.triggerManualBuild(1, "prod", "test");
         jenkins.waitUntilNoActivity();
         aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
@@ -281,7 +281,7 @@ public class PipelineTest {
 
         assertNotNull(build.getLastBuild());
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build"), "1", false, null, false);
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build"), "1", false, null);
         view.triggerManualBuild(1, "ci1", "build");
 
         jenkins.waitUntilNoActivity();

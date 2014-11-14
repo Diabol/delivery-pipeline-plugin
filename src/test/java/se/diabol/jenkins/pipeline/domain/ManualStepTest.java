@@ -116,7 +116,7 @@ public class ManualStepTest {
         MockFolder folder = jenkins.createFolder("folder");
         FreeStyleProject upstream = folder.createProject (FreeStyleProject.class, "upstream");
         FreeStyleProject downstream = folder.createProject (FreeStyleProject.class, "downstream");
-        upstream.getPublishersList().add(new BuildPipelineTrigger("downstream", null));
+        upstream.getPublishersList().add(new BuildPipelineTrigger("folder/downstream", null));
         jenkins.getInstance().rebuildDependencyGraph();
 
 
