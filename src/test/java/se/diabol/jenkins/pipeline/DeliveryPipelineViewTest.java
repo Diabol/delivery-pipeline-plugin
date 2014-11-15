@@ -670,41 +670,4 @@ public class DeliveryPipelineViewTest {
         assertEquals("B", components.get(1).getFirstJob());
     }
 
-    /**
-     * This testcase just validates the bug in BPP since BPP don´t handle folders very well
-     */
-    @Test
-    @Bug(23532)
-    public void testFolderInManualTrigger() throws Exception {
-        MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "A");
-        folder.createProject(FreeStyleProject.class, "B");
-
-        a.getPublishersList().add(new BuildPipelineTrigger("folder/B", null));
-
-        jenkins.getInstance().rebuildDependencyGraph();
-
-        Pipeline pipeline = Pipeline.extractPipeline("Pipe", a);
-        assertNotNull(pipeline);
-        assertEquals(2, pipeline.getStages().size());
-
-        DeliveryPipelineView view = new DeliveryPipelineView("Pipe");
-
-        jenkins.getInstance().addView(view);
-
-        jenkins.buildAndAssertSuccess(a);
-        try {
-            view.triggerManual("Folder/B", "Folder/A", "1");
-            fail();
-        } catch (TriggerException e) {
-            //Should happen
-        } catch (AuthenticationException e) {
-            fail();
-        }
-
-    }
-
-
-
-
 }

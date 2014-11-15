@@ -41,7 +41,7 @@ public class BPPManualTriggerTest {
         FreeStyleProject a = folder.createProject(FreeStyleProject.class, "a");
         FreeStyleProject b = folder.createProject(FreeStyleProject.class, "b");
 
-        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        a.getPublishersList().add(new BuildPipelineTrigger("folder/b", null));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
@@ -62,7 +62,7 @@ public class BPPManualTriggerTest {
         MockFolder folder = jenkins.createFolder("SubFolder");
         FreeStyleProject a = folder.createProject(FreeStyleProject.class, "JobA");
         FreeStyleProject b = folder.createProject(FreeStyleProject.class, "JobB");
-        a.getPublishersList().add(new BuildPipelineTrigger("JobB", null));
+        a.getPublishersList().add(new BuildPipelineTrigger("SubFolder/JobB", null));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 

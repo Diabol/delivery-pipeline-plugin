@@ -62,7 +62,7 @@ public class BPPManualTriggerResolverTest {
         MockFolder folder = jenkins.createFolder("folder");
         FreeStyleProject a = folder.createProject(FreeStyleProject.class, "a");
         FreeStyleProject b = folder.createProject(FreeStyleProject.class, "b");
-        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        a.getPublishersList().add(new BuildPipelineTrigger("folder/b", null));
         jenkins.getInstance().rebuildDependencyGraph();
 
         assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));

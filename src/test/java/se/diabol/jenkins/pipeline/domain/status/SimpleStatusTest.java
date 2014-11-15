@@ -228,7 +228,7 @@ public class SimpleStatusTest {
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.IDLE, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("project1"), "0", false, "", false);
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("project1"), "0", false, "");
         project1.setQuietPeriod(3);
         view.triggerManualBuild(1, "project2", "project1");
         pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
