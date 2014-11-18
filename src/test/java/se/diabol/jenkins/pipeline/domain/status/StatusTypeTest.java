@@ -35,13 +35,14 @@ public class StatusTypeTest {
         assertEquals(StatusType.RUNNING, StatusType.valueOf("RUNNING"));
         assertEquals(StatusType.SUCCESS, StatusType.valueOf("SUCCESS"));
         assertEquals(StatusType.UNSTABLE, StatusType.valueOf("UNSTABLE"));
+        assertEquals(StatusType.NOT_BUILT, StatusType.valueOf("NOT_BUILT"));
     }
 
     @Test
     public void testValue() {
         StatusType[] values = StatusType.values();
         assertNotNull(values);
-        assertEquals(8, values.length);
+        assertEquals(9, values.length);
     }
 
 }

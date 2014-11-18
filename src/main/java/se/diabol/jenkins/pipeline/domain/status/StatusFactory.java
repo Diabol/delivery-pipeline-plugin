@@ -49,6 +49,9 @@ public final class StatusFactory {
     public static Status cancelled(long lastActivity, long duration) {
         return new SimpleStatus(StatusType.CANCELLED, lastActivity, duration);
     }
+    public static Status notBuilt(long lastActivity, long duration) {
+        return new SimpleStatus(StatusType.NOT_BUILT, lastActivity, duration);
+    }
 
     public static Status disabled() {
         return new SimpleStatus(StatusType.DISABLED, -1, -1);

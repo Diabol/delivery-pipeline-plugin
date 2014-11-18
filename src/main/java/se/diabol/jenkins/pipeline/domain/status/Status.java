@@ -40,6 +40,8 @@ public interface Status {
 
     boolean isDisabled();
 
+    boolean isNotBuilt();
+
     long getLastActivity();
 
     String getTimestamp();

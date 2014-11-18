@@ -103,6 +103,12 @@ public class SimpleStatus implements Status {
     }
 
     @Override
+    public boolean isNotBuilt() {
+        return NOT_BUILT.equals(type);
+    }
+
+
+    @Override
     public boolean isDisabled() {
         return DISABLED.equals(type);
     }
@@ -140,9 +146,11 @@ public class SimpleStatus implements Status {
         }
         if (Result.UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
-        } else {
-            throw new IllegalStateException("Result " + result + " not recognized.");
         }
+        if (Result.NOT_BUILT.equals(result)) {
+            return StatusFactory.notBuilt(build.getTimeInMillis(), build.getDuration());
+        }
+        throw new IllegalStateException("Result " + result + " not recognized.");
     }
 
 
