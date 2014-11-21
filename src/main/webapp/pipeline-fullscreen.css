@@ -107,6 +107,12 @@ div.task-progress {
     background-color: inherit;
 }
 
+.NOT_BUILT {
+    border-left: 6px solid #8b8989;
+    font-weight: bold;
+    background-color: inherit;
+}
+
 .DISABLED {
     border-left: 6px solid transparent;
     color: #a9a9a9;

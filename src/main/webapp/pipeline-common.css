@@ -219,6 +219,13 @@ div.task-progress-running {
     font-weight: bold;
 }
 
+.NOT_BUILT {
+    border-left: 6px solid #8b8989;
+    background-color: #d3d3d3;
+    font-weight: bold;
+}
+
+
 .DISABLED {
     border-left: 6px solid transparent;
     color: #a9a9a9;
