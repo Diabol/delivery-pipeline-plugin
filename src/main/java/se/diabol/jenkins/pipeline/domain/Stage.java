@@ -18,6 +18,8 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
+import hudson.EnvVars;
+import hudson.model.*;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -29,6 +31,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.PipelineVersionContributor;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
@@ -171,13 +174,27 @@ public class Stage extends AbstractItem {
         //The version build for this stage is the highest first task build
         AbstractBuild versionBuild = getHighestBuild(getTasks(), firstProject, context);
 
-        String stageVersion = null;
-        if (versionBuild != null) {
-            stageVersion = versionBuild.getDisplayName();
-        }
         for (Task task : getTasks()) {
             stageTasks.add(task.getAggregatedTask(versionBuild, context));
         }
+
+        String stageVersion = null;
+        if (versionBuild != null) {
+            AbstractProject project = ProjectUtil.getProject(stageTasks.get(0).getId(), context);
+            List<ParametersAction> parameters = project.getLastBuild().getActions(ParametersAction.class);
+            
+            for (ParametersAction parameter : parameters) {
+                ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
+                if (value instanceof StringParameterValue) {
+                    stageVersion = ((StringParameterValue) value).value;
+                }
+            }
+
+            if (stageVersion == null) {
+                stageVersion = versionBuild.getDisplayName();
+            }
+        }
+
         return new Stage(this, stageTasks, stageVersion, id);
     }
 

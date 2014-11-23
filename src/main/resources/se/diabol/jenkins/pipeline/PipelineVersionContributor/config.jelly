@@ -9,4 +9,8 @@
                  field="updateDisplayName">
             <f:checkbox/>
         </f:entry>
+        <f:entry title="Override upstream version"
+                 field="overrideUpstream">
+            <f:checkbox/>
+        </f:entry>
 </j:jelly>

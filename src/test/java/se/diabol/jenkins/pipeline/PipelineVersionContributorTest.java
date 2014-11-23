@@ -112,6 +112,32 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
+    public void testVersionCanOverrideUpstream() throws Exception {
+
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
+
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
+        secondProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "2.0.0.${BUILD_NUMBER}", true));
+
+        firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+        secondProject.getBuildersList().add(new AssertPipelineVersion("2.0.0.1"));
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(firstProject.getLastBuild());
+        assertNotNull(secondProject.getLastBuild());
+        assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
+        assertEquals("2.0.0.1", secondProject.getLastBuild().getDisplayName());
+
+
+    }
+
+    @Test
     public void testVersionContributorConfiguredManualTrigger() throws Exception {
 
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
