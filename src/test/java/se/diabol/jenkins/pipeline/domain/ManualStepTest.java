@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
@@ -200,6 +201,33 @@ public class ManualStepTest {
         a.getPublishersList().add(new BuildTrigger("b", false));
         jenkins.getInstance().rebuildDependencyGraph();
         assertNull(ManualStep.getManualStepAggregated(b, a));
+
+    }
+
+
+    @Test
+    public void getManualStepLatestWithMultipleManualTriggers() throws Exception {
+        FreeStyleProject a =  jenkins.createFreeStyleProject("A");
+        FreeStyleProject b =  jenkins.createFreeStyleProject("B");
+        FreeStyleProject c =  jenkins.createFreeStyleProject("C");
+        FreeStyleProject d =  jenkins.createFreeStyleProject("D");
+
+        a.getPublishersList().add(new BuildPipelineTrigger("B,C", null));
+        b.getPublishersList().add(new BuildPipelineTrigger("D", null));
+        c.getPublishersList().add(new BuildPipelineTrigger("D", null));
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+
+        AbstractBuild firstBuild = jenkins.buildAndAssertSuccess(a);
+        DeliveryPipelineView view = new DeliveryPipelineView("hej", jenkins.getInstance());
+        view.triggerManual("C", "A", "1");
+        jenkins.waitUntilNoActivity();
+
+        ManualStep step = ManualStep.getManualStepLatest(d, null, firstBuild);
+        assertNotNull(step);
+        assertEquals("1", step.getUpstreamId());
+        assertEquals("C", step.getUpstreamProject());
+        assertTrue(step.isEnabled());
 
     }
 

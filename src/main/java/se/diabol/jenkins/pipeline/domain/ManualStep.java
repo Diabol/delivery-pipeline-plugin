@@ -28,6 +28,7 @@ import se.diabol.jenkins.pipeline.trigger.ManualTriggerResolver;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,20 +69,34 @@ public class ManualStep {
         return false;
     }
 
+    protected static List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project) {
+        List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
+        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        for (ManualTriggerResolver manualTriggerResolver : resolvers) {
+            result.addAll(manualTriggerResolver.getUpstreamManualTriggered(project));
+        }
+        return result;
+    }
+
+
     public static ManualStep getManualStepLatest(AbstractProject project, AbstractBuild build, AbstractBuild firstBuild) {
         if (isManualTrigger(project)) {
-            AbstractProject<?, ?> upstream = (AbstractProject<?, ?>) project.getUpstreamProjects().get(0);
-            AbstractBuild upstreamBuild = BuildUtil.match(upstream.getBuilds(), firstBuild);
-            if (build == null) {
-                if (upstreamBuild != null && !upstreamBuild.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)) {
-                    return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+
+            List<AbstractProject> upstreams = getUpstreamManualTriggered(project);
+            for (int i = 0; i < upstreams.size(); i++) {
+                AbstractProject upstream = upstreams.get(i);
+                AbstractBuild upstreamBuild = BuildUtil.match(upstream.getBuilds(), firstBuild);
+                if (build == null) {
+                    if (upstreamBuild != null && !upstreamBuild.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)) {
+                        return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+                    }
                 } else {
-                    return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), null, false, project.hasPermission(Item.BUILD), null);
+                    if (!build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild) && build.getResult().isWorseThan(Result.UNSTABLE)) {
+                        return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+                    }
                 }
-            } else {
-                //TODO get this from configuration of trigger?
-                if (!build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild) && build.getResult().isWorseThan(Result.UNSTABLE)) {
-                    return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+                if (i == upstreams.size() - 1) {
+                    return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), null, false, project.hasPermission(Item.BUILD), null);
                 }
             }
         }
