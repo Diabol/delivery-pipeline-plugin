@@ -25,6 +25,7 @@ import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Extension(optional = true)
@@ -49,7 +50,7 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
 
     public boolean isManualTrigger(AbstractProject<?, ?> project) {
         List<AbstractProject> upstreamProjects = project.getUpstreamProjects();
-        if (upstreamProjects.size() == 1) {
+        if (upstreamProjects.size() > 0) {
             AbstractProject<?,?> upstreamProject = upstreamProjects.get(0);
             DescribableList<Publisher, Descriptor<Publisher>> upstreamPublishersLists = upstreamProject.getPublishersList();
             for (Publisher upstreamPub : upstreamPublishersLists) {
@@ -64,4 +65,21 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
         return false;
     }
 
+    @Override
+    public List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project) {
+        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        List<AbstractProject> upstreamProjects = project.getUpstreamProjects();
+        for (AbstractProject upstream : upstreamProjects) {
+            DescribableList<Publisher, Descriptor<Publisher>> upstreamPublishersLists = upstream.getPublishersList();
+            for (Publisher upstreamPub : upstreamPublishersLists) {
+                if (upstreamPub instanceof BuildPipelineTrigger) {
+                    String names = ((BuildPipelineTrigger) upstreamPub).getDownstreamProjectNames();
+                    if (ProjectUtil.getProjectList(names, project.getParent(), null).contains(project)) {
+                        result.add(upstream);
+                    }
+                }
+            }
+        }
+        return result;
+    }
 }

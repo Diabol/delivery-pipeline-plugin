@@ -29,6 +29,8 @@ public abstract class ManualTriggerResolver implements ExtensionPoint {
 
     public abstract boolean isManualTrigger(AbstractProject<?, ?> project);
 
+    public abstract List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project);
+
     public static List<ManualTriggerResolver> all() {
         return Jenkins.getInstance().getExtensionList(ManualTriggerResolver.class);
     }
