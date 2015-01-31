@@ -64,7 +64,7 @@ public final class BuildUtil {
 
         AbstractBuild upstreamBuild = BuildUtil.getUpstreamBuild(build);
         if (upstreamBuild != null) {
-            if (upstreamBuild.getProject().equals(first)) {
+            if (upstreamBuild.getProject().equals(first) || upstreamBuild.getProject().equals(build.getProject())) {
                 return upstreamBuild;
             } else {
                 return getFirstUpstreamBuild(upstreamBuild, first);
