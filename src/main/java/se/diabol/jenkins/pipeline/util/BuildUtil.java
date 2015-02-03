@@ -23,6 +23,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.util.RunList;
+import jenkins.model.Jenkins;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public final class BuildUtil {
             List<Cause.UpstreamCause> causes = Util.filter(action.getCauses(), Cause.UpstreamCause.class);
 
             for (Cause.UpstreamCause upstreamCause : causes) {
-                AbstractProject upstreamProject = ProjectUtil.getProject(upstreamCause.getUpstreamProject());
+                AbstractProject upstreamProject = Jenkins.getInstance().getItemByFullName(upstreamCause.getUpstreamProject(), AbstractProject.class);
                 //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
                 if (upstreamProject == null) {
                     return null;
