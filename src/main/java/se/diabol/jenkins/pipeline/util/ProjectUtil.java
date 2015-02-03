@@ -78,44 +78,6 @@ public final class ProjectUtil {
         return Jenkins.getInstance().getItem(name, context, AbstractProject.class);
     }
 
-    public static AbstractProject getProject(String name) {
-        Map<String, TopLevelItem> items = Jenkins.getInstance().getItemMap();
-        if (items.containsKey(name)) {
-            return (AbstractProject) items.get(name);
-        } else {
-            List<ItemGroup> groups = Util.createSubList(items.values(), ItemGroup.class);
-            for (ItemGroup group : groups) {
-                AbstractProject project = find(group, name);
-                if (project != null) {
-                    return project;
-                }
-            }
-
-        }
-        return null;
-    }
-
-
-    private static AbstractProject find(ItemGroup group, String name) {
-
-        List<AbstractProject> projects = Util.createSubList(group.getItems(), AbstractProject.class);
-        for (AbstractProject project : projects) {
-            if (project.getRelativeNameFrom(Jenkins.getInstance()).equals(name)) {
-                return project;
-            }
-        }
-
-        List<ItemGroup> groups = Util.createSubList(group.getItems(), ItemGroup.class);
-        for (ItemGroup itemGroup : groups) {
-            AbstractProject project = find(itemGroup, name);
-            if (project != null) {
-                return project;
-            }
-        }
-        return null;
-    }
-
-
     public static Map<String, AbstractProject> getProjects(String regExp) {
         try {
             Pattern pattern = Pattern.compile(regExp);
