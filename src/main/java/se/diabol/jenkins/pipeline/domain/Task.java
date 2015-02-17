@@ -46,8 +46,9 @@ public class Task extends AbstractItem {
     private final ManualStep manual;
     private final String buildId;
     private final List<String> downstreamTasks;
+    private final boolean initial;
 
-    public Task(String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks) {
+    public Task(String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks, boolean initial) {
         super(name);
         this.id = id;
         this.link = link;
@@ -56,6 +57,7 @@ public class Task extends AbstractItem {
         this.manual = manual;
         this.buildId = null;
         this.downstreamTasks = downstreamTasks;
+        this.initial = initial;
     }
 
 
@@ -69,6 +71,7 @@ public class Task extends AbstractItem {
         this.link = link;
         this.manual = manual;
         this.testResult = testResult;
+        this.initial = task.isInitial();
     }
 
     @Exported
@@ -112,7 +115,23 @@ public class Task extends AbstractItem {
         return downstreamTasks;
     }
 
-    public static Task getPrototypeTask(AbstractProject project) {
+    @Exported
+    public boolean isRebuildable() {
+        if (initial) {
+            return false;
+        }
+        if (status.isRunning() || status.isIdle() || status.isNotBuilt() || status.isQueued() || status.isDisabled()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean isInitial() {
+        return initial;
+    }
+
+    public static Task getPrototypeTask(AbstractProject project, boolean initial) {
         String taskName;
         PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
         if (property == null && project.getParent() instanceof AbstractProject) {
@@ -132,7 +151,7 @@ public class Task extends AbstractItem {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
         return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
-                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks);
+                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial);
     }
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {

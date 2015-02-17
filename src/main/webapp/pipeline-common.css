@@ -144,12 +144,26 @@ div.taskname {
 
 div.task-manual {
     display: table-cell;
-    background: url("play.gif") no-repeat;
+    background: url("play.png") no-repeat;
+    background-size: 75%;
     height: 14px;
     width: 14px;
     float: right;
     padding-right: 5px;
     z-index: 100;
+}
+
+div.task-rebuild {
+    display: table-cell;
+    background-color: #808080;
+    background: url("refresh.png") no-repeat;
+    background-size: 75%;
+    height: 14px;
+    width: 14px;
+    float: right;
+    padding-right: 5px;
+    z-index: 100;
+
 }
 
 .timestamp {
@@ -212,6 +226,7 @@ div.task-progress-running {
 
 .SUCCESS {
     border-left: 6px solid #228b22;
+    background-color: #1bd130;
 }
 
 .UNSTABLE {

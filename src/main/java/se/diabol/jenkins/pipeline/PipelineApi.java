@@ -54,7 +54,22 @@ public class PipelineApi extends Api {
         } else {
             rsp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
         }
+    }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public void doRebuildStep(StaplerRequest req, StaplerResponse rsp,
+                      @QueryParameter String project,
+                      @QueryParameter String buildId) throws IOException, ServletException {
+        if (project != null && buildId != null) {
+            try {
+                view.triggerRebuild(project, buildId);
+                rsp.setStatus(HttpServletResponse.SC_OK);
+            } catch (AuthenticationException e) {
+                rsp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            }
+        } else {
+            rsp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        }
     }
 
 
