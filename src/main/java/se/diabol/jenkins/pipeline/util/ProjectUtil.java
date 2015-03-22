@@ -78,7 +78,7 @@ public final class ProjectUtil {
             return projects;
         }
 
-        projects.put(first.getName(), first);
+        projects.put(first.getFullName(), first);
 
         for (AbstractProject p : getDownstreamProjects(first)) {
             projects.putAll(getAllDownstreamProjects(p, projects));
@@ -105,7 +105,7 @@ public final class ProjectUtil {
             Pattern pattern = Pattern.compile(regExp);
             Map<String, AbstractProject> result = new HashMap<String, AbstractProject>();
             for (AbstractProject<?, ?> project : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                Matcher matcher = pattern.matcher(project.getName());
+                Matcher matcher = pattern.matcher(project.getFullName());
                 if (matcher.find()) {
                     if (matcher.groupCount() >= 1) {
                         String name = matcher.group(1);

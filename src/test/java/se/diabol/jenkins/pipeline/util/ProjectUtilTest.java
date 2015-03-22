@@ -80,6 +80,23 @@ public class ProjectUtilTest {
     }
 
     @Test
+    public void testGetProjectsInFolders() throws Exception {
+        jenkins.createFolder("folder1");
+        jenkins.createFolder("folder2");
+
+        jenkins.createFreeStyleProject("folder1/project");
+        jenkins.createFreeStyleProject("folder1/otherProject");
+        jenkins.createFreeStyleProject("folder2/project");
+        jenkins.createFreeStyleProject("folder2/otherProject");
+
+        Map<String, AbstractProject> result = ProjectUtil.getProjects("^(project)");
+        assertEquals(0, result.size());
+
+        Map<String, AbstractProject> result2 = ProjectUtil.getProjects("^(.+)/project");
+        assertEquals(2, result2.size());
+    }
+
+    @Test
     public void testGetProjectList() throws Exception {
         jenkins.createFreeStyleProject("p1");
         jenkins.createFreeStyleProject("p2");
