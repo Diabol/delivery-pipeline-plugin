@@ -23,6 +23,7 @@ import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
@@ -228,6 +229,35 @@ public class ManualStepTest {
         assertEquals("1", step.getUpstreamId());
         assertEquals("C", step.getUpstreamProject());
         assertTrue(step.isEnabled());
+
+    }
+
+    @Test
+    @Bug(27584)
+    public void getManualStepLatestUpstreamDeleted() throws Exception {
+        FreeStyleProject a =  jenkins.createFreeStyleProject("A");
+        FreeStyleProject b =  jenkins.createFreeStyleProject("B");
+        FreeStyleProject c =  jenkins.createFreeStyleProject("C");
+
+        a.getPublishersList().add(new BuildTrigger("B", true));
+        b.getPublishersList().add(new BuildPipelineTrigger("C", null));
+        c.getBuildersList().add(new FailureBuilder());
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+        AbstractBuild firstBuild = jenkins.buildAndAssertSuccess(a);
+        jenkins.waitUntilNoActivity();
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", jenkins.getInstance());
+        view.triggerManual("C", "B", "1");
+        jenkins.waitUntilNoActivity();
+
+        ManualStep step = ManualStep.getManualStepLatest(c, null, firstBuild);
+        assertNotNull(step);
+
+        b.getLastBuild().delete();
+        assertNull(b.getLastBuild());
+        step = ManualStep.getManualStepLatest(c, c.getLastBuild(), firstBuild);
+        assertNotNull(step);
 
     }
 
