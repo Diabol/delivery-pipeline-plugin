@@ -22,12 +22,15 @@ import hudson.matrix.Axis;
 import hudson.matrix.AxisList;
 import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
+import hudson.model.FreeStyleProject;
+import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.PipelineVersionContributor;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 
 import java.util.ArrayList;

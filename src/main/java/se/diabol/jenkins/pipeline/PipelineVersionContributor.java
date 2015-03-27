@@ -37,13 +37,19 @@ public class PipelineVersionContributor extends BuildWrapper {
 
     private String versionTemplate;
     private boolean updateDisplayName = false;
+    private boolean overrideUpstream = false;
 
     private static final Logger LOG = Logger.getLogger(PipelineVersionContributor.class.getName());
 
     @DataBoundConstructor
-    public PipelineVersionContributor(boolean updateDisplayName, String versionTemplate) {
+    public PipelineVersionContributor(boolean updateDisplayName, String versionTemplate, boolean overrideUpstream) {
         this.updateDisplayName = updateDisplayName;
         this.versionTemplate = versionTemplate;
+        this.overrideUpstream = overrideUpstream;
+    }
+
+    public PipelineVersionContributor(boolean updateDisplayName, String versionTemplate) {
+        this(updateDisplayName, versionTemplate, false);
     }
 
     public String getVersionTemplate() {
@@ -54,13 +60,23 @@ public class PipelineVersionContributor extends BuildWrapper {
         return updateDisplayName;
     }
 
+    public boolean isOverrideUpstream() {
+        return overrideUpstream;
+    }
+
     @Override
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) throws IOException,
             InterruptedException {
         try {
 
             String version = TokenMacro.expand(build, listener, getVersionTemplate());
-            setVersion(build, version);
+            
+            if (isOverrideUpstream()) {
+                overrideVersion(build, version);
+            } else {
+                setVersion(build, version);
+            }
+
             listener.getLogger().println("Creating version: " + version);
 
             if (isUpdateDisplayName()) {
@@ -96,6 +112,11 @@ public class PipelineVersionContributor extends BuildWrapper {
         build.addAction(action);
     }
 
+    public static void overrideVersion(AbstractBuild build, String version) {
+        ParametersAction action = new ParametersAction(
+                new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));
+        build.replaceAction(action);
+    }
 
     @Extension
     public static class DescriptorImpl extends BuildWrapperDescriptor {

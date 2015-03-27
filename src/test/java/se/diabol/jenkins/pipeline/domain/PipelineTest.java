@@ -37,6 +37,7 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.PipelineVersionContributor;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
 import java.util.ArrayList;
@@ -315,6 +316,34 @@ public class PipelineTest {
         assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
         assertEquals("#2", aggregated.getStages().get(1).getVersion());
 
+    }
+
+    @Test
+    public void testAggregatedStageWithVersionOverride() throws Exception {
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
+
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
+        secondProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "2.0.0.${BUILD_NUMBER}", true));
+
+        firstProject.addProperty(new PipelineProperty("task", "Stage1"));
+        secondProject.addProperty(new PipelineProperty("task", "Stage2"));
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        Pipeline pipeline = Pipeline.extractPipeline("test", firstProject);
+        Pipeline aggregated = pipeline.createPipelineAggregated(jenkins.getInstance());
+
+        Stage firstStage = aggregated.getStages().get(0);
+        Stage secondStage = aggregated.getStages().get(1);
+
+        assertEquals(2, aggregated.getStages().size());
+        assertEquals("1.0.0.1", firstStage.getVersion());
+        assertEquals("2.0.0.1", secondStage.getVersion());
     }
 
     @Test

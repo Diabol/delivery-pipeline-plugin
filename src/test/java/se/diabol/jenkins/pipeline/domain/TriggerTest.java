@@ -22,6 +22,7 @@ import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -163,6 +164,7 @@ public class TriggerTest {
     }
 
     @Test
+    @Ignore("Deprecated as of Jenkins 1.548 - upstream descriptions have changed")
     public void testGetTriggeredByUpStreamJobNotExists() throws Exception {
         FreeStyleProject upstream = jenkins.createFreeStyleProject("up");
         jenkins.setQuietPeriod(0);
