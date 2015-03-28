@@ -19,12 +19,21 @@ package se.diabol.jenkins.pipeline.util;
 
 import hudson.EnvVars;
 import hudson.Util;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Cause;
+import hudson.model.ItemGroup;
+import hudson.model.Items;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.RelationshipResolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;

@@ -28,6 +28,10 @@
             <f:checkbox/>
         </f:entry>
 
+        <f:entry title="Enable rebuild" field="allowRebuild">
+            <f:checkbox/>
+        </f:entry>
+
 
         <f:entry title="Show avatars" field="showAvatars">
             <f:checkbox/>

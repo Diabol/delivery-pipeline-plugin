@@ -158,6 +158,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                             html.push('<div class="task-manual" id="manual-' + id + '" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">');
                             html.push("</div>");
+                        } else {
+                            if (!pipeline.aggregated && data.allowRebuild && task.rebuildable) {
+                                html.push('<div class="task-rebuild" id="rebuild-' + id + '" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
+                                html.push("</div>");
+                            }
                         }
 
                         html.push('</div><div class="task-details">');
@@ -337,6 +342,35 @@ function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild
         }
     });
 }
+
+function triggerRebuild(taskId, project, buildId) {
+    Q("#rebuild-" + taskId).hide();
+    var formData = {project: project, buildId: buildId};
+
+    var before;
+    if (crumb.value != null && crumb.value != "") {
+        console.info("Crumb found and will be added to request header");
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info("Crumb not needed");
+        before = function(xhr){}
+    }
+
+    Q.ajax({
+        url: rootURL + "/" + view.viewUrl + 'api/rebuildStep',
+        type: "POST",
+        data: formData,
+        beforeSend: before,
+        timeout: 20000,
+        success: function (data, textStatus, jqXHR) {
+            console.info("Triggered rebuild of " + project + " successfully!")
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            window.alert("Could not trigger rebuild! error: " + errorThrown + " status: " + textStatus)
+        }
+    });
+}
+
 
 function htmlEncode(html) {
     return document.createElement('a')

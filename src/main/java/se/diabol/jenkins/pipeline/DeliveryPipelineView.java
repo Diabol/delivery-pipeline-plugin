@@ -19,21 +19,38 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractDescribableImpl;
+import hudson.model.AbstractProject;
+import hudson.model.Api;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.Descriptor;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.ParametersAction;
+import hudson.model.TopLevelItem;
+import hudson.model.View;
+import hudson.model.ViewDescriptor;
+import hudson.model.ViewGroup;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
-import org.kohsuke.stapler.*;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
-import se.diabol.jenkins.pipeline.trigger.ManualTrigger;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
+import se.diabol.jenkins.pipeline.trigger.ManualTrigger;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -41,7 +58,14 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -71,6 +95,7 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
     private boolean allowManualTriggers = false;
+    private boolean allowRebuild = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -245,6 +270,15 @@ public class DeliveryPipelineView extends View {
         return error;
     }
 
+    @Exported
+    public boolean isAllowRebuild() {
+        return allowRebuild;
+    }
+
+    public void setAllowRebuild(boolean allowRebuild) {
+        this.allowRebuild = allowRebuild;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
         try {
@@ -267,6 +301,24 @@ public class DeliveryPipelineView extends View {
             LOG.log(Level.WARNING, triggerExceptionMessage(projectName, upstreamName, buildId), e);
             throw e;
         }
+    }
+
+    public void triggerRebuild(String projectName, String buildId) {
+        AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+        if (!project.hasPermission(Item.BUILD)) {
+            throw new BadCredentialsException("Not auth to build");
+        }
+        AbstractBuild build = project.getBuildByNumber(Integer.parseInt(buildId));
+
+        List<Cause> prevCauses = build.getCauses();
+        CauseAction causeAction = new CauseAction();
+        for (Cause cause : prevCauses) {
+            if (!(cause instanceof Cause.UserIdCause)) {
+                causeAction.getCauses().add(cause);
+            }
+        }
+        causeAction.getCauses().add(new Cause.UserIdCause());
+        project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
     }
 
     protected static String triggerExceptionMessage(final String projectName, final String upstreamName, final String buildId) {

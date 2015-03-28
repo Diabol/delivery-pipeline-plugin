@@ -20,11 +20,17 @@ package se.diabol.jenkins.pipeline.domain;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
 import hudson.model.ItemGroup;
 import hudson.model.Saveable;
-import hudson.plugins.parameterizedtrigger.*;
+import hudson.plugins.parameterizedtrigger.AbstractBuildParameterFactory;
+import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
+import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.ResultCondition;
+import hudson.plugins.parameterizedtrigger.TriggerBuilder;
 import hudson.tasks.BuildTrigger;
 import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
@@ -620,6 +626,16 @@ public class PipelineTest {
 
     }
 
+    @Test
+    public void testShouldShowPipelineInstanceInQueue() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
+        a.scheduleBuild(2, new Cause.UserIdCause());
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance());
+        assertEquals(1, pipelines.size());
+
+
+    }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup);
