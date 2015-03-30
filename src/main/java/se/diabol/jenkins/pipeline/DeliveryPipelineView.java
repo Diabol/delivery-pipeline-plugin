@@ -79,7 +79,7 @@ public class DeliveryPipelineView extends View {
     public static final int DEFAULT_INTERVAL = 2;
 
     public static final int DEFAULT_NO_OF_PIPELINES = 3;
-    private static final int MAX_NO_OF_PIPELINES = 10;
+    private static final int MAX_NO_OF_PIPELINES = 50;
 
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     public static final String NONE_SORTER = "none";
