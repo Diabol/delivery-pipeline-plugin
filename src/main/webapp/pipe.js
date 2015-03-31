@@ -54,7 +54,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             component = data.pipelines[c];
             html.push("<section class='pipeline-component'>");
             html.push("<h1>" + htmlEncode(component.name));
-            html.push('&nbsp;<a class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJob + '\', \'' + data.name + '\');">');
+            html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJob + '\', \'' + data.name + '\');">');
             html.push('<img class="icon-clock icon-md" title="Build now" src="/jenkins/static/5f438a37/images/24x24/clock.png">');
             html.push("</a></h1>");
             if (component.pipelines.length === 0) {
