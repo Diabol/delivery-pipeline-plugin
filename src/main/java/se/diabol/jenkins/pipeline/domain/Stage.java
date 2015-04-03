@@ -33,7 +33,15 @@ import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -145,7 +153,7 @@ public class Stage extends AbstractItem {
     public static List<Stage> extractStages(AbstractProject firstProject) throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject).values()) {
-            Task task = Task.getPrototypeTask(project);
+            Task task = Task.getPrototypeTask(project, project.getFullName().equals(firstProject.getFullName()));
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property == null && project.getParent() instanceof AbstractProject) {
                 property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);

@@ -35,14 +35,12 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.UnstableBuilder;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.pipeline.PipelineProperty;
-import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
-import se.diabol.jenkins.pipeline.domain.status.Status;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -56,9 +54,10 @@ public class TaskTest {
         FreeStyleProject project = jenkins.createFreeStyleProject("test");
         jenkins.getInstance().setQuietPeriod(0);
 
-        Task task = Task.getPrototypeTask(project);
+        Task task = Task.getPrototypeTask(project, true);
         assertNotNull(task);
         assertFalse(task.isManual());
+        assertFalse(task.isRebuildable());
 
         Task aggregatedTask = task.getAggregatedTask(null, Jenkins.getInstance());
         assertNotNull(aggregatedTask);
@@ -82,7 +81,7 @@ public class TaskTest {
         a.getPublishersList().add(new BuildPipelineTrigger("b", null));
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Task task = Task.getPrototypeTask(b);
+        Task task = Task.getPrototypeTask(b, false);
         assertTrue(task.isManual());
 
     }
@@ -101,7 +100,7 @@ public class TaskTest {
                 return true;
             }
         });
-        Task prototype = Task.getPrototypeTask(project);
+        Task prototype = Task.getPrototypeTask(project, true);
 
         project.scheduleBuild2(0);
         buildStarted.block(); // wait for the build to really start
@@ -128,7 +127,7 @@ public class TaskTest {
         Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
 
         for (MatrixConfiguration configuration : configurations) {
-            Task task = Task.getPrototypeTask(configuration);
+            Task task = Task.getPrototypeTask(configuration, true);
             assertEquals("task "  + configuration.getName(), task.getName());
 
         }
@@ -143,7 +142,7 @@ public class TaskTest {
         a.getPublishersList().add(new BuildPipelineTrigger("b", null));
         b.getBuildersList().add(new FailureBuilder());
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
-        Task task = Task.getPrototypeTask(b);
+        Task task = Task.getPrototypeTask(b, false);
         assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isIdle());
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", jenkins.getInstance());
@@ -155,6 +154,27 @@ public class TaskTest {
         view.triggerManual("b", "a", "1");
 
         assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isQueued());
+
+    }
+
+    @Test
+    public void testIsRebuildable() throws Exception {
+        jenkins.setQuietPeriod(0);
+        FreeStyleProject project = jenkins.createFreeStyleProject("project");
+        Task task = Task.getPrototypeTask(project, false);
+        //IDLE
+        assertFalse(task.getLatestTask(jenkins.getInstance(), null).isRebuildable());
+        //FAILED
+        project.getBuildersList().add(new FailureBuilder());
+        project.scheduleBuild2(0);
+        jenkins.waitUntilNoActivity();
+        assertTrue(task.getLatestTask(jenkins.getInstance(), project.getLastBuild()).isRebuildable());
+        //UNSTABLE
+        project.getBuildersList().clear();
+        project.getBuildersList().add(new UnstableBuilder());
+        project.scheduleBuild2(0);
+        jenkins.waitUntilNoActivity();
+        assertTrue(task.getLatestTask(jenkins.getInstance(), project.getLastBuild()).isRebuildable());
 
     }
 

@@ -23,6 +23,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.*;
 import hudson.plugins.parameterizedtrigger.AbstractBuildParameterFactory;
 import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.PredefinedBuildParameters;
 import hudson.plugins.parameterizedtrigger.ResultCondition;
 import hudson.security.ACL;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
@@ -42,7 +43,7 @@ import static org.junit.Assert.*;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
-import org.junit.Ignore;
+import org.junit.ComparisonFailure;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -146,6 +147,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.getShowAvatars());
         assertFalse(view.isShowChanges());
         assertFalse(view.isAllowManualTriggers());
+        assertFalse(view.isAllowRebuild());
     }
 
     @Test
@@ -167,6 +169,8 @@ public class DeliveryPipelineViewTest {
         assertNotNull(view.getLastUpdated());
         view.setAllowManualTriggers(true);
         assertTrue(view.isAllowManualTriggers());
+        view.setAllowRebuild(true);
+        assertTrue(view.isAllowRebuild());
 
     }
 
@@ -668,6 +672,73 @@ public class DeliveryPipelineViewTest {
         assertEquals("Comp1", components.get(1).getName());
         assertEquals("A", components.get(0).getFirstJob());
         assertEquals("B", components.get(1).getFirstJob());
+    }
+
+
+    @Test
+    public void testRebuild() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        b.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
+        a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("b", ResultCondition.SUCCESS, new PredefinedBuildParameters("VERSION=$BUILD_NUMBER"))));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        jenkins.getInstance().addView(view);
+
+        jenkins.buildAndAssertSuccess(a);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(a.getLastBuild());
+        assertNotNull(b.getLastBuild());
+
+        AbstractBuild b1 = b.getLastBuild();
+
+        view.triggerRebuild("B", "1");
+        jenkins.waitUntilNoActivity();
+        assertEquals(2, b.getLastBuild().getNumber());
+        assertEqualsList(b1.getActions(ParametersAction.class), b.getLastBuild().getActions(ParametersAction.class));
+
+
+
+    }
+
+    @Test
+    public void testRebuildNotAuthorized() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        DeliveryPipelineView view = new DeliveryPipelineView("View");
+        jenkins.getInstance().addView(view);
+
+        jenkins.getInstance().setSecurityRealm(jenkins.createDummySecurityRealm());
+        GlobalMatrixAuthorizationStrategy gmas = new GlobalMatrixAuthorizationStrategy();
+        gmas.add(Permission.READ, "devel");
+        jenkins.getInstance().setAuthorizationStrategy(gmas);
+
+        SecurityContext oldContext = ACL.impersonate(User.get("devel").impersonate());
+        try {
+            view.triggerRebuild("B", "1");
+            fail();
+        } catch (AuthenticationException e) {
+            //Should throw this
+        }
+        SecurityContextHolder.setContext(oldContext);
+    }
+
+    private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {
+        if (a1.size() != a2.size()) {
+            throw new ComparisonFailure("Size not equal!", String.valueOf(a1.size()), String.valueOf(a2.size()));
+        }
+        for (int i = 0; i < a1.size(); i++) {
+            ParametersAction action1 = a1.get(i);
+            ParametersAction action2 = a2.get(i);
+            assertEquals(action1.getParameters(), action2.getParameters());
+
+        }
     }
 
 }

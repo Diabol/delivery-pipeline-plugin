@@ -133,7 +133,10 @@ public class SimpleStatus implements Status {
 
             return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
         }
+        return getStatusFromResult(build);
+    }
 
+    private static Status getStatusFromResult(AbstractBuild build) {
         Result result = build.getResult();
         if (Result.ABORTED.equals(result)) {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
@@ -151,6 +154,7 @@ public class SimpleStatus implements Status {
             return StatusFactory.notBuilt(build.getTimeInMillis(), build.getDuration());
         }
         throw new IllegalStateException("Result " + result + " not recognized.");
+
     }
 
 

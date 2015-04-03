@@ -138,9 +138,26 @@ public class Pipeline extends AbstractItem {
      */
     public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context) {
         List<Pipeline> result = new ArrayList<Pipeline>();
+        int no = noOfPipelines;
+        if (firstProject.isInQueue()) {
+            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
+            List<Stage> pipelineStages = new ArrayList<Stage>();
+            for (Stage stage : getStages()) {
+                pipelineStages.add(stage.createLatestStage(context, null));
+            }
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, "#" + firstProject.getNextBuildNumber(), pipeLineTimestamp,
+                    Trigger.getTriggeredBy(firstProject, null), null,
+                    //            Trigger.getTriggeredBy(firstBuild),
+                    //            UserInfo.getContributors(firstBuild),
+                    pipelineStages, false);
+            //pipelineLatest.setChanges(pipelineChanges);
+            result.add(pipelineLatest);
+            no--;
+        }
+
 
         Iterator it = firstProject.getBuilds().iterator();
-        for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
+        for (int i = 0; i < no && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
@@ -149,7 +166,7 @@ public class Pipeline extends AbstractItem {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, firstBuild.getDisplayName(), pipeLineTimestamp,
-                                Trigger.getTriggeredBy(firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
+                                Trigger.getTriggeredBy(firstProject, firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
             result.add(pipelineLatest);
         }

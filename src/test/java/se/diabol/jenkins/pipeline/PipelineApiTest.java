@@ -80,4 +80,24 @@ public class PipelineApiTest {
     }
 
 
+    @Test
+    public void testDoRebuild() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        StaplerResponse response = Mockito.mock(StaplerResponse.class);
+        DeliveryPipelineView view = Mockito.mock(DeliveryPipelineView.class);
+        doThrow(new BadCredentialsException("Ops")).when(view).triggerRebuild("secretproject", "1");
+        PipelineApi api = new PipelineApi(view);
+
+        api.doRebuildStep(request, response, null, null);
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+
+        api.doRebuildStep(request, response, "project", "1");
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_OK);
+
+        api.doRebuildStep(request, response, "secretproject", "1");
+        verify(response, times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+    }
+
+
 }

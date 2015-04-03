@@ -20,19 +20,19 @@ package se.diabol.jenkins.pipeline.util;
 import hudson.EnvVars;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
+import hudson.tasks.BuildTrigger;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ProjectUtilTest {
 
@@ -80,6 +80,23 @@ public class ProjectUtilTest {
     }
 
     @Test
+    public void testGetProjectsInFolders() throws Exception {
+        jenkins.createFolder("folder1");
+        jenkins.createFolder("folder2");
+
+        jenkins.createFreeStyleProject("folder1/project");
+        jenkins.createFreeStyleProject("folder1/otherProject");
+        jenkins.createFreeStyleProject("folder2/project");
+        jenkins.createFreeStyleProject("folder2/otherProject");
+
+        Map<String, AbstractProject> result = ProjectUtil.getProjects("^(project)");
+        assertEquals(0, result.size());
+
+        Map<String, AbstractProject> result2 = ProjectUtil.getProjects("^(.+)/project");
+        assertEquals(2, result2.size());
+    }
+
+    @Test
     public void testGetProjectList() throws Exception {
         jenkins.createFreeStyleProject("p1");
         jenkins.createFreeStyleProject("p2");
@@ -98,4 +115,19 @@ public class ProjectUtilTest {
 
     }
 
+    @Test
+    public void testRecursiveProjects() throws Exception {
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("projectA");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("projectB");
+        projectA.getPublishersList().add(new BuildTrigger(projectB.getName(), true));
+        projectB.getPublishersList().add(new BuildTrigger(projectA.getName(), true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        assertEquals(projectA.getUpstreamProjects().get(0), projectB);
+        assertEquals(projectB.getUpstreamProjects().get(0), projectA);
+
+        // If there is a cycle dependency, then a stack overflow will be thrown here.
+        ProjectUtil.getAllDownstreamProjects(projectA);
+    }
 }

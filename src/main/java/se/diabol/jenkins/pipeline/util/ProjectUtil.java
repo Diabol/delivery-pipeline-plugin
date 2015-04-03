@@ -19,16 +19,21 @@ package se.diabol.jenkins.pipeline.util;
 
 import hudson.EnvVars;
 import hudson.Util;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Cause;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
-import hudson.model.TopLevelItem;
-import hudson.model.*;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.RelationshipResolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -53,15 +58,41 @@ public final class ProjectUtil {
         return options;
     }
 
+    /**
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
+     *
+     */
     public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first) {
         Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
+        return  getAllDownstreamProjects(first, projects);
+    }
+
+    /**
+     * Get all downstream projects for a given project. This will recursively call all downstream projects for a given first project.
+     *
+     * A project that has a downstream project and will eventually loop back to itself will log a warning, and will NOT add. Adding
+     * a project that already exists will produce a stack overflow.
+     *
+     * @param first The first project
+     * @param projects Current map of all sub projects.
+     * @return A map of all downstream projects.
+     */
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, Map<String, AbstractProject<?, ?>> projects) {
         if (first == null) {
             return projects;
         }
-        projects.put(first.getName(), first);
-        for (AbstractProject project : getDownstreamProjects(first)) {
-            projects.putAll(getAllDownstreamProjects(project));
+
+        if (projects.containsValue(first)) {
+            LOG.warning("Project " + first.getFullDisplayName() + " already exists as a downstream project.");
+            return projects;
         }
+
+        projects.put(first.getFullName(), first);
+
+        for (AbstractProject p : getDownstreamProjects(first)) {
+            projects.putAll(getAllDownstreamProjects(p, projects));
+        }
+
         return projects;
     }
 
@@ -83,7 +114,7 @@ public final class ProjectUtil {
             Pattern pattern = Pattern.compile(regExp);
             Map<String, AbstractProject> result = new HashMap<String, AbstractProject>();
             for (AbstractProject<?, ?> project : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
-                Matcher matcher = pattern.matcher(project.getName());
+                Matcher matcher = pattern.matcher(project.getFullName());
                 if (matcher.find()) {
                     if (matcher.groupCount() >= 1) {
                         String name = matcher.group(1);

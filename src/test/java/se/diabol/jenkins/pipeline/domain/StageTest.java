@@ -179,7 +179,7 @@ public class StageTest {
     @Test
     @WithoutJenkins
     public void testFindStageForJob() {
-        Task task1 = new Task("build", "Build", StatusFactory.idle(), null, null, Collections.<String>emptyList());
+        Task task1 = new Task("build", "Build", StatusFactory.idle(), null, null, Collections.<String>emptyList(), true);
         List<Stage> stages = Lists.newArrayList(new Stage("QA", Lists.newArrayList(task1)));
         assertNull(Stage.findStageForJob("nofind", stages));
         assertNotNull(Stage.findStageForJob("build", stages));
