@@ -10,3 +10,16 @@ For info see the [Delivery Pipeline Plugin - Wiki](https://wiki.jenkins-ci.org/d
 
 Contributed by [Diabol AB](http://www.diabol.se)
 
+Build
+---
+
+    mvn install
+
+Run locally
+---
+    mvn hpi:run
+
+Function Test
+---
+    mvn integration-test
+    
