@@ -54,7 +54,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             component = data.pipelines[c];
             html.push("<section class='pipeline-component'>");
             html.push("<h1>" + htmlEncode(component.name));
-            html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJob + '\', \'' + data.name + '\');">');
+            html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
             html.push('<img class="icon-clock icon-md" title="Build now" src="/jenkins/static/5f438a37/images/24x24/clock.png">');
             html.push("</a></h1>");
             if (component.pipelines.length === 0) {
@@ -374,11 +374,13 @@ function triggerRebuild(taskId, project, buildId) {
     });
 }
 
-function triggerBuild(taskId, viewName) {
+function triggerBuild(url, taskId) {
     var before = function(xhr){};
 
+    console.log(url)
+
     Q.ajax({
-        url: rootURL + "/" + getTaskUrl(taskId, viewName) + 'build?delay=0sec',
+        url: rootURL + "/" + url + '/build?delay=0sec',
         type: "GET",
         beforeSend: before,
         timeout: 20000,
@@ -402,10 +404,6 @@ function htmlEncode(html) {
 function getStageId(name, count) {
     var re = new RegExp(' ', 'g');
     return name.replace(re, '_') + "_" + count;
-}
-
-function getTaskUrl(taskId, viewName) {
-    return view.viewUrl.replace("view/" + viewName, "job/" + taskId);
 }
 
 function equalheight(container) {
