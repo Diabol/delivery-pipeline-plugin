@@ -378,7 +378,7 @@ public class DeliveryPipelineView extends View {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
         }
         pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
-        return new Component(name, firstJob.getName(), pipelines);
+        return new Component(name, firstJob.getName(), firstJob.getUrl(), pipelines);
     }
 
     @Override

@@ -197,8 +197,6 @@ public class GuiFunctionalIT {
 
 
     @Test
-    @Ignore
-    //TODO fix this testcase this is a bug
     public void testTriggerNewPipelineFolders() throws Exception {
         Folder folder =  jenkins.getInstance().createProject(Folder.class, "Folder");
         assertNotNull(folder);
