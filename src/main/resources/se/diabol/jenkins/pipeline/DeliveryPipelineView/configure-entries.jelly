@@ -24,6 +24,10 @@
             <f:textbox/>
         </f:entry>
 
+        <f:entry title="Enable start of new pipeline build" field="allowPipelineStart">
+            <f:checkbox/>
+        </f:entry>
+
         <f:entry title="Enable manual triggers" field="allowManualTriggers">
             <f:checkbox/>
         </f:entry>

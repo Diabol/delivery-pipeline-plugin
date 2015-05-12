@@ -96,6 +96,7 @@ public class DeliveryPipelineView extends View {
     private boolean showChanges = false;
     private boolean allowManualTriggers = false;
     private boolean allowRebuild = false;
+    private boolean allowPipelineStart = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -175,6 +176,15 @@ public class DeliveryPipelineView extends View {
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
         this.showAggregatedPipeline = showAggregatedPipeline;
+    }
+
+    @Exported
+    public boolean isAllowPipelineStart() {
+        return allowPipelineStart;
+    }
+
+    public void setAllowPipelineStart(boolean allowPipelineStart) {
+        this.allowPipelineStart = allowPipelineStart;
     }
 
     @Exported
