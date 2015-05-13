@@ -180,7 +180,7 @@ public class GuiFunctionalIT {
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start"));
         view.setComponentSpecs(specs);
-
+        view.setAllowPipelineStart(true);
 
         jenkins.getInstance().addView(view);
 
@@ -213,7 +213,7 @@ public class GuiFunctionalIT {
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start"));
         view.setComponentSpecs(specs);
-
+        view.setAllowPipelineStart(true);
 
         folder.addView(view);
 
