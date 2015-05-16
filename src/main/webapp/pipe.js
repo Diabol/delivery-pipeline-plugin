@@ -383,7 +383,7 @@ function triggerBuild(url, taskId) {
     console.log(url)
 
     Q.ajax({
-        url: rootURL + "/" + url + '/build?delay=0sec',
+        url: rootURL + "/" + url + 'build?delay=0sec',
         type: "GET",
         beforeSend: before,
         timeout: 20000,
