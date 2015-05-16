@@ -4,5 +4,10 @@ jdk:
 notifications:
   slack:
     secure: phVNsiDfu5nDM7okqhGgX1Qhh3Sawqy5X3p5bgDarh9RX82V2OAebyiiKiw6aNGyDCoD0ElMHmz7tbdBODsR3muWyoQ5EJBsDgNv1NM9dhkdeIQ/182bF7EBFciPW5SYjl0+dOkIeMn9DHdg8i0RVxwjy6GjJX2r/6oUmYxExQk=
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+script:
+  mvn integration-test
 after_success:
 - mvn jacoco:report coveralls:jacoco

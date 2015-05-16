@@ -29,11 +29,13 @@ import static com.google.common.base.Objects.toStringHelper;
 public class Component extends AbstractItem {
     private final List<Pipeline> pipelines;
     private final String firstJob;
+    private final String firstJobUrl;
 
-    public Component(String name, String firstJob, List<Pipeline> pipelines) {
+    public Component(String name, String firstJob, String firstJobUrl, List<Pipeline> pipelines) {
         super(name);
         this.pipelines = ImmutableList.copyOf(pipelines);
         this.firstJob = firstJob;
+        this.firstJobUrl = firstJobUrl;
     }
 
     @Exported
@@ -44,6 +46,11 @@ public class Component extends AbstractItem {
     @Exported
     public String getFirstJob() {
         return firstJob;
+    }
+
+    @Exported
+    public String getFirstJobUrl() {
+        return firstJobUrl;
     }
 
     @Override

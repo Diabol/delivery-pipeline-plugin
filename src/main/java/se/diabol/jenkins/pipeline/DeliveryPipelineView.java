@@ -96,6 +96,7 @@ public class DeliveryPipelineView extends View {
     private boolean showChanges = false;
     private boolean allowManualTriggers = false;
     private boolean allowRebuild = false;
+    private boolean allowPipelineStart = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -175,6 +176,15 @@ public class DeliveryPipelineView extends View {
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
         this.showAggregatedPipeline = showAggregatedPipeline;
+    }
+
+    @Exported
+    public boolean isAllowPipelineStart() {
+        return allowPipelineStart;
+    }
+
+    public void setAllowPipelineStart(boolean allowPipelineStart) {
+        this.allowPipelineStart = allowPipelineStart;
     }
 
     @Exported
@@ -378,7 +388,7 @@ public class DeliveryPipelineView extends View {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
         }
         pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
-        return new Component(name, firstJob.getName(), pipelines);
+        return new Component(name, firstJob.getName(), firstJob.getUrl(), pipelines);
     }
 
     @Override
@@ -426,19 +436,9 @@ public class DeliveryPipelineView extends View {
         
         if (!isDefault()) {
             return getOwner().getPrimaryView().doCreateItem(req, rsp);
+        } else {
+            return Jenkins.getInstance().doCreateItem(req, rsp);
         }
-        
-        // when we are the default view, dynamically load the "All" view
-        // and defer to the "All" view's implemenation for creating a new item
-        try {
-            allView = new hudson.model.AllView("All" , getOwner());
-        } catch(Exception e) {
-            // return null in the unlikely event that the AllView class
-            // changes its constructor signatures, which would raise a NoSuchMethodException
-            return null;
-        }
-        
-        return allView.doCreateItem(req, rsp);
     }
 
 
