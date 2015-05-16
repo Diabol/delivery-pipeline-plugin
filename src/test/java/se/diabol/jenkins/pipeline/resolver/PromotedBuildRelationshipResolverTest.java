@@ -19,6 +19,9 @@ package se.diabol.jenkins.pipeline.resolver;
 
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
+import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.BlockingBehaviour;
 import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.ResultCondition;
 import hudson.plugins.promoted_builds.JobPropertyImpl;
@@ -27,6 +30,7 @@ import hudson.plugins.promoted_builds.conditions.DownstreamPassCondition;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.util.List;
@@ -77,6 +81,29 @@ public class PromotedBuildRelationshipResolverTest {
         List<AbstractProject> projects = resolver.getDownstreamProjects(a);
         assertEquals(1, projects.size());
     }
+
+
+    @Test
+    @Bug(28347)
+    public void testResolveWithBuildTrigger() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        jenkins.createFreeStyleProject("b");
+        jenkins.createFreeStyleProject("c");
+        a.getPublishersList().add(new BuildTrigger("b", false));
+        JobPropertyImpl property = new JobPropertyImpl(a);
+        PromotionProcess process = property.addProcess("process");
+        process.conditions.add(new DownstreamPassCondition("b", false));
+        process.getBuildSteps().add(new hudson.plugins.parameterizedtrigger.TriggerBuilder(new BlockableBuildTriggerConfig("b", new BlockingBehaviour(Result.FAILURE, Result.UNSTABLE, Result.FAILURE), null)));
+        process.save();
+        a.addProperty(property);
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        PromotedBuildRelationshipResolver resolver = new PromotedBuildRelationshipResolver();
+        List<AbstractProject> projects = resolver.getDownstreamProjects(a);
+        assertEquals(1, projects.size());
+    }
+
+
 
 
 }
