@@ -20,8 +20,10 @@ package se.diabol.jenkins.pipeline.resolver;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.DependencyGraph;
+import hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.BuildTrigger;
 import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.TriggerBuilder;
 import hudson.plugins.promoted_builds.JobPropertyImpl;
 import hudson.plugins.promoted_builds.PromotionProcess;
 import hudson.tasks.BuildStep;
@@ -35,7 +37,8 @@ import java.util.List;
 public class PromotedBuildRelationshipResolver extends RelationshipResolver {
 
     // Force a classloading error plugin isn't available
-    public static final Class clazz = PromotionProcess.class;
+    @SuppressWarnings("UnusedDeclaration")
+    public static final Class CLASS = PromotionProcess.class;
 
     @Override
     public List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?> project) {
@@ -61,9 +64,19 @@ public class PromotedBuildRelationshipResolver extends RelationshipResolver {
                         for (BuildTriggerConfig config : configs) {
                             result.addAll(config.getProjectList(project.getParent(), null));
                         }
+                    }
+
+                    if (buildStep instanceof TriggerBuilder) {
+                        TriggerBuilder triggerBuilder = (TriggerBuilder) buildStep;
+                        List<BlockableBuildTriggerConfig> configs = triggerBuilder.getConfigs();
+                        for (BlockableBuildTriggerConfig config : configs) {
+                            result.addAll(config.getProjectList(project.getParent(), null));
+
+                        }
 
 
                     }
+
                 }
             }
 
