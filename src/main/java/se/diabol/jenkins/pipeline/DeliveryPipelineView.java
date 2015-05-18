@@ -517,8 +517,10 @@ public class DeliveryPipelineView extends View {
                         Pattern pattern = Pattern.compile(value);
                         if (pattern.matcher("").groupCount() == 1) {
                             return FormValidation.ok();
-                        } else {
+                        } else if (pattern.matcher("").groupCount() == 0) {
                             return FormValidation.error("No capture group defined");
+                        } else {
+                            return FormValidation.error("Too many capture groups defined");
                         }
                     } catch (PatternSyntaxException e) {
                         return FormValidation.error(e, "Syntax error in regular-expression pattern");
