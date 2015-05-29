@@ -88,6 +88,8 @@ public class TaskTest {
 
     @Test
     public void testGetLatestRunning() throws Exception {
+        final String mockDescription = "some description";
+
         final OneShotEvent buildStarted = new OneShotEvent();
         final OneShotEvent buildBuilding = new OneShotEvent();
 
@@ -104,10 +106,13 @@ public class TaskTest {
 
         project.scheduleBuild2(0);
         buildStarted.block(); // wait for the build to really start
+
+        project.getLastBuild().setDescription(mockDescription);
         Task latest = prototype.getLatestTask(jenkins.getInstance(), project.getLastBuild());
         Task aggregated = prototype.getAggregatedTask(project.getLastBuild(), jenkins.getInstance());
         assertEquals("job/test/1/console", latest.getLink());
         assertTrue(latest.getStatus().isRunning());
+        assertEquals(mockDescription, aggregated.getDescription());
 
         assertEquals("job/test/1/console", aggregated.getLink());
         assertTrue(aggregated.getStatus().isRunning());

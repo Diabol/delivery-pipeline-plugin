@@ -19,6 +19,8 @@ package se.diabol.jenkins.pipeline.domain.status;
 
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.util.List;
+
 @ExportedBean
 public interface Status {
 
@@ -47,4 +49,8 @@ public interface Status {
     String getTimestamp();
 
     long getDuration();
+
+    boolean isPromoted();
+
+	List<PromotionStatus> getPromotions();
 }

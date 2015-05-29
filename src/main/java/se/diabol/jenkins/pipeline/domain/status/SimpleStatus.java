@@ -17,14 +17,21 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Result;
+import hudson.model.*;
+import hudson.plugins.promoted_builds.PromotedBuildAction;
+import hudson.plugins.promoted_builds.Promotion;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
@@ -36,11 +43,33 @@ public class SimpleStatus implements Status {
     private final long lastActivity;
     private final long duration;
 
+    private final boolean promoted;
+	private final List<PromotionStatus> promotions;
+
     public SimpleStatus(StatusType type, long lastActivity, long duration) {
+        this(type, lastActivity, duration, false, Collections.<PromotionStatus>emptyList());
+    }
+
+    public SimpleStatus(StatusType type, long lastActivity, long duration, boolean promoted, List<PromotionStatus> promotions) {
         this.type = type;
         this.lastActivity = lastActivity;
         this.duration = duration;
+		this.promoted = promoted;
+		this.promotions = promotions;
     }
+
+	@Exported
+	public List<PromotionStatus> getPromotions()
+	{
+		return promotions;
+	}
+
+    @Exported
+	@Override
+	public boolean isPromoted()
+	{
+		return promoted;
+	}
 
     @Exported
     public StatusType getType() {
@@ -142,10 +171,10 @@ public class SimpleStatus implements Status {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
         }
         if (Result.SUCCESS.equals(result)) {
-            return StatusFactory.success(build.getTimeInMillis(), build.getDuration());
+            return getStatusWithPromotionsFromSuccessResult(build);
         }
         if (Result.FAILURE.equals(result)) {
-            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration());
+            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), false, Collections.<PromotionStatus>emptyList());
         }
         if (Result.UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
@@ -154,7 +183,58 @@ public class SimpleStatus implements Status {
             return StatusFactory.notBuilt(build.getTimeInMillis(), build.getDuration());
         }
         throw new IllegalStateException("Result " + result + " not recognized.");
+    }
 
+    private static Status getStatusWithPromotionsFromSuccessResult(AbstractBuild build) {
+        final PromotedBuildAction action = build.getAction(PromotedBuildAction.class);
+        if(action != null) {
+            final List<hudson.plugins.promoted_builds.Status> statusList = action.getPromotions();
+            if (CollectionUtils.isNotEmpty(statusList)) {
+                final List<PromotionStatus> promotionStatusList = getPromotionStatuses(build, statusList);
+                return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), true, promotionStatusList);
+            }
+        }
+        return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), false, Collections.<PromotionStatus>emptyList());
+    }
+
+    private static List<PromotionStatus> getPromotionStatuses(AbstractBuild build, List<hudson.plugins.promoted_builds.Status> statusList) {
+        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        for(hudson.plugins.promoted_builds.Status status : statusList)
+        {
+            final List<String> params = new ArrayList<String>();
+            if (!status.getPromotionBuilds().isEmpty())
+            {
+                for(Promotion promotion : status.getPromotionBuilds()) {
+                    for (ParameterValue value : promotion.getParameterValues()) {
+                        if (value instanceof StringParameterValue) {
+                            if (StringUtils.isNotBlank(((StringParameterValue) value).value)) {
+                                params.add("<strong>" + value.getName() + "</strong>: " + ((StringParameterValue) value).value);
+                            }
+                        } else if (value instanceof FileParameterValue) {
+                            params.add("<strong>" + value.getName() + "</strong>: " + ((FileParameterValue) value).getLocation());
+                        } else if (value instanceof BooleanParameterValue) {
+                            if (((BooleanParameterValue) value).value) {
+                                params.add("<strong>" + value.getName() + "</strong>: " + Boolean.toString(((BooleanParameterValue) value).value));
+                            }
+                        }
+                        // TODO: there are more types
+                    }
+                    promotionStatusList.add(new PromotionStatus(status.getName(), promotion.getStartTimeInMillis(), promotion.getTime().getTime()-build.getTimeInMillis(),
+                                        promotion.getUserName(), status.getIcon("16x16"), params));
+                }
+            }
+        }
+        sortPromotionStatusListByStartTime(promotionStatusList);
+        return promotionStatusList;
+    }
+
+    private static void sortPromotionStatusListByStartTime(List<PromotionStatus> promotionStatusList) {
+        Collections.sort(promotionStatusList, new Comparator<PromotionStatus>() {
+            @Override
+            public int compare(PromotionStatus o1, PromotionStatus o2) {
+                return (int) (o2.getStartTime() - o1.getStartTime());
+            }
+        });
     }
 
 
