@@ -75,6 +75,7 @@ public class Change {
             String changeLink = null;
             if (repositoryBrowser != null) {
                 try {
+                    @SuppressWarnings("unchecked")
                     URL link = repositoryBrowser.getChangeSetLink(entry);
                     if (link != null) {
                         changeLink = link.toExternalForm();

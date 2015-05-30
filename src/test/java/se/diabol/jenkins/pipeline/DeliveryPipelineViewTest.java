@@ -66,15 +66,20 @@ public class DeliveryPipelineViewTest {
     public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    @WithoutJenkins
-    public void testOnJobRenamed() {
+    public void testOnJobRenamed() throws Exception {
+
+        FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
+
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         view.setComponentSpecs(componentSpecs);
-        view.onJobRenamed(null, "build1", "newbuild");
+        jenkins.getInstance().addView(view);
+
+        p1.renameTo("newbuild");
+
         assertEquals("newbuild", view.getComponentSpecs().get(0).getFirstJob());
     }
 
@@ -84,24 +89,32 @@ public class DeliveryPipelineViewTest {
     public void testOnJobRenamedNoComponentSpecs() {
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         //Rename
-        view.onJobRenamed(null, "build1", "newbuild");
+        view.onProjectRenamed(null, "build1", "newbuild");
         //Delete
-        view.onJobRenamed(null, "build1", null);
+        view.onProjectRenamed(null, "build1", null);
     }
 
 
     @Test
-    @WithoutJenkins
-    public void testOnJobRenamedDelete() {
+    public void testOnJobRenamedDelete() throws Exception {
+
+        FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
+
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
 
 
+
+
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         view.setComponentSpecs(componentSpecs);
+
+        jenkins.getInstance().addView(view);
+
         assertEquals(2, view.getComponentSpecs().size());
-        view.onJobRenamed(null, "build1", null);
+
+        p1.delete();
 
         assertEquals(1, view.getComponentSpecs().size());
 
@@ -122,6 +135,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    @SuppressWarnings("all")
     public void testDoCheckUpdateInterval() {
         DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
         assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("").kind);
@@ -369,6 +383,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    @SuppressWarnings("all")
     public void testDoCheckName() {
         DeliveryPipelineView.ComponentSpec.DescriptorImpl d = new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
         assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(null).kind);
@@ -381,6 +396,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    @SuppressWarnings("all")
     public void testDoCheckRegexpFirstJob() {
         DeliveryPipelineView.RegExpSpec.DescriptorImpl d = new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
         assertEquals(FormValidation.Kind.OK, d.doCheckRegexp(null).kind);
@@ -517,11 +533,11 @@ public class DeliveryPipelineViewTest {
         testDoCreateItem("testDoCreateItem", "");
 
         DeliveryPipelineView view = new DeliveryPipelineView("Delivery Pipeline");
-        jenkins.hudson.addView(view);
+        jenkins.getInstance().addView(view);
         
         testDoCreateItem("testDoCreateItemAsTheDefaultViewFromTheViewUrl", "view/Delivery%20Pipeline/");
 
-        jenkins.hudson.setPrimaryView(view);
+        jenkins.getInstance().setPrimaryView(view);
         testDoCreateItem("testDoCreateItemAsTheDefaultView", "");
     }
 
