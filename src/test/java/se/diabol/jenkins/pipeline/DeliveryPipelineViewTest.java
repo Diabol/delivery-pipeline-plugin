@@ -379,6 +379,7 @@ public class DeliveryPipelineViewTest {
         assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("*").kind);
         assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-.+?-project").kind);
         assertEquals(FormValidation.Kind.OK, d.doCheckRegexp("^build-(.+?)-project").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-(.+?)-(project)").kind);
     }
 
     @Test
