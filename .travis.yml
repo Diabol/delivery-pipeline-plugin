@@ -10,4 +10,4 @@ before_install:
 script:
   mvn integration-test
 after_success:
-- mvn jacoco:report coveralls:jacoco
+- mvn jacoco:report coveralls:report
