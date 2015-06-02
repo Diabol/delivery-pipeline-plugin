@@ -378,13 +378,18 @@ function triggerRebuild(taskId, project, buildId) {
 }
 
 function triggerBuild(url, taskId) {
-    var before = function(xhr){};
-
-    console.log(url)
+    var before;
+    if (crumb.value != null && crumb.value != "") {
+        console.info("Crumb found and will be added to request header");
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info("Crumb not needed");
+        before = function(xhr){}
+    }
 
     Q.ajax({
         url: rootURL + "/" + url + 'build?delay=0sec',
-        type: "GET",
+        type: "POST",
         beforeSend: before,
         timeout: 20000,
         success: function (data, textStatus, jqXHR) {
