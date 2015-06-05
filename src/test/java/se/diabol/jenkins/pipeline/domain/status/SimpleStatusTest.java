@@ -21,10 +21,8 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.FreeStyleProject;
-import hudson.model.Result;
+import hudson.model.*;
+import hudson.plugins.promoted_builds.Promotion;
 import hudson.util.OneShotEvent;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -83,6 +82,92 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.SUCCESS));
+    }
+
+    @Test
+    public void testResolveStatusSuccessWithPromotions() throws Exception {
+        final String stringParamName = "StringParamName";
+        final String stringParamValue = "Param Value";
+
+        final String booleanParamName = "BooleanParamName";
+        final boolean booleanParamValue = true;
+
+        final String fileParamName = "FileParamName";
+        final String fileParamValue = "File Path";
+
+        final String promotionUserName = "User";
+
+        final String promotion1Name = "Promotion-1";
+        final long promotion1StartTime = System.currentTimeMillis()-100;
+
+        final String promotion2Name = "Promotion-2";
+        final long promotion2StartTime = System.currentTimeMillis();
+
+        final AbstractBuild build = Mockito.mock(AbstractBuild.class);
+        Mockito.when(build.getResult()).thenReturn(Result.SUCCESS);
+
+        final List<ParameterValue> parameterValues = new ArrayList<ParameterValue>();
+        parameterValues.add(new StringParameterValue(stringParamName, stringParamValue));
+        parameterValues.add(new BooleanParameterValue(booleanParamName, booleanParamValue));
+
+        final FileParameterValue fileParam = Mockito.mock(FileParameterValue.class);
+        Mockito.when(fileParam.getLocation()).thenReturn(fileParamValue);
+
+        parameterValues.add(fileParam);
+
+        final Promotion promotionFirst = Mockito.mock(Promotion.class);
+        Mockito.when(promotionFirst.getUserName()).thenReturn(promotionUserName);
+        Mockito.when(promotionFirst.getParameterValues()).thenReturn(parameterValues);
+
+        final Promotion promotionSecond = Mockito.mock(Promotion.class);
+        Mockito.when(promotionSecond.getParameterValues()).thenReturn(parameterValues);
+
+        final List<Promotion> promotions = new ArrayList<Promotion>();
+        promotions.add(promotionFirst);
+
+        final SimpleStatus.PromotionStatusDecorator promotionStatusDecorator = Mockito.mock(SimpleStatus.PromotionStatusDecorator.class);
+        SimpleStatus.setPromotionStatusDecorator(promotionStatusDecorator);
+        Mockito.when(promotionStatusDecorator.getPromotionBuilds(Mockito.anyObject())).thenReturn(promotions);
+
+        final List statusList = new ArrayList();
+        final Object statusObject1 = new Object();
+        statusList.add(statusObject1);
+
+        final Object statusObject2 = new Object();
+        statusList.add(statusObject2);
+
+        Mockito.when(promotionStatusDecorator.getName(statusObject1)).thenReturn(promotion1Name);
+        Mockito.when(promotionStatusDecorator.getName(statusObject2)).thenReturn(promotion2Name);
+
+        Mockito.when(promotionStatusDecorator.getStartTime(Mockito.anyObject())).thenReturn(promotion1StartTime, promotion2StartTime);
+
+        final SimpleStatus.PromotedBuildActionDecorator actionDecorator = Mockito.mock(SimpleStatus.PromotedBuildActionDecorator.class);
+        SimpleStatus.setPromotedBuildActionDecorator(actionDecorator);
+        Mockito.when(actionDecorator.getPromotions(Mockito.anyObject())).thenReturn(statusList);
+
+        Mockito.when(build.getAction(Mockito.any(Class.class))).thenReturn((Action) actionDecorator);
+
+        final Status resolvedStatus = SimpleStatus.resolveStatus(null, build, null);
+        assertTrue(resolvedStatus.isSuccess());
+        assertEquals("SUCCESS", resolvedStatus.toString());
+        assertTrue(resolvedStatus.getType().equals(StatusType.SUCCESS));
+        assertFalse(resolvedStatus.getPromotions().isEmpty());
+        assertEquals(2, resolvedStatus.getPromotions().size());
+
+        final PromotionStatus promotionStatusLatest = resolvedStatus.getPromotions().get(0);
+        assertEquals(promotion2Name, promotionStatusLatest.getName());
+        assertEquals(promotionUserName, promotionStatusLatest.getUser());
+        assertEquals(3, promotionStatusLatest.getParams().size());
+        assertEquals("<strong>StringParamName</strong>: Param Value", promotionStatusLatest.getParams().get(0));
+        assertEquals("<strong>BooleanParamName</strong>: true", promotionStatusLatest.getParams().get(1));
+        assertEquals("<strong>null</strong>: File Path", promotionStatusLatest.getParams().get(2));
+
+        final PromotionStatus promotionStatusPrevious = resolvedStatus.getPromotions().get(1);
+        assertEquals(promotion1Name, promotionStatusPrevious.getName());
+        assertEquals(promotionUserName, promotionStatusPrevious.getUser());
+        assertEquals("<strong>StringParamName</strong>: Param Value", promotionStatusPrevious.getParams().get(0));
+        assertEquals("<strong>BooleanParamName</strong>: true", promotionStatusPrevious.getParams().get(1));
+        assertEquals("<strong>null</strong>: File Path", promotionStatusPrevious.getParams().get(2));
     }
 
     @Test

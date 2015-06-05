@@ -148,6 +148,8 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowChanges());
         assertFalse(view.isAllowManualTriggers());
         assertFalse(view.isAllowRebuild());
+        assertFalse(view.isShowDescription());
+        assertFalse(view.isShowPromotions());
     }
 
     @Test
@@ -171,7 +173,10 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isAllowManualTriggers());
         view.setAllowRebuild(true);
         assertTrue(view.isAllowRebuild());
-
+        view.setShowDescription(true);
+        assertTrue(view.isShowDescription());
+        view.setShowPromotions(true);
+        assertTrue(view.isShowPromotions());
     }
 
     @Test

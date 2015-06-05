@@ -28,10 +28,7 @@ import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
@@ -45,6 +42,9 @@ public class SimpleStatus implements Status {
 
     private final boolean promoted;
 	private final List<PromotionStatus> promotions;
+
+    private static PromotionStatusDecorator promotionStatusDecorator = new PromotionStatusDecorator();
+    private static PromotedBuildActionDecorator promotedBuildActionDecorator = new PromotedBuildActionDecorator();
 
     public SimpleStatus(StatusType type, long lastActivity, long duration) {
         this(type, lastActivity, duration, false, Collections.<PromotionStatus>emptyList());
@@ -186,9 +186,9 @@ public class SimpleStatus implements Status {
     }
 
     private static Status getStatusWithPromotionsFromSuccessResult(AbstractBuild build) {
-        final PromotedBuildAction action = build.getAction(PromotedBuildAction.class);
+        final Object action = build.getAction(PromotedBuildAction.class);
         if(action != null) {
-            final List<hudson.plugins.promoted_builds.Status> statusList = action.getPromotions();
+            final List statusList = promotedBuildActionDecorator.getPromotions(action);
             if (CollectionUtils.isNotEmpty(statusList)) {
                 final List<PromotionStatus> promotionStatusList = getPromotionStatuses(build, statusList);
                 return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), true, promotionStatusList);
@@ -197,14 +197,14 @@ public class SimpleStatus implements Status {
         return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), false, Collections.<PromotionStatus>emptyList());
     }
 
-    private static List<PromotionStatus> getPromotionStatuses(AbstractBuild build, List<hudson.plugins.promoted_builds.Status> statusList) {
+    private static List<PromotionStatus> getPromotionStatuses(AbstractBuild build, List statusList) {
         final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
-        for(hudson.plugins.promoted_builds.Status status : statusList)
+        for(Object status : statusList)
         {
             final List<String> params = new ArrayList<String>();
-            if (!status.getPromotionBuilds().isEmpty())
+            if (!promotionStatusDecorator.getPromotionBuilds(status).isEmpty())
             {
-                for(Promotion promotion : status.getPromotionBuilds()) {
+                for(Promotion promotion : promotionStatusDecorator.getPromotionBuilds(status)) {
                     for (ParameterValue value : promotion.getParameterValues()) {
                         if (value instanceof StringParameterValue) {
                             if (StringUtils.isNotBlank(((StringParameterValue) value).value)) {
@@ -219,20 +219,20 @@ public class SimpleStatus implements Status {
                         }
                         // TODO: there are more types
                     }
-                    promotionStatusList.add(new PromotionStatus(status.getName(), promotion.getStartTimeInMillis(), promotion.getTime().getTime()-build.getTimeInMillis(),
-                                        promotion.getUserName(), status.getIcon("16x16"), params));
+                    promotionStatusList.add(new PromotionStatus(promotionStatusDecorator.getName(status), promotion.getStartTimeInMillis(), promotion.getTime().getTime()-build.getTimeInMillis(),
+                                        promotion.getUserName(), promotionStatusDecorator.getIcon(status, "16x16"), params));
                 }
             }
         }
-        sortPromotionStatusListByStartTime(promotionStatusList);
+        sortPromotionStatusListByStartTimeInDescOrder(promotionStatusList);
         return promotionStatusList;
     }
 
-    private static void sortPromotionStatusListByStartTime(List<PromotionStatus> promotionStatusList) {
-        Collections.sort(promotionStatusList, new Comparator<PromotionStatus>() {
+    private static void sortPromotionStatusListByStartTimeInDescOrder(List promotionStatusList) {
+        Collections.sort(promotionStatusList, new Comparator() {
             @Override
-            public int compare(PromotionStatus o1, PromotionStatus o2) {
-                return (int) (o2.getStartTime() - o1.getStartTime());
+            public int compare(Object o1, Object o2) {
+                return (int) (promotionStatusDecorator.getStartTime(o2) - promotionStatusDecorator.getStartTime(o1));
             }
         });
     }
@@ -241,5 +241,53 @@ public class SimpleStatus implements Status {
     @Override
     public String toString() {
         return String.valueOf(type);
+    }
+
+    /* package */ static void setPromotionStatusDecorator(PromotionStatusDecorator promotionStatusDecorator) {
+        SimpleStatus.promotionStatusDecorator = promotionStatusDecorator;
+    }
+
+    /* package */ static void setPromotedBuildActionDecorator(PromotedBuildActionDecorator promotedBuildActionDecorator) {
+        SimpleStatus.promotedBuildActionDecorator = promotedBuildActionDecorator;
+    }
+    // Decorator
+
+    static public class PromotedBuildActionDecorator implements Action {
+        public List getPromotions(Object action) {
+            return ((PromotedBuildAction)action).getPromotions();
+        }
+
+        @Override
+        public String getIconFileName() {
+            return null;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return null;
+        }
+
+        @Override
+        public String getUrlName() {
+            return null;
+        }
+    }
+
+    static public class PromotionStatusDecorator {
+        public Collection<Promotion> getPromotionBuilds(Object status) {
+            return ((hudson.plugins.promoted_builds.Status)status).getPromotionBuilds();
+        }
+
+        public String getName(Object status) {
+            return ((hudson.plugins.promoted_builds.Status)status).getName();
+        }
+
+        public String getIcon(Object status, String size) {
+            return ((hudson.plugins.promoted_builds.Status)status).getIcon(size);
+        }
+
+        public long getStartTime(Object status) {
+            return ((PromotionStatus)status).getStartTime();
+        }
     }
 }
