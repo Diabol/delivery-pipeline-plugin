@@ -100,6 +100,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     html.push(' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h2>');
 
+                    if (data.showTotalBuildTime) {
+                        html.push('<h3>Total build time: ' + formatDuration(pipeline.totalBuildTime) + '</h3>');
+                    }
+
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html.push(generateChangeLog(pipeline.changes));
                     }
