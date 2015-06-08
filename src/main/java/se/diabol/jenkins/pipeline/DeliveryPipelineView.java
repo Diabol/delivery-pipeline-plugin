@@ -95,6 +95,7 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
     private boolean allowManualTriggers = false;
+    private boolean showTotalBuildTime = false;
     private boolean allowRebuild = false;
     private boolean allowPipelineStart = false;
 
@@ -172,6 +173,15 @@ public class DeliveryPipelineView extends View {
 
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
+    }
+
+    @Exported
+    public boolean isShowTotalBuildTime() {
+        return showTotalBuildTime;
+    }
+
+    public void setShowTotalBuildTime(boolean showTotalBuildTime) {
+        this.showTotalBuildTime = showTotalBuildTime;
     }
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {

@@ -26,8 +26,10 @@ import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
@@ -51,6 +53,9 @@ public class Pipeline extends AbstractItem {
 
     private List<Change> changes;
 
+    private long totalBuildTime;
+
+    private Map<String, Task> allTasks = null;
 
     public Pipeline(String name, AbstractProject firstProject, List<Stage> stages) {
         super(name);
@@ -114,7 +119,61 @@ public class Pipeline extends AbstractItem {
         return changes;
     }
 
+    @Exported
+    public long getTotalBuildTime() {
+        return totalBuildTime;
+    }
 
+    public void calculateTotalBuildTime() {
+        if (stages.size() == 0) {
+            this.totalBuildTime = 0L;
+        } else {
+            List<Route> allRoutes = new ArrayList<Route>();
+            calculatePipelineRoutes(getStages().get(0).getTasks().get(0), null, allRoutes);
+            long maxTime = 0L;
+            for (Route route : allRoutes) {
+                long buildTime = route.getTotalBuildTime();
+                if (buildTime > maxTime) {
+                    maxTime = buildTime;
+                }
+            }
+            this.totalBuildTime = maxTime;
+        }
+    }
+
+    private Route createRouteAndCopyTasks(final Route route, Task task) {
+        Route currentRoute = new Route();
+        if (route != null) {
+            currentRoute.setTasks(newArrayList(route.getTasks()));
+        }
+        currentRoute.addTask(task);
+        return currentRoute;
+    }
+
+    void calculatePipelineRoutes(Task task, final Route route, List<Route> allRoutes) {
+        if (task.getDownstreamTasks() != null && task.getDownstreamTasks().size() > 0) {
+            for (String downstreamTaskName: task.getDownstreamTasks()) {
+                // assume each task only appears once in the pipeline
+                Route currentRoute = createRouteAndCopyTasks(route, task);
+                calculatePipelineRoutes(getTaskFromName(downstreamTaskName), currentRoute, allRoutes);
+            }
+        } else {
+            Route currentRoute = createRouteAndCopyTasks(route, task);
+            allRoutes.add(currentRoute);
+        }
+    }
+
+    private Task getTaskFromName(String taskName) {
+        if (allTasks == null) {
+            allTasks = new HashMap<String, Task>();
+            for (Stage stage : stages) {
+                for (Task task : stage.getTasks()) {
+                    allTasks.put(task.getId(), task);
+                }
+            }
+        }
+        return allTasks.get(taskName);
+    }
 
     /**
      * Created a pipeline prototype for the supplied first project
@@ -168,6 +227,7 @@ public class Pipeline extends AbstractItem {
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, firstBuild.getDisplayName(), pipeLineTimestamp,
                                 Trigger.getTriggeredBy(firstProject, firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
+            pipelineLatest.calculateTotalBuildTime();
             result.add(pipelineLatest);
         }
         return result;
