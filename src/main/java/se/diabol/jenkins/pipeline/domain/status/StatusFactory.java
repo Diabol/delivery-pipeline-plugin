@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
+
 import java.util.List;
 
 public final class StatusFactory {

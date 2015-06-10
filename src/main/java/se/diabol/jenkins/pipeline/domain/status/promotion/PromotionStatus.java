@@ -1,4 +1,4 @@
-package se.diabol.jenkins.pipeline.domain.status;
+package se.diabol.jenkins.pipeline.domain.status.promotion;
 
 
 import org.kohsuke.stapler.export.Exported;

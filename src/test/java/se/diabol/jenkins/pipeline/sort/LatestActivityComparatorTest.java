@@ -22,7 +22,7 @@ import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.Task;
-import se.diabol.jenkins.pipeline.domain.status.PromotionStatus;
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 
 import java.util.ArrayList;

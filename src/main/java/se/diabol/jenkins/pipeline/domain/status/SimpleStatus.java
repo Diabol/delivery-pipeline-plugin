@@ -17,18 +17,21 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
-import hudson.model.*;
-import hudson.plugins.promoted_builds.PromotedBuildAction;
-import hudson.plugins.promoted_builds.Promotion;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.Result;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
@@ -43,8 +46,7 @@ public class SimpleStatus implements Status {
     private final boolean promoted;
 	private final List<PromotionStatus> promotions;
 
-    private static PromotionStatusDecorator promotionStatusDecorator = new PromotionStatusDecorator();
-    private static PromotedBuildActionDecorator promotedBuildActionDecorator = new PromotedBuildActionDecorator();
+    private static PromotionStatusProviderWrapper promotionStatusProviderWrapper = new PromotionStatusProviderWrapper();
 
     public SimpleStatus(StatusType type, long lastActivity, long duration) {
         this(type, lastActivity, duration, false, Collections.<PromotionStatus>emptyList());
@@ -171,10 +173,10 @@ public class SimpleStatus implements Status {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
         }
         if (Result.SUCCESS.equals(result)) {
-            return getStatusWithPromotionsFromSuccessResult(build);
+            return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build), getPromotionStatusList(build));
         }
         if (Result.FAILURE.equals(result)) {
-            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), false, Collections.<PromotionStatus>emptyList());
+            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build), getPromotionStatusList(build));
         }
         if (Result.UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
@@ -185,109 +187,40 @@ public class SimpleStatus implements Status {
         throw new IllegalStateException("Result " + result + " not recognized.");
     }
 
-    private static Status getStatusWithPromotionsFromSuccessResult(AbstractBuild build) {
-        final Object action = build.getAction(PromotedBuildAction.class);
-        if(action != null) {
-            final List statusList = promotedBuildActionDecorator.getPromotions(action);
-            if (CollectionUtils.isNotEmpty(statusList)) {
-                final List<PromotionStatus> promotionStatusList = getPromotionStatuses(build, statusList);
-                return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), true, promotionStatusList);
-            }
+    private static boolean isBuildPromoted(AbstractBuild build) {
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
+        if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
+            return promotionStatusProviders.get(0).isBuildPromoted(build);
         }
-        return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), false, Collections.<PromotionStatus>emptyList());
+        return false;
     }
 
-    private static List<PromotionStatus> getPromotionStatuses(AbstractBuild build, List statusList) {
+    private static List<PromotionStatus> getPromotionStatusList(AbstractBuild build) {
         final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
-        for(Object status : statusList)
-        {
-            final List<String> params = new ArrayList<String>();
-            if (!promotionStatusDecorator.getPromotionBuilds(status).isEmpty())
-            {
-                for(Promotion promotion : promotionStatusDecorator.getPromotionBuilds(status)) {
-                    for (ParameterValue value : promotion.getParameterValues()) {
-                        if (value instanceof StringParameterValue) {
-                            if (StringUtils.isNotBlank(((StringParameterValue) value).value)) {
-                                params.add("<strong>" + value.getName() + "</strong>: " + ((StringParameterValue) value).value);
-                            }
-                        } else if (value instanceof FileParameterValue) {
-                            params.add("<strong>" + value.getName() + "</strong>: " + ((FileParameterValue) value).getLocation());
-                        } else if (value instanceof BooleanParameterValue) {
-                            if (((BooleanParameterValue) value).value) {
-                                params.add("<strong>" + value.getName() + "</strong>: " + Boolean.toString(((BooleanParameterValue) value).value));
-                            }
-                        }
-                        // TODO: there are more types
-                    }
-                    promotionStatusList.add(new PromotionStatus(promotionStatusDecorator.getName(status), promotion.getStartTimeInMillis(), promotion.getTime().getTime()-build.getTimeInMillis(),
-                                        promotion.getUserName(), promotionStatusDecorator.getIcon(status, "16x16"), params));
-                }
-            }
+
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
+        if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
+            promotionStatusList.addAll(promotionStatusProviders.get(0).getPromotionStatusList(build));
         }
-        sortPromotionStatusListByStartTimeInDescOrder(promotionStatusList);
         return promotionStatusList;
     }
-
-    private static void sortPromotionStatusListByStartTimeInDescOrder(List promotionStatusList) {
-        Collections.sort(promotionStatusList, new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                return (int) (promotionStatusDecorator.getStartTime(o2) - promotionStatusDecorator.getStartTime(o1));
-            }
-        });
-    }
-
 
     @Override
     public String toString() {
         return String.valueOf(type);
     }
 
-    /* package */ static void setPromotionStatusDecorator(PromotionStatusDecorator promotionStatusDecorator) {
-        SimpleStatus.promotionStatusDecorator = promotionStatusDecorator;
-    }
+    // Decorators to make code unit-testable
 
-    /* package */ static void setPromotedBuildActionDecorator(PromotedBuildActionDecorator promotedBuildActionDecorator) {
-        SimpleStatus.promotedBuildActionDecorator = promotedBuildActionDecorator;
-    }
-    // Decorator
-
-    static public class PromotedBuildActionDecorator implements Action {
-        public List getPromotions(Object action) {
-            return ((PromotedBuildAction)action).getPromotions();
-        }
-
-        @Override
-        public String getIconFileName() {
-            return null;
-        }
-
-        @Override
-        public String getDisplayName() {
-            return null;
-        }
-
-        @Override
-        public String getUrlName() {
-            return null;
+    static class PromotionStatusProviderWrapper {
+        public List<AbstractPromotionStatusProvider> getAllPromotionStatusProviders() {
+            return AbstractPromotionStatusProvider.all();
         }
     }
 
-    static public class PromotionStatusDecorator {
-        public Collection<Promotion> getPromotionBuilds(Object status) {
-            return ((hudson.plugins.promoted_builds.Status)status).getPromotionBuilds();
-        }
+    // package scope setters for unit testing
 
-        public String getName(Object status) {
-            return ((hudson.plugins.promoted_builds.Status)status).getName();
-        }
-
-        public String getIcon(Object status, String size) {
-            return ((hudson.plugins.promoted_builds.Status)status).getIcon(size);
-        }
-
-        public long getStartTime(Object status) {
-            return ((PromotionStatus)status).getStartTime();
-        }
+    static void setPromotionStatusProviderWrapper(PromotionStatusProviderWrapper promotionStatusProviderWrapper) {
+        SimpleStatus.promotionStatusProviderWrapper = promotionStatusProviderWrapper;
     }
 }
