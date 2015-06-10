@@ -147,6 +147,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.getShowAvatars());
         assertFalse(view.isShowChanges());
         assertFalse(view.isAllowManualTriggers());
+        assertFalse(view.isShowTotalBuildTime());
         assertFalse(view.isAllowRebuild());
         assertFalse(view.isShowDescription());
         assertFalse(view.isShowPromotions());
@@ -171,6 +172,8 @@ public class DeliveryPipelineViewTest {
         assertNotNull(view.getLastUpdated());
         view.setAllowManualTriggers(true);
         assertTrue(view.isAllowManualTriggers());
+        view.setShowTotalBuildTime(true);
+        assertTrue(view.isShowTotalBuildTime());
         view.setAllowRebuild(true);
         assertTrue(view.isAllowRebuild());
         view.setShowDescription(true);
@@ -384,6 +387,7 @@ public class DeliveryPipelineViewTest {
         assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("*").kind);
         assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-.+?-project").kind);
         assertEquals(FormValidation.Kind.OK, d.doCheckRegexp("^build-(.+?)-project").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-(.+?)-(project)").kind);
     }
 
     @Test

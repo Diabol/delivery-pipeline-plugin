@@ -100,6 +100,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     html.push(' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h2>');
 
+                    if (data.showTotalBuildTime) {
+                        html.push('<h3>Total build time: ' + formatDuration(pipeline.totalBuildTime) + '</h3>');
+                    }
+
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html.push(generateChangeLog(pipeline.changes));
                     }
@@ -162,11 +166,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
                             "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + rootURL + "/" + task.link + "\">" + htmlEncode(task.name) + "</a></div>");
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
-                            html.push('<div class="task-manual" id="manual-' + id + '" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">');
+                            html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">');
                             html.push("</div>");
                         } else {
                             if (!pipeline.aggregated && data.allowRebuild && task.rebuildable) {
-                                html.push('<div class="task-rebuild" id="rebuild-' + id + '" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
+                                html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
                                 html.push("</div>");
                             }
                         }
@@ -403,13 +407,18 @@ function triggerRebuild(taskId, project, buildId) {
 }
 
 function triggerBuild(url, taskId) {
-    var before = function(xhr){};
-
-    console.log(url)
+    var before;
+    if (crumb.value != null && crumb.value != "") {
+        console.info("Crumb found and will be added to request header");
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info("Crumb not needed");
+        before = function(xhr){}
+    }
 
     Q.ajax({
         url: rootURL + "/" + url + 'build?delay=0sec',
-        type: "GET",
+        type: "POST",
         beforeSend: before,
         timeout: 20000,
         success: function (data, textStatus, jqXHR) {

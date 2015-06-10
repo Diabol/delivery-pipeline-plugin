@@ -146,6 +146,7 @@ div.task-manual {
     display: table-cell;
     background: url("play.png") no-repeat;
     background-size: 75%;
+    cursor: pointer;
     height: 14px;
     width: 14px;
     float: right;
@@ -158,6 +159,7 @@ div.task-rebuild {
     background-color: #808080;
     background: url("refresh.png") no-repeat;
     background-size: 75%;
+    cursor: pointer;
     height: 14px;
     width: 14px;
     float: right;
