@@ -88,7 +88,7 @@ public class ManualStep {
                 AbstractBuild upstreamBuild = BuildUtil.match(upstream.getBuilds(), firstBuild);
                 if (build == null) {
                     if (upstreamBuild != null && !upstreamBuild.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)) {
-                        return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+                        return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), !upstreamBuild.getResult().isWorseThan(Result.UNSTABLE), project.hasPermission(Item.BUILD), null);
                     }
                 } else {
                     if (upstreamBuild != null && !build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild) && build.getResult().isWorseThan(Result.UNSTABLE)) {
