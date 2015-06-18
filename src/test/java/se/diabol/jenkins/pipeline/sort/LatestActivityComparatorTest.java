@@ -34,7 +34,7 @@ public class LatestActivityComparatorTest {
 
     @Test
     public void testCompare() {
-        Task taskA = new Task("task", "Build", StatusFactory.success(0, 20), null, null, null, true);
+        Task taskA = new Task(null, "task", "Build", StatusFactory.success(0, 20), null, null, null, true);
         List<Task> tasksA = new ArrayList<Task>();
         tasksA.add(taskA);
         Stage stageA = new Stage("Build", tasksA);
@@ -44,7 +44,7 @@ public class LatestActivityComparatorTest {
         List<Pipeline> pipelinesA = new ArrayList<Pipeline>();
         pipelinesA.add(pipelineA);
 
-        Task taskB = new Task("task", "Build", StatusFactory.success(10, 20), null, null, null, true);
+        Task taskB = new Task(null, "task", "Build", StatusFactory.success(10, 20), null, null, null, true);
         List<Task> tasksB = new ArrayList<Task>();
         tasksB.add(taskB);
         Stage stageB = new Stage("Build", tasksB);
