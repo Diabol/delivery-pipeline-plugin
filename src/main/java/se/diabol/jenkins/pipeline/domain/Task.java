@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.domain;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
@@ -47,8 +48,9 @@ public class Task extends AbstractItem {
     private final String buildId;
     private final List<String> downstreamTasks;
     private final boolean initial;
+    private final AbstractProject project;
 
-    public Task(String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks, boolean initial) {
+    public Task(AbstractProject project, String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks, boolean initial) {
         super(name);
         this.id = id;
         this.link = link;
@@ -58,6 +60,7 @@ public class Task extends AbstractItem {
         this.buildId = null;
         this.downstreamTasks = downstreamTasks;
         this.initial = initial;
+        this.project = project;
     }
 
 
@@ -72,6 +75,7 @@ public class Task extends AbstractItem {
         this.manual = manual;
         this.testResult = testResult;
         this.initial = task.isInitial();
+        this.project = task.project;
     }
 
     @Exported
@@ -123,7 +127,7 @@ public class Task extends AbstractItem {
         if (status.isRunning() || status.isIdle() || status.isNotBuilt() || status.isQueued() || status.isDisabled()) {
             return false;
         } else {
-            return true;
+            return project.hasPermission(Item.BUILD);
         }
     }
 
@@ -150,7 +154,7 @@ public class Task extends AbstractItem {
         for (AbstractProject downstreamProject : downStreams) {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
+        return new Task(project, project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
                 project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial);
     }
 
