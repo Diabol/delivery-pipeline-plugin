@@ -22,4 +22,11 @@ Run locally
 Function Test
 ---
     mvn integration-test
+
+Docker container
+----
+    mvn install
+    docker build -t dpp .
+    docker run -p 8080:8080 dpp
+
     
