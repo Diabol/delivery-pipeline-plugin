@@ -15,43 +15,35 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain.status;
+package se.diabol.jenkins.pipeline.domain;
 
-import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
-
+import java.util.ArrayList;
 import java.util.List;
 
-@ExportedBean
-public interface Status {
+/**
+ * A possible route in the pipeline, comprised of tasks.
+ */
+public class Route {
 
-    StatusType getType();
+    private List<Task> tasks = new ArrayList<Task>();
 
-    boolean isIdle();
+    public List<Task> getTasks() {
+        return tasks;
+    }
 
-    boolean isQueued();
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
 
-    boolean isRunning();
+    public long getTotalBuildTime() {
+        long totalBuildTime = 0;
+        for (Task task: tasks) {
+            totalBuildTime += task.getStatus().getDuration();
+        }
+        return totalBuildTime;
+    }
 
-    boolean isSuccess();
-
-    boolean isFailed();
-
-    boolean isUnstable();
-
-    boolean isCancelled();
-
-    boolean isDisabled();
-
-    boolean isNotBuilt();
-
-    long getLastActivity();
-
-    String getTimestamp();
-
-    long getDuration();
-
-    boolean isPromoted();
-
-	List<PromotionStatus> getPromotions();
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
 }

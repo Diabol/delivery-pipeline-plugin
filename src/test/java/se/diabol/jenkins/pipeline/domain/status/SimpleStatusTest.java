@@ -33,8 +33,11 @@ import org.jvnet.hudson.test.*;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -56,6 +59,7 @@ public class SimpleStatusTest {
         assertEquals(-1, status.getDuration());
         assertNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.IDLE));
+        assertFalse(status.isPromoted());
     }
 
     @Test
@@ -69,6 +73,7 @@ public class SimpleStatusTest {
         assertEquals(-1, status.getDuration());
         assertNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.DISABLED));
+        assertFalse(status.isPromoted());
     }
 
     @Test
@@ -83,6 +88,55 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.SUCCESS));
+        assertFalse(status.isPromoted());
+    }
+
+    @Test
+    public void testResolveStatusSuccessWithPromotions() {
+        final AbstractBuild build = Mockito.mock(AbstractBuild.class);
+        Mockito.when(build.getResult()).thenReturn(Result.SUCCESS);
+
+        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        promotionStatusList.add(Mockito.mock(PromotionStatus.class));
+        promotionStatusList.add(Mockito.mock(PromotionStatus.class));
+        promotionStatusList.add(Mockito.mock(PromotionStatus.class));
+
+        final AbstractPromotionStatusProvider promotionStatusProvider = Mockito.mock(AbstractPromotionStatusProvider.class);
+        Mockito.when(promotionStatusProvider.isBuildPromoted(build)).thenReturn(true);
+        Mockito.when(promotionStatusProvider.getPromotionStatusList(build)).thenReturn(promotionStatusList);
+
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = new ArrayList<AbstractPromotionStatusProvider>();
+        promotionStatusProviders.add(promotionStatusProvider);
+
+        final SimpleStatus.PromotionStatusProviderWrapper promotionStatusProviderWrapper = Mockito.mock(SimpleStatus.PromotionStatusProviderWrapper.class);
+        Mockito.when(promotionStatusProviderWrapper.getAllPromotionStatusProviders()).thenReturn(promotionStatusProviders);
+
+        SimpleStatus.setPromotionStatusProviderWrapper(promotionStatusProviderWrapper);
+
+        final Status resolvedStatus = SimpleStatus.resolveStatus(null, build, null);
+        assertTrue(resolvedStatus.isSuccess());
+        assertEquals("SUCCESS", resolvedStatus.toString());
+        assertTrue(resolvedStatus.getType().equals(StatusType.SUCCESS));
+        assertEquals(3, resolvedStatus.getPromotions().size());
+        assertTrue(resolvedStatus.isPromoted());
+    }
+
+    @Test
+    public void testResolveStatusSuccessWithNoPromotionsPlugin() {
+        final AbstractBuild build = Mockito.mock(AbstractBuild.class);
+        Mockito.when(build.getResult()).thenReturn(Result.SUCCESS);
+
+        final SimpleStatus.PromotionStatusProviderWrapper promotionStatusProviderWrapper = Mockito.mock(SimpleStatus.PromotionStatusProviderWrapper.class);
+        Mockito.when(promotionStatusProviderWrapper.getAllPromotionStatusProviders()).thenReturn(null);
+
+        SimpleStatus.setPromotionStatusProviderWrapper(promotionStatusProviderWrapper);
+
+        final Status resolvedStatus = SimpleStatus.resolveStatus(null, build, null);
+        assertTrue(resolvedStatus.isSuccess());
+        assertEquals("SUCCESS", resolvedStatus.toString());
+        assertTrue(resolvedStatus.getType().equals(StatusType.SUCCESS));
+        assertTrue(resolvedStatus.getPromotions().isEmpty());
+        assertFalse(resolvedStatus.isPromoted());
     }
 
     @Test
@@ -98,6 +152,55 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.FAILED));
+        assertFalse(status.isPromoted());
+    }
+
+    @Test
+    public void testResolveStatusFailureWithPromotions() {
+        final AbstractBuild build = Mockito.mock(AbstractBuild.class);
+        Mockito.when(build.getResult()).thenReturn(Result.FAILURE);
+
+        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        promotionStatusList.add(Mockito.mock(PromotionStatus.class));
+        promotionStatusList.add(Mockito.mock(PromotionStatus.class));
+        promotionStatusList.add(Mockito.mock(PromotionStatus.class));
+
+        final AbstractPromotionStatusProvider promotionStatusProvider = Mockito.mock(AbstractPromotionStatusProvider.class);
+        Mockito.when(promotionStatusProvider.isBuildPromoted(build)).thenReturn(true);
+        Mockito.when(promotionStatusProvider.getPromotionStatusList(build)).thenReturn(promotionStatusList);
+
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = new ArrayList<AbstractPromotionStatusProvider>();
+        promotionStatusProviders.add(promotionStatusProvider);
+
+        final SimpleStatus.PromotionStatusProviderWrapper promotionStatusProviderWrapper = Mockito.mock(SimpleStatus.PromotionStatusProviderWrapper.class);
+        Mockito.when(promotionStatusProviderWrapper.getAllPromotionStatusProviders()).thenReturn(promotionStatusProviders);
+
+        SimpleStatus.setPromotionStatusProviderWrapper(promotionStatusProviderWrapper);
+
+        final Status resolvedStatus = SimpleStatus.resolveStatus(null, build, null);
+        assertFalse(resolvedStatus.isSuccess());
+        assertEquals("FAILED", resolvedStatus.toString());
+        assertTrue(resolvedStatus.getType().equals(StatusType.FAILED));
+        assertEquals(3, resolvedStatus.getPromotions().size());
+        assertTrue(resolvedStatus.isPromoted());
+    }
+
+    @Test
+    public void testResolveStatusFailureWithNoPromotionsPlugin() {
+        final AbstractBuild build = Mockito.mock(AbstractBuild.class);
+        Mockito.when(build.getResult()).thenReturn(Result.FAILURE);
+
+        final SimpleStatus.PromotionStatusProviderWrapper promotionStatusProviderWrapper = Mockito.mock(SimpleStatus.PromotionStatusProviderWrapper.class);
+        Mockito.when(promotionStatusProviderWrapper.getAllPromotionStatusProviders()).thenReturn(null);
+
+        SimpleStatus.setPromotionStatusProviderWrapper(promotionStatusProviderWrapper);
+
+        final Status resolvedStatus = SimpleStatus.resolveStatus(null, build, null);
+        assertFalse(resolvedStatus.isSuccess());
+        assertEquals("FAILED", resolvedStatus.toString());
+        assertTrue(resolvedStatus.getType().equals(StatusType.FAILED));
+        assertTrue(resolvedStatus.getPromotions().isEmpty());
+        assertFalse(resolvedStatus.isPromoted());
     }
 
 
@@ -114,6 +217,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.UNSTABLE));
+        assertFalse(status.isPromoted());
     }
 
 
@@ -130,6 +234,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.CANCELLED));
+        assertFalse(status.isPromoted());
     }
 
     @Test
@@ -145,6 +250,7 @@ public class SimpleStatusTest {
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
         assertTrue(status.getType().equals(StatusType.NOT_BUILT));
+        assertFalse(status.isPromoted());
     }
 
 
@@ -163,6 +269,7 @@ public class SimpleStatusTest {
         assertTrue(status.getType().equals(StatusType.SUCCESS));
         assertEquals(project.getLastBuild().getDuration(), status.getDuration());
         assertNotNull(status.getTimestamp());
+        assertFalse(status.isPromoted());
     }
 
     @Test
@@ -242,5 +349,4 @@ public class SimpleStatusTest {
         assertEquals(StatusType.SUCCESS, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
     }
-
 }

@@ -95,8 +95,11 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
     private boolean allowManualTriggers = false;
+    private boolean showTotalBuildTime = false;
     private boolean allowRebuild = false;
     private boolean allowPipelineStart = false;
+    private boolean showDescription = false;
+    private boolean showPromotions = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -172,6 +175,15 @@ public class DeliveryPipelineView extends View {
 
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
+    }
+
+    @Exported
+    public boolean isShowTotalBuildTime() {
+        return showTotalBuildTime;
+    }
+
+    public void setShowTotalBuildTime(boolean showTotalBuildTime) {
+        this.showTotalBuildTime = showTotalBuildTime;
     }
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
@@ -287,6 +299,26 @@ public class DeliveryPipelineView extends View {
 
     public void setAllowRebuild(boolean allowRebuild) {
         this.allowRebuild = allowRebuild;
+    }
+
+    @Exported
+	public boolean isShowDescription()
+	{
+		return showDescription;
+	}
+
+    @Exported
+    public boolean isShowPromotions() {
+        return showPromotions;
+    }
+
+    public void setShowDescription(boolean showDescription)
+	{
+		this.showDescription = showDescription;
+	}
+
+    public void setShowPromotions(boolean showPromotions) {
+        this.showPromotions = showPromotions;
     }
 
     @JavaScriptMethod
@@ -517,8 +549,10 @@ public class DeliveryPipelineView extends View {
                         Pattern pattern = Pattern.compile(value);
                         if (pattern.matcher("").groupCount() == 1) {
                             return FormValidation.ok();
-                        } else {
+                        } else if (pattern.matcher("").groupCount() == 0) {
                             return FormValidation.error("No capture group defined");
+                        } else {
+                            return FormValidation.error("Too many capture groups defined");
                         }
                     } catch (PatternSyntaxException e) {
                         return FormValidation.error(e, "Syntax error in regular-expression pattern");

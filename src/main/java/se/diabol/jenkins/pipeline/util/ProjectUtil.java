@@ -83,7 +83,6 @@ public final class ProjectUtil {
         }
 
         if (projects.containsValue(first)) {
-            LOG.warning("Project " + first.getFullDisplayName() + " already exists as a downstream project.");
             return projects;
         }
 
