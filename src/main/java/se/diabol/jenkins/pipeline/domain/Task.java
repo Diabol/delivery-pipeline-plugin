@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.domain;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
@@ -48,8 +49,9 @@ public class Task extends AbstractItem {
     private final List<String> downstreamTasks;
     private final boolean initial;
     private final String description;
-
-    public Task(String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks,
+    private final AbstractProject project;
+    
+    public Task(AbstractProject project, String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks,
                 boolean initial, String description) {
         super(name);
         this.id = id;
@@ -61,8 +63,8 @@ public class Task extends AbstractItem {
         this.downstreamTasks = downstreamTasks;
         this.initial = initial;
         this.description = description;
+        this.project = project;
     }
-
 
     public Task(Task task, String buildId, Status status, String link, ManualStep manual,
                     TestResult testResult, String description) {
@@ -76,6 +78,7 @@ public class Task extends AbstractItem {
         this.testResult = testResult;
         this.initial = task.isInitial();
         this.description = description;
+        this.project = task.project;
     }
 
     @Exported
@@ -132,7 +135,7 @@ public class Task extends AbstractItem {
         if (status.isRunning() || status.isIdle() || status.isNotBuilt() || status.isQueued() || status.isDisabled()) {
             return false;
         } else {
-            return true;
+            return project.hasPermission(Item.BUILD);
         }
     }
 
@@ -159,7 +162,7 @@ public class Task extends AbstractItem {
         for (AbstractProject downstreamProject : downStreams) {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
+        return new Task(project, project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
                 project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial, "");
     }
 
