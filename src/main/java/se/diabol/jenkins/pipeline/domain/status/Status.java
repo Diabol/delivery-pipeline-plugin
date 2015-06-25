@@ -18,6 +18,9 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain.status;
 
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
+
+import java.util.List;
 
 @ExportedBean
 public interface Status {
@@ -47,4 +50,8 @@ public interface Status {
     String getTimestamp();
 
     long getDuration();
+
+    boolean isPromoted();
+
+	List<PromotionStatus> getPromotions();
 }

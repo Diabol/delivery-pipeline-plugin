@@ -98,6 +98,8 @@ public class DeliveryPipelineView extends View {
     private boolean showTotalBuildTime = false;
     private boolean allowRebuild = false;
     private boolean allowPipelineStart = false;
+    private boolean showDescription = false;
+    private boolean showPromotions = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -297,6 +299,26 @@ public class DeliveryPipelineView extends View {
 
     public void setAllowRebuild(boolean allowRebuild) {
         this.allowRebuild = allowRebuild;
+    }
+
+    @Exported
+	public boolean isShowDescription()
+	{
+		return showDescription;
+	}
+
+    @Exported
+    public boolean isShowPromotions() {
+        return showPromotions;
+    }
+
+    public void setShowDescription(boolean showDescription)
+	{
+		this.showDescription = showDescription;
+	}
+
+    public void setShowPromotions(boolean showPromotions) {
+        this.showPromotions = showPromotions;
     }
 
     @JavaScriptMethod
