@@ -187,6 +187,31 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         html.push("</div></div></div></div>");
 
+                        if(data.showDescription && task.description && task.description != "") {
+                            html.push("<div class='infoPanelOuter'>");
+                            html.push("<div class='infoPanel'><div class='infoPanelInner'>" + task.description.replace(/\r\n/g, '<br/>') + "</div></div>");
+                            html.push("</div>");
+                        }
+                        if(data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
+                            html.push("<div class='infoPanelOuter'>");
+                            Q.each(task.status.promotions, function(i, promo) {
+                                html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+                                html.push("<img class='promo-icon' height='16' width='16' src='" + rootURL + promo.icon + "'/>");
+                                html.push("<span class='promo-name'><a href='" + rootURL + "/" + task.link + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
+                                if (promo.user != 'anonymous') {
+                                    html.push("<span class='promo-user'>" + promo.user + "</span>");
+                                }
+                                html.push("<span class='promo-time'>" + formatDuration(promo.time) + "</span><br/>");
+                                if (promo.params.length > 0) {
+                                    html.push("<br/>");
+                                }
+                                Q.each(promo.params, function (j, param) {
+                                    html.push(param.replace(/\r\n/g, '<br/>') + "<br />");
+                                });
+                                html.push("</div></div>");
+                            });
+                            html.push("</div>");
+                        }
                     }
                     html.push("</div>");
                     html.push('</div>');
@@ -219,7 +244,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             plumb.connect({
                                 source: source,
                                 target: target,
-                                anchors: ["RightMiddle", "LeftMiddle"],
+                                anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
                                 overlays: [
                                     [ "Arrow", { location: 1}]
                                 ],

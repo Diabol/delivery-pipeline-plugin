@@ -45,6 +45,14 @@
             <f:checkbox/>
         </f:entry>
 
+        <f:entry title="Show job description" field="showDescription">
+            <f:checkbox/>
+        </f:entry>
+
+        <f:entry title="Show job promotions" field="showPromotions">
+            <f:checkbox/>
+        </f:entry>
+		
         <f:entry title="Show total build time" field="showTotalBuildTime">
             <f:checkbox/>
         </f:entry>
