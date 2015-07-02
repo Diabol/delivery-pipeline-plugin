@@ -26,6 +26,7 @@ import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.util.OneShotEvent;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,13 @@ public class SimpleStatusTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
+
+    private SimpleStatus.PromotionStatusProviderWrapper defaultNotMockedPromotionStatusProviderWrapper = new SimpleStatus.PromotionStatusProviderWrapper();
+
+    @After
+    public void tearDown() {
+        SimpleStatus.setPromotionStatusProviderWrapper(defaultNotMockedPromotionStatusProviderWrapper);
+    }
 
     @Test
     public void testResolveStatusIdle() throws Exception {

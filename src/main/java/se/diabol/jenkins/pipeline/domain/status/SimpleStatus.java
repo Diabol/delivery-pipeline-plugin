@@ -190,7 +190,10 @@ public class SimpleStatus implements Status {
     private static boolean isBuildPromoted(AbstractBuild build) {
         final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
         if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
-            return promotionStatusProviders.get(0).isBuildPromoted(build);
+            final AbstractPromotionStatusProvider promotionStatusProvider = promotionStatusProviders.get(0);
+            if (promotionStatusProvider != null) {
+                return promotionStatusProvider.isBuildPromoted(build);
+            }
         }
         return false;
     }
@@ -200,7 +203,10 @@ public class SimpleStatus implements Status {
 
         final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
         if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
-            promotionStatusList.addAll(promotionStatusProviders.get(0).getPromotionStatusList(build));
+            final AbstractPromotionStatusProvider promotionStatusProvider = promotionStatusProviders.get(0);
+            if (promotionStatusProvider != null) {
+                promotionStatusList.addAll(promotionStatusProvider.getPromotionStatusList(build));
+            }
         }
         return promotionStatusList;
     }
