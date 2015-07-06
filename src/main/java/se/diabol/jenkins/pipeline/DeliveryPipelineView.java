@@ -499,6 +499,15 @@ public class DeliveryPipelineView extends View {
             return options;
         }
 
+        public FormValidation doCheckShowAggregatedPipeline(@QueryParameter boolean value, @QueryParameter
+                int noOfPipelines) {
+            if (!value && noOfPipelines == 0) {
+                return FormValidation.error("Either show aggregated pipeline or increase number of pipelines!");
+
+            }
+            return FormValidation.ok();
+        }
+
         public ListBoxModel doFillSortingItems() {
             DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors = ComponentComparator.all();
             ListBoxModel options = new ListBoxModel();
