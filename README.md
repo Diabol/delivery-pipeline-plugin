@@ -19,7 +19,14 @@ Run locally
 ---
     mvn hpi:run
 
-Function Test
+Run function tests
 ---
     mvn integration-test
+
+Run Jenkins and the Delivery Pipeline plugin in a Docker container
+----
+    mvn install
+    docker build -t dpp .
+    docker run -p 8080:8080 dpp
+
     

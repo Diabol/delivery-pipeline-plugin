@@ -261,4 +261,29 @@ public class ManualStepTest {
 
     }
 
+    @Test
+    @Bug(28937)
+    public void testFailure() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        b.getPublishersList().add(new BuildPipelineTrigger("C", null));
+        b.getBuildersList().add(new FailureBuilder());
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+        AbstractBuild firstBuild = jenkins.buildAndAssertSuccess(a);
+        jenkins.waitUntilNoActivity();
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", jenkins.getInstance());
+        view.triggerManual("B", "A", "1");
+
+        jenkins.waitUntilNoActivity();
+
+        ManualStep step = ManualStep.getManualStepLatest(c, null, firstBuild);
+        assertNotNull(step);
+        assertFalse(step.isEnabled());
+
+    }
+
 }

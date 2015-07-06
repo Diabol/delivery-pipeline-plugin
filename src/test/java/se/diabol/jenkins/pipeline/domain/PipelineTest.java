@@ -43,12 +43,15 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class PipelineTest {
 
@@ -643,5 +646,109 @@ public class PipelineTest {
         return pipelines.get(0);
     }
 
+    @Test
+    public void testCalculatePipelineRoutesSimpleRoute() throws Exception {
+        /*
+        stage1   stage2   stage3
+        task1 -- task2 -- task3
+         */
+        Stage stage1 = mock(Stage.class);
+        Stage stage2 = mock(Stage.class);
+        Stage stage3 = mock(Stage.class);
+        Task task1 = mock(Task.class);
+        Task task2 = mock(Task.class);
+        Task task3 = mock(Task.class);
+        when(task1.getId()).thenReturn("task1");
+        when(task2.getId()).thenReturn("task2");
+        when(task3.getId()).thenReturn("task3");
+        when(task2.getDownstreamTasks()).thenReturn(Arrays.asList("task3"));
+        when(task1.getDownstreamTasks()).thenReturn(Arrays.asList("task2"));
+        when(stage1.getTasks()).thenReturn(Arrays.asList(task1));
+        when(stage2.getTasks()).thenReturn(Arrays.asList(task2));
+        when(stage3.getTasks()).thenReturn(Arrays.asList(task3));
+
+        FreeStyleProject project = jenkins.createFreeStyleProject("A");
+        Pipeline pipeline = new Pipeline("SimpleRoute", project, Arrays.asList(stage1, stage2, stage3));
+        List<Route> allRoutes = new ArrayList<Route>();
+        pipeline.calculatePipelineRoutes(task1, null, allRoutes);
+        /*
+        task1 -> task2 -> task3
+         */
+        assertEquals(1, allRoutes.size());
+    }
+
+    @Test
+    public void testCalculatePipelineRoutesComplexRoutes() throws Exception {
+        /*
+        stage1   stage2   stage3   stage4
+        task1 -- task2 -- task4 -- task6
+              |_ task3 |_ task5     |_ task7
+         */
+        Stage stage1 = mock(Stage.class);
+        Stage stage2 = mock(Stage.class);
+        Stage stage3 = mock(Stage.class);
+        Stage stage4 = mock(Stage.class);
+        Task task1 = mock(Task.class);
+        Task task2 = mock(Task.class);
+        Task task3 = mock(Task.class);
+        Task task4 = mock(Task.class);
+        Task task5 = mock(Task.class);
+        Task task6 = mock(Task.class);
+        Task task7 = mock(Task.class);
+        Status status1 = mock(Status.class);
+        Status status2 = mock(Status.class);
+        Status status3 = mock(Status.class);
+        Status status4 = mock(Status.class);
+        Status status5 = mock(Status.class);
+        Status status6 = mock(Status.class);
+        Status status7 = mock(Status.class);
+        when(task1.getId()).thenReturn("task1");
+        when(task2.getId()).thenReturn("task2");
+        when(task3.getId()).thenReturn("task3");
+        when(task4.getId()).thenReturn("task4");
+        when(task5.getId()).thenReturn("task5");
+        when(task6.getId()).thenReturn("task6");
+        when(task7.getId()).thenReturn("task7");
+        when(status1.getDuration()).thenReturn(100L);
+        when(status2.getDuration()).thenReturn(200L);
+        when(status3.getDuration()).thenReturn(300L);
+        when(status4.getDuration()).thenReturn(400L);
+        when(status5.getDuration()).thenReturn(500L);
+        when(status6.getDuration()).thenReturn(600L);
+        when(status7.getDuration()).thenReturn(700L);
+        when(task1.getStatus()).thenReturn(status1);
+        when(task2.getStatus()).thenReturn(status2);
+        when(task3.getStatus()).thenReturn(status3);
+        when(task4.getStatus()).thenReturn(status4);
+        when(task5.getStatus()).thenReturn(status5);
+        when(task6.getStatus()).thenReturn(status6);
+        when(task7.getStatus()).thenReturn(status7);
+        when(task6.getDownstreamTasks()).thenReturn(Arrays.asList("task7"));
+        when(task4.getDownstreamTasks()).thenReturn(Arrays.asList("task6"));
+        when(task2.getDownstreamTasks()).thenReturn(Arrays.asList("task4", "task5"));
+        when(task1.getDownstreamTasks()).thenReturn(Arrays.asList("task2", "task3"));
+        when(stage1.getTasks()).thenReturn(Arrays.asList(task1));
+        when(stage2.getTasks()).thenReturn(Arrays.asList(task2, task3));
+        when(stage3.getTasks()).thenReturn(Arrays.asList(task4, task5));
+        when(stage4.getTasks()).thenReturn(Arrays.asList(task6, task7));
+
+        FreeStyleProject project = jenkins.createFreeStyleProject("A");
+        Pipeline pipeline = new Pipeline("TotalBuildTime", project, Arrays.asList(stage1, stage2, stage3, stage4));
+        /*
+        task1 -> task3: 100 + 300 = 400L
+        task1 -> task2 -> task5: 100 + 200 + 500 = 800L
+        task1 -> task2 -> task4 -> task6 -> task7: 100 + 200 + 400 + 600 + 700 = 2000L
+         */
+        pipeline.calculateTotalBuildTime();
+        assertEquals(2000L, pipeline.getTotalBuildTime());
+    }
+
+    @Test
+    public void testCalculateTotalBuildTimeNoStages() throws Exception {
+        FreeStyleProject project = jenkins.createFreeStyleProject("A");
+        Pipeline pipeline = new Pipeline("NoStages", project, new ArrayList<Stage>());
+        pipeline.calculateTotalBuildTime();
+        assertEquals(0L, pipeline.getTotalBuildTime());
+    }
 
 }

@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
+
+import java.util.List;
+
 public final class StatusFactory {
 
     private StatusFactory() {
@@ -34,12 +38,12 @@ public final class StatusFactory {
         return new SimpleStatus(StatusType.QUEUED, lastActivity, -1);
     }
 
-    public static Status success(long lastActivity, long duration) {
-        return new SimpleStatus(StatusType.SUCCESS, lastActivity, duration);
+    public static Status success(long lastActivity, long duration, boolean promoted, List<PromotionStatus> promotions) {
+        return new SimpleStatus(StatusType.SUCCESS, lastActivity, duration, promoted, promotions);
     }
 
-    public static Status failed(long lastActivity, long duration) {
-        return new SimpleStatus(StatusType.FAILED, lastActivity, duration);
+    public static Status failed(long lastActivity, long duration, boolean promoted, List<PromotionStatus> promotions) {
+        return new SimpleStatus(StatusType.FAILED, lastActivity, duration, promoted, promotions);
     }
 
     public static Status unstable(long lastActivity, long duration) {

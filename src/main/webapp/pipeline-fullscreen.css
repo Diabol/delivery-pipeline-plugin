@@ -129,3 +129,14 @@ svg.relation path {
     stroke: #fefefe;
     stroke-width: 3;
 }
+
+div.infoPanel {
+    border: none;
+    background: none;
+}
+
+div.infoPanelOuter {
+    color: #fefefe;
+    background-color: #646060;
+    border: 1px solid darkgray;
+}

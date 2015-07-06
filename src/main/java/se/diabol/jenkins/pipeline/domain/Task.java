@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.domain;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Item;
 import hudson.model.ItemGroup;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
@@ -47,8 +48,11 @@ public class Task extends AbstractItem {
     private final String buildId;
     private final List<String> downstreamTasks;
     private final boolean initial;
-
-    public Task(String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks, boolean initial) {
+    private final String description;
+    private final AbstractProject project;
+    
+    public Task(AbstractProject project, String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks,
+                boolean initial, String description) {
         super(name);
         this.id = id;
         this.link = link;
@@ -58,11 +62,12 @@ public class Task extends AbstractItem {
         this.buildId = null;
         this.downstreamTasks = downstreamTasks;
         this.initial = initial;
+        this.description = description;
+        this.project = project;
     }
 
-
     public Task(Task task, String buildId, Status status, String link, ManualStep manual,
-                    TestResult testResult) {
+                    TestResult testResult, String description) {
         super(task.getName());
         this.id = task.id;
         this.downstreamTasks = task.getDownstreamTasks();
@@ -72,6 +77,8 @@ public class Task extends AbstractItem {
         this.manual = manual;
         this.testResult = testResult;
         this.initial = task.isInitial();
+        this.description = description;
+        this.project = task.project;
     }
 
     @Exported
@@ -115,6 +122,11 @@ public class Task extends AbstractItem {
         return downstreamTasks;
     }
 
+	@Exported
+    public String getDescription() {
+        return description;
+    }
+
     @Exported
     public boolean isRebuildable() {
         if (initial) {
@@ -123,7 +135,7 @@ public class Task extends AbstractItem {
         if (status.isRunning() || status.isIdle() || status.isNotBuilt() || status.isQueued() || status.isDisabled()) {
             return false;
         } else {
-            return true;
+            return project.hasPermission(Item.BUILD);
         }
     }
 
@@ -150,8 +162,8 @@ public class Task extends AbstractItem {
         for (AbstractProject downstreamProject : downStreams) {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }
-        return new Task(project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
-                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial);
+        return new Task(project, project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
+                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial, "");
     }
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
@@ -175,7 +187,9 @@ public class Task extends AbstractItem {
 
         String taskBuildId = build == null || taskStatus.isIdle() || taskStatus.isQueued() ? null : String.valueOf(build.getNumber());
         ManualStep manualStep = ManualStep.getManualStepLatest(project, build, firstBuild);
-        return new Task(this, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build));
+
+        final String buildDescription = (build != null) ? build.getDescription() : "";
+        return new Task(this, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build), buildDescription);
     }
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
@@ -187,9 +201,10 @@ public class Task extends AbstractItem {
             if (taskStatus.isRunning()) {
                 taskLink = currentBuild.getUrl() + "console";
             }
-            return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.getManualStep(), TestResult.getTestResult(currentBuild));
+            return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.getManualStep(),
+                    TestResult.getTestResult(currentBuild), currentBuild.getDescription());
         } else {
-            return new Task(this, null, StatusFactory.idle(), this.getLink(), this.getManualStep(), null);
+            return new Task(this, null, StatusFactory.idle(), this.getLink(), this.getManualStep(), null, "");
         }
     }
 

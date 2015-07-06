@@ -95,8 +95,11 @@ public class DeliveryPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private boolean showChanges = false;
     private boolean allowManualTriggers = false;
+    private boolean showTotalBuildTime = false;
     private boolean allowRebuild = false;
     private boolean allowPipelineStart = false;
+    private boolean showDescription = false;
+    private boolean showPromotions = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -172,6 +175,15 @@ public class DeliveryPipelineView extends View {
 
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
+    }
+
+    @Exported
+    public boolean isShowTotalBuildTime() {
+        return showTotalBuildTime;
+    }
+
+    public void setShowTotalBuildTime(boolean showTotalBuildTime) {
+        this.showTotalBuildTime = showTotalBuildTime;
     }
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
@@ -287,6 +299,26 @@ public class DeliveryPipelineView extends View {
 
     public void setAllowRebuild(boolean allowRebuild) {
         this.allowRebuild = allowRebuild;
+    }
+
+    @Exported
+	public boolean isShowDescription()
+	{
+		return showDescription;
+	}
+
+    @Exported
+    public boolean isShowPromotions() {
+        return showPromotions;
+    }
+
+    public void setShowDescription(boolean showDescription)
+	{
+		this.showDescription = showDescription;
+	}
+
+    public void setShowPromotions(boolean showPromotions) {
+        this.showPromotions = showPromotions;
     }
 
     @JavaScriptMethod
