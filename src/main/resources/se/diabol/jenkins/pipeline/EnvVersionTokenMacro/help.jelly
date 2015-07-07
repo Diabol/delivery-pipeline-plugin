@@ -1,0 +1,16 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+  <dt>$${ENV_VERSION}</dt>
+  <dd>
+    Expands to the value of the version that was passed during built. Note that this does not include any variables set by the build scripts themselves, only those set by Jenkins and other plugins.
+  </dd>
+
+  <h3>Parameters</h3>
+  <dl>
+    <dt>stripSnapshot</dt>
+    <dd>
+      If specified, this token expands to the value of the version without the -SNAPSHOT part, such as '1.0'.
+      Otherwise, it only expands to the unchanged value, such as '1.0-SNAPSHOT'.
+    </dd>
+  </dl>
+</j:jelly>
