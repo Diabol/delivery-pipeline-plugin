@@ -228,7 +228,6 @@ div.task-progress-running {
 
 .SUCCESS {
     border-left: 6px solid #228b22;
-    background-color: #1bd130;
 }
 
 .UNSTABLE {
