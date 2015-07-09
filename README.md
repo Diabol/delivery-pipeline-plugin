@@ -23,11 +23,19 @@ Run function tests
 ---
     mvn integration-test
 
-Run Jenkins and the Delivery Pipeline plugin in a Docker container
+Build and run the Delivery Pipeline plugin in a Docker container
 ----
     mvn install
     docker build -t dpp .
     docker run -p 8080:8080 dpp
+
+Run Jenkins with the latest released Delivery Pipeline plugin in a Docker container
+---
+	docker run -dt -p 8080:8080 diabol/delivery-pipeline-plugin:0.9.4
+
+If you run on Mac and use boot2docker, enable port forwarding between your host and boot2docker VM:
+
+    VBoxManage controlvm boot2docker-vm natpf1 8080,tcp,,8080,,8080
 
 Configuring manually triggered jobs
 ----
