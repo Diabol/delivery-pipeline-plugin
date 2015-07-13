@@ -23,7 +23,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
 
-import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.MoreObjects.toStringHelper;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
@@ -49,6 +49,7 @@ public class Component extends AbstractItem {
     }
 
     @Exported
+    @SuppressWarnings("unused")
     public String getFirstJobUrl() {
         return firstJobUrl;
     }

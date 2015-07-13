@@ -33,6 +33,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
 import hudson.model.ViewGroup;
+import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
@@ -254,8 +255,7 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    @Override
-    public void onJobRenamed(Item item, String oldName, String newName) {
+    public void onProjectRenamed(Item item, String oldName, String newName) {
         if (componentSpecs != null) {
             Iterator<ComponentSpec> it = componentSpecs.iterator();
             while (it.hasNext()) {
@@ -352,6 +352,7 @@ public class DeliveryPipelineView extends View {
         }
         AbstractBuild build = project.getBuildByNumber(Integer.parseInt(buildId));
 
+        @SuppressWarnings("unchecked")
         List<Cause> prevCauses = build.getCauses();
         CauseAction causeAction = new CauseAction();
         for (Cause cause : prevCauses) {
@@ -607,4 +608,32 @@ public class DeliveryPipelineView extends View {
 
         }
     }
+
+
+    @Extension
+    public static class ItemListenerImpl extends ItemListener {
+
+        @Override
+        public void onRenamed(Item item, String oldName, String newName) {
+            notifyView(item, oldName, newName);
+        }
+
+        @Override
+        public void onDeleted(Item item) {
+            notifyView(item, item.getFullName(), null);
+        }
+
+
+        private void notifyView(Item item, String oldName, String newName) {
+            Collection<View> views = Jenkins.getInstance().getViews();
+            for (View view : views) {
+                if (view instanceof DeliveryPipelineView) {
+                    ((DeliveryPipelineView) view).onProjectRenamed(item, oldName, newName);
+                }
+            }
+        }
+
+
+    }
+
 }

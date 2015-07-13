@@ -30,6 +30,7 @@ import java.util.*;
 public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
 
     // Force a classloading error plugin isn't available
+    @SuppressWarnings("UnusedDeclaration")
     static final public Class CLASS = PromotedBuildAction.class;
     static final String DEFAULT_ICON_SIZE = "16x16";
 

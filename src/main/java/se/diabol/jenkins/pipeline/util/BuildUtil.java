@@ -92,15 +92,8 @@ public final class BuildUtil {
 
 
     public static boolean equals(AbstractBuild b1, AbstractBuild b2) {
-        if (b1 != null && b2 != null) {
-            if (b1.getProject().getFullName().equals(b2.getProject().getFullName()) && b1.getNumber() == b2.getNumber()) {
-                return true;
-            } else {
-               return false;
-            }
-        } else {
-            return false;
-        }
+        return b1 != null && b2 != null && b1.getProject().getFullName().equals(b2.getProject().getFullName())
+                && b1.getNumber() == b2.getNumber();
 
     }
 

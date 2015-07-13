@@ -32,7 +32,8 @@ import java.util.List;
 public class BPPManualTriggerResolver extends ManualTriggerResolver {
 
     // Force a classloading error plugin isn't available
-    public static final Class clazz = BuildPipelineTrigger.class;
+    @SuppressWarnings("unused")
+    public static final Class CLASS = BuildPipelineTrigger.class;
 
 
     @Override
@@ -70,6 +71,7 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
         List<AbstractProject> result = new ArrayList<AbstractProject>();
         List<AbstractProject> upstreamProjects = project.getUpstreamProjects();
         for (AbstractProject upstream : upstreamProjects) {
+            @SuppressWarnings("unchecked")
             DescribableList<Publisher, Descriptor<Publisher>> upstreamPublishersLists = upstream.getPublishersList();
             for (Publisher upstreamPub : upstreamPublishersLists) {
                 if (upstreamPub instanceof BuildPipelineTrigger) {
