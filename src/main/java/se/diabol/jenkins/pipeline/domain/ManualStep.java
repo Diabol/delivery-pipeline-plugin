@@ -85,7 +85,6 @@ public class ManualStep {
             List<AbstractProject> upstreams = getUpstreamManualTriggered(project);
             for (int i = 0; i < upstreams.size(); i++) {
                 AbstractProject upstream = upstreams.get(i);
-                @SuppressWarnings("unchecked")
                 AbstractBuild upstreamBuild = BuildUtil.match(upstream.getBuilds(), firstBuild);
                 if (build == null) {
                     if (upstreamBuild != null && !upstreamBuild.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)) {

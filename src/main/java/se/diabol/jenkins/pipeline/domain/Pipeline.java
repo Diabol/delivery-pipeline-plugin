@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.MoreObjects.toStringHelper;
+import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.collect.Lists.newArrayList;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
@@ -206,7 +206,10 @@ public class Pipeline extends AbstractItem {
             }
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, "#" + firstProject.getNextBuildNumber(), pipeLineTimestamp,
                     Trigger.getTriggeredBy(firstProject, null), null,
+                    //            Trigger.getTriggeredBy(firstBuild),
+                    //            UserInfo.getContributors(firstBuild),
                     pipelineStages, false);
+            //pipelineLatest.setChanges(pipelineChanges);
             result.add(pipelineLatest);
             no--;
         }
