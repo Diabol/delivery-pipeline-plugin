@@ -96,7 +96,6 @@ public class UserInfoTest {
 
     @Test
     @WithoutJenkins
-    @SuppressWarnings("all")
     public void testEqualsHashCode() {
         UserInfo userInfo1 = new UserInfo("name", null);
         assertTrue(userInfo1.equals(userInfo1));
@@ -106,11 +105,9 @@ public class UserInfoTest {
         assertFalse(userInfo2.equals(null));
         assertFalse(userInfo2.equals("name"));
 
-
         UserInfo userInfo3 = new UserInfo("name1", "http://nowhere.com");
         assertEquals(userInfo1.hashCode(), userInfo2.hashCode());
         assertNotEquals(userInfo1.hashCode(), userInfo3.hashCode());
-        assertNotEquals(userInfo1, userInfo3);
     }
 
 }

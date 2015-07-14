@@ -266,9 +266,4 @@ public class TriggerTest {
         assertNotEquals(trigger1.hashCode(), trigger3.hashCode());
     }
 
-    @Test
-    public void testNullUser() {
-        assertEquals("anonymous", Trigger.getDisplayName(null));
-    }
-
 }

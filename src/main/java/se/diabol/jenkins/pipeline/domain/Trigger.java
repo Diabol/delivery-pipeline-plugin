@@ -106,7 +106,7 @@ public class Trigger {
         return new ArrayList<Trigger>(result);
     }
 
-    protected static String getDisplayName(String userName) {
+    private static String getDisplayName(String userName) {
         User user = Jenkins.getInstance().getUser(userName);
         if (user != null) {
             return user.getDisplayName();

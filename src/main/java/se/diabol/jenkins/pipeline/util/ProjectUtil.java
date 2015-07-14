@@ -136,7 +136,6 @@ public final class ProjectUtil {
                 return true;
             } else {
                 List<Cause.UpstreamCause> causes = Util.filter(project.getQueueItem().getCauses(), Cause.UpstreamCause.class);
-                @SuppressWarnings("unchecked")
                 List<AbstractProject<?,?>> upstreamProjects = project.getUpstreamProjects();
                 for (AbstractProject<?, ?> upstreamProject : upstreamProjects) {
                     AbstractBuild upstreamBuild = BuildUtil.match(upstreamProject.getBuilds(), firstBuild);

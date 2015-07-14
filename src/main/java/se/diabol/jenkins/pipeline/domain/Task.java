@@ -37,8 +37,6 @@ import java.util.List;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.disabled;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.idle;
-import static com.google.common.base.MoreObjects.toStringHelper;
-
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Task extends AbstractItem {
@@ -217,13 +215,15 @@ public class Task extends AbstractItem {
 
     @Override
     public String toString() {
-        return toStringHelper(this)
-                .add("id", id)
-                .add("link", link)
-                .add("testResult", testResult)
-                .add("status", status)
-                .add("manueal", manual)
-                .add("buildId", buildId)
-                .add("downstreamTasks", downstreamTasks).toString();
+        final StringBuilder sb = new StringBuilder("Task{");
+        sb.append("id='").append(id).append('\'');
+        sb.append(", link='").append(link).append('\'');
+        sb.append(", testResult=").append(testResult);
+        sb.append(", status=").append(status);
+        sb.append(", manual=").append(manual);
+        sb.append(", buildId='").append(buildId).append('\'');
+        sb.append(", downstreamTasks=").append(downstreamTasks);
+        sb.append('}');
+        return sb.toString();
     }
 }
