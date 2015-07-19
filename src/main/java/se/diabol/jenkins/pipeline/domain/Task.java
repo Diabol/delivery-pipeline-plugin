@@ -37,7 +37,7 @@ import java.util.List;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.disabled;
 import static se.diabol.jenkins.pipeline.domain.status.StatusFactory.idle;
-import static com.google.common.base.MoreObjects.toStringHelper;
+import static com.google.common.base.Objects.toStringHelper;
 
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
