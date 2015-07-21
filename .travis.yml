@@ -1,3 +1,4 @@
+sudo: false
 language: java
 jdk:
 - oraclejdk7
@@ -11,3 +12,6 @@ script:
   mvn license:check integration-test
 after_success:
 - mvn jacoco:report coveralls:report
+env:
+ global:
+   - "MAVEN_OPTS=-Xmx1024m"
