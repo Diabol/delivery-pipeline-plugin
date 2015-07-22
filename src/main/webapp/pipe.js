@@ -55,7 +55,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             html.push("<section class='pipeline-component'>");
             html.push("<h1>" + htmlEncode(component.name));
             if (data.allowPipelineStart) {
-                html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
+                if (component.firstJobParameterized) {
+                    html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
+                } else {
+                    html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
+                }
                 html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.png">');
                 html.push("</a>");
             }
@@ -406,6 +410,11 @@ function triggerRebuild(taskId, project, buildId) {
     });
 }
 
+function triggerParameterizedBuild(url, taskId) {
+    console.info("Job is parameterized");
+    window.location.href = rootURL + "/" + url + 'build?delay=0sec';
+}
+
 function triggerBuild(url, taskId) {
     var before;
     if (crumb.value != null && crumb.value != "") {
@@ -429,7 +438,6 @@ function triggerBuild(url, taskId) {
         }
     });
 }
-
 
 function htmlEncode(html) {
     return document.createElement('a')

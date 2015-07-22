@@ -30,12 +30,15 @@ public class Component extends AbstractItem {
     private final List<Pipeline> pipelines;
     private final String firstJob;
     private final String firstJobUrl;
+    private final boolean firstJobParameterized;
 
-    public Component(String name, String firstJob, String firstJobUrl, List<Pipeline> pipelines) {
+    public Component(String name, String firstJob, String firstJobUrl, boolean firstJobParameterized,
+            List<Pipeline> pipelines) {
         super(name);
         this.pipelines = ImmutableList.copyOf(pipelines);
         this.firstJob = firstJob;
         this.firstJobUrl = firstJobUrl;
+        this.firstJobParameterized = firstJobParameterized;
     }
 
     @Exported
@@ -51,6 +54,11 @@ public class Component extends AbstractItem {
     @Exported
     public String getFirstJobUrl() {
         return firstJobUrl;
+    }
+
+    @Exported
+    public boolean isFirstJobParameterized() {
+        return firstJobParameterized;
     }
 
     @Override
