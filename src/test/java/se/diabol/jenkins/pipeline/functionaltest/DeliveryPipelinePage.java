@@ -52,8 +52,13 @@ public class DeliveryPipelinePage {
     }
 
     public void triggerNewPipelineBuild(String no){
-         webDriver.findElement(By.id("startpipeline-" + no)).click();
-    }
+        webDriver.findElement(By.id("startpipeline-" + no)).click();
+   }
 
+    public void triggerNewParameterizedPipelineBuild(String no){
+        webDriver.findElement(By.id("startpipeline-" + no)).click();
+        /* this build requires parameter */
+        webDriver.findElement(By.id("yui-gen1-button")).click();
+   }
 
 }
