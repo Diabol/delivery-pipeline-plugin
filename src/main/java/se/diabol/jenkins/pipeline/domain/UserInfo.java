@@ -62,7 +62,7 @@ public class UserInfo extends AbstractItem {
 
         UserInfo userInfo = (UserInfo) o;
 
-        return userInfo.getName().equals(userInfo.getName());
+        return userInfo.getName().equals(getName());
     }
 
     @Override

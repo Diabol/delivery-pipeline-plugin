@@ -206,10 +206,7 @@ public class Pipeline extends AbstractItem {
             }
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, "#" + firstProject.getNextBuildNumber(), pipeLineTimestamp,
                     Trigger.getTriggeredBy(firstProject, null), null,
-                    //            Trigger.getTriggeredBy(firstBuild),
-                    //            UserInfo.getContributors(firstBuild),
                     pipelineStages, false);
-            //pipelineLatest.setChanges(pipelineChanges);
             result.add(pipelineLatest);
             no--;
         }
