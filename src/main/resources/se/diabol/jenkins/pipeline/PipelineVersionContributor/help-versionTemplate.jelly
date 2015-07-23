@@ -1,0 +1,19 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+    <div>
+        <p>
+            Template for generated version example:
+            <br/>
+            <b>
+                1.0.0.$${BUILD_NUMBER}
+                <br/>
+                1.2.0.$${ENV,var="SVN_REVISION"}
+                <br/>
+            </b>
+        </p>
+        <p>
+            This field can contain the following macros:
+            <help xmlns="/lib/token-macro"/>
+        </p>
+    </div>
+</j:jelly>
