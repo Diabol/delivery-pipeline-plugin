@@ -1,0 +1,7 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+  <dt>$${PIPELINE_VERSION}</dt>
+  <dd>
+    Expands to the current <b>PIPELINE_VERSION</b> environment variable from the Delivery Pipeline Plugin if present.
+  </dd>
+</j:jelly>
