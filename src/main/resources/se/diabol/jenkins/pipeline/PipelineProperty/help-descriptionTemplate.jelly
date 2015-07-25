@@ -1,0 +1,13 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <j:new var="h" className="hudson.Functions"/>
+    <!-- instead of JSP functions -->
+    ${h.initPageVariables(context)}
+    <div>
+        <img src="${resURL}/plugin/delivery-pipeline-plugin/help/description.png"/>
+        <p>
+            In a build Delivery Pipeline View this description will be shown as an description for the task. Description can be customized with all environment and <a href="http://ci.jenkins-ci.org/env-vars.html">build variables</a> using <a href="https://wiki.jenkins-ci.org/display/JENKINS/Token+Macro+Plugin">Token Macro Plugin</a>
+        </p>
+    </div>
+    <help xmlns="/lib/token-macro"/>
+</j:jelly>

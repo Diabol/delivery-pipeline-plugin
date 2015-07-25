@@ -25,6 +25,8 @@ import java.net.URL;
 
 public class FakeRepositoryBrowser extends RepositoryBrowser<FakeChangeLogSCM.EntryImpl> {
 
+    private static final long serialVersionUID = -5144842224743489576L;
+
     @Override
     public URL getChangeSetLink(FakeChangeLogSCM.EntryImpl changeSet) throws IOException {
         return new URL("http://somewhere.com/" + changeSet.getAuthor().getDisplayName());

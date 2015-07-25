@@ -15,20 +15,22 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain;
+package se.diabol.jenkins.pipeline.domain.task;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
-import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 
+import se.diabol.jenkins.pipeline.DeliveryPipelineView;
+import se.diabol.jenkins.pipeline.domain.task.ManualStep;
 import static org.junit.Assert.*;
 
 public class ManualStepTest {

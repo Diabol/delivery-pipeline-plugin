@@ -15,15 +15,18 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain;
+package se.diabol.jenkins.pipeline.domain.task;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Result;
 import jenkins.model.Jenkins;
+
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerResolver;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;

@@ -21,7 +21,7 @@ import hudson.Extension;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
-import se.diabol.jenkins.pipeline.domain.Task;
+import se.diabol.jenkins.pipeline.domain.task.Task;
 
 public class LatestActivityComparator extends ComponentComparator {
 
