@@ -17,26 +17,29 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.functionaltest;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import com.cloudbees.hudson.plugins.folder.Folder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import hudson.model.FreeStyleProject;
+import hudson.model.ParametersDefinitionProperty;
+import hudson.model.StringParameterDefinition;
 import hudson.model.View;
 import hudson.tasks.BuildTrigger;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.cloudbees.hudson.plugins.folder.Folder;
 
 public class GuiFunctionalIT {
 
@@ -65,7 +68,6 @@ public class GuiFunctionalIT {
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
         a.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
-
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A"));
@@ -78,14 +80,12 @@ public class GuiFunctionalIT {
 
         jenkins.buildAndAssertSuccess(a);
 
-
         DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
 
         page.triggerManual("B0");
         jenkins.waitUntilNoActivity();
         assertNotNull(b.getLastBuild());
-
     }
 
     @Test
@@ -94,7 +94,6 @@ public class GuiFunctionalIT {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
         a.getPublishersList().add(new BuildPipelineTrigger("B", null));
-
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
@@ -110,8 +109,6 @@ public class GuiFunctionalIT {
         a.scheduleBuild(0, null);
         jenkins.waitUntilNoActivity();
 
-
-
         DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
 
@@ -123,7 +120,6 @@ public class GuiFunctionalIT {
         jenkins.waitUntilNoActivity();
 
         assertEquals(2, b.getLastBuild().getNumber());
-
     }
 
     @Test
@@ -131,7 +127,6 @@ public class GuiFunctionalIT {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
         a.getPublishersList().add(new BuildPipelineTrigger("B", null));
-
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
@@ -152,7 +147,6 @@ public class GuiFunctionalIT {
         a.scheduleBuild(0, null);
         jenkins.waitUntilNoActivity();
 
-
         NewJobPage newJobPage = new NewJobPage(webDriver, jenkins.getURL() + "view/Pipeline");
         newJobPage.open();
         newJobPage.setJobName("NewJob");
@@ -161,9 +155,36 @@ public class GuiFunctionalIT {
         configureJobPage.submit();
 
         assertNotNull(jenkins.getInstance().getItemByFullName("NewJob"));
-
     }
 
+    @Test
+    public void testTriggerNewParameterizedPipeline() throws Exception {
+
+        FreeStyleProject start = jenkins.createFreeStyleProject("Start");
+        start.addProperty(new ParametersDefinitionProperty(
+                new StringParameterDefinition("key2", "value2")
+                ));
+        jenkins.createFreeStyleProject("End");
+        start.getPublishersList().add(new BuildTrigger("End", true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start"));
+        view.setComponentSpecs(specs);
+        view.setAllowPipelineStart(true);
+
+        jenkins.getInstance().addView(view);
+
+        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        page.open();
+        page.triggerNewParameterizedPipelineBuild("0");
+
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(start.getLastBuild());
+    }
 
     @Test
     public void testTriggerNewPipeline() throws Exception {
@@ -174,7 +195,6 @@ public class GuiFunctionalIT {
         start.getPublishersList().add(new BuildTrigger("End", true));
 
         jenkins.getInstance().rebuildDependencyGraph();
-
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
@@ -188,13 +208,10 @@ public class GuiFunctionalIT {
         page.open();
         page.triggerNewPipelineBuild("0");
 
-
         jenkins.waitUntilNoActivity();
 
         assertNotNull(start.getLastBuild());
-
     }
-
 
     @Test
     public void testTriggerNewPipelineFolders() throws Exception {
@@ -208,7 +225,6 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start"));
@@ -221,12 +237,9 @@ public class GuiFunctionalIT {
         page.open();
         page.triggerNewPipelineBuild("0");
 
-
         jenkins.waitUntilNoActivity();
 
         assertNotNull(start.getLastBuild());
-
     }
-
 
 }
