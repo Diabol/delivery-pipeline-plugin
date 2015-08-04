@@ -19,7 +19,12 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
+import hudson.model.ParameterValue;
+import hudson.model.ParametersAction;
+import hudson.model.StringParameterValue;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
@@ -27,6 +32,7 @@ import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,9 +97,17 @@ public class PipelineVersionContributor extends BuildWrapper {
     }
 
     public static void setVersion(AbstractBuild build, String version) {
-        ParametersAction action = new ParametersAction(
-                new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version));
-        build.addAction(action);
+        ParameterValue value = new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version);
+        ParametersAction action = build.getAction(ParametersAction.class);
+        if (action == null) {
+            action = new ParametersAction(value);
+            build.addAction(action);
+        } else {
+            List<ParameterValue> parameters = new ArrayList<ParameterValue>(action.getParameters());
+            parameters.add(value);
+            action = new ParametersAction(parameters);
+            build.replaceAction(action);
+        }
     }
 
 

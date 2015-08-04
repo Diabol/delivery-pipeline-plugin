@@ -27,6 +27,7 @@ import hudson.model.*;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
 import org.apache.commons.io.FileUtils;
+import org.jenkinsci.plugins.buildnamesetter.BuildNameSetter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -183,6 +184,30 @@ public class PipelineVersionContributorTest {
         assertNull(PipelineVersionContributor.getVersion(build));
     }
 
+    @Test
+    @Bug(28848)
+    public void testWithBuildNameSetterPluginAndAdditionalParameters() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+
+        a.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
+        a.getPublishersList().add(new BuildTrigger("b", false));
+        a.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
+        b.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
+
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+
+        jenkins.buildAndAssertSuccess(a);
+        jenkins.waitUntilNoActivity();
+
+        assertEquals("1.0.0.1", a.getLastBuild().getDisplayName());
+        assertEquals("1.0.0.1", b.getLastBuild().getDisplayName());
+        assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve("PIPELINE_VERSION"));
+        assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve("PIPELINE_VERSION"));
+
+    }
 
     private class AssertNoPipelineVersion extends TestBuilder {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
