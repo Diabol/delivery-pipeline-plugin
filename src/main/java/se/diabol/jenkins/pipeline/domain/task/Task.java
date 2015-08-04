@@ -173,7 +173,7 @@ public class Task extends AbstractItem {
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
         AbstractProject<?, ?> project = getProject(this, context);
-        AbstractBuild build = null;
+        AbstractBuild<?, ?> build = null;
         if (!ProjectUtil.isQueued(project, firstBuild)) {
             build = BuildUtil.match(project.getBuilds(), firstBuild);
         }
@@ -186,14 +186,14 @@ public class Task extends AbstractItem {
 
         final String buildDescription = TokenUtils.decodedTemplate(build, resolveBuildDescription(build));
         final String name = TokenUtils.decodedTemplate(build, this.getName());
-        final String taskName = (TokenUtils.stringIsNotEmpy(name) ? name : project.getName());
+        final String taskName = (TokenUtils.stringIsNotEmpy(name) ? name : project.getDisplayName());
 
         return new Task(this, taskName, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build), buildDescription);
     }
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
         AbstractProject<?, ?> taskProject = getProject(this, context);
-        AbstractBuild build = BuildUtil.match(taskProject.getBuilds(), versionBuild);
+        AbstractBuild<?, ?> build = BuildUtil.match(taskProject.getBuilds(), versionBuild);
 
         final Status taskStatus = SimpleStatus.resolveStatus(taskProject, build, null);
         final String taskLink = resolveTaskLink(taskStatus, build);
@@ -203,7 +203,7 @@ public class Task extends AbstractItem {
 
         final String buildDescription = TokenUtils.decodedTemplate(build, resolveBuildDescription(build));
         final String name = TokenUtils.decodedTemplate(build, this.getName());
-        final String taskName = (TokenUtils.stringIsNotEmpy(name) ? name : project.getName());
+        final String taskName = (TokenUtils.stringIsNotEmpy(name) ? name : project.getDisplayName());
 
         return new Task(this, taskName, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build), buildDescription);
     }
