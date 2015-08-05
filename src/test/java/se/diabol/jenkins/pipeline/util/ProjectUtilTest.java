@@ -22,10 +22,15 @@ import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import hudson.util.ListBoxModel;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
+
+import se.diabol.jenkins.pipeline.RelationshipResolver;
+import se.diabol.jenkins.pipeline.resolver.ProjectRelationshipResolver;
+import se.diabol.jenkins.pipeline.resolver.SubProjectRelationshipResolver;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
 import java.util.List;
@@ -128,6 +133,29 @@ public class ProjectUtilTest {
         assertEquals(projectB.getUpstreamProjects().get(0), projectA);
 
         // If there is a cycle dependency, then a stack overflow will be thrown here.
-        ProjectUtil.getAllDownstreamProjects(projectA);
+        ProjectUtil.getAllDownstreamProjects(projectA, null);
     }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testFirstLastProjects() throws Exception {
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("projectA");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("projectB");
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("projectC");
+        FreeStyleProject projectD = jenkins.createFreeStyleProject("projectD");
+        projectA.getPublishersList().add(new BuildTrigger(projectB.getName(), true));
+        projectB.getPublishersList().add(new BuildTrigger(projectC.getName(), true));
+        projectC.getPublishersList().add(new BuildTrigger(projectD.getName(), true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        jenkins.getInstance().getExtensionList(RelationshipResolver.class).add(new ProjectRelationshipResolver());
+        Map<String, AbstractProject<?, ?>> projects = ProjectUtil.getAllDownstreamProjects(projectB, projectC);
+        assertEquals(2, projects.size());
+        assertTrue(!projects.containsKey("projectA"));
+        assertTrue(projects.containsKey("projectB"));
+        assertTrue(projects.containsKey("projectC"));
+        assertTrue(!projects.containsKey("projectD"));
+    }
+
 }

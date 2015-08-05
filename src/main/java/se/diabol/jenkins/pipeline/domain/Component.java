@@ -49,7 +49,6 @@ public class Component extends AbstractItem {
     }
 
     @Exported
-    @SuppressWarnings("unused")
     public String getFirstJobUrl() {
         return firstJobUrl;
     }

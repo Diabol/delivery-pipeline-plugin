@@ -71,8 +71,8 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", null));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         view.setComponentSpecs(componentSpecs);
@@ -101,8 +101,8 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1"));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", null));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2", null));
 
 
 
@@ -240,7 +240,7 @@ public class DeliveryPipelineViewTest {
 
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", null));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
         jenkins.getInstance().addView(view);
@@ -257,7 +257,7 @@ public class DeliveryPipelineViewTest {
     @Test
     public void testGetItemsGetPipelinesWhenNoProjectFound() throws Exception {
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", null));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
         jenkins.getInstance().addView(view);
@@ -287,7 +287,7 @@ public class DeliveryPipelineViewTest {
 
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", null));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
         folder.addView(view);
@@ -301,13 +301,35 @@ public class DeliveryPipelineViewTest {
 
     }
 
+    @Test
+    public void testLimitedBuildsPipelines() throws Exception {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject test = jenkins.createFreeStyleProject("test");
+        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+
+        build.getPublishersList().add(new BuildTrigger(test.getName(), false));
+        test.getPublishersList().add(new BuildTrigger(deploy.getName(), false));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(build);
+        jenkins.waitUntilNoActivity();
+
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", "test"));
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        view.setComponentSpecs(specs);
+        view.setSorting(NameComparator.class.getName());
+        jenkins.getInstance().addView(view);
+        view.getPipelines();
+        assertNull(view.getError());
+    }
 
     @Test
     public void testGetPipelines() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         build.addProperty(new PipelineProperty("Build", "BuildStage"));
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build"));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", null));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
         view.setSorting(NameComparator.class.getName());
@@ -634,7 +656,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp", "A"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp", "A", null));
         view.setComponentSpecs(componentSpecs);
 
         jenkins.getInstance().addView(view);
@@ -655,8 +677,8 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A"));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A", null));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B", null));
         view.setComponentSpecs(componentSpecs);
         view.setShowAggregatedPipeline(true);
         view.setSorting("this will not be found");
@@ -684,8 +706,8 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A"));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B"));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A", null));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B", null));
         view.setComponentSpecs(componentSpecs);
         view.setShowAggregatedPipeline(true);
         view.setSorting("none");

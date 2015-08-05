@@ -668,7 +668,7 @@ public class PipelineTest {
         when(stage3.getTasks()).thenReturn(Arrays.asList(task3));
 
         FreeStyleProject project = jenkins.createFreeStyleProject("A");
-        Pipeline pipeline = new Pipeline("SimpleRoute", project, Arrays.asList(stage1, stage2, stage3));
+        Pipeline pipeline = new Pipeline("SimpleRoute", project, null, Arrays.asList(stage1, stage2, stage3));
         List<Route> allRoutes = new ArrayList<Route>();
         pipeline.calculatePipelineRoutes(task1, null, allRoutes);
         /*
@@ -733,7 +733,7 @@ public class PipelineTest {
         when(stage4.getTasks()).thenReturn(Arrays.asList(task6, task7));
 
         FreeStyleProject project = jenkins.createFreeStyleProject("A");
-        Pipeline pipeline = new Pipeline("TotalBuildTime", project, Arrays.asList(stage1, stage2, stage3, stage4));
+        Pipeline pipeline = new Pipeline("TotalBuildTime", project, null, Arrays.asList(stage1, stage2, stage3, stage4));
         /*
         task1 -> task3: 100 + 300 = 400L
         task1 -> task2 -> task5: 100 + 200 + 500 = 800L
@@ -746,7 +746,7 @@ public class PipelineTest {
     @Test
     public void testCalculateTotalBuildTimeNoStages() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("A");
-        Pipeline pipeline = new Pipeline("NoStages", project, new ArrayList<Stage>());
+        Pipeline pipeline = new Pipeline("NoStages", project, null, new ArrayList<Stage>());
         pipeline.calculateTotalBuildTime();
         assertEquals(0L, pipeline.getTotalBuildTime());
     }

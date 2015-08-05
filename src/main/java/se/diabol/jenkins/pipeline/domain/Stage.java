@@ -150,10 +150,15 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject) throws PipelineException {
+    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject) throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
-        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject).values()) {
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
             Task task = Task.getPrototypeTask(project, project.getFullName().equals(firstProject.getFullName()));
+            /* if current project is last we need clean downStreamTasks*/
+            if (lastProject != null && project.getFullName().equals(lastProject.getFullName())) {
+                task.getDownstreamTasks().clear();
+            }
+
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property == null && project.getParent() instanceof AbstractProject) {
                 property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
