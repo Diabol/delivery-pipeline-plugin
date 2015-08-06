@@ -603,10 +603,6 @@ public class DeliveryPipelineView extends View {
             return lastJob;
         }
 
-        public void setLastJob(String lastJob) {
-            this.lastJob = lastJob;
-        }
-
         @Extension
         public static class DescriptorImpl extends Descriptor<ComponentSpec> {
 
@@ -620,7 +616,10 @@ public class DeliveryPipelineView extends View {
             }
 
             public ListBoxModel doFillLastJobItems(@AncestorInPath ItemGroup<?> context) {
-                return ProjectUtil.fillAllProjects(context);
+                ListBoxModel options = new ListBoxModel();
+                options.add("");
+                options.addAll(ProjectUtil.fillAllProjects(context));
+                return options;
             }
 
             public FormValidation doCheckName(@QueryParameter String value) {

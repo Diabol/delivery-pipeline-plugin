@@ -484,6 +484,18 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
+    public void testDoFillFirstJobItems() {
+        ListBoxModel model = new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance());
+        assertNotNull(model);
+    }
+
+    @Test
+    public void testDoFillLastJobItems() {
+        ListBoxModel model = new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillLastJobItems(jenkins.getInstance());
+        assertNotNull(model);
+    }
+
+    @Test
     public void testGetPipelinesRegExp() throws Exception {
         jenkins.createFreeStyleProject("compile-Project1");
         jenkins.createFreeStyleProject("compile-Project2");
