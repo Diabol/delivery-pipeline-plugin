@@ -191,31 +191,12 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         html.push("</div></div></div></div>");
 
-                        if(data.showDescription && task.description && task.description != "") {
-                            html.push("<div class='infoPanelOuter'>");
-                            html.push("<div class='infoPanel'><div class='infoPanelInner'>" + task.description.replace(/\r\n/g, '<br/>') + "</div></div>");
-                            html.push("</div>");
-                        }
-                        if(data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
-                            html.push("<div class='infoPanelOuter'>");
-                            Q.each(task.status.promotions, function(i, promo) {
-                                html.push("<div class='infoPanel'><div class='infoPanelInner'>");
-                                html.push("<img class='promo-icon' height='16' width='16' src='" + rootURL + promo.icon + "'/>");
-                                html.push("<span class='promo-name'><a href='" + rootURL + "/" + task.link + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
-                                if (promo.user != 'anonymous') {
-                                    html.push("<span class='promo-user'>" + promo.user + "</span>");
-                                }
-                                html.push("<span class='promo-time'>" + formatDuration(promo.time) + "</span><br/>");
-                                if (promo.params.length > 0) {
-                                    html.push("<br/>");
-                                }
-                                Q.each(promo.params, function (j, param) {
-                                    html.push(param.replace(/\r\n/g, '<br/>') + "<br />");
-                                });
-                                html.push("</div></div>");
-                            });
-                            html.push("</div>");
-                        }
+                        html.push(generateDescription(data, task));
+                        html.push(generateTestInfo(data, task));
+                        html.push(generateCoverageInfo(data, task));
+                        html.push(generateStaticAnalysisInfo(data, task));
+                        html.push(generatePromotionsInfo(data, task));
+
                     }
                     html.push("</div>");
                     html.push('</div>');
@@ -289,6 +270,126 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
         }
     }
     plumb.repaintEverything();
+}
+
+function generateDescription(data, task) {
+    if (data.showDescription && task.description && task.description != "") {
+        var html = ["<div class='infoPanelOuter'>"];
+        html.push("<div class='infoPanel'><div class='infoPanelInner'>" + task.description.replace(/\r\n/g, '<br/>') + "</div></div>");
+        html.push("</div>");
+        return html.join("");
+    }
+}
+
+function generateTestInfo(data, task) {
+    if (data.showTestResult && task.testResult && task.testResult.length > 0) {
+        var html = ["<div class='infoPanelOuter'>"];
+        Q.each(task.testResult, function(i, analysis) {
+            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+                html.push("<a href=" + rootURL + "/" + analysis.url + ">" + analysis.name + "</a>");
+                html.push("<table id='priority.summary' class='pane'>");
+                html.push("<tbody>");
+                    html.push("<tr>");
+                        html.push("<td class='pane-header'>Total</td>");
+                        html.push("<td class='pane-header'>Failures</td>");
+                        html.push("<td class='pane-header'>Skipped</td>");
+                    html.push("</tr>");
+                html.push("</tbody>");
+                html.push("<tbody>");
+                    html.push("<tr>");
+                        html.push("<td class='pane'>" + analysis.total + "</td>");
+                        html.push("<td class='pane'>" + analysis.failed + "</td>");
+                        html.push("<td class='pane'>" + analysis.skipped + "</td>");
+                    html.push("</tr>");
+                html.push("</tbody>");
+                html.push("</table>");
+            html.push("</div></div>");
+        });
+        html.push("</div>");
+        return html.join("");
+    }
+}
+
+function generateCoverageInfo(data, task) {
+    if (data.showCoverageResult && task.coverageResult && task.coverageResult.length > 0) {
+        var html = ["<div class='infoPanelOuter'>"];
+        Q.each(task.coverageResult, function(i, coverage) {
+            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+                html.push("<a href=" + rootURL + "/" + coverage.url + ">" + coverage.name + "</a>");
+                html.push("<table id='priority.summary' class='pane'>");
+                html.push("<tbody>");
+                    html.push("<tr>");
+                        html.push("<td class='pane-header'>Line</td>");
+                        html.push("<td class='pane-header'>Method</td>");
+                        html.push("<td class='pane-header'>Classes</td>");
+                    html.push("</tr>");
+                html.push("</tbody>");
+                html.push("<tbody>");
+                    html.push("<tr>");
+                        html.push("<td class='pane'>" + coverage.line + " %</td>");
+                        html.push("<td class='pane'>" + coverage.method + " %</td>");
+                        html.push("<td class='pane'>" + coverage.classes + " %</td>");
+                    html.push("</tr>");
+                html.push("</tbody>");
+                html.push("</table>");
+            html.push("</div></div>");
+        });
+        html.push("</div>");
+        return html.join("");
+    }
+}
+
+function generateStaticAnalysisInfo(data, task) {
+    if (data.showStaticAnalysisResult && task.staticAnalysisResults && task.staticAnalysisResults.length > 0) {
+        var html = ["<div class='infoPanelOuter'>"];
+        Q.each(task.staticAnalysisResults, function(i, analysis) {
+            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+                html.push("<a href=" + rootURL + "/" + analysis.url + ">" + analysis.name + "</a>");
+                html.push("<table id='priority.summary' class='pane'>");
+                html.push("<tbody>");
+                    html.push("<tr>");
+                        html.push("<td class='pane-header'>High</td>");
+                        html.push("<td class='pane-header'>Normal</td>");
+                        html.push("<td class='pane-header'>Low</td>");
+                    html.push("</tr>");
+                html.push("</tbody>");
+                html.push("<tbody>");
+                    html.push("<tr>");
+                        html.push("<td class='pane'>" + analysis.high + "</td>");
+                        html.push("<td class='pane'>" + analysis.normal + "</td>");
+                        html.push("<td class='pane'>" + analysis.low + "</td>");
+                    html.push("</tr>");
+                html.push("</tbody>");
+                html.push("</table>");
+            html.push("</div></div>");
+        });
+        html.push("</div>");
+        return html.join("");
+    }
+}
+
+function generatePromotionsInfo(data, task) {
+    if (data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
+        var html = ["<div class='infoPanelOuter'>"];
+        Q.each(task.status.promotions, function(i, promo) {
+            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+            html.push("<img class='promo-icon' height='16' width='16' src='" + rootURL + promo.icon + "'/>");
+            html.push("<span class='promo-name'><a href='" + rootURL + "/" + task.link + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
+            if (promo.user != 'anonymous') {
+                html.push("<span class='promo-user'>" + promo.user + "</span>");
+            }
+            html.push("<span class='promo-time'>" + formatDuration(promo.time) + "</span><br/>");
+            if (promo.params.length > 0) {
+                html.push("<br/>");
+            }
+            Q.each(promo.params, function (j, param) {
+                html.push(param.replace(/\r\n/g, '<br/>') + "<br />");
+            });
+            html.push("</div></div>");
+        });
+        html.push("</div>");
+        return html.join("");
+    }
 }
 
 function generateChangeLog(changes) {

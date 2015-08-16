@@ -72,7 +72,6 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-@SuppressWarnings("UnusedDeclaration")
 public class DeliveryPipelineView extends View {
 
     private static final Logger LOG = Logger.getLogger(DeliveryPipelineView.class.getName());
@@ -101,6 +100,9 @@ public class DeliveryPipelineView extends View {
     private boolean allowPipelineStart = false;
     private boolean showDescription = false;
     private boolean showPromotions = false;
+    private boolean showTestResult = false;
+    private boolean showStaticAnalysisResult = false;
+    private boolean showCoverageResult = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -147,8 +149,6 @@ public class DeliveryPipelineView extends View {
             this.sorting = sorting;
         }
     }
-
-
 
     public List<ComponentSpec> getComponentSpecs() {
         return componentSpecs;
@@ -302,23 +302,50 @@ public class DeliveryPipelineView extends View {
     }
 
     @Exported
-	public boolean isShowDescription()
-	{
-		return showDescription;
-	}
+    public boolean isShowDescription()
+    {
+        return showDescription;
+    }
 
     @Exported
     public boolean isShowPromotions() {
         return showPromotions;
     }
 
+    @Exported
+    public boolean isShowTestResult() {
+        return showTestResult;
+    }
+
+    @Exported
+    public boolean isShowStaticAnalysisResult() {
+        return showStaticAnalysisResult;
+    }
+
+    @Exported
+    public boolean isShowCoverageResult() {
+        return showCoverageResult;
+    }
+
+    public void setShowCoverageResult(boolean showCoverageResult) {
+        this.showCoverageResult = showCoverageResult;
+    }
+
     public void setShowDescription(boolean showDescription)
-	{
-		this.showDescription = showDescription;
-	}
+    {
+        this.showDescription = showDescription;
+    }
 
     public void setShowPromotions(boolean showPromotions) {
         this.showPromotions = showPromotions;
+    }
+
+    public void setShowTestResult(boolean showTestResult) {
+        this.showTestResult = showTestResult;
+    }
+
+    public void setShowStaticAnalysisResult(boolean showStaticAnalysisResult) {
+        this.showStaticAnalysisResult = showStaticAnalysisResult;
     }
 
     @JavaScriptMethod

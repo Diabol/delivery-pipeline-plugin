@@ -22,9 +22,14 @@ import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import jenkins.model.Jenkins;
+
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.domain.results.CoverageResult;
+import se.diabol.jenkins.pipeline.domain.results.StaticAnalysisResult;
+import se.diabol.jenkins.pipeline.domain.results.TestResult;
 import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
@@ -44,7 +49,9 @@ import static com.google.common.base.Objects.toStringHelper;
 public class Task extends AbstractItem {
     private final String id;
     private final String link;
-    private final TestResult testResult;
+    private final List<TestResult> testResult;
+    private final List<CoverageResult> coverageResult;
+    private final List<StaticAnalysisResult> staticAnalysisResults;
     private final Status status;
     private final ManualStep manual;
     private final String buildId;
@@ -53,12 +60,15 @@ public class Task extends AbstractItem {
     private final String description;
     private final AbstractProject project;
     
-    public Task(AbstractProject project, String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks,
-                boolean initial, String description) {
+    public Task(AbstractProject project, String id, String name, Status status, String link,
+                    ManualStep manual, List<String> downstreamTasks, boolean initial,
+                    String description) {
         super(name);
         this.id = id;
         this.link = link;
         this.testResult = null;
+        this.coverageResult = null;
+        this.staticAnalysisResults = null;
         this.status = status;
         this.manual = manual;
         this.buildId = null;
@@ -69,7 +79,8 @@ public class Task extends AbstractItem {
     }
 
     public Task(Task task, String buildId, Status status, String link, ManualStep manual,
-                    TestResult testResult, String description) {
+                    List<TestResult> testResult, List<CoverageResult> coverageResult,
+                    List<StaticAnalysisResult> staticAnalysisResults, String description) {
         super(task.getName());
         this.id = task.id;
         this.downstreamTasks = task.getDownstreamTasks();
@@ -78,6 +89,8 @@ public class Task extends AbstractItem {
         this.link = link;
         this.manual = manual;
         this.testResult = testResult;
+        this.coverageResult = coverageResult;
+        this.staticAnalysisResults = staticAnalysisResults;
         this.initial = task.isInitial();
         this.description = description;
         this.project = task.project;
@@ -109,9 +122,18 @@ public class Task extends AbstractItem {
     }
 
     @Exported
-    @SuppressWarnings("unused")
-    public TestResult getTestResult() {
+    public List<TestResult> getTestResult() {
         return testResult;
+    }
+
+    @Exported
+    public List<CoverageResult> getCoverageResult() {
+        return coverageResult;
+    }
+
+    @Exported
+    public List<StaticAnalysisResult> getStaticAnalysisResults() {
+        return staticAnalysisResults;
     }
 
     @Exported
@@ -124,7 +146,7 @@ public class Task extends AbstractItem {
         return downstreamTasks;
     }
 
-	@Exported
+    @Exported
     public String getDescription() {
         return description;
     }
@@ -191,7 +213,8 @@ public class Task extends AbstractItem {
         ManualStep manualStep = ManualStep.getManualStepLatest(project, build, firstBuild);
 
         final String buildDescription = (build != null) ? build.getDescription() : "";
-        return new Task(this, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build), buildDescription);
+        return new Task(this, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getResults(build),
+                        CoverageResult.getResults(build), StaticAnalysisResult.getResults(build), buildDescription);
     }
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
@@ -204,9 +227,10 @@ public class Task extends AbstractItem {
                 taskLink = currentBuild.getUrl() + "console";
             }
             return new Task(this, String.valueOf(currentBuild.getNumber()), taskStatus, taskLink, this.getManualStep(),
-                    TestResult.getTestResult(currentBuild), currentBuild.getDescription());
+                    TestResult.getResults(currentBuild), CoverageResult.getResults(currentBuild), StaticAnalysisResult.getResults(currentBuild),
+                    currentBuild.getDescription());
         } else {
-            return new Task(this, null, StatusFactory.idle(), this.getLink(), this.getManualStep(), null, "");
+            return new Task(this, null, StatusFactory.idle(), this.getLink(), this.getManualStep(), null, null, null, "");
         }
     }
 
@@ -221,8 +245,10 @@ public class Task extends AbstractItem {
                 .add("id", id)
                 .add("link", link)
                 .add("testResult", testResult)
+                .add("coverageResult", coverageResult)
+                .add("staticAnalysisResults", staticAnalysisResults)
                 .add("status", status)
-                .add("manueal", manual)
+                .add("manual", manual)
                 .add("buildId", buildId)
                 .add("downstreamTasks", downstreamTasks).toString();
     }

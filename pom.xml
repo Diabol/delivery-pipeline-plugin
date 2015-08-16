@@ -334,6 +334,24 @@
             <version>2.21</version>
         </dependency>
         <dependency>
+            <groupId>org.jvnet.hudson.plugins</groupId>
+            <artifactId>analysis-core</artifactId>
+            <version>1.54</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jacoco</artifactId>
+            <version>1.0.19</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>cobertura</artifactId>
+            <version>1.9.6</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>join</artifactId>
             <version>1.15</version>

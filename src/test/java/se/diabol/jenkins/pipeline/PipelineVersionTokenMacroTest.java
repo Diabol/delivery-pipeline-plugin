@@ -21,6 +21,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
+
 import org.jenkinsci.plugins.buildnamesetter.BuildNameSetter;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.junit.Rule;
@@ -61,6 +62,7 @@ public class PipelineVersionTokenMacroTest {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testNoPipelineVersionExists() throws Exception {
         PipelineVersionTokenMacro macro = new PipelineVersionTokenMacro();
@@ -76,6 +78,7 @@ public class PipelineVersionTokenMacroTest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @WithoutJenkins
     public void testAcceptsMacroName() {

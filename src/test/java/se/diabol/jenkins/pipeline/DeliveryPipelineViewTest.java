@@ -165,6 +165,9 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isAllowRebuild());
         assertFalse(view.isShowDescription());
         assertFalse(view.isShowPromotions());
+        assertFalse(view.isShowTestResult());
+        assertFalse(view.isShowStaticAnalysisResult());
+        assertFalse(view.isShowCoverageResult());
     }
 
     @Test
@@ -194,6 +197,12 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowDescription());
         view.setShowPromotions(true);
         assertTrue(view.isShowPromotions());
+        view.setShowTestResult(true);
+        assertTrue(view.isShowTestResult());
+        view.setShowStaticAnalysisResult(true);
+        assertTrue(view.isShowStaticAnalysisResult());
+        view.setShowCoverageResult(true);
+        assertTrue(view.isShowCoverageResult());
     }
 
     @Test
@@ -344,8 +353,7 @@ public class DeliveryPipelineViewTest {
         assertEquals("Build", task.getName());
         assertEquals("build", task.getId());
         assertEquals("1", task.getBuildId());
-        assertNull(task.getTestResult());
-
+        assertEquals(0, task.getTestResult().size());
 
         view.setShowAggregatedPipeline(true);
         components = view.getPipelines();
@@ -354,8 +362,6 @@ public class DeliveryPipelineViewTest {
         component = components.get(0);
         assertEquals(2, component.getPipelines().size());
         assertEquals("Comp", component.getName());
-
-
 
         pipeline = component.getPipelines().get(0);
         assertNull(pipeline.getVersion());
@@ -366,8 +372,6 @@ public class DeliveryPipelineViewTest {
         assertEquals(1, pipeline.getStages().size());
         assertNull(pipeline.getChanges());
 
-
-
         pipeline = component.getPipelines().get(1);
         assertEquals("#1", pipeline.getVersion());
         assertNotNull(pipeline.getTimestamp());
@@ -376,9 +380,6 @@ public class DeliveryPipelineViewTest {
         assertEquals(0, pipeline.getContributors().size());
         assertEquals(1, pipeline.getStages().size());
         assertEquals(0, pipeline.getChanges().size());
-
-
-
     }
 
     @Test
@@ -390,8 +391,6 @@ public class DeliveryPipelineViewTest {
         assertEquals(FormValidation.Kind.ERROR,  d.doCheckName("").kind);
         assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(" ").kind);
         assertEquals(FormValidation.Kind.OK,  d.doCheckName("Component").kind);
-
-
     }
 
     @Test
@@ -424,7 +423,6 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getFullScreenCss());
         view.setFullScreenCss("http://somewhere.com");
         assertEquals("http://somewhere.com", view.getFullScreenCss());
-
     }
 
     @Test
@@ -437,7 +435,6 @@ public class DeliveryPipelineViewTest {
         assertNull(view.getEmbeddedCss());
         view.setEmbeddedCss("http://somewhere.com");
         assertEquals("http://somewhere.com", view.getEmbeddedCss());
-
     }
 
     @Test
@@ -673,8 +670,6 @@ public class DeliveryPipelineViewTest {
         assertEquals(2, components.size());
         assertEquals("Comp2", components.get(0).getName());
         assertEquals("Comp1", components.get(1).getName());
-
-
     }
 
     @Test
@@ -718,15 +713,12 @@ public class DeliveryPipelineViewTest {
         assertNotNull(a.getLastBuild());
         assertNotNull(b.getLastBuild());
 
-        AbstractBuild b1 = b.getLastBuild();
+        AbstractBuild<?, ?> b1 = b.getLastBuild();
 
         view.triggerRebuild("B", "1");
         jenkins.waitUntilNoActivity();
         assertEquals(2, b.getLastBuild().getNumber());
         assertEqualsList(b1.getActions(ParametersAction.class), b.getLastBuild().getActions(ParametersAction.class));
-
-
-
     }
 
     @Test
