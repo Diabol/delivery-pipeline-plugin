@@ -100,9 +100,8 @@ public class DeliveryPipelineView extends View {
     private boolean allowPipelineStart = false;
     private boolean showDescription = false;
     private boolean showPromotions = false;
-    private boolean showTestResult = false;
-    private boolean showStaticAnalysisResult = false;
-    private boolean showCoverageResult = false;
+    private boolean showTestResults = false;
+    private boolean showStaticAnalysisResults = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -313,22 +312,13 @@ public class DeliveryPipelineView extends View {
     }
 
     @Exported
-    public boolean isShowTestResult() {
-        return showTestResult;
+    public boolean isShowTestResults() {
+        return showTestResults;
     }
 
     @Exported
-    public boolean isShowStaticAnalysisResult() {
-        return showStaticAnalysisResult;
-    }
-
-    @Exported
-    public boolean isShowCoverageResult() {
-        return showCoverageResult;
-    }
-
-    public void setShowCoverageResult(boolean showCoverageResult) {
-        this.showCoverageResult = showCoverageResult;
+    public boolean isShowStaticAnalysisResults() {
+        return showStaticAnalysisResults;
     }
 
     public void setShowDescription(boolean showDescription)
@@ -340,12 +330,12 @@ public class DeliveryPipelineView extends View {
         this.showPromotions = showPromotions;
     }
 
-    public void setShowTestResult(boolean showTestResult) {
-        this.showTestResult = showTestResult;
+    public void setShowTestResults(boolean showTestResults) {
+        this.showTestResults = showTestResults;
     }
 
-    public void setShowStaticAnalysisResult(boolean showStaticAnalysisResult) {
-        this.showStaticAnalysisResult = showStaticAnalysisResult;
+    public void setShowStaticAnalysisResults(boolean showStaticAnalysisResults) {
+        this.showStaticAnalysisResults = showStaticAnalysisResults;
     }
 
     @JavaScriptMethod

@@ -5,6 +5,7 @@
     ${h.initPageVariables(context)}
     <div>
         <img src="${resURL}/plugin/delivery-pipeline-plugin/help/task.png"/>
-        <p>In a build Delivery Pipeline View this job will be shown as an task to a stage. Enter the name for the task.</p>
+        <p>In a build Delivery Pipeline View this job will be shown as an task to a stage. Enter the name for the task. You can use all environment and <a href="http://ci.jenkins-ci.org/env-vars.html">build variables</a> using <a href="https://wiki.jenkins-ci.org/display/JENKINS/Token+Macro+Plugin">Token Macro Plugin</a></p>
     </div>
+    <help xmlns="/lib/token-macro"/>
 </j:jelly>

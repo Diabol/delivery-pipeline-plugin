@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import hudson.Plugin;
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
 import hudson.plugins.analysis.core.AbstractResultAction;
@@ -31,14 +32,27 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import jenkins.model.Jenkins;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Jenkins.class)
 public class StaticAnalysisResultTest {
 
     @SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
     @Test
     public void testGetStaticAnalysisResult() {
         AbstractBuild<?, ?> build =  mock(AbstractBuild.class);
+        Jenkins jenkins = mock(Jenkins.class);
+        Plugin plugin = mock(Plugin.class);
+        PowerMockito.mockStatic(Jenkins.class);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(jenkins.getPlugin("analysis-core")).thenReturn(plugin);
         AbstractResultAction findbugs = mock(AbstractResultAction.class);
         AbstractResultAction owasp = mock(AbstractResultAction.class);
 
@@ -77,6 +91,11 @@ public class StaticAnalysisResultTest {
     @Test
     public void testGetStaticAnalysisResultEmpty() {
         AbstractBuild<?, ?> build =  mock(AbstractBuild.class);
+        Jenkins jenkins = mock(Jenkins.class);
+        Plugin plugin = mock(Plugin.class);
+        PowerMockito.mockStatic(Jenkins.class);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+        PowerMockito.when(jenkins.getPlugin("analysis-core")).thenReturn(plugin);
         when(build.getActions()).thenReturn(Collections.<Action> emptyList());
 
         List<StaticAnalysisResult> result = StaticAnalysisResult.getResults(build);

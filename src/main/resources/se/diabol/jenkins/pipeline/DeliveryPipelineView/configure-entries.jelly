@@ -53,15 +53,11 @@
             <f:checkbox/>
         </f:entry>
 
-        <f:entry title="Show junit result" field="showTestResult">
+        <f:entry title="Show junit results" field="showTestResults">
             <f:checkbox/>
         </f:entry>
 
-        <f:entry title="Show code coverage result" field="showCoverageResult">
-            <f:checkbox/>
-        </f:entry>
-
-        <f:entry title="Show static analysis result" field="showStaticAnalysisResult">
+        <f:entry title="Show static analysis results" field="showStaticAnalysisResults">
             <f:checkbox/>
         </f:entry>
 

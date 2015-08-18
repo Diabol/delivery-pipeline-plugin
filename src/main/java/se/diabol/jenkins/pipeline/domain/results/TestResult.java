@@ -23,6 +23,7 @@ import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.kohsuke.stapler.export.Exported;
@@ -82,7 +83,7 @@ public class TestResult extends Result {
             }
             return result;
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

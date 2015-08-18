@@ -193,7 +193,6 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         html.push(generateDescription(data, task));
                         html.push(generateTestInfo(data, task));
-                        html.push(generateCoverageInfo(data, task));
                         html.push(generateStaticAnalysisInfo(data, task));
                         html.push(generatePromotionsInfo(data, task));
 
@@ -282,9 +281,9 @@ function generateDescription(data, task) {
 }
 
 function generateTestInfo(data, task) {
-    if (data.showTestResult && task.testResult && task.testResult.length > 0) {
+    if (data.showTestResults && task.testResults && task.testResults.length > 0) {
         var html = ["<div class='infoPanelOuter'>"];
-        Q.each(task.testResult, function(i, analysis) {
+        Q.each(task.testResults, function(i, analysis) {
             html.push("<div class='infoPanel'><div class='infoPanelInner'>");
                 html.push("<a href=" + rootURL + "/" + analysis.url + ">" + analysis.name + "</a>");
                 html.push("<table id='priority.summary' class='pane'>");
@@ -310,37 +309,8 @@ function generateTestInfo(data, task) {
     }
 }
 
-function generateCoverageInfo(data, task) {
-    if (data.showCoverageResult && task.coverageResult && task.coverageResult.length > 0) {
-        var html = ["<div class='infoPanelOuter'>"];
-        Q.each(task.coverageResult, function(i, coverage) {
-            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
-                html.push("<a href=" + rootURL + "/" + coverage.url + ">" + coverage.name + "</a>");
-                html.push("<table id='priority.summary' class='pane'>");
-                html.push("<tbody>");
-                    html.push("<tr>");
-                        html.push("<td class='pane-header'>Line</td>");
-                        html.push("<td class='pane-header'>Method</td>");
-                        html.push("<td class='pane-header'>Classes</td>");
-                    html.push("</tr>");
-                html.push("</tbody>");
-                html.push("<tbody>");
-                    html.push("<tr>");
-                        html.push("<td class='pane'>" + coverage.line + " %</td>");
-                        html.push("<td class='pane'>" + coverage.method + " %</td>");
-                        html.push("<td class='pane'>" + coverage.classes + " %</td>");
-                    html.push("</tr>");
-                html.push("</tbody>");
-                html.push("</table>");
-            html.push("</div></div>");
-        });
-        html.push("</div>");
-        return html.join("");
-    }
-}
-
 function generateStaticAnalysisInfo(data, task) {
-    if (data.showStaticAnalysisResult && task.staticAnalysisResults && task.staticAnalysisResults.length > 0) {
+    if (data.showStaticAnalysisResults && task.staticAnalysisResults && task.staticAnalysisResults.length > 0) {
         var html = ["<div class='infoPanelOuter'>"];
         Q.each(task.staticAnalysisResults, function(i, analysis) {
             html.push("<div class='infoPanel'><div class='infoPanelInner'>");

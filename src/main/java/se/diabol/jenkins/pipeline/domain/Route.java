@@ -20,6 +20,8 @@ package se.diabol.jenkins.pipeline.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.diabol.jenkins.pipeline.domain.task.Task;
+
 /**
  * A possible route in the pipeline, comprised of tasks.
  */

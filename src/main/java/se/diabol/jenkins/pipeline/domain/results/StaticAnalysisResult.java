@@ -26,6 +26,7 @@ import hudson.plugins.analysis.core.BuildResult;
 import hudson.plugins.analysis.core.MavenResultAction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.kohsuke.stapler.export.Exported;
@@ -92,7 +93,7 @@ public class StaticAnalysisResult extends Result {
                 return result;
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

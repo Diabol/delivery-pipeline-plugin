@@ -19,7 +19,6 @@ package se.diabol.jenkins.pipeline.trigger;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleProject;
-import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;

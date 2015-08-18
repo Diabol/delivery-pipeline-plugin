@@ -84,10 +84,10 @@ public class PromotionStatusProviderTest {
         final String promotionIcon = "16x16-icon";
 
         final String promotion1Name = "Promotion-1";
-        final long promotion1StartTime = 10000L;
+        final long promotionStartTime = 0L;
+        final long promotionDuration = 0L;
 
         final String promotion2Name = "Promotion-2";
-        final long promotion2StartTime = 12000L;
 
         final List<ParameterValue> mockParameterValues = new ArrayList<ParameterValue>();
         mockParameterValues.add(new StringParameterValue(stringParamName, stringParamValue));
@@ -111,7 +111,7 @@ public class PromotionStatusProviderTest {
         final PromotionStatusProvider.PromotionStatusWrapper mockPromotionStatusWrapper = mock(PromotionStatusProvider.PromotionStatusWrapper.class);
         when(mockPromotionStatusWrapper.getPromotionBuilds(anyObject())).thenReturn(mockPromotions);
 
-        final List mockStatusList = new ArrayList();
+        final List<Object> mockStatusList = new ArrayList<Object>();
         final Object mockStatusObject1 = new Object();
         mockStatusList.add(mockStatusObject1);
 
@@ -120,11 +120,13 @@ public class PromotionStatusProviderTest {
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject1)).thenReturn(promotion1Name);
         when(mockPromotionStatusWrapper.getIcon(mockStatusObject1, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
-        when(mockPromotionStatusWrapper.getStartTime(mockStatusObject1)).thenReturn(promotion1StartTime);
+        when(mockPromotionStatusWrapper.getStartTime(mockStatusObject1)).thenReturn(promotionStartTime);
+        when(mockPromotionStatusWrapper.getDuration(mockStatusObject1)).thenReturn(promotionDuration);
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject2)).thenReturn(promotion2Name);
         when(mockPromotionStatusWrapper.getIcon(mockStatusObject2, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
-        when(mockPromotionStatusWrapper.getStartTime(mockStatusObject2)).thenReturn(promotion2StartTime);
+        when(mockPromotionStatusWrapper.getStartTime(mockStatusObject2)).thenReturn(promotionStartTime);
+        when(mockPromotionStatusWrapper.getDuration(mockStatusObject2)).thenReturn(promotionDuration);
 
         final AbstractBuild mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
@@ -145,6 +147,8 @@ public class PromotionStatusProviderTest {
         assertEquals(promotion1Name, promotionStatus1.getName());
         assertEquals(promotionUserName, promotionStatus1.getUser());
         assertEquals(promotionIcon, promotionStatus1.getIcon());
+        assertEquals(promotionDuration, promotionStatus1.getDuration());
+        assertEquals(promotionStartTime, promotionStatus1.getStartTime());
 
         final List<String> promotionStatus1Params = promotionStatus1.getParams();
         assertNotNull(promotionStatus1Params);

@@ -65,7 +65,7 @@ public class PipelineVersionContributor extends BuildWrapper {
             InterruptedException {
         try {
 
-            String version = TokenMacro.expand(build, listener, getVersionTemplate());
+            String version = TokenMacro.expandAll(build, listener, getVersionTemplate());
             setVersion(build, version);
             listener.getLogger().println("Creating version: " + version);
 
