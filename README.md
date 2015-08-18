@@ -31,7 +31,7 @@ Build and run the Delivery Pipeline plugin in a Docker container
 
 Run Jenkins with the latest released Delivery Pipeline plugin in a Docker container
 ---
-	docker run -dt -p 8080:8080 diabol/delivery-pipeline-plugin:0.9.4
+	docker run -dt -p 8080:8080 diabol/delivery-pipeline-plugin:0.9.5
 
 If you run on Mac and use boot2docker, enable port forwarding between your host and boot2docker VM:
 
