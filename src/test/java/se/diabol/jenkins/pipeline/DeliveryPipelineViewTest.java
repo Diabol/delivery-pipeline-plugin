@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 
 import org.acegisecurity.AuthenticationException;
@@ -516,7 +517,7 @@ public class DeliveryPipelineViewTest {
         assertTrue(names.contains("Project2"));
         assertTrue(names.contains("Project3"));
 
-        assertEquals(3, view.getItems().size());
+        assertEquals(4, view.getItems().size());
     }
 
     @Test
@@ -776,6 +777,12 @@ public class DeliveryPipelineViewTest {
             //Should throw this
         }
         SecurityContextHolder.setContext(oldContext);
+    }
+
+    @Test
+    public void testComponentSpecDescriptorImpldoFillFirstJobItems() throws Exception {
+        jenkins.createFreeStyleProject("a");
+        assertEquals(1, new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance()).size());
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {

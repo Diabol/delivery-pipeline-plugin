@@ -130,4 +130,10 @@ public class ProjectUtilTest {
         // If there is a cycle dependency, then a stack overflow will be thrown here.
         ProjectUtil.getAllDownstreamProjects(projectA);
     }
+
+    @Test
+    public void testGetAllDownstreamProjects() {
+        Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(null);
+        assertTrue(result.isEmpty());
+    }
 }

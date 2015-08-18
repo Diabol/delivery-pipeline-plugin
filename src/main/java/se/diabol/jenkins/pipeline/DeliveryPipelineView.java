@@ -426,28 +426,7 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        List<TopLevelItem> result = new ArrayList<TopLevelItem>();
-        Set<AbstractProject> projects = new HashSet<AbstractProject>();
-        if (componentSpecs != null) {
-            for (ComponentSpec componentSpec : componentSpecs) {
-                projects.add(ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup()));
-            }
-        }
-        if (regexpFirstJobs != null) {
-            for (RegExpSpec regexp : regexpFirstJobs) {
-                Map<String, AbstractProject> projectMap = ProjectUtil.getProjects(regexp.getRegexp());
-                projects.addAll(projectMap.values());
-            }
-
-        }
-        for (AbstractProject project : projects) {
-            Collection<AbstractProject<?, ?>> downstreamProjects = ProjectUtil.getAllDownstreamProjects(project).values();
-            for (AbstractProject<?, ?> abstractProject : downstreamProjects) {
-                result.add(getItem(abstractProject.getName()));
-            }
-        }
-
-        return result;
+        return (Collection)getOwnerItemGroup().getItems();
     }
 
     @Override
