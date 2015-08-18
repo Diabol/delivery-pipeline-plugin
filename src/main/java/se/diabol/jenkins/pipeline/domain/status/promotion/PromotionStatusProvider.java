@@ -127,6 +127,10 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
         public long getStartTime(Object status) {
             return ((PromotionStatus) status).getStartTime();
         }
+
+        public long getDuration(Object status) {
+            return ((PromotionStatus) status).getDuration();
+        }
     }
 
     // package scope setters for unit testing

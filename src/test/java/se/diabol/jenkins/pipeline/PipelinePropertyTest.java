@@ -80,6 +80,7 @@ public class PipelinePropertyTest {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn("");
         when(request.getParameter("stageName")).thenReturn("");
+        when(request.getParameter("descriptionTemplate")).thenReturn("");
         when(request.getParameter("enabled")).thenReturn("on");
         assertNull(d.newInstance(request, null));
     }
@@ -139,7 +140,7 @@ public class PipelinePropertyTest {
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
         jenkins.createFreeStyleProject("build3");
         build2.addProperty(new PipelineProperty());
-        build.addProperty(new PipelineProperty("Build", "Build"));
+        build.addProperty(new PipelineProperty("Build", "Build", ""));
 
 
         AutoCompletionCandidates c1 = d.doAutoCompleteStageName("B");
@@ -161,8 +162,8 @@ public class PipelinePropertyTest {
         Set<String> stageNames = PipelineProperty.getStageNames();
         assertNotNull(stageNames);
         assertEquals(0, stageNames.size());
-        build1.addProperty(new PipelineProperty(null, "Build"));
-        build2.addProperty(new PipelineProperty(null, "QA"));
+        build1.addProperty(new PipelineProperty(null, "Build", ""));
+        build2.addProperty(new PipelineProperty(null, "QA", ""));
 
         stageNames = PipelineProperty.getStageNames();
         assertNotNull(stageNames);

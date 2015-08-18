@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.URL;
 
 public class MeanFakeRepositoryBrowser extends RepositoryBrowser<FakeChangeLogSCM.EntryImpl> {
+    private static final long serialVersionUID = 996026414850737194L;
+
     @Override
     public URL getChangeSetLink(FakeChangeLogSCM.EntryImpl changeSet) throws IOException {
         throw new IOException("I can get changeset link");

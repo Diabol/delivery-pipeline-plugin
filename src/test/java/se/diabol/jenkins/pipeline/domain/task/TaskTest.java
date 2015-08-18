@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain;
+package se.diabol.jenkins.pipeline.domain.task;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
@@ -35,6 +35,7 @@ import hudson.security.Permission;
 import hudson.tasks.BuildTrigger;
 import hudson.util.OneShotEvent;
 import jenkins.model.Jenkins;
+
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.junit.Rule;
@@ -44,8 +45,10 @@ import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.UnstableBuilder;
+
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.pipeline.PipelineProperty;
+import se.diabol.jenkins.pipeline.domain.task.Task;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -135,7 +138,7 @@ public class TaskTest {
     public void testTaskNameForMultiConfiguration() throws Exception {
         MatrixProject project = jenkins.createMatrixProject("Multi");
         project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));
-        project.addProperty(new PipelineProperty("task", "stage"));
+        project.addProperty(new PipelineProperty("task", "stage", ""));
 
         Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
 

@@ -15,12 +15,15 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain;
+package se.diabol.jenkins.pipeline.domain.task;
 
 import hudson.model.AbstractBuild;
 import hudson.tasks.test.AggregatedTestResultAction;
+
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import se.diabol.jenkins.pipeline.domain.AbstractItem;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class TestResult {

@@ -36,14 +36,17 @@ import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
 import join.JoinTrigger;
+
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
+
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.status.Status;
+import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
 import java.util.ArrayList;
@@ -68,7 +71,7 @@ public class PipelineTest {
         assertEquals("job", pipeline.getStages().get(0).getName());
         assertEquals("job", pipeline.getStages().get(0).getTasks().get(0).getName());
 
-        job.addProperty(new PipelineProperty("", ""));
+        job.addProperty(new PipelineProperty("", "", ""));
 
         pipeline = Pipeline.extractPipeline("Pipeline", job);
         assertEquals(1, pipeline.getStages().size());
@@ -83,12 +86,12 @@ public class PipelineTest {
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
         FreeStyleProject test = jenkins.createFreeStyleProject("test");
 
-        compile.addProperty(new PipelineProperty("Compile", "Build"));
+        compile.addProperty(new PipelineProperty("Compile", "Build", ""));
         compile.save();
 
-        deploy.addProperty(new PipelineProperty("Deploy", "Deploy"));
+        deploy.addProperty(new PipelineProperty("Deploy", "Deploy", ""));
         deploy.save();
-        test.addProperty(new PipelineProperty("Test", "Test"));
+        test.addProperty(new PipelineProperty("Test", "Test", ""));
         test.save();
 
         compile.getPublishersList().add(new BuildTrigger("test", false));
@@ -126,13 +129,13 @@ public class PipelineTest {
     @Test
     public void testExtractSimpleForkJoinPipeline() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty(null, "build"));
+        build.addProperty(new PipelineProperty(null, "build", ""));
         FreeStyleProject deploy1 = jenkins.createFreeStyleProject("deploy1");
-        deploy1.addProperty(new PipelineProperty(null, "CI"));
+        deploy1.addProperty(new PipelineProperty(null, "CI", ""));
         FreeStyleProject deploy2 = jenkins.createFreeStyleProject("deploy2");
-        deploy2.addProperty(new PipelineProperty(null, "CI"));
+        deploy2.addProperty(new PipelineProperty(null, "CI", ""));
         FreeStyleProject deploy3 = jenkins.createFreeStyleProject("deploy3");
-        deploy3.addProperty(new PipelineProperty(null, "QA"));
+        deploy3.addProperty(new PipelineProperty(null, "QA", ""));
 
         build.getPublishersList().add(new BuildTrigger("deploy1,deploy2", false));
         deploy1.getPublishersList().add(new BuildTrigger("deploy3", false));
@@ -151,12 +154,12 @@ public class PipelineTest {
     @Test
     public void testExtractPipelineWithSubProjects() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty("Build", "Build"));
+        build.addProperty(new PipelineProperty("Build", "Build", ""));
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
-        sonar.addProperty(new PipelineProperty("Sonar", "Build"));
+        sonar.addProperty(new PipelineProperty("Sonar", "Build", ""));
 
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
-        deploy.addProperty(new PipelineProperty("Deploy", "QA"));
+        deploy.addProperty(new PipelineProperty("Deploy", "QA", ""));
 
 
         build.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("sonar", new BlockingBehaviour("never", "never", "never"), null)));
@@ -279,8 +282,8 @@ public class PipelineTest {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         FreeStyleProject ci1 = jenkins.createFreeStyleProject("ci1");
         FreeStyleProject ci2 = jenkins.createFreeStyleProject("ci2");
-        ci1.addProperty(new PipelineProperty("ci1", "CI1"));
-        ci2.addProperty(new PipelineProperty("ci2", "CI1"));
+        ci1.addProperty(new PipelineProperty("ci1", "CI1", ""));
+        ci2.addProperty(new PipelineProperty("ci2", "CI1", ""));
         build.getPublishersList().add(new BuildPipelineTrigger("ci1", null));
         build.getPublishersList().add(new BuildPipelineTrigger("ci2", null));
         jenkins.getInstance().rebuildDependencyGraph();
@@ -329,11 +332,11 @@ public class PipelineTest {
     @Test
     public void testCreatePipelineLatest() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty("", "Build"));
+        build.addProperty(new PipelineProperty("", "Build", ""));
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
-        sonar.addProperty(new PipelineProperty("Sonar", "Build"));
+        sonar.addProperty(new PipelineProperty("Sonar", "Build", ""));
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
-        deploy.addProperty(new PipelineProperty("Deploy", "CI"));
+        deploy.addProperty(new PipelineProperty("Deploy", "CI", ""));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
@@ -604,13 +607,13 @@ public class PipelineTest {
     public void testRecursiveStages() throws Exception {
 
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        a.addProperty(new PipelineProperty("A", "A"));
+        a.addProperty(new PipelineProperty("A", "A", ""));
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        b.addProperty(new PipelineProperty("B", "B"));
+        b.addProperty(new PipelineProperty("B", "B", ""));
         FreeStyleProject c = jenkins.createFreeStyleProject("C");
-        c.addProperty(new PipelineProperty("C", "C"));
+        c.addProperty(new PipelineProperty("C", "C", ""));
         FreeStyleProject d = jenkins.createFreeStyleProject("D");
-        d.addProperty(new PipelineProperty("D", "B"));
+        d.addProperty(new PipelineProperty("D", "B", ""));
 
         a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
         b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
