@@ -77,8 +77,8 @@ public class SimpleStatusTest {
         try {
             SimpleStatus.resolveStatus(project, build, null);
             fail("Should throw exception");
-        } catch (IllegalStateException e) {
-            //Exception thrown
+        } catch (IllegalStateException expected) {
+            // Expected exception thrown
         }
     }
 
@@ -236,7 +236,6 @@ public class SimpleStatusTest {
         assertFalse(resolvedStatus.isPromoted());
     }
 
-
     @Test
     public void testResolveStatusUnstable() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject();
@@ -252,7 +251,6 @@ public class SimpleStatusTest {
         assertTrue(status.getType().equals(StatusType.UNSTABLE));
         assertFalse(status.isPromoted());
     }
-
 
     @Test
     public void testResolveStatusAborted() throws Exception {
@@ -285,7 +283,6 @@ public class SimpleStatusTest {
         assertTrue(status.getType().equals(StatusType.NOT_BUILT));
         assertFalse(status.isPromoted());
     }
-
 
     @Test
     public void testResolveStatusQueued() throws Exception {
@@ -333,7 +330,6 @@ public class SimpleStatusTest {
         assertTrue(running.isRunning());
         assertTrue(status.getType().equals(StatusType.RUNNING));
         assertNotNull(status.toString());
-
     }
 
     @Test
@@ -347,7 +343,6 @@ public class SimpleStatusTest {
         Mockito.when(build.getEstimatedDuration()).thenReturn(10l);
 
         assertEquals(99, ((Running) SimpleStatus.resolveStatus(null, build, null)).getPercentage());
-
     }
 
     @Test
@@ -380,6 +375,5 @@ public class SimpleStatusTest {
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.SUCCESS, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
-
     }
 }

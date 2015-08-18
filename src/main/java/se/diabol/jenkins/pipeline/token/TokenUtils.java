@@ -40,7 +40,7 @@ public final class TokenUtils {
      * @param template - template to decode
      * @return decoded template or empty when an error occurred or build is empty
      */
-    public final static String decodedTemplate(AbstractBuild<?, ?> build, String template) {
+    public static String decodedTemplate(AbstractBuild<?, ?> build, String template) {
         try {
             if (build != null) {
                 return TokenMacro.expandAll(build, TaskListener.NULL, template);
@@ -53,7 +53,7 @@ public final class TokenUtils {
         return "";
     }
 
-    public final static boolean stringIsNotEmpy(String string) {
+    public static boolean stringIsNotEmpty(String string) {
         if (string == null || "".equals(string)) {
             return Boolean.FALSE;
         } else {
