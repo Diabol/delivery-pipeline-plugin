@@ -179,33 +179,46 @@ public class Task extends AbstractItem {
         }
 
         final Status taskStatus = SimpleStatus.resolveStatus(project, build, firstBuild);
-        final String taskLink = resolveTaskLink(taskStatus, build);
-
-        final String taskBuildId = resolveBuildId(taskStatus, build);
         final ManualStep manualStep = ManualStep.getManualStepLatest(project, build, firstBuild);
 
-        final String buildDescription = TokenUtils.decodedTemplate(build, resolveBuildDescription(build));
-        final String name = TokenUtils.decodedTemplate(build, this.getName());
-        final String taskName = (TokenUtils.stringIsNotEmpy(name) ? name : project.getDisplayName());
-
-        return new Task(this, taskName, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build), buildDescription);
+        return new Task(this,
+                        resolveTaskName(project, getExpandedName(build)),
+                        resolveBuildId(taskStatus, build),
+                        taskStatus,
+                        resolveTaskLink(taskStatus, build),
+                        manualStep,
+                        TestResult.getTestResult(build),
+                        getBuildDescription(build));
     }
+
+
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
         AbstractProject<?, ?> taskProject = getProject(this, context);
         AbstractBuild<?, ?> build = BuildUtil.match(taskProject.getBuilds(), versionBuild);
 
         final Status taskStatus = SimpleStatus.resolveStatus(taskProject, build, null);
-        final String taskLink = resolveTaskLink(taskStatus, build);
-
         final ManualStep manualStep = this.getManualStep();
-        final String taskBuildId = resolveBuildId(taskStatus, build);
 
-        final String buildDescription = TokenUtils.decodedTemplate(build, resolveBuildDescription(build));
-        final String name = TokenUtils.decodedTemplate(build, this.getName());
-        final String taskName = (TokenUtils.stringIsNotEmpy(name) ? name : project.getDisplayName());
+        return new Task(this,
+                        resolveTaskName(project, getExpandedName(build)),
+                        resolveBuildId(taskStatus, build),
+                        taskStatus,
+                        resolveTaskLink(taskStatus, build),
+                        manualStep,
+                        TestResult.getTestResult(build),
+                        getBuildDescription(build));
+    }
 
-        return new Task(this, taskName, taskBuildId, taskStatus, taskLink, manualStep, TestResult.getTestResult(build), buildDescription);
+    private String getBuildDescription(AbstractBuild<?, ?> build) {
+        return TokenUtils.decodedTemplate(build, resolveBuildDescription(build));
+    }
+
+    private String resolveTaskName(AbstractProject<?, ?> project, String name) {
+        return (TokenUtils.stringIsNotEmpty(name) ? name : project.getDisplayName());
+    }
+    private String getExpandedName(AbstractBuild<?, ?> build) {
+        return TokenUtils.decodedTemplate(build, this.getName());
     }
 
     private String resolveTaskLink(Status taskStatus, AbstractBuild build) {
@@ -240,7 +253,6 @@ public class Task extends AbstractItem {
         return ProjectUtil.getProject(task.getId(), context);
     }
 
-
     @Override
     public String toString() {
         return toStringHelper(this)
@@ -248,7 +260,7 @@ public class Task extends AbstractItem {
                 .add("link", link)
                 .add("testResult", testResult)
                 .add("status", status)
-                .add("manueal", manual)
+                .add("manual", manual)
                 .add("buildId", buildId)
                 .add("downstreamTasks", downstreamTasks).toString();
     }

@@ -23,7 +23,14 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTr
 import hudson.EnvVars;
 import hudson.Launcher;
 import hudson.cli.BuildCommand;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.ParametersAction;
+import hudson.model.ParametersDefinitionProperty;
+import hudson.model.StringParameterDefinition;
+import hudson.model.StringParameterValue;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
 import org.apache.commons.io.FileUtils;
@@ -40,9 +47,10 @@ import static org.junit.Assert.*;
 
 public class PipelineVersionContributorTest {
 
+    public static final String PIPELINE_VERSION = "PIPELINE_VERSION";
+
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-
 
     @Test
     public void testVersionContributorNotConfigured() throws Exception {
@@ -173,7 +181,7 @@ public class PipelineVersionContributorTest {
     @Test
     public void testGetVersionFound() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
-        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"), new StringParameterValue("PIPELINE_VERSION", "1.1"))).get();
+        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"), new StringParameterValue(PIPELINE_VERSION, "1.1"))).get();
         assertEquals("1.1", PipelineVersionContributor.getVersion(build));
     }
 
@@ -204,16 +212,15 @@ public class PipelineVersionContributorTest {
 
         assertEquals("1.0.0.1", a.getLastBuild().getDisplayName());
         assertEquals("1.0.0.1", b.getLastBuild().getDisplayName());
-        assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve("PIPELINE_VERSION"));
-        assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve("PIPELINE_VERSION"));
-
+        assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+        assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
     }
 
     private class AssertNoPipelineVersion extends TestBuilder {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                BuildListener listener) throws InterruptedException, IOException {
             EnvVars env = build.getEnvironment(new StreamTaskListener(System.out, null));
-            assertFalse(env.containsKey("PIPELINE_VERSION"));
+            assertFalse(env.containsKey(PIPELINE_VERSION));
             return true;
         }
     }
@@ -228,8 +235,8 @@ public class PipelineVersionContributorTest {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                BuildListener listener) throws InterruptedException, IOException {
             EnvVars env = build.getEnvironment(new StreamTaskListener(System.out, null));
-            assertTrue(env.containsKey("PIPELINE_VERSION"));
-            assertEquals(version, env.get("PIPELINE_VERSION"));
+            assertTrue(env.containsKey(PIPELINE_VERSION));
+            assertEquals(version, env.get(PIPELINE_VERSION));
             return true;
         }
     }

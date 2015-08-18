@@ -76,8 +76,8 @@ public class TokenUtilsTest {
     @Test
     @WithoutJenkins
     public void testStringIsNotEmpy() {
-        assertEquals(Boolean.TRUE, TokenUtils.stringIsNotEmpy("string"));
-        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpy(""));
-        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpy(null));
+        assertEquals(Boolean.TRUE, TokenUtils.stringIsNotEmpty("string"));
+        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(""));
+        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(null));
     }
 }
