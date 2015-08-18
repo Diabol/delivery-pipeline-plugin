@@ -31,8 +31,8 @@ import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.nio.charset.Charset;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -62,23 +62,17 @@ public class PipelineVersionTokenMacroTest {
 
     }
 
-    @SuppressWarnings("deprecation")
-    @Test
+    @Test(expected=MacroEvaluationException.class)
     public void testNoPipelineVersionExists() throws Exception {
         PipelineVersionTokenMacro macro = new PipelineVersionTokenMacro();
         FreeStyleProject a = jenkins.createFreeStyleProject("a");
         jenkins.setQuietPeriod(0);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
 
-        try {
-            macro.evaluate(build, new StreamTaskListener(System.err, Charset.defaultCharset()), "PIPELINE_VERSION");
-            fail("Should throw exception");
-        } catch (MacroEvaluationException e) {
-            //Exception thrown
-        }
+        macro.evaluate(build, new StreamTaskListener(System.err, Charset.defaultCharset()), "PIPELINE_VERSION");
+        fail("Should throw exception");
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @WithoutJenkins
     public void testAcceptsMacroName() {

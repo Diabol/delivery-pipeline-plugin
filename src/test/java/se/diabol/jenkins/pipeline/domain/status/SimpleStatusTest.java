@@ -17,7 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -68,18 +68,14 @@ public class SimpleStatusTest {
         SimpleStatus.setPromotionStatusProviderWrapper(defaultNotMockedPromotionStatusProviderWrapper);
     }
 
-    @Test
+    @Test(expected=IllegalStateException.class)
     public void testResolveStatusNotRecognized() throws Exception {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(null);
         FreeStyleProject project = jenkins.createFreeStyleProject();
 
-        try {
-            SimpleStatus.resolveStatus(project, build, null);
-            fail("Should throw exception");
-        } catch (IllegalStateException expected) {
-            // Expected exception thrown
-        }
+        SimpleStatus.resolveStatus(project, build, null);
+        fail("Should throw exception");
     }
 
     @Test

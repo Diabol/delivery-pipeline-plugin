@@ -17,27 +17,21 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
-import jenkins.model.Jenkins;
+import static org.junit.Assert.fail;
 
-public final class PluginUtil {
-    
-    private PluginUtil() {
+import org.junit.Test;
+
+public class PluginUtilTest {
+
+    @Test(expected=IllegalStateException.class)
+    public void testIsPluginInstalledNoJenkins() {
+        PluginUtil.isPluginInstalled("analysis-core");
+        fail("Should throw exception");
     }
 
-    /**
-     * Returns whether the specified plug-in is installed.
-     *
-     * @param shortName
-     *            the plug-in to check
-     * @return <code>true</code> if the specified plug-in is installed,
-     *         <code>false</code> if not.
-     */
-    public static boolean isPluginInstalled(final String shortName) {
-        Jenkins instance = Jenkins.getInstance();
-        if (instance == null) {
-            throw new IllegalStateException("Jenkins has not been started, or was already shut down");
-        }
-        return instance.getPlugin(shortName) != null;
+    @Test(expected=IllegalAccessException.class)
+    public void testConstructorPrivate() throws Exception {
+        PluginUtil.class.newInstance();
+        fail("Utility class constructor should be private");
     }
-
 }

@@ -21,6 +21,7 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTr
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import jenkins.model.Jenkins;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -76,33 +77,23 @@ public class BPPManualTriggerTest {
 
     }
 
-    @Test
+    @Test(expected=TriggerException.class)
     public void triggerManualWhenProjectNull() throws Exception {
         BPPManualTrigger trigger = new BPPManualTrigger();
         FreeStyleProject b = jenkins.createFreeStyleProject( "b");
-        try {
-            trigger.triggerManual(b, null, "1", Jenkins.getInstance());
-            fail();
-        } catch (TriggerException e) {
-            //Should throw exception
-        }
-
+        trigger.triggerManual(b, null, "1", Jenkins.getInstance());
+        fail("Should throw exception");
     }
 
-    @Test
+    @Test(expected=TriggerException.class)
     public void triggerInvalidBuild() throws Exception {
         BPPManualTrigger trigger = new BPPManualTrigger();
         FreeStyleProject a = jenkins.createFreeStyleProject( "a");
         FreeStyleProject b = jenkins.createFreeStyleProject( "b");
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
 
-        try {
-            trigger.triggerManual(b,a , build.getId(), Jenkins.getInstance());
-            fail();
-        } catch (TriggerException e) {
-            //Should throw exception
-        }
-
+        trigger.triggerManual(b,a , build.getId(), Jenkins.getInstance());
+        fail("Should throw exception");
     }
 
 }

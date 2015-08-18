@@ -399,6 +399,12 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
+    public void testDoFillFirstJobItems() {
+        ListBoxModel model = new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance());
+        assertNotNull(model);
+    }
+
+    @Test
     @WithoutJenkins
     @SuppressWarnings("all")
     public void testDoCheckName() {

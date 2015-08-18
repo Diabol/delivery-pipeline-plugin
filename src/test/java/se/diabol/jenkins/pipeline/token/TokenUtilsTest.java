@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.token;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import hudson.model.FreeStyleBuild;
@@ -79,5 +80,11 @@ public class TokenUtilsTest {
         assertEquals(Boolean.TRUE, TokenUtils.stringIsNotEmpty("string"));
         assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(""));
         assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(null));
+    }
+
+    @Test(expected=IllegalAccessException.class)
+    public void testConstructorPrivate() throws Exception {
+        TokenUtils.class.newInstance();
+        fail("Utility class constructor should be private");
     }
 }

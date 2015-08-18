@@ -19,10 +19,11 @@ package se.diabol.jenkins.pipeline.domain.results;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
+import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
 
 import java.util.List;
@@ -51,19 +52,21 @@ public class TestResultTest {
     }
 
     @Test
-    public void testGetTestResultEmpty() {
-        AbstractBuild<?, ?> build =  mock(AbstractBuild.class);
-        when(build.getAction(AggregatedTestResultAction.class)).thenReturn(null);
+    public void testGetTestResultFreeStyleBuild() {
+        FreeStyleBuild build =  mock(FreeStyleBuild.class);
+        TestResultAction action = mock(TestResultAction.class);
+        when(build.getAction(TestResultAction.class)).thenReturn(action);
 
         List<TestResult> result = TestResult.getResults(build);
         assertNotNull(result);
-        assertEquals(0, result.size());
+        assertEquals(1, result.size());
     }
 
     @Test
     public void testGetTestResultBuildNull() {
         List<TestResult> result = TestResult.getResults(null);
-        assertNull(result);
+        assertNotNull(result);
+        assertEquals(0, result.size());
     }
 
 }

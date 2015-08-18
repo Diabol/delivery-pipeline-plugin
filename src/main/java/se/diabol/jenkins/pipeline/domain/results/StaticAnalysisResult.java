@@ -17,7 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.results;
 
-import static com.google.common.base.Objects.toStringHelper;
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
 import hudson.plugins.analysis.core.ResultAction;
@@ -94,16 +93,6 @@ public class StaticAnalysisResult extends Result {
             }
         }
         return Collections.emptyList();
-    }
-
-    @Override
-    public String toString() {
-        return toStringHelper(this)
-                .add("name", name)
-                .add("url", url)
-                .add("high", high)
-                .add("normal", normal)
-                .add("low", low).toString();
     }
 
 }

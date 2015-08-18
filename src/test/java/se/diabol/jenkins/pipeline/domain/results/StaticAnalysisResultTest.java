@@ -19,7 +19,6 @@ package se.diabol.jenkins.pipeline.domain.results;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import hudson.Plugin;
@@ -81,9 +80,11 @@ public class StaticAnalysisResultTest {
         List<StaticAnalysisResult> result = StaticAnalysisResult.getResults(build);
         assertNotNull(result);
         assertEquals(2, result.size());
+        assertEquals("FindBugs Warnings", result.get(0).getName());
         assertEquals(1, result.get(0).getHigh());
         assertEquals(2, result.get(0).getNormal());
         assertEquals(3, result.get(0).getLow());
+        System.out.println(result.get(0));
         assertNotNull(result.get(0).getUrl());
     }
 
@@ -105,7 +106,8 @@ public class StaticAnalysisResultTest {
     @Test
     public void testGetStaticAnalysisResultNull() {
         List<StaticAnalysisResult> result = StaticAnalysisResult.getResults(null);
-        assertNull(result);
+        assertNotNull(result);
+        assertEquals(0, result.size());
     }
 
 }

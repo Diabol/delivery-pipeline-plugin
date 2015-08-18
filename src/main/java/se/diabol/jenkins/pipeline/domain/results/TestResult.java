@@ -17,7 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.results;
 
-import static com.google.common.base.Objects.toStringHelper;
 import hudson.model.AbstractBuild;
 import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
@@ -84,16 +83,6 @@ public class TestResult extends Result {
             return result;
         }
         return Collections.emptyList();
-    }
-
-    @Override
-    public String toString() {
-        return toStringHelper(this)
-                .add("name", name)
-                .add("url", url)
-                .add("high", total)
-                .add("normal", skipped)
-                .add("low", failed).toString();
     }
 
 }
