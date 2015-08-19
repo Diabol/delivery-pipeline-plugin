@@ -19,23 +19,38 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.AbstractBuild;
 import hudson.model.AbstractDescribableImpl;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.TopLevelItem;
+import hudson.model.ViewGroup;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Api;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Descriptor;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.ParametersAction;
-import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
-import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import javax.servlet.ServletException;
+
 import jenkins.model.Jenkins;
 
 import org.acegisecurity.AuthenticationException;
@@ -49,7 +64,6 @@ import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
 
 import se.diabol.jenkins.pipeline.domain.Component;
-import se.diabol.jenkins.pipeline.domain.FirstLastProject;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparator;
@@ -59,22 +73,6 @@ import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
-
-import javax.servlet.ServletException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class DeliveryPipelineView extends View {
 
@@ -430,37 +428,7 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        List<TopLevelItem> result = new ArrayList<TopLevelItem>();
-
-        Set<FirstLastProject> projects = new HashSet<FirstLastProject>();
-        if (componentSpecs != null) {
-            for (ComponentSpec componentSpec : componentSpecs) {
-                FirstLastProject job = new FirstLastProject();
-                job.setFirst(ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup()));
-                job.setLast(ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup()));
-                projects.add(job);
-            }
-        }
-
-        if (regexpFirstJobs != null) {
-            for (RegExpSpec regexp : regexpFirstJobs) {
-                Map<String, AbstractProject> projectMap = ProjectUtil.getProjects(regexp.getRegexp());
-                for (AbstractProject project : projectMap.values()) {
-                    FirstLastProject job = new FirstLastProject(project, null);
-                    projects.add(job);
-                }
-            }
-
-        }
-
-        for (FirstLastProject project : projects) {
-            Collection<AbstractProject<?, ?>> downstreamProjects = ProjectUtil.getAllDownstreamProjects(project.getFirst(), project.getLast()).values();
-            for (AbstractProject<?, ?> abstractProject : downstreamProjects) {
-                result.add(getItem(abstractProject.getName()));
-            }
-        }
-
-        return result;
+        return (Collection)getOwnerItemGroup().getItems();
     }
 
     @Override

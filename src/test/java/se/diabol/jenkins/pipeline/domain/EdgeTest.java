@@ -19,6 +19,8 @@ package se.diabol.jenkins.pipeline.domain;
 
 import org.junit.Test;
 
+import se.diabol.jenkins.pipeline.domain.task.Task;
+
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;

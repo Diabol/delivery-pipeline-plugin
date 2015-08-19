@@ -297,6 +297,7 @@ function generateChangeLog(changes) {
     for (var i = 0; i < changes.length; i++) {
         html.push('<div class="change">');
         var change = changes[i];
+        html.push('<div class="change-commit-id">' + htmlEncode(change.commitId) + '</div>')
         html.push('<div class="change-author">' + htmlEncode(change.author.name) + '</div>');
         if (change.changeLink) {
             html.push('<div class="change-message"><a href="' + change.changeLink + '">' + htmlEncode(change.message) + '</a></div>');

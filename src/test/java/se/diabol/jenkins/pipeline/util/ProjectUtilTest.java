@@ -132,4 +132,9 @@ public class ProjectUtilTest {
         ProjectUtil.getAllDownstreamProjects(projectA, null);
     }
 
+    @Test
+    public void testGetAllDownstreamProjects() {
+        Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(null, null);
+        assertTrue(result.isEmpty());
+    }
 }
