@@ -268,6 +268,13 @@ public class DeliveryPipelineView extends View {
                         componentSpec.setFirstJob(newName);
                     }
                 }
+                if (componentSpec.getLastJob() != null && componentSpec.getLastJob().equals(oldName)) {
+                    if (newName == null) {
+                        it.remove();
+                    } else {
+                        componentSpec.setLastJob(newName);
+                    }
+                }
             }
         }
     }
@@ -569,6 +576,10 @@ public class DeliveryPipelineView extends View {
 
         public String getLastJob() {
             return lastJob;
+        }
+
+        public void setLastJob(String lastJob) {
+            this.lastJob = lastJob;
         }
 
         @Extension
