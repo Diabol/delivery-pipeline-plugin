@@ -20,12 +20,16 @@ package se.diabol.jenkins.pipeline.resolver;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+
 import se.diabol.jenkins.pipeline.RelationshipResolver;
+import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -52,6 +56,28 @@ public class ProjectRelationshipResolverTest {
         List<AbstractProject> downStreams = resolver.getDownstreamProjects(a);
         assertFalse(downStreams.isEmpty());
         assertEquals(b, downStreams.get(0));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testFirstLastProjects() throws Exception {
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("projectA");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("projectB");
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("projectC");
+        FreeStyleProject projectD = jenkins.createFreeStyleProject("projectD");
+        projectA.getPublishersList().add(new BuildTrigger(projectB.getName(), true));
+        projectB.getPublishersList().add(new BuildTrigger(projectC.getName(), true));
+        projectC.getPublishersList().add(new BuildTrigger(projectD.getName(), true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        jenkins.getInstance().getExtensionList(RelationshipResolver.class).add(new ProjectRelationshipResolver());
+        Map<String, AbstractProject<?, ?>> projects = ProjectUtil.getAllDownstreamProjects(projectB, projectC);
+        assertEquals(2, projects.size());
+        assertTrue(!projects.containsKey("projectA"));
+        assertTrue(projects.containsKey("projectB"));
+        assertTrue(projects.containsKey("projectC"));
+        assertTrue(!projects.containsKey("projectD"));
     }
 
 }

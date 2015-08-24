@@ -44,7 +44,7 @@ public class LatestActivityComparatorTest {
         Stage stageA = new Stage("Build", tasksA);
         List<Stage> stagesA = new ArrayList<Stage>();
         stagesA.add(stageA);
-        Pipeline pipelineA = new Pipeline("Pipeline A", null, "1.0.0.1", null, null, null, stagesA, false);
+        Pipeline pipelineA = new Pipeline("Pipeline A", null, null, "1.0.0.1", null, null, null, stagesA, false);
         List<Pipeline> pipelinesA = new ArrayList<Pipeline>();
         pipelinesA.add(pipelineA);
 
@@ -56,7 +56,7 @@ public class LatestActivityComparatorTest {
         Stage stageB = new Stage("Build", tasksB);
         List<Stage> stagesB = new ArrayList<Stage>();
         stagesB.add(stageB);
-        Pipeline pipelineB = new Pipeline("Pipeline B", null, "1.0.0.1", null, null, null, stagesB, false);
+        Pipeline pipelineB = new Pipeline("Pipeline B", null, null, "1.0.0.1", null, null, null, stagesB, false);
         List<Pipeline> pipelinesB = new ArrayList<Pipeline>();
         pipelinesB.add(pipelineB);
 
