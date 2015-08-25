@@ -65,6 +65,13 @@ div.change-author {
     vertical-align: top;
     min-width: 75px;
     display: table-cell;
+    padding-right: 10px;
+}
+
+div.change-commit-id {
+    vertical-align: top;
+    display: table-cell;
+    padding-right: 10px;
 }
 
 div.change-message {

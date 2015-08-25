@@ -43,6 +43,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class Pipeline extends AbstractItem {
 
     private AbstractProject firstProject;
+    private AbstractProject lastProject;
 
     private List<Stage> stages;
 
@@ -61,14 +62,16 @@ public class Pipeline extends AbstractItem {
 
     private Map<String, Task> allTasks = null;
 
-    public Pipeline(String name, AbstractProject firstProject, List<Stage> stages) {
+    public Pipeline(String name, AbstractProject firstProject, AbstractProject lastProject, List<Stage> stages) {
         super(name);
         this.firstProject = firstProject;
+        this.lastProject = lastProject;
         this.stages = stages;
     }
 
     public Pipeline(String name,
                     AbstractProject firstProject,
+                    AbstractProject lastProject,
                     String version,
                     String timestamp,
                     List<Trigger> triggeredBy,
@@ -76,6 +79,7 @@ public class Pipeline extends AbstractItem {
                     List<Stage> stages, boolean aggregated) {
         super(name);
         this.firstProject = firstProject;
+        this.lastProject = lastProject;
         this.version = version;
         this.triggeredBy = triggeredBy;
         this.contributors = contributors;
@@ -182,8 +186,12 @@ public class Pipeline extends AbstractItem {
     /**
      * Created a pipeline prototype for the supplied first project
      */
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, AbstractProject<?, ?> lastProject) throws PipelineException {
+        return new Pipeline(name, firstProject, lastProject, newArrayList(Stage.extractStages(firstProject, lastProject)));
+    }
+
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {
-        return new Pipeline(name, firstProject, newArrayList(Stage.extractStages(firstProject)));
+        return new Pipeline(name, firstProject, null, newArrayList(Stage.extractStages(firstProject, null)));
     }
 
     public Pipeline createPipelineAggregated(ItemGroup context) {
@@ -191,7 +199,7 @@ public class Pipeline extends AbstractItem {
         for (Stage stage : getStages()) {
             pipelineStages.add(stage.createAggregatedStage(context, firstProject));
         }
-        return new Pipeline(getName(), firstProject, null, null, null, null, pipelineStages, true);
+        return new Pipeline(getName(), firstProject, lastProject, null, null, null, null, pipelineStages, true);
     }
 
     /**
@@ -208,7 +216,7 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, null));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, "#" + firstProject.getNextBuildNumber(), pipeLineTimestamp,
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, "#" + firstProject.getNextBuildNumber(), pipeLineTimestamp,
                     Trigger.getTriggeredBy(firstProject, null), null,
                     pipelineStages, false);
             result.add(pipelineLatest);
@@ -225,7 +233,7 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, firstBuild.getDisplayName(), pipeLineTimestamp,
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(), pipeLineTimestamp,
                                 Trigger.getTriggeredBy(firstProject, firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
             pipelineLatest.calculateTotalBuildTime();
