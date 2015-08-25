@@ -21,14 +21,15 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Result;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerResolver;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public class ManualStep {
         this.possibleVersions = possibleVersions;
     }
 
+    @CheckForNull
     public static ManualStep resolveManualStep(AbstractProject project) {
         if (isManualTrigger(project)) {
             return new ManualStep(project.getName(), null, false, project.hasPermission(Item.BUILD), null);
@@ -79,7 +81,7 @@ public class ManualStep {
         return result;
     }
 
-
+    @CheckForNull
     public static ManualStep getManualStepLatest(AbstractProject project, AbstractBuild build, AbstractBuild firstBuild) {
         if (isManualTrigger(project)) {
 
@@ -90,21 +92,24 @@ public class ManualStep {
                 AbstractBuild upstreamBuild = BuildUtil.match(upstream.getBuilds(), firstBuild);
                 if (build == null) {
                     if (upstreamBuild != null && !upstreamBuild.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)) {
-                        return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), !upstreamBuild.getResult().isWorseThan(Result.UNSTABLE), project.hasPermission(Item.BUILD), null);
+                        Result result = upstreamBuild.getResult();
+                        return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), String.valueOf(upstreamBuild.getNumber()), result != null && !result.isWorseThan(Result.UNSTABLE), project.hasPermission(Item.BUILD), null);
                     }
                 } else {
-                    if (upstreamBuild != null && !build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild) && build.getResult().isWorseThan(Result.UNSTABLE)) {
-                        return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+                    Result result = build.getResult();
+                    if (upstreamBuild != null && !build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild) && result != null && result.isWorseThan(Result.UNSTABLE)) {
+                        return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
                     }
                 }
                 if (i == upstreams.size() - 1) {
-                    return new ManualStep(upstream.getRelativeNameFrom(Jenkins.getInstance()), null, false, project.hasPermission(Item.BUILD), null);
+                    return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), null, false, project.hasPermission(Item.BUILD), null);
                 }
             }
         }
         return null;
     }
 
+    @CheckForNull
     public static ManualStep getManualStepAggregated(AbstractProject project, AbstractProject firstProject) {
         if (isManualTrigger(project)) {
             Map<String, String> versions = new HashMap<String, String>();

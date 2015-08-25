@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.kohsuke.stapler.export.Exported;
 
-import se.diabol.jenkins.pipeline.util.PluginUtil;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 public class StaticAnalysisResult extends Result {
 
@@ -75,7 +75,7 @@ public class StaticAnalysisResult extends Result {
     @SuppressWarnings("deprecation")
     public static List<StaticAnalysisResult> getResults(AbstractBuild<?, ?> build) {
         if (build != null) {
-            if (PluginUtil.isPluginInstalled(ANALYSIS_CORE_PLUGIN)) {
+            if (JenkinsUtil.isPluginInstalled(ANALYSIS_CORE_PLUGIN)) {
                 List<StaticAnalysisResult> result = new ArrayList<StaticAnalysisResult>();
                 for (Action action : build.getActions()) {
                     if (AbstractResultAction.class.isInstance(action) || MavenResultAction.class.isInstance(action)) {

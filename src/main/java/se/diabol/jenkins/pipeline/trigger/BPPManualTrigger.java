@@ -42,6 +42,7 @@ public class BPPManualTrigger implements ManualTrigger {
 
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings("SIC_INNER_SHOULD_BE_STATIC")
     public class MyView extends BuildPipelineView {
 
         ItemGroup<? extends TopLevelItem> context;

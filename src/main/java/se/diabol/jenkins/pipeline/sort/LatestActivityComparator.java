@@ -23,7 +23,9 @@ import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 
-public class LatestActivityComparator extends ComponentComparator {
+import java.io.Serializable;
+
+public class LatestActivityComparator extends ComponentComparator implements Serializable {
 
     @Override
     public int compare(Component o1, Component o2) {

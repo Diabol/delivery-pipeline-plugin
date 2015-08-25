@@ -19,7 +19,7 @@ package se.diabol.jenkins.pipeline.trigger;
 
 import hudson.ExtensionPoint;
 import hudson.model.AbstractProject;
-import jenkins.model.Jenkins;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.List;
 
@@ -32,6 +32,6 @@ public abstract class ManualTriggerResolver implements ExtensionPoint {
     public abstract List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project);
 
     public static List<ManualTriggerResolver> all() {
-        return Jenkins.getInstance().getExtensionList(ManualTriggerResolver.class);
+        return JenkinsUtil.getInstance().getExtensionList(ManualTriggerResolver.class);
     }
 }

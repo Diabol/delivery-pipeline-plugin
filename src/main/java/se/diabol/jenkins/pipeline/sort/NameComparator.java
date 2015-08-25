@@ -20,7 +20,9 @@ package se.diabol.jenkins.pipeline.sort;
 import hudson.Extension;
 import se.diabol.jenkins.pipeline.domain.Component;
 
-public class NameComparator extends ComponentComparator {
+import java.io.Serializable;
+
+public class NameComparator extends ComponentComparator implements Serializable {
 
     @Override
     public int compare(Component o1, Component o2) {

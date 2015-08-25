@@ -34,6 +34,7 @@ import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -228,11 +229,11 @@ public class Stage extends AbstractItem {
         CycleDetector<Stage, Edge> cycleDetector = new CycleDetector<Stage, Edge>(graph);
         if (cycleDetector.detectCycles()) {
             Set<Stage> stageSet = cycleDetector.findCycles();
-            String message = "Circular dependencies between stages: ";
+            StringBuilder message = new StringBuilder("Circular dependencies between stages: ");
             for (Stage stage : stageSet) {
-                message += stage.getName() + " ";
+                message.append(stage.getName()).append(" ");
             }
-            throw new PipelineException(message);
+            throw new PipelineException(message.toString());
         }
 
 
@@ -324,6 +325,7 @@ public class Stage extends AbstractItem {
         return result;
     }
 
+    @CheckForNull
     protected static Stage findStageForJob(String name, Collection<Stage> stages) {
         for (Stage stage : stages) {
             for (int j = 0; j < stage.getTasks().size(); j++) {
@@ -337,6 +339,7 @@ public class Stage extends AbstractItem {
 
     }
 
+    @CheckForNull
     private AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
         int highest = -1;
         for (Task task : tasks) {
@@ -354,6 +357,7 @@ public class Stage extends AbstractItem {
         }
     }
 
+    @CheckForNull
     private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first) {
         RunList<? extends AbstractBuild> builds = project.getBuilds();
         for (AbstractBuild build : builds) {

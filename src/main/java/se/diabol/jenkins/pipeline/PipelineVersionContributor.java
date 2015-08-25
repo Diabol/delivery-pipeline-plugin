@@ -31,6 +31,7 @@ import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +86,7 @@ public class PipelineVersionContributor extends BuildWrapper {
         };
     }
 
+    @CheckForNull
     public static String getVersion(AbstractBuild build)  {
         List<ParametersAction> parameters = build.getActions(ParametersAction.class);
         for (ParametersAction parameter : parameters) {
