@@ -17,32 +17,45 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status.promotion;
 
-import hudson.model.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import hudson.model.BuildBadgeAction;
+import hudson.model.ParameterValue;
+import hudson.model.AbstractBuild;
+import hudson.model.BooleanParameterValue;
+import hudson.model.FileParameterValue;
+import hudson.model.StringParameterValue;
+import hudson.plugins.promoted_builds.Status;
 import hudson.plugins.promoted_builds.Promotion;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Status.class)
 public class PromotionStatusProviderTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testIsBuildPromotedWhenThereAreNoPromotions() {
-        final AbstractBuild mockBuild = mock(AbstractBuild.class);
+        final AbstractBuild<?, ?> mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
 
         final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper = mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
-        when(mockPromotedBuildActionWrapper.getPromotions(mockBuild)).thenReturn(Collections.emptyList());
+        when(mockPromotedBuildActionWrapper.getPromotions(mockBuild)).thenReturn(Collections.<Status>emptyList());
 
         final PromotionStatusProvider promotionStatusProvider = new PromotionStatusProvider();
         promotionStatusProvider.setPromotedBuildActionWrapper(mockPromotedBuildActionWrapper);
@@ -51,13 +64,15 @@ public class PromotionStatusProviderTest {
         assertFalse(isPromoted);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testIsBuildPromotedWhenThereArePromotions() {
-        final AbstractBuild mockBuild = mock(AbstractBuild.class);
+        final AbstractBuild<?, ?> mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
 
-        final List mockPromotionList = new ArrayList();
-        mockPromotionList.add(mock(Object.class));
+        final List<Status> mockPromotionList = new ArrayList<Status>();
+        PowerMockito.mockStatic(Status.class);
+        mockPromotionList.add(mock(Status.class));
 
         final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper = mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
         when(mockPromotedBuildActionWrapper.getPromotions(anyObject())).thenReturn(mockPromotionList);
@@ -69,6 +84,7 @@ public class PromotionStatusProviderTest {
         assertTrue(isPromoted);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetPromotionStatusList() {
         final String stringParamName = "StringParamName";
@@ -77,7 +93,6 @@ public class PromotionStatusProviderTest {
         final String booleanParamName = "BooleanParamName";
         final boolean booleanParamValue = true;
 
-        final String fileParamName = "FileParamName";
         final String fileParamValue = "File Path";
 
         final String promotionUserName = "User";
@@ -111,11 +126,12 @@ public class PromotionStatusProviderTest {
         final PromotionStatusProvider.PromotionStatusWrapper mockPromotionStatusWrapper = mock(PromotionStatusProvider.PromotionStatusWrapper.class);
         when(mockPromotionStatusWrapper.getPromotionBuilds(anyObject())).thenReturn(mockPromotions);
 
-        final List<Object> mockStatusList = new ArrayList<Object>();
-        final Object mockStatusObject1 = new Object();
+        final List<Status> mockStatusList = new ArrayList<Status>();
+        PowerMockito.mockStatic(Status.class);
+        final Status mockStatusObject1 = mock(Status.class);
         mockStatusList.add(mockStatusObject1);
 
-        final Object mockStatusObject2 = new Object();
+        final Status mockStatusObject2 = mock(Status.class);
         mockStatusList.add(mockStatusObject2);
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject1)).thenReturn(promotion1Name);
@@ -128,7 +144,7 @@ public class PromotionStatusProviderTest {
         when(mockPromotionStatusWrapper.getStartTime(mockStatusObject2)).thenReturn(promotionStartTime);
         when(mockPromotionStatusWrapper.getDuration(mockStatusObject2)).thenReturn(promotionDuration);
 
-        final AbstractBuild mockBuild = mock(AbstractBuild.class);
+        final AbstractBuild<?, ?> mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
 
         final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper = mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);

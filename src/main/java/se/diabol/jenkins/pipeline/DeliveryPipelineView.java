@@ -102,6 +102,8 @@ public class DeliveryPipelineView extends View {
     private boolean allowPipelineStart = false;
     private boolean showDescription = false;
     private boolean showPromotions = false;
+    private boolean showTestResults = false;
+    private boolean showStaticAnalysisResults = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -148,8 +150,6 @@ public class DeliveryPipelineView extends View {
             this.sorting = sorting;
         }
     }
-
-
 
     public List<ComponentSpec> getComponentSpecs() {
         return componentSpecs;
@@ -320,6 +320,16 @@ public class DeliveryPipelineView extends View {
         return showPromotions;
     }
 
+    @Exported
+    public boolean isShowTestResults() {
+        return showTestResults;
+    }
+
+    @Exported
+    public boolean isShowStaticAnalysisResults() {
+        return showStaticAnalysisResults;
+    }
+
     public void setShowDescription(boolean showDescription)
     {
         this.showDescription = showDescription;
@@ -327,6 +337,14 @@ public class DeliveryPipelineView extends View {
 
     public void setShowPromotions(boolean showPromotions) {
         this.showPromotions = showPromotions;
+    }
+
+    public void setShowTestResults(boolean showTestResults) {
+        this.showTestResults = showTestResults;
+    }
+
+    public void setShowStaticAnalysisResults(boolean showStaticAnalysisResults) {
+        this.showStaticAnalysisResults = showStaticAnalysisResults;
     }
 
     @JavaScriptMethod

@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.domain.status.promotion;
 
 import hudson.ExtensionList;
 import jenkins.model.Jenkins;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +33,7 @@ public class AbstractPromotionStatusProviderTest {
     public void testGetAll() {
         final Jenkins mockJenkins = mock(Jenkins.class);
 
+        @SuppressWarnings("unchecked")
         final ExtensionList<AbstractPromotionStatusProvider> mockExtensionList = mock(ExtensionList.class);
         when(mockJenkins.getExtensionList(AbstractPromotionStatusProvider.class)).thenReturn(mockExtensionList);
 

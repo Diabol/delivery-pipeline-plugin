@@ -28,8 +28,8 @@ public abstract class AbstractPromotionStatusProvider implements ExtensionPoint 
 
     static private JenkinsInstanceProvider jenkinsInstanceProvider = new JenkinsInstanceProvider();
 
-    abstract public boolean isBuildPromoted(AbstractBuild build);
-    abstract public List<PromotionStatus> getPromotionStatusList(AbstractBuild build);
+    abstract public boolean isBuildPromoted(AbstractBuild<?, ?> build);
+    abstract public List<PromotionStatus> getPromotionStatusList(AbstractBuild<?, ?> build);
 
     public static ExtensionList<AbstractPromotionStatusProvider> all() {
         return AbstractPromotionStatusProvider.jenkinsInstanceProvider.getJenkinsInstance().getExtensionList(AbstractPromotionStatusProvider.class);

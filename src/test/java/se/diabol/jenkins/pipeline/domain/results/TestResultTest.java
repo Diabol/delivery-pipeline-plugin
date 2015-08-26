@@ -15,54 +15,58 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain.task;
+package se.diabol.jenkins.pipeline.domain.results;
 
-import hudson.model.AbstractBuild;
-import hudson.tasks.test.AggregatedTestResultAction;
-
-import org.junit.Test;
-
-import se.diabol.jenkins.pipeline.domain.task.TestResult;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import hudson.model.FreeStyleBuild;
+import hudson.model.AbstractBuild;
+import hudson.tasks.junit.TestResultAction;
+import hudson.tasks.test.AggregatedTestResultAction;
+
+import java.util.List;
+
+import org.junit.Test;
 
 public class TestResultTest {
 
     @Test
     public void testGetTestResult() {
-        AbstractBuild build =  mock(AbstractBuild.class);
+        AbstractBuild<?, ?> build =  mock(AbstractBuild.class);
         AggregatedTestResultAction tests = mock(AggregatedTestResultAction.class);
         when(build.getAction(AggregatedTestResultAction.class)).thenReturn(tests);
+        when(tests.getDisplayName()).thenReturn("Test Result");
         when(tests.getFailCount()).thenReturn(1);
         when(tests.getSkipCount()).thenReturn(0);
         when(tests.getTotalCount()).thenReturn(11);
 
-        TestResult result = TestResult.getTestResult(build);
+        List<TestResult> result = TestResult.getResults(build);
         assertNotNull(result);
-        assertEquals(1, result.getFailed());
-        assertEquals(0, result.getSkipped());
-        assertEquals(11, result.getTotal());
-        assertNotNull(result.getUrl());
+        assertEquals(1, result.get(0).getFailed());
+        assertEquals(0, result.get(0).getSkipped());
+        assertEquals(11, result.get(0).getTotal());
+        assertNotNull(result.get(0).getUrl());
+        assertNotNull(result.get(0).getName());
     }
 
-
     @Test
-    public void testGetTestResultEmpty() {
-        AbstractBuild build =  mock(AbstractBuild.class);
-        when(build.getAction(AggregatedTestResultAction.class)).thenReturn(null);
+    public void testGetTestResultFreeStyleBuild() {
+        FreeStyleBuild build =  mock(FreeStyleBuild.class);
+        TestResultAction action = mock(TestResultAction.class);
+        when(build.getAction(TestResultAction.class)).thenReturn(action);
 
-        TestResult result = TestResult.getTestResult(build);
-        assertNull(result);
+        List<TestResult> result = TestResult.getResults(build);
+        assertNotNull(result);
+        assertEquals(1, result.size());
     }
 
     @Test
     public void testGetTestResultBuildNull() {
-        TestResult result = TestResult.getTestResult(null);
-        assertNull(result);
+        List<TestResult> result = TestResult.getResults(null);
+        assertNotNull(result);
+        assertEquals(0, result.size());
     }
-
 
 }

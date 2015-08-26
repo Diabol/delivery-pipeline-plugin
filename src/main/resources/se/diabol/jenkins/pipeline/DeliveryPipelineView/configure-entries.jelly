@@ -52,7 +52,15 @@
         <f:entry title="Show job promotions" field="showPromotions">
             <f:checkbox/>
         </f:entry>
-		
+
+        <f:entry title="Show junit results" field="showTestResults">
+            <f:checkbox/>
+        </f:entry>
+
+        <f:entry title="Show static analysis results" field="showStaticAnalysisResults">
+            <f:checkbox/>
+        </f:entry>
+
         <f:entry title="Show total build time" field="showTotalBuildTime">
             <f:checkbox/>
         </f:entry>

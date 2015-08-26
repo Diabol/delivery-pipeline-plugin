@@ -28,6 +28,8 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.pipeline.domain.results.StaticAnalysisResult;
+import se.diabol.jenkins.pipeline.domain.results.TestResult;
 import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.token.TokenUtils;
@@ -47,7 +49,8 @@ import static com.google.common.base.Objects.toStringHelper;
 public class Task extends AbstractItem {
     private final String id;
     private final String link;
-    private final TestResult testResult;
+    private final List<TestResult> testResults;
+    private final List<StaticAnalysisResult> staticAnalysisResults;
     private final Status status;
     private final ManualStep manual;
     private final String buildId;
@@ -55,13 +58,15 @@ public class Task extends AbstractItem {
     private final boolean initial;
     private final String description;
     private final AbstractProject project;
-    
-    public Task(AbstractProject project, String id, String name, Status status, String link, ManualStep manual, List<String> downstreamTasks,
-                boolean initial, String description) {
+
+    public Task(AbstractProject project, String id, String name, Status status, String link,
+            ManualStep manual, List<String> downstreamTasks, boolean initial,
+            String description) {
         super(name);
         this.id = id;
         this.link = link;
-        this.testResult = null;
+        this.testResults = null;
+        this.staticAnalysisResults = null;
         this.status = status;
         this.manual = manual;
         this.buildId = null;
@@ -72,11 +77,13 @@ public class Task extends AbstractItem {
     }
 
     public Task(Task task, String taskName, String buildId, Status status, String link, ManualStep manual,
-                    TestResult testResult, String description) {
+            List<TestResult> testResults, List<StaticAnalysisResult> staticAnalysisResults,
+            String description) {
         super(taskName);
         this.id = task.id;
         this.link = link;
-        this.testResult = testResult;
+        this.testResults = testResults;
+        this.staticAnalysisResults = staticAnalysisResults;
         this.status = status;
         this.manual = manual;
         this.buildId = buildId;
@@ -112,8 +119,13 @@ public class Task extends AbstractItem {
     }
 
     @Exported
-    public TestResult getTestResult() {
-        return testResult;
+    public List<TestResult> getTestResults() {
+        return testResults;
+    }
+
+    @Exported
+    public List<StaticAnalysisResult> getStaticAnalysisResults() {
+        return staticAnalysisResults;
     }
 
     @Exported
@@ -187,11 +199,10 @@ public class Task extends AbstractItem {
                         taskStatus,
                         resolveTaskLink(taskStatus, build),
                         manualStep,
-                        TestResult.getTestResult(build),
+                        TestResult.getResults(build),
+                        StaticAnalysisResult.getResults(build),
                         getBuildDescription(build));
     }
-
-
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
         AbstractProject<?, ?> taskProject = getProject(this, context);
@@ -206,7 +217,8 @@ public class Task extends AbstractItem {
                         taskStatus,
                         resolveTaskLink(taskStatus, build),
                         manualStep,
-                        TestResult.getTestResult(build),
+                        TestResult.getResults(build),
+                        StaticAnalysisResult.getResults(build),
                         getBuildDescription(build));
     }
 
@@ -258,7 +270,8 @@ public class Task extends AbstractItem {
         return toStringHelper(this)
                 .add("id", id)
                 .add("link", link)
-                .add("testResult", testResult)
+                .add("testResults", testResults)
+                .add("staticAnalysisResults", staticAnalysisResults)
                 .add("status", status)
                 .add("manual", manual)
                 .add("buildId", buildId)

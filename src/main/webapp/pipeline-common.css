@@ -310,6 +310,9 @@ div.infoPanelInner {
     overflow: hidden;
     border: 0;
 }
+div.infoPanelInner a {
+    font-weight: bold;
+}
 div.infoPanelOuter {
     margin: 8px;
     border: 1px solid lightgray;
