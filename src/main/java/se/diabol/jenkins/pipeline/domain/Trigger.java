@@ -23,9 +23,9 @@ import hudson.model.Cause;
 import hudson.model.User;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,7 +82,7 @@ public class Trigger {
                 result.add(new Trigger(Trigger.TYPE_REMOTE, "remote trigger"));
             } else if (cause instanceof Cause.UpstreamCause) {
                 Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                AbstractProject upstreamProject = Jenkins.getInstance().getItem(upstreamCause.getUpstreamProject(), Jenkins.getInstance(), AbstractProject.class);
+                AbstractProject upstreamProject = JenkinsUtil.getInstance().getItem(upstreamCause.getUpstreamProject(), JenkinsUtil.getInstance(), AbstractProject.class);
                 StringBuilder causeString = new StringBuilder("upstream project");
                 if (upstreamProject != null) {
 
@@ -107,7 +107,7 @@ public class Trigger {
     }
 
     protected static String getDisplayName(String userName) {
-        User user = Jenkins.getInstance().getUser(userName);
+        User user = JenkinsUtil.getInstance().getUser(userName);
         if (user != null) {
             return user.getDisplayName();
         } else {

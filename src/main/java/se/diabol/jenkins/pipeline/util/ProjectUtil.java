@@ -25,7 +25,6 @@ import hudson.model.Cause;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
 import se.diabol.jenkins.pipeline.RelationshipResolver;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public final class ProjectUtil {
 
     public static ListBoxModel fillAllProjects(ItemGroup<?> context) {
         ListBoxModel options = new ListBoxModel();
-        for (AbstractProject<?, ?> p : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+        for (AbstractProject<?, ?> p : JenkinsUtil.getInstance().getAllItems(AbstractProject.class)) {
             options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
         }
         return options;
@@ -111,14 +110,14 @@ public final class ProjectUtil {
     }
 
     public static AbstractProject<?, ?> getProject(String name, ItemGroup context) {
-        return Jenkins.getInstance().getItem(name, context, AbstractProject.class);
+        return JenkinsUtil.getInstance().getItem(name, context, AbstractProject.class);
     }
 
     public static Map<String, AbstractProject> getProjects(String regExp) {
         try {
             Pattern pattern = Pattern.compile(regExp);
             Map<String, AbstractProject> result = new HashMap<String, AbstractProject>();
-            for (AbstractProject<?, ?> project : Jenkins.getInstance().getAllItems(AbstractProject.class)) {
+            for (AbstractProject<?, ?> project : JenkinsUtil.getInstance().getAllItems(AbstractProject.class)) {
                 Matcher matcher = pattern.matcher(project.getFullName());
                 if (matcher.find()) {
                     if (matcher.groupCount() >= 1) {
@@ -148,7 +147,7 @@ public final class ProjectUtil {
                     AbstractBuild upstreamBuild = BuildUtil.match(upstreamProject.getBuilds(), firstBuild);
                     if (upstreamBuild != null) {
                         for (Cause.UpstreamCause upstreamCause : causes) {
-                            if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild() && upstreamProject.getRelativeNameFrom(Jenkins.getInstance()).equals(upstreamCause.getUpstreamProject())) {
+                            if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild() && upstreamProject.getRelativeNameFrom(JenkinsUtil.getInstance()).equals(upstreamCause.getUpstreamProject())) {
                                 return true;
                             }
 

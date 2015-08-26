@@ -71,6 +71,7 @@ import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.trigger.ManualTrigger;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -474,7 +475,7 @@ public class DeliveryPipelineView extends View {
         if (!isDefault()) {
             return getOwner().getPrimaryView().doCreateItem(req, rsp);
         } else {
-            return Jenkins.getInstance().doCreateItem(req, rsp);
+            return JenkinsUtil.getInstance().doCreateItem(req, rsp);
         }
     }
 
@@ -646,7 +647,7 @@ public class DeliveryPipelineView extends View {
 
 
         private void notifyView(Item item, String oldName, String newName) {
-            Collection<View> views = Jenkins.getInstance().getViews();
+            Collection<View> views = JenkinsUtil.getInstance().getViews();
             for (View view : views) {
                 if (view instanceof DeliveryPipelineView) {
                     ((DeliveryPipelineView) view).onProjectRenamed(item, oldName, newName);

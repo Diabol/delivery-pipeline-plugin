@@ -25,6 +25,7 @@ import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
 
 
     @Override
+    @CheckForNull
     public ManualTrigger getManualTrigger(AbstractProject<?, ?> project, AbstractProject<?, ?> downstream) {
         BuildPipelineTrigger bppTrigger = downstream.getPublishersList().get(BuildPipelineTrigger.class);
         if (bppTrigger != null) {

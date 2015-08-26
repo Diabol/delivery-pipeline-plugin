@@ -23,8 +23,8 @@ import hudson.model.AbstractProject;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.util.RunList;
-import jenkins.model.Jenkins;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 
 public final class BuildUtil {
@@ -32,13 +32,14 @@ public final class BuildUtil {
     private BuildUtil() {
     }
 
+    @CheckForNull
     public static AbstractBuild getUpstreamBuild(AbstractBuild build) {
         List<CauseAction> actions = build.getActions(CauseAction.class);
         for (CauseAction action : actions) {
             List<Cause.UpstreamCause> causes = Util.filter(action.getCauses(), Cause.UpstreamCause.class);
 
             for (Cause.UpstreamCause upstreamCause : causes) {
-                AbstractProject upstreamProject = Jenkins.getInstance().getItemByFullName(upstreamCause.getUpstreamProject(), AbstractProject.class);
+                AbstractProject upstreamProject = JenkinsUtil.getInstance().getItemByFullName(upstreamCause.getUpstreamProject(), AbstractProject.class);
                 //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers are not updated correctly
                 if (upstreamProject == null) {
                     return null;
@@ -55,6 +56,7 @@ public final class BuildUtil {
      * @param build the build to find the first upstream for
      * @return the first upstream build for the given build
      */
+    @CheckForNull
     public static AbstractBuild getFirstUpstreamBuild(AbstractBuild build, AbstractProject first) {
         if (build == null) {
             return null;
@@ -78,6 +80,7 @@ public final class BuildUtil {
     /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
+    @CheckForNull
     public static AbstractBuild match(RunList<? extends AbstractBuild> runList, AbstractBuild firstBuild) {
         if (firstBuild != null) {
             for (AbstractBuild currentBuild : runList) {

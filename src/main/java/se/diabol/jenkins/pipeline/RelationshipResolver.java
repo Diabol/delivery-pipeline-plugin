@@ -19,7 +19,7 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionPoint;
 import hudson.model.AbstractProject;
-import jenkins.model.Jenkins;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public abstract class RelationshipResolver implements ExtensionPoint {
      * Returns all loaded implementations of this extension point.
      */
     public static List<RelationshipResolver> all() {
-        return Jenkins.getInstance().getExtensionList(RelationshipResolver.class);
+        return JenkinsUtil.getInstance().getExtensionList(RelationshipResolver.class);
     }
 
 }

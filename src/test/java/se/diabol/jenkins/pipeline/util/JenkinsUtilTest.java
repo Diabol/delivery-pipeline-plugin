@@ -17,21 +17,37 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import jenkins.model.Jenkins;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import se.diabol.jenkins.pipeline.test.TestUtil;
+
 import static org.junit.Assert.fail;
 
-import org.junit.Test;
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Jenkins.class)
+public class JenkinsUtilTest {
 
-public class PluginUtilTest {
+    @Test
+    public void testValidUtilClass() throws Exception {
+        TestUtil.assertUtilityClassWellDefined(JenkinsUtil.class);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void getInstanceJenkinsReturnsNull() throws Exception {
+        PowerMockito.mockStatic(Jenkins.class);
+        PowerMockito.when(Jenkins.getInstance()).thenReturn(null);
+        JenkinsUtil.getInstance();
+    }
 
     @Test(expected=IllegalStateException.class)
     public void testIsPluginInstalledNoJenkins() {
-        PluginUtil.isPluginInstalled("analysis-core");
+        JenkinsUtil.isPluginInstalled("analysis-core");
         fail("Should throw exception");
     }
 
-    @Test(expected=IllegalAccessException.class)
-    public void testConstructorPrivate() throws Exception {
-        PluginUtil.class.newInstance();
-        fail("Utility class constructor should be private");
-    }
+
 }

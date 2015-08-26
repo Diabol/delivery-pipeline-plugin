@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.trigger;
 
 import hudson.model.AbstractProject;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 
 public final class ManualTriggerFactory {
@@ -26,6 +27,7 @@ public final class ManualTriggerFactory {
     private ManualTriggerFactory() {
     }
 
+    @CheckForNull
     public static ManualTrigger getManualTrigger(AbstractProject<?, ?> project, AbstractProject<?, ?> downstream) {
         List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
         for (ManualTriggerResolver resolver : resolvers) {

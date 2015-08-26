@@ -19,9 +19,22 @@ package se.diabol.jenkins.pipeline.util;
 
 import jenkins.model.Jenkins;
 
-public final class PluginUtil {
-    
-    private PluginUtil() {
+public final class JenkinsUtil {
+
+    private JenkinsUtil() {
+    }
+
+    /**
+     * Gets the Jenkins singleton.
+     * @return the instance, or null if Jenkins has not been started, or was already shut down
+     * @throws IllegalStateException {@link Jenkins} has not been started, or was already shut down
+     */
+    public static Jenkins getInstance() {
+        Jenkins instance = Jenkins.getInstance();
+        if (instance == null) {
+            throw new IllegalStateException("Jenkins has not been started, or was already shut down");
+        }
+        return instance;
     }
 
     /**
@@ -33,11 +46,9 @@ public final class PluginUtil {
      *         <code>false</code> if not.
      */
     public static boolean isPluginInstalled(final String shortName) {
-        Jenkins instance = Jenkins.getInstance();
-        if (instance == null) {
-            throw new IllegalStateException("Jenkins has not been started, or was already shut down");
-        }
-        return instance.getPlugin(shortName) != null;
+        return getInstance().getPlugin(shortName) != null;
     }
+
+
 
 }
