@@ -26,12 +26,12 @@ import java.util.List;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class PromotionStatus {
-    final private String name;
-    final private long duration;
-    final private long startTime;
-    final private String user;
-    final private String icon;
-    final private List<String> params;
+    private final String name;
+    private final long duration;
+    private final long startTime;
+    private final String user;
+    private final String icon;
+    private final List<String> params;
 
     public PromotionStatus(String name, long startTime, long duration, String user, String icon, List<String> params) {
         this.name = name;

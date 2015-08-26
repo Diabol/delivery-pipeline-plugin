@@ -32,7 +32,8 @@ public class BPPManualTrigger implements ManualTrigger {
         if (upstream != null && upstream.getBuild(buildId) != null) {
 
             try {
-                view.triggerManualBuild(Integer.parseInt(buildId), project.getRelativeNameFrom(itemGroup), upstream.getRelativeNameFrom(itemGroup));
+                view.triggerManualBuild(Integer.parseInt(buildId), project.getRelativeNameFrom(itemGroup),
+                        upstream.getRelativeNameFrom(itemGroup));
             } catch (Exception e) {
                 throw new TriggerException("Could not trigger", e);
             }

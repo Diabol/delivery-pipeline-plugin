@@ -19,42 +19,29 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
-import hudson.model.ViewGroup;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractDescribableImpl;
 import hudson.model.AbstractProject;
 import hudson.model.Api;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Descriptor;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.ParametersAction;
+import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
+import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
 
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
+
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -62,6 +49,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
+
 
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
@@ -74,6 +62,21 @@ import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.servlet.ServletException;
+
 
 public class DeliveryPipelineView extends View {
 
@@ -311,8 +314,7 @@ public class DeliveryPipelineView extends View {
     }
 
     @Exported
-    public boolean isShowDescription()
-    {
+    public boolean isShowDescription() {
         return showDescription;
     }
 
@@ -331,8 +333,7 @@ public class DeliveryPipelineView extends View {
         return showStaticAnalysisResults;
     }
 
-    public void setShowDescription(boolean showDescription)
-    {
+    public void setShowDescription(boolean showDescription) {
         this.showDescription = showDescription;
     }
 
@@ -349,7 +350,8 @@ public class DeliveryPipelineView extends View {
     }
 
     @JavaScriptMethod
-    public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
+    public void triggerManual(String projectName, String upstreamName, String buildId)
+            throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
             AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
@@ -361,8 +363,8 @@ public class DeliveryPipelineView extends View {
             if (trigger != null) {
                 trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
             } else {
-                String message = "Trigger not found for manual build " + projectName + " for upstream " +
-                                        upstreamName + " id: " + buildId;
+                String message = "Trigger not found for manual build " + projectName + " for upstream "
+                        + upstreamName + " id: " + buildId;
                 LOG.log(Level.WARNING, message);
                 throw new TriggerException(message);
             }
@@ -392,8 +394,10 @@ public class DeliveryPipelineView extends View {
         project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
     }
 
-    protected static String triggerExceptionMessage(final String projectName, final String upstreamName, final String buildId) {
-        String message = "Could not trigger manual build " + projectName + " for upstream " + upstreamName + " id: " + buildId;
+    protected static String triggerExceptionMessage(final String projectName, final String upstreamName,
+                                                    final String buildId) {
+        String message = "Could not trigger manual build " + projectName + " for upstream " + upstreamName
+                + " id: " + buildId;
         if (projectName.contains("/")) {
             message += ". Did you mean to specify " + withoutFolderPrefix(projectName) + "?";
         }
@@ -414,7 +418,8 @@ public class DeliveryPipelineView extends View {
                     AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
                     AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
-                        components.add(getComponent(componentSpec.getName(), firstJob, lastJob, showAggregatedPipeline));
+                        components.add(getComponent(componentSpec.getName(), firstJob,
+                                lastJob, showAggregatedPipeline));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -443,7 +448,8 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, boolean showAggregatedPipeline) throws PipelineException {
+    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
+                                   boolean showAggregatedPipeline) throws PipelineException {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
@@ -501,7 +507,8 @@ public class DeliveryPipelineView extends View {
         }
 
         public ListBoxModel doFillSortingItems() {
-            DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors = ComponentComparator.all();
+            DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors =
+                    ComponentComparator.all();
             ListBoxModel options = new ListBoxModel();
             options.add("None", NONE_SORTER);
             for (ComponentComparatorDescriptor descriptor : descriptors) {
