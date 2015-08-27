@@ -223,4 +223,50 @@ public class TaskTest {
 
     }
 
+    @Test
+    @Bug(30170)
+    public void testTaskName() throws Exception {
+        testSimplePipelineTaskNames("Build", "Deploy", "Build", "Deploy", "Build", "Deploy");
+    }
+
+    @Test
+    public void testTaskNameMacro() throws Exception {
+        testSimplePipelineTaskNames("Build ${BUILD_NUMBER}", "Deploy ${BUILD_NUMBER}", "Build ...",
+                "Deploy ...", "Build 1", "Deploy 1");
+    }
+
+    @Test
+    public void testTaskNameMacroOnly() throws Exception {
+        testSimplePipelineTaskNames("${BUILD_NUMBER}", "${BUILD_NUMBER}", "...",
+                "...", "1", "1");
+    }
+
+    private void testSimplePipelineTaskNames(String taskNameA, String taskNameB, String expectedBeforeA,
+                                             String expectedBeforeB, String expectedAfterA, String expectedAfterB)
+            throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject b = jenkins.createFreeStyleProject("B");
+        a.addProperty(new PipelineProperty(taskNameA, "Stage Build", null));
+        b.addProperty(new PipelineProperty(taskNameB, "Stage Deploy", null));
+
+        a.getPublishersList().add(new BuildTrigger("B", false));
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Task taskA = Task.getPrototypeTask(a, true).getLatestTask(jenkins.getInstance(), null);
+        Task taskB = Task.getPrototypeTask(b, false).getLatestTask(jenkins.getInstance(), null);
+
+        assertEquals(expectedBeforeA, taskA.getName());
+        assertEquals(expectedBeforeB, taskB.getName());
+
+        FreeStyleBuild firstBuild = jenkins.buildAndAssertSuccess(a);
+        jenkins.waitUntilNoActivity();
+
+        taskA = Task.getPrototypeTask(a, true).getLatestTask(jenkins.getInstance(), firstBuild);
+        taskB = Task.getPrototypeTask(b, false).getLatestTask(jenkins.getInstance(), firstBuild);
+
+        assertEquals(expectedAfterA, taskA.getName());
+        assertEquals(expectedAfterB, taskB.getName());
+    }
+
 }
