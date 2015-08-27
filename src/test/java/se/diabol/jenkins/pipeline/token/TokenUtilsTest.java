@@ -62,7 +62,7 @@ public class TokenUtilsTest {
     @Test
     @WithoutJenkins
     public void testDecodedTemplateNoBuild() {
-        assertEquals("", TokenUtils.decodedTemplate(null, "1.0.0.1"));
+        assertEquals("1.0.0.1", TokenUtils.decodedTemplate(null, "1.0.0.1"));
     }
 
     @Test

@@ -44,6 +44,9 @@ public final class TokenUtils {
         try {
             if (build != null) {
                 return TokenMacro.expandAll(build, TaskListener.NULL, template);
+            } else {
+                /* if we don't have build we should hide variable ex. ${VAR} */
+                return template.replaceAll("\\$\\{.*?\\}", "...");
             }
         } catch (MacroEvaluationException e) {
             LOG.log(Level.WARNING, e.getMessage());
