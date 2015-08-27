@@ -229,6 +229,7 @@ public class Task extends AbstractItem {
     private String resolveTaskName(AbstractProject<?, ?> project, String name) {
         return (TokenUtils.stringIsNotEmpty(name) ? name : project.getDisplayName());
     }
+
     private String getExpandedName(AbstractBuild<?, ?> build) {
         return TokenUtils.decodedTemplate(build, this.getName());
     }
