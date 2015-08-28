@@ -421,7 +421,7 @@ public class PipelineTest {
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance());
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
-        assertEquals(Trigger.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
+        assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
 
     }
 
