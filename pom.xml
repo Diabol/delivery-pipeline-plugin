@@ -219,7 +219,7 @@
                 <version>2.18.1</version>
                 <configuration>
                     <!-- Travis build workaround -->
-                    <argLine>-Xmx1024m</argLine>
+                    <argLine>${argLine} -Xmx1024m</argLine>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
