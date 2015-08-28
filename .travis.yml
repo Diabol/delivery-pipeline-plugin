@@ -10,7 +10,7 @@ before_install:
 script:
   mvn license:check integration-test
 after_success:
-- mvn jacoco:report coveralls:report
-env:
- global:
-   - "MAVEN_OPTS=-Xmx1024m"
+  - mvn jacoco:report coveralls:report
+  - bash <(curl -s https://codecov.io/bash)
+global:
+  - "MAVEN_OPTS=-Xmx1024m"
