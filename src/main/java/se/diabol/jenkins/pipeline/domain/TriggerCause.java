@@ -21,10 +21,9 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Cause;
 import hudson.model.User;
-import hudson.triggers.SCMTrigger;
-import hudson.triggers.TimerTrigger;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.pipeline.CauseResolver;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Trigger {
+public class TriggerCause {
 
     private String type;
     private String description;
@@ -46,7 +45,7 @@ public class Trigger {
     public static final String TYPE_UNKNOWN = "UNKNOWN";
 
 
-    public Trigger(String type, String description) {
+    public TriggerCause(String type, String description) {
         this.type = type;
         this.description = description;
     }
@@ -61,8 +60,8 @@ public class Trigger {
         return description;
     }
 
-    public static List<Trigger> getTriggeredBy(AbstractProject project, AbstractBuild<?, ?> build) {
-        Set<Trigger> result = new HashSet<Trigger>();
+    public static List<TriggerCause> getTriggeredBy(AbstractProject project, AbstractBuild<?, ?> build) {
+        Set<TriggerCause> result = new HashSet<TriggerCause>();
         List<Cause> causes;
         if (build == null && project.isInQueue()) {
             causes = project.getQueueItem().getCauses();
@@ -70,40 +69,14 @@ public class Trigger {
             if (build != null) {
                 causes = build.getCauses();
             } else {
-                return new ArrayList<Trigger>();
+                return new ArrayList<TriggerCause>();
             }
 
         }
-
         for (Cause cause : causes) {
-            if (cause instanceof Cause.UserIdCause) {
-                result.add(new Trigger(Trigger.TYPE_MANUAL, "user " + getDisplayName(((Cause.UserIdCause) cause).getUserName())));
-            } else if (cause instanceof Cause.RemoteCause) {
-                result.add(new Trigger(Trigger.TYPE_REMOTE, "remote trigger"));
-            } else if (cause instanceof Cause.UpstreamCause) {
-                Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-                AbstractProject upstreamProject = JenkinsUtil.getInstance().getItem(upstreamCause.getUpstreamProject(), JenkinsUtil.getInstance(), AbstractProject.class);
-                StringBuilder causeString = new StringBuilder("upstream project");
-                if (upstreamProject != null) {
-
-                    causeString.append(" ").append(upstreamProject.getDisplayName());
-                    AbstractBuild upstreamBuild = upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
-                    if (upstreamBuild != null) {
-                        causeString.append(" build ").append(upstreamBuild.getDisplayName());
-                    }
-                }
-                result.add(new Trigger(Trigger.TYPE_UPSTREAM, causeString.toString()));
-            } else if (cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause) {
-                result.add(new Trigger(Trigger.TYPE_UPSTREAM, "upstream"));
-            } else if (cause instanceof SCMTrigger.SCMTriggerCause) {
-                result.add(new Trigger(Trigger.TYPE_SCM, "SCM"));
-            } else if (cause instanceof TimerTrigger.TimerTriggerCause) {
-                result.add(new Trigger(Trigger.TYPE_TIMER, "timer"));
-            } else {
-                result.add(new Trigger(Trigger.TYPE_UNKNOWN, "unknown cause"));
-            }
+            result.add(CauseResolver.getTrigger(cause));
         }
-        return new ArrayList<Trigger>(result);
+        return new ArrayList<TriggerCause>(result);
     }
 
     protected static String getDisplayName(String userName) {
@@ -123,7 +96,7 @@ public class Trigger {
         if (o == null || getClass() != o.getClass()){
             return false;
         }
-        Trigger trigger = (Trigger) o;
+        TriggerCause trigger = (TriggerCause) o;
 
         return description.equals(trigger.description) && type.equals(trigger.type);
 

@@ -49,7 +49,7 @@ public class Pipeline extends AbstractItem {
 
     private String version;
 
-    private List<Trigger> triggeredBy;
+    private List<TriggerCause> triggeredBy;
     private Set<UserInfo> contributors;
 
     private boolean aggregated;
@@ -74,7 +74,7 @@ public class Pipeline extends AbstractItem {
                     AbstractProject lastProject,
                     String version,
                     String timestamp,
-                    List<Trigger> triggeredBy,
+                    List<TriggerCause> triggeredBy,
                     Set<UserInfo> contributors,
                     List<Stage> stages, boolean aggregated) {
         super(name);
@@ -216,9 +216,9 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, null));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, "#" + firstProject.getNextBuildNumber(), pipeLineTimestamp,
-                    Trigger.getTriggeredBy(firstProject, null), null,
-                    pipelineStages, false);
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, "#"
+                    + firstProject.getNextBuildNumber(), pipeLineTimestamp,
+                    TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false);
             result.add(pipelineLatest);
             no--;
         }
@@ -233,8 +233,9 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(), pipeLineTimestamp,
-                                Trigger.getTriggeredBy(firstProject, firstBuild), UserInfo.getContributors(firstBuild), pipelineStages, false);
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
+                    pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
+                    UserInfo.getContributors(firstBuild), pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
             pipelineLatest.calculateTotalBuildTime();
             result.add(pipelineLatest);
@@ -253,7 +254,7 @@ public class Pipeline extends AbstractItem {
     }
 
     @Exported
-    public List<Trigger> getTriggeredBy() {
+    public List<TriggerCause> getTriggeredBy() {
         return triggeredBy;
     }
 }
