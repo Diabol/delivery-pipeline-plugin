@@ -8,9 +8,7 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
-  mvn license:check integration-test
+  mvn install
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
-global:
-  - "MAVEN_OPTS=-Xmx1024m"
