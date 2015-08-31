@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-public class TriggerTest {
+public class TriggerCauseTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
@@ -45,9 +45,9 @@ public class TriggerTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_MANUAL, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_MANUAL, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -59,9 +59,9 @@ public class TriggerTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_MANUAL, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_MANUAL, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -69,9 +69,9 @@ public class TriggerTest {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(project);
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_UNKNOWN, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_UNKNOWN, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -83,9 +83,9 @@ public class TriggerTest {
         project.setScm(scm);
         project.scheduleBuild(new TimerTrigger.TimerTriggerCause());
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_TIMER, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_TIMER, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -97,9 +97,9 @@ public class TriggerTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new SCMTrigger.SCMTriggerCause("SCM"));
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_SCM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_SCM, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -112,9 +112,9 @@ public class TriggerTest {
         jenkins.getInstance().setNumExecutors(0);
         project.scheduleBuild(0, new SCMTrigger.SCMTriggerCause("SCM"));
         //jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, null);
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, null);
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_SCM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_SCM, triggeredBy.iterator().next().getType());
     }
 
 
@@ -134,9 +134,9 @@ public class TriggerTest {
 
         project.scheduleBuild(0, null, action);
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_SCM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_SCM, triggeredBy.iterator().next().getType());
     }
 
 
@@ -146,9 +146,9 @@ public class TriggerTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.RemoteCause("localhost", "Remote"));
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_REMOTE, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_REMOTE, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -157,9 +157,9 @@ public class TriggerTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UpstreamCause.DeeplyNestedUpstreamCause());
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
     }
 
     @Test
@@ -173,9 +173,9 @@ public class TriggerTest {
         project.setScm(scm);
         project.scheduleBuild(new Cause.UpstreamCause((Run)upstream.getLastBuild()));
         jenkins.waitUntilNoActivity();
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
         assertEquals("upstream project up build #1", triggeredBy.iterator().next().getDescription());
     }
 
@@ -189,9 +189,9 @@ public class TriggerTest {
         jenkins.waitUntilNoActivity();
         upstream.delete();
 
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
         assertEquals("upstream project", triggeredBy.iterator().next().getDescription());
     }
 
@@ -205,9 +205,9 @@ public class TriggerTest {
         jenkins.waitUntilNoActivity();
         upstream.getLastBuild().delete();
 
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_UPSTREAM, triggeredBy.iterator().next().getType());
         assertEquals("upstream project up", triggeredBy.iterator().next().getDescription());
     }
 
@@ -235,15 +235,15 @@ public class TriggerTest {
 
         assertEquals(3, build.getCulprits().size());
 
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, project.getLastBuild());
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, project.getLastBuild());
         assertEquals(1, triggeredBy.size());
-        assertEquals(Trigger.TYPE_MANUAL, triggeredBy.iterator().next().getType());
+        assertEquals(TriggerCause.TYPE_MANUAL, triggeredBy.iterator().next().getType());
     }
 
     @Test
     public void testGetTriggeredByNullBuild() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
-        List<Trigger> triggeredBy = Trigger.getTriggeredBy(project, null);
+        List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, null);
         assertTrue(triggeredBy.isEmpty());
 
 
@@ -252,10 +252,10 @@ public class TriggerTest {
     @Test
     @WithoutJenkins
     public void testHashcodeEquals() {
-       Trigger trigger1 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
-        Trigger trigger2 = new Trigger(Trigger.TYPE_MANUAL, "manual trigger");
-        Trigger trigger3 = new Trigger(Trigger.TYPE_MANUAL, "manual");
-        Trigger trigger4 = new Trigger(Trigger.TYPE_SCM, "manual");
+        TriggerCause trigger1 = new TriggerCause(TriggerCause.TYPE_MANUAL, "manual trigger");
+        TriggerCause trigger2 = new TriggerCause(TriggerCause.TYPE_MANUAL, "manual trigger");
+        TriggerCause trigger3 = new TriggerCause(TriggerCause.TYPE_MANUAL, "manual");
+        TriggerCause trigger4 = new TriggerCause(TriggerCause.TYPE_SCM, "manual");
         assertEquals(trigger1, trigger1);
         assertEquals(trigger1, trigger2);
         assertEquals(trigger1.hashCode(), trigger2.hashCode());
@@ -264,11 +264,6 @@ public class TriggerTest {
         assertNotEquals(trigger3, null);
         assertNotEquals(trigger3, "");
         assertNotEquals(trigger1.hashCode(), trigger3.hashCode());
-    }
-
-    @Test
-    public void testNullUser() {
-        assertEquals("anonymous", Trigger.getDisplayName(null));
     }
 
 }
