@@ -105,6 +105,7 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean linkRelative = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -329,6 +330,15 @@ public class DeliveryPipelineView extends View {
     @Exported
     public boolean isShowStaticAnalysisResults() {
         return showStaticAnalysisResults;
+    }
+
+    @Exported
+    public boolean isLinkRelative() {
+        return linkRelative;
+    }
+
+    public void setLinkRelative(boolean linkRelative) {
+        this.linkRelative = linkRelative;
     }
 
     public void setShowDescription(boolean showDescription)
