@@ -551,7 +551,7 @@ public class PipelineTest {
 
     /**
      * A -> B -> D -> E
-     * -> C
+     *        -> C     
      * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
@@ -593,6 +593,70 @@ public class PipelineTest {
         assertEquals("c", pipeline.getStages().get(4).getName());
         assertEquals(1, pipeline.getStages().get(4).getRow());
         assertEquals(2, pipeline.getStages().get(4).getColumn());
+
+    }
+
+
+    /**
+     * A -> B -> D -> E -> F
+     *        -> C      -> G
+     *                  -> H
+     * <p/>
+     * Javascript in view needs to have a sorted list of stages based
+     * on row and column the stage has been placed in.
+     */
+    @Test
+    public void testGetPipelinesWhereEachRowHasMultipleStages() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        jenkins.createFreeStyleProject("c");
+        FreeStyleProject d = jenkins.createFreeStyleProject("d");
+        FreeStyleProject e =jenkins.createFreeStyleProject("e");
+        jenkins.createFreeStyleProject("f");
+        jenkins.createFreeStyleProject("g");
+        jenkins.createFreeStyleProject("h");
+
+        a.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("b", new BlockingBehaviour("never", "never", "never"), null)));
+        b.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("c,d", new BlockingBehaviour("never", "never", "never"), null)));
+        d.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("e", new BlockingBehaviour("never", "never", "never"), null)));
+        e.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("f,g,h", new BlockingBehaviour("never", "never", "never"), null)));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+
+        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+
+        assertEquals("a", pipeline.getStages().get(0).getName());
+        assertEquals(0, pipeline.getStages().get(0).getRow());
+        assertEquals(0, pipeline.getStages().get(0).getColumn());
+
+        assertEquals("b", pipeline.getStages().get(1).getName());
+        assertEquals(0, pipeline.getStages().get(1).getRow());
+        assertEquals(1, pipeline.getStages().get(1).getColumn());
+
+        assertEquals("d", pipeline.getStages().get(2).getName());
+        assertEquals(0, pipeline.getStages().get(2).getRow());
+        assertEquals(2, pipeline.getStages().get(2).getColumn());
+
+        assertEquals("e", pipeline.getStages().get(3).getName());
+        assertEquals(0, pipeline.getStages().get(3).getRow());
+        assertEquals(3, pipeline.getStages().get(3).getColumn());
+
+        assertEquals("f", pipeline.getStages().get(4).getName());
+        assertEquals(0, pipeline.getStages().get(4).getRow());
+        assertEquals(4, pipeline.getStages().get(4).getColumn());
+
+        assertEquals("c", pipeline.getStages().get(5).getName());
+        assertEquals(1, pipeline.getStages().get(5).getRow());
+        assertEquals(2, pipeline.getStages().get(5).getColumn());
+
+        assertEquals("g", pipeline.getStages().get(6).getName());
+        assertEquals(1, pipeline.getStages().get(6).getRow());
+        assertEquals(4, pipeline.getStages().get(6).getColumn());
+
+        assertEquals("h", pipeline.getStages().get(7).getName());
+        assertEquals(2, pipeline.getStages().get(7).getRow());
+        assertEquals(4, pipeline.getStages().get(7).getColumn());
 
     }
 
