@@ -32,14 +32,6 @@ describe("htmlEncode", function() {
 });
 
 describe("generateChangeLog", function() {
-    it("Linebreak in changelog comment", function() {
-        var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"Firstline\\nSecondLine"}]}');
-        expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-commit-id">2718</div><div class="change-author">Firstname Lastname</div><div class="change-message">Firstline<br/>SecondLine</div></div></div>');
-    });
-    it("XML in changelog comment", function() {
-        var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"<xml>data</xml>"}]}');
-        expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-commit-id">2718</div><div class="change-author">Firstname Lastname</div><div class="change-message">&lt;xml&gt;data&lt;/xml&gt;</div></div></div>');
-    });
     it("Swedish characters in changelog comment", function() {
         var data = JSON.parse('{"changes":[{"author":{"name":"Firstname Lastname","avatarUrl":null,"url":"user/user"},"changeLink":null,"commitId":"2718","message":"Räksmörgås"}]}');
         expect(generateChangeLog(data.changes)).toEqual('<div class="changes"><h1>Changes:</h1><div class="change"><div class="change-commit-id">2718</div><div class="change-author">Firstname Lastname</div><div class="change-message">Räksmörgås</div></div></div>');

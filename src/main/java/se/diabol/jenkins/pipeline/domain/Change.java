@@ -84,7 +84,7 @@ public class Change {
                    LOG.log(Level.WARNING, "Could not get changeset link for: " + build.getProject().getFullDisplayName() + " " + build.getDisplayName(), e);
                 }
             }
-            result.add(new Change(user, entry.getMsg(), entry.getCommitId(), changeLink));
+            result.add(new Change(user, entry.getMsgAnnotated(), entry.getCommitId(), changeLink));
         }
         return result;
     }
