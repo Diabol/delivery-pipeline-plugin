@@ -17,8 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import hudson.MarkupText;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
+import hudson.scm.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +30,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
 import se.diabol.jenkins.pipeline.test.MeanFakeRepositoryBrowserSCM;
+import se.diabol.jenkins.pipeline.test.ParentAwareSCM;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -103,6 +106,28 @@ public class ChangeTest {
     }
 
     @Test
+    public void testGetChangesWithAnnotator() throws Exception {
+        ChangeLogAnnotator.all().add(new ChangeLogAnnotator() {
+            @Override
+            public void annotate(AbstractBuild<?, ?> build, ChangeLogSet.Entry change, MarkupText text) {
+                text.addMarkup(0, "Something huge: ");
+            }
+        });
+        FreeStyleProject project = jenkins.createFreeStyleProject("build");
+        ParentAwareSCM scm = new ParentAwareSCM();
+        scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
+        project.setScm(scm);
+        jenkins.setQuietPeriod(0);
+        jenkins.buildAndAssertSuccess(project);
+        AbstractBuild build = project.getLastBuild();
+        List<Change> changes = Change.getChanges(build);
+        assertNotNull(changes);
+        assertEquals(1, changes.size());
+        Change change = changes.get(0);
+        assertEquals("Something huge: Fixed bug", change.getMessage());
+    }
+
+    @Test
     public void testGetChangesWithBrowserThrowIOException() throws Exception {
         MockFolder folder = jenkins.createFolder("Folder");
         FreeStyleProject project = folder.createProject(FreeStyleProject.class, "build");
@@ -124,8 +149,6 @@ public class ChangeTest {
         String capturedLog = getTestCapturedLog();
         Assert.assertTrue(capturedLog.contains("Could not get changeset link for: Folder » build #1"));
     }
-
-
 
 
 }

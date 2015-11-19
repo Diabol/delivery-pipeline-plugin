@@ -368,13 +368,20 @@ function generateChangeLog(changes) {
     for (var i = 0; i < changes.length; i++) {
         html.push('<div class="change">');
         var change = changes[i];
-        html.push('<div class="change-commit-id">' + htmlEncode(change.commitId) + '</div>')
-        html.push('<div class="change-author">' + htmlEncode(change.author.name) + '</div>');
+
         if (change.changeLink) {
-            html.push('<div class="change-message"><a href="' + change.changeLink + '">' + htmlEncode(change.message) + '</a></div>');
-        } else {
-            html.push('<div class="change-message">' + htmlEncode(change.message) + '</div>');
+            html.push('<a href="' + change.changeLink + '">');
         }
+
+        html.push('<div class="change-commit-id">' + htmlEncode(change.commitId) + '</div>');
+
+        if (change.changeLink) {
+            html.push('</a>');
+        }
+
+        html.push('<div class="change-author">' + htmlEncode(change.author.name) + '</div>');
+
+        html.push('<div class="change-message">' + change.message + '</div>');
         html.push('</div>');
     }
     html.push('</div>');
