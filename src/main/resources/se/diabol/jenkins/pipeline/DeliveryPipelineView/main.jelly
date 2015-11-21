@@ -74,6 +74,10 @@
         view.viewUrl = '${it.getViewUrl()}';
 
         updatePipelines(pipelineContainers, "pipelineerror", view, fullscreen, ${it.isShowChanges()},
+        <j:choose>
+            <j:when test="it.getAggregatedChangesGroupingPattern()">/${it.getAggregatedChangesGroupingPattern()}/g</j:when>
+            <j:otherwise>null</j:otherwise>
+        </j:choose>,
         ${it.updateInterval * 1000});
     </script>
     </div>

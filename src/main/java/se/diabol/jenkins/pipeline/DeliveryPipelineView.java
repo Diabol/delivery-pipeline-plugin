@@ -105,6 +105,8 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean showAggregatedChanges = false;
+    private String aggregatedChangesGroupingPattern = null;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -348,6 +350,24 @@ public class DeliveryPipelineView extends View {
         this.showStaticAnalysisResults = showStaticAnalysisResults;
     }
 
+    @Exported
+    public boolean isShowAggregatedChanges() {
+        return showAggregatedChanges;
+    }
+
+    public void setShowAggregatedChanges(boolean showAggregatedChanges) {
+        this.showAggregatedChanges = showAggregatedChanges;
+    }
+
+    @Exported
+    public String getAggregatedChangesGroupingPattern() {
+        return aggregatedChangesGroupingPattern;
+    }
+
+    public void setAggregatedChangesGroupingPattern(String aggregatedChangesGroupingPattern) {
+        this.aggregatedChangesGroupingPattern = aggregatedChangesGroupingPattern;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
         try {
@@ -446,7 +466,7 @@ public class DeliveryPipelineView extends View {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
-            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
+            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
         return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines);

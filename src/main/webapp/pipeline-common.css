@@ -318,6 +318,32 @@ div.infoPanelOuter {
     border: 1px solid lightgray;
     background-color: #FAF8F8;
 }
+
+div.aggregatedChangesPanel {
+    display:block;
+    max-width:300px;
+    padding-left:2px;
+    padding-right:2px;
+    margin-top:-2px;
+    border-top:none;
+}
+
+div.aggregatedChangesPanelInner {
+    padding:8px 4px;
+    overflow: hidden;
+    border: 0;
+}
+
+div.aggregatedChangesPanelOuter {
+    margin: 8px;
+    border: 1px solid lightgray;
+    background-color: #FAF8F8;
+}
+
+div.aggregatedChangesPanelInner > ul {
+    padding-left: 1.2em;
+}
+
 .MANUALTASK {
     border-right: 6px solid #FFE4E1;
 }

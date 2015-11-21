@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
+import hudson.model.Result;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.jgrapht.DirectedGraph;
@@ -40,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ public class Stage extends AbstractItem {
     private List<String> downstreamStages;
     private List<Long> downstreamStageIds;
     private long id;
+    private Set<Change> changes = new HashSet<Change>();
 
     public Stage(String name, List<Task> tasks) {
         super(name);
@@ -144,6 +147,15 @@ public class Stage extends AbstractItem {
         this.downstreamStageIds = downstreamStageIds;
     }
 
+    @Exported
+    public Set<Change> getChanges() {
+        return changes;
+    }
+
+    public void setChanges(Set<Change> changes) {
+        this.changes = changes;
+    }
+
     public void setTaskConnections(Map<String, List<String>> taskConnections) {
         this.taskConnections = taskConnections;
     }
@@ -184,7 +196,7 @@ public class Stage extends AbstractItem {
         List<Task> stageTasks = new ArrayList<Task>();
 
         //The version build for this stage is the highest first task build
-        AbstractBuild versionBuild = getHighestBuild(getTasks(), firstProject, context);
+        AbstractBuild versionBuild = getHighestBuild(firstProject, context);
 
         String stageVersion = null;
         if (versionBuild != null) {
@@ -340,11 +352,16 @@ public class Stage extends AbstractItem {
     }
 
     @CheckForNull
-    private AbstractBuild getHighestBuild(List<Task> tasks, AbstractProject firstProject, ItemGroup context) {
+    public AbstractBuild getHighestBuild(AbstractProject firstProject, ItemGroup context) {
+        return getHighestBuild(firstProject, context, null);
+    }
+
+    @CheckForNull
+    public AbstractBuild getHighestBuild(AbstractProject firstProject, ItemGroup context, Result minResult) {
         int highest = -1;
-        for (Task task : tasks) {
+        for (Task task : getTasks()) {
             AbstractProject project = ProjectUtil.getProject(task.getId(), context);
-            AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject);
+            AbstractBuild firstBuild = getFirstUpstreamBuild(project, firstProject, minResult);
             if (firstBuild != null && firstBuild.getNumber() > highest) {
                 highest = firstBuild.getNumber();
             }
@@ -358,9 +375,13 @@ public class Stage extends AbstractItem {
     }
 
     @CheckForNull
-    private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first) {
+    private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first, Result minResult) {
         RunList<? extends AbstractBuild> builds = project.getBuilds();
         for (AbstractBuild build : builds) {
+            if (minResult != null && (build.isBuilding() || build.getResult().isWorseThan(minResult))) {
+                continue;
+            }
+
             AbstractBuild upstream = BuildUtil.getFirstUpstreamBuild(build, first);
             if (upstream != null && upstream.getProject().equals(first)) {
                 return upstream;
