@@ -18,6 +18,9 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -243,14 +246,35 @@ public class Stage extends AbstractItem {
                 return stages2.size() - stages1.size();
             }
         });
-        for (int row = allPaths.size() - 1; row >= 0; row--) {
-            List<Stage> path = allPaths.get(row);
+        
+        //for keeping track of which row has an available column
+        final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
+        final List<Stage> processedStages = Lists.newArrayList();
+        
+        for (int row = 0; row < allPaths.size(); row++) {
+            List<Stage> path = allPaths.get(row);            
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-                stage.setColumn(Math.max(stage.getColumn(), column));
-                stage.setRow(row);
+                
+                //skip processed stage since the row/column has already been set
+                if (!processedStages.contains(stage)) {
+	                stage.setColumn(Math.max(stage.getColumn(), column));
+	                
+	                final int effectiveColumn = stage.getColumn();
+	                
+	                final Integer previousRowForThisColumn = columnRowMap.get(effectiveColumn);
+	                //set it to 0 if no previous setting is set; if found, previous value + 1
+	                final int currentRowForThisColumn = previousRowForThisColumn == null ? 0 : previousRowForThisColumn + 1;
+	                //update/set row number in the columnRowMap for this effective column
+	            	columnRowMap.put(effectiveColumn, currentRowForThisColumn);
+	
+	            	stage.setRow(currentRowForThisColumn);
+	            	
+	            	processedStages.add(stage);
+                }
             }
         }
+        
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);
