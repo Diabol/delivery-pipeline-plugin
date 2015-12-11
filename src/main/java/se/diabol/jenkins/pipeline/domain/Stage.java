@@ -54,10 +54,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+
+import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static java.util.Collections.singleton;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
+
+    private static final Pattern MATCH_NONE_PATTERN = Pattern.compile(".^");
+
     private final List<Task> tasks;
 
     private String version;
@@ -166,15 +177,19 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject)
+    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject, String excludeJobsRegex)
             throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
+        Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
-            Task task = Task.getPrototypeTask(project, project.getFullName().equals(firstProject.getFullName()));
-            /* if current project is last we need clean downStreamTasks*/
-            if (lastProject != null && project.getFullName().equals(lastProject.getFullName())) {
-                task.getDownstreamTasks().clear();
-            }
+            String projectName = project.getName();
+            if (!excludeJobsPattern.matcher(projectName).matches()) {
+                boolean isInitialTask = project.getFullName().equals(firstProject.getFullName());
+                Task task = Task.getPrototypeTask(project, isInitialTask, excludeJobsPattern);
+                /* if current project is last we need clean downStreamTasks*/
+                if (lastProject != null && project.getFullName().equals(lastProject.getFullName())) {
+                    task.getDownstreamTasks().clear();
+                }
 
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property == null && project.getParent() instanceof AbstractProject) {

@@ -69,7 +69,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, NONE));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
 
@@ -96,7 +96,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, NONE));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
         view.setAllowRebuild(true);
@@ -129,7 +129,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, NONE));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
         view.setAllowRebuild(true);
@@ -170,7 +170,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, NONE));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
@@ -197,7 +197,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, NONE));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
@@ -226,7 +226,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, NONE));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
