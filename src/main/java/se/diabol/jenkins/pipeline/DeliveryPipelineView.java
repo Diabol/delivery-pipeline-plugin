@@ -725,10 +725,6 @@ public class DeliveryPipelineView extends View {
             return excludeJobsRegex;
         }
 
-        public void setExcludeJobsRegex(String excludeJobsRegex) {
-            this.excludeJobsRegex = excludeJobsRegex;
-        }
-
         @Extension
         public static class DescriptorImpl extends Descriptor<ComponentSpec> {
 
