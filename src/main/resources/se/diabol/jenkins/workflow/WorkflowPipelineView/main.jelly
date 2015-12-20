@@ -1,0 +1,81 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+        >
+
+    <st:bind var="view" value="${it}"/>
+    <st:bind var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+
+    <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+
+    <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-common.css"/>
+    <j:switch on="${fullscreen}">
+        <j:case value="true">
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-fullscreen.css"/>
+            <j:if test="${it.fullScreenCss != null}">
+                <link rel="stylesheet" href="${it.fullScreenCss}"/>
+            </j:if>
+        </j:case>
+        <j:default>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline.css"/>
+            <j:if test="${it.embeddedCss != null}">
+                <link rel="stylesheet" href="${it.embeddedCss}"/>
+            </j:if>
+            <j:set var="views" value="${it.owner.views}"/>
+            <j:set var="currentView" value="${it}"/>
+            <j:choose>
+                <j:when test="${it.owner.class.name=='hudson.model.MyViewsProperty'}">
+                    <st:include page="myViewTabs.jelly" it="${it.owner.myViewsTabBar}"/>
+                </j:when>
+                <j:otherwise>
+                    <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}"/>
+                </j:otherwise>
+            </j:choose>
+        </j:default>
+    </j:switch>
+
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/moment.min.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.jsPlumb-1.3.16-all-min.js"/>
+
+
+    <div class="pipeline-main">
+
+    <div class="pipeline-logo"/>
+
+    <div id="taskDetails" class="popover">
+    </div>
+
+
+    <div id="pipelineerror" class="pipelineerror"/>
+
+    <div id="pipeline-message" class="pipeline-message"><div class="pipeline-loading-icon"></div></div>
+
+    <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+        <div id="pipelines-${i}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
+    </j:forEach>
+    <div class="clear"></div>
+
+    <script type="text/javascript">
+        // TODO: refactor pipe.js to support placing these
+        // variables into an anonymous function closure
+        // to avoid polluting the global namespace
+        var plumb = jsPlumb.getInstance(),
+        lastResponse = null,
+        pipelineContainers = [];
+
+        <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+            pipelineContainers.push('pipelines-${i}');
+        </j:forEach>
+
+        Q(window).resize(function () {
+        plumb.repaintEverything();
+        });
+
+        view.viewUrl = '${it.getViewUrl()}';
+
+        updatePipelines(pipelineContainers, "pipelineerror", view, fullscreen, false, 2000);
+    </script>
+    </div>
+    <!--<st:include page="legend.jelly"/>-->
+
+</j:jelly>

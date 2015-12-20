@@ -22,6 +22,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Descriptor;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.NullSCM;
@@ -93,8 +94,10 @@ public class ParentAwareSCM extends NullSCM {
         }
 
         @Override
-        public SCM newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+        public SCM newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException {
             return new ParentAwareSCM();
         }
     }
+
+
 }

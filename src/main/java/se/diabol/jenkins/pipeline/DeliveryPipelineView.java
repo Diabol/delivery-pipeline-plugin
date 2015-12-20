@@ -727,13 +727,13 @@ public class DeliveryPipelineView extends View {
             }
 
             public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
-                return ProjectUtil.fillAllProjects(context);
+                return ProjectUtil.fillAllProjects(context, AbstractProject.class);
             }
 
             public ListBoxModel doFillLastJobItems(@AncestorInPath ItemGroup<?> context) {
                 ListBoxModel options = new ListBoxModel();
                 options.add("");
-                options.addAll(ProjectUtil.fillAllProjects(context));
+                options.addAll(ProjectUtil.fillAllProjects(context, AbstractProject.class));
                 return options;
             }
 

@@ -1,0 +1,15 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <f:section title="View settings">
+        <f:entry title="Update interval" field="updateInterval" default="2">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Pipeline project" field="project">
+            <f:select/>
+        </f:entry>
+    </f:section>
+
+
+</j:jelly>

@@ -109,6 +109,19 @@ public class Change {
         return result;
     }
 
+    public static List<Change> getChanges(List<ChangeLogSet<? extends ChangeLogSet.Entry>> changes) {
+        List<Change> result = new ArrayList<Change>();
+        for (int i = 0; i < changes.size(); i++) {
+            ChangeLogSet<? extends ChangeLogSet.Entry> entries = changes.get(i);
+            for (ChangeLogSet.Entry entry : entries) {
+                UserInfo user = UserInfo.getUser(entry.getAuthor());
+                String changeLink = null;
+                result.add(new Change(user, entry.getMsgAnnotated(), entry.getCommitId(), changeLink));
+            }
+        }
+        return result;
+    }
+
 
 
 }
