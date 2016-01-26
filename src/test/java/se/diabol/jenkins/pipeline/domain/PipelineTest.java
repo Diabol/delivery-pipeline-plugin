@@ -418,7 +418,7 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance());
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), false);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -701,14 +701,14 @@ public class PipelineTest {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance());
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), false);
         assertEquals(1, pipelines.size());
 
 
     }
 
-    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup);
+    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) throws PipelineException {
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, false);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }

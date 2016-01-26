@@ -353,7 +353,7 @@ public class SimpleStatusTest {
         jenkins.buildAndAssertSuccess(project1);
         jenkins.waitUntilNoActivity();
 
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), false);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.IDLE, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
@@ -361,13 +361,13 @@ public class SimpleStatusTest {
         BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("project1"), "0", false, "");
         project1.setQuietPeriod(3);
         view.triggerManualBuild(1, "project2", "project1");
-        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
+        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), false);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.QUEUED, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
         jenkins.waitUntilNoActivity();
-        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance());
+        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), false);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.SUCCESS, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
