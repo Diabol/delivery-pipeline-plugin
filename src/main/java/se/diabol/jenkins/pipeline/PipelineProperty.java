@@ -37,15 +37,17 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
     private String taskName = null;
     private String stageName = null;
     private String descriptionTemplate = null;
+	private boolean hideTask = false;
 
     public PipelineProperty() {
     }
 
     @DataBoundConstructor
-    public PipelineProperty(String taskName, String stageName, String descriptionTemplate) {
+    public PipelineProperty(String taskName, String stageName, String descriptionTemplate, boolean hideTask) {
         setStageName(stageName);
         setTaskName(taskName);
         setDescriptionTemplate(descriptionTemplate);
+		setHideTask(hideTask);
     }
 
     @Exported
@@ -62,6 +64,11 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
     public String getDescriptionTemplate() {
         return descriptionTemplate;
     }
+	
+	@Exported
+	public boolean getHideTask() {
+		return hideTask;
+	}
 
     public final void setTaskName(String taskName) {
         this.taskName = taskName;
@@ -87,6 +94,10 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         }
         return result;
     }
+	
+	public final void setHideTask(boolean hideTask) {
+		this.hideTask = hideTask;
+	}
 
     @Extension
     public static final class DescriptorImpl extends JobPropertyDescriptor {
@@ -140,6 +151,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             String task = sr.getParameter("taskName");
             String stage = sr.getParameter("stageName");
             String description = sr.getParameter("descriptionTemplate");
+			boolean hideTask = sr.getParameter("hideTask") != null;
             boolean configEnabled = sr.getParameter("enabled") != null;
             if (!configEnabled) {
                 return null;
@@ -156,7 +168,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             if (task == null && stage == null) {
                 return null;
             }
-            return new PipelineProperty(task, stage, description);
+            return new PipelineProperty(task, stage, description, hideTask);
         }
     }
 }

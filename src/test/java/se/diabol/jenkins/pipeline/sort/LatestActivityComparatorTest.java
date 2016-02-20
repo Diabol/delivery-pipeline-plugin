@@ -37,7 +37,7 @@ public class LatestActivityComparatorTest {
     @Test
     public void testCompare() {
         Task taskA = new Task(null, "task", "Build", StatusFactory.success(0, 20, false,
-                Collections.<PromotionStatus>emptyList()), null, null, null, true, "");
+                Collections.<PromotionStatus>emptyList()), null, null, null, true, "", false);
 
         List<Task> tasksA = new ArrayList<Task>();
         tasksA.add(taskA);
@@ -49,7 +49,7 @@ public class LatestActivityComparatorTest {
         pipelinesA.add(pipelineA);
 
         Task taskB = new Task(null, "task", "Build", StatusFactory.success(10, 20, false,
-                Collections.<PromotionStatus>emptyList()), null, null, null, true, "");
+                Collections.<PromotionStatus>emptyList()), null, null, null, true, "", false);
 
         List<Task> tasksB = new ArrayList<Task>();
         tasksB.add(taskB);

@@ -138,7 +138,7 @@ public class TaskTest {
     public void testTaskNameForMultiConfiguration() throws Exception {
         MatrixProject project = jenkins.createMatrixProject("Multi");
         project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));
-        project.addProperty(new PipelineProperty("task", "stage", ""));
+        project.addProperty(new PipelineProperty("task", "stage", "", false));
 
         Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
 
@@ -246,8 +246,8 @@ public class TaskTest {
             throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        a.addProperty(new PipelineProperty(taskNameA, "Stage Build", null));
-        b.addProperty(new PipelineProperty(taskNameB, "Stage Deploy", null));
+        a.addProperty(new PipelineProperty(taskNameA, "Stage Build", null, false));
+        b.addProperty(new PipelineProperty(taskNameB, "Stage Deploy", null, false));
 
         a.getPublishersList().add(new BuildTrigger("B", false));
         jenkins.setQuietPeriod(0);

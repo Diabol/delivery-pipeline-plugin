@@ -49,6 +49,25 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
         }
 
         plumb.reset();
+		for(var c = 0; c < data.pipelines.length; c++) {
+			component = data.pipelines[c];
+			for(var i=0; i< component.pipelines.length; i++) {
+				pipeline = component.pipelines[i];	
+				for (var j = 0; j < pipeline.stages.length; j++) {
+					var l = [];
+					var stage = pipeline.stages[j];
+					for (var k = 0; k < stage.tasks.length; k++) {
+						task = stage.tasks[k];
+						if(task.hideTask) {
+							l.push(task);
+						}
+					}
+					for(var m = 0; m < l.length; m++) {
+						stage.tasks.splice(Q.inArray(l[m], stage.tasks),1);
+					}
+				}
+			}
+		}	
         for (var c = 0; c < data.pipelines.length; c++) {
             html = [];
             component = data.pipelines[c];

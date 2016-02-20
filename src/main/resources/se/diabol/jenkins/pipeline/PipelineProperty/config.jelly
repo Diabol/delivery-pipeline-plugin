@@ -9,6 +9,10 @@
             <f:entry title="Task Name" field="taskName">
                 <f:textbox name="taskName" value="${instance.getTaskName()}"/>
             </f:entry>
+			
+			<f:entry title="Hide Task" field="hideTask">
+				<f:checkbox name="hideTask" checked="${instance.getHideTask()}"/>
+			</f:entry>
 
             <f:entry title="Customize Task Description Template" field="descriptionTemplate">
                 <f:textarea name="descriptionTemplate" value="${instance.getDescriptionTemplate()}"/>

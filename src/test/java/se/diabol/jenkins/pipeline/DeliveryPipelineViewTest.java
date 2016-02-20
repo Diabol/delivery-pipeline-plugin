@@ -368,7 +368,7 @@ public class DeliveryPipelineViewTest {
     @Test
     public void testGetPipelines() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty("Build", "BuildStage", ""));
+        build.addProperty(new PipelineProperty("Build", "BuildStage", "", false));
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
@@ -681,13 +681,13 @@ public class DeliveryPipelineViewTest {
     public void testRecursiveStages() throws Exception {
 
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        a.addProperty(new PipelineProperty("A", "A", ""));
+        a.addProperty(new PipelineProperty("A", "A", "", false));
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        b.addProperty(new PipelineProperty("B", "B", ""));
+        b.addProperty(new PipelineProperty("B", "B", "", false));
         FreeStyleProject c = jenkins.createFreeStyleProject("C");
-        c.addProperty(new PipelineProperty("C", "C", ""));
+        c.addProperty(new PipelineProperty("C", "C", "", false));
         FreeStyleProject d = jenkins.createFreeStyleProject("D");
-        d.addProperty(new PipelineProperty("D", "B", ""));
+        d.addProperty(new PipelineProperty("D", "B", "", false));
 
         a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
         b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
