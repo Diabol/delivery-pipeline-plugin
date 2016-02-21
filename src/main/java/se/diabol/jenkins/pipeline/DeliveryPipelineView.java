@@ -105,6 +105,7 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+	private boolean showHiddenTasks = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -184,7 +185,16 @@ public class DeliveryPipelineView extends View {
     public boolean isShowTotalBuildTime() {
         return showTotalBuildTime;
     }
+	
+	@Exported
+	public boolean getShowHiddenTasks() {
+		return showHiddenTasks;
+	}
 
+	public void setShowHiddenTasks(boolean showHiddenTasks) {
+		this.showHiddenTasks = showHiddenTasks;
+	}
+	
     public void setShowTotalBuildTime(boolean showTotalBuildTime) {
         this.showTotalBuildTime = showTotalBuildTime;
     }
