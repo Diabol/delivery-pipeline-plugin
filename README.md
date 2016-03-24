@@ -74,6 +74,30 @@ Here is an example of a corresponding JobDSL pipeline view configuration:
         }
     }
 
+Using a custom CSS
+----
+Here is an example of how to specify a custom CSS for the Delivery Pipeline Plugin using a JobDSL pipeline view configuration:
+
+    deliveryPipelineView("my-pipeline") {
+        name("my-pipeline")
+        description("Delivery pipeline with custom full screen CSS")
+        pipelineInstances(1)
+        showAggregatedPipeline(false)
+        columns(1)
+        updateInterval(2)
+        enableManualTriggers(true)
+        showAvatars(false)
+        showChangeLog(true)
+        configure { node ->
+            node << {
+                fullScreenCss('https://my-jenkins-instance/userContent/my-pipeline-fullscreen.css')
+            }
+        }
+        pipelines {
+            component("My pipeline", "the-name-of-the-first-job-in-the-pipeline")
+        }
+    }
+
 For Jenkins Job Builder job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
 
 For JobDSL job configuration examples, see: [demo.groovy](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.groovy)
