@@ -1,4 +1,4 @@
-function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout) {
+function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, timeout) {
     Q.ajax({
         url: rootURL + "/" + view.viewUrl + 'api/json',
         dataType: 'json',
@@ -6,22 +6,22 @@ function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, time
         cache: false,
         timeout: 20000,
         success: function (data) {
-            refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges);
+            refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern);
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout);
+                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, timeout);
             }, timeout);
         },
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
             plumb.repaintEverything();
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout);
+                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, timeout);
             }, timeout);
         }
     });
 }
 
-function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges) {
+function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern) {
     var lastUpdate = data.lastUpdated,
         cErrorDiv = Q("#" + errorDiv),
         pipeline,
@@ -197,6 +197,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html.push(generatePromotionsInfo(data, task));
 
                     }
+
+                    if (pipeline.aggregated && stage.changes && stage.changes.length > 0) {
+                        html.push(generateAggregatedChangelog(stage.changes, aggregatedChangesGroupingPattern));
+                    }
+
                     html.push("</div>");
                     html.push('</div>');
                     column++;
@@ -388,6 +393,62 @@ function generateChangeLog(changes) {
     return html.join("");
 }
 
+function generateAggregatedChangelog(stageChanges, aggregatedChangesGroupingPattern) {
+    var html = [];
+    html.push("<div class='aggregatedChangesPanelOuter'>");
+    html.push("<div class='aggregatedChangesPanel'>");
+    html.push("<div class='aggregatedChangesPanelInner'>");
+    html.push("<b>Changes:</b>");
+    html.push("<ul>");
+
+    var changes = {};
+
+    var unmatchedChangesKey = '';
+
+    if (aggregatedChangesGroupingPattern) {
+        var re = new RegExp(aggregatedChangesGroupingPattern);
+
+        stageChanges.forEach(function(stageChange) {
+            var matches = stageChange.message.match(re) || [unmatchedChangesKey];
+
+            Q.unique(matches).forEach(function (match) {
+                (changes[match] || (changes[match] = [])).push(stageChange);
+            });
+        });
+    } else {
+        changes[unmatchedChangesKey] = stageChanges;
+    }
+
+    var keys = Object.keys(changes).sort().filter(function(matchKey) {
+        return matchKey !== unmatchedChangesKey;
+    });
+
+    keys.push(unmatchedChangesKey);
+
+    keys.forEach(function(matchKey) {
+        if (matchKey != unmatchedChangesKey) {
+            html.push("<li class='aggregatedKey'><b>" + matchKey + "</b><ul>");
+        }
+
+        (changes[matchKey] || []).forEach(function (change) {
+            html.push("<li>");
+            html.push(change.message || "&nbsp;");
+            html.push("</li>");
+        });
+
+        if (matchKey != unmatchedChangesKey) {
+            html.push("</ul></li>");
+        }
+    });
+
+    html.push("</ul>");
+    html.push("</div>");
+    html.push("</div>");
+    html.push("</div>");
+
+    return html.join("")
+}
+
 function getStageClassName(stagename) {
     return "stage_" + replace(stagename, " ", "_");
 }
@@ -520,9 +581,9 @@ function triggerBuild(url, taskId) {
 
 function htmlEncode(html) {
     return document.createElement('a')
-            .appendChild(document.createTextNode(html))
-            .parentNode.innerHTML
-            .replace(/\n/g, '<br/>');
+        .appendChild(document.createTextNode(html))
+        .parentNode.innerHTML
+        .replace(/\n/g, '<br/>');
 }
 
 function getStageId(name, count) {
