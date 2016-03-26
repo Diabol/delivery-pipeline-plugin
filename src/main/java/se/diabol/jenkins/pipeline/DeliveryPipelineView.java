@@ -453,7 +453,7 @@ public class DeliveryPipelineView extends View {
     }
 
     private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, boolean showAggregatedPipeline) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, showHiddenTasks);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));

@@ -186,13 +186,13 @@ public class Pipeline extends AbstractItem {
     /**
      * Created a pipeline prototype for the supplied first project
      */
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, AbstractProject<?, ?> lastProject) throws PipelineException {
-        List<Stage> stages = Stage.extractStages(firstProject, lastProject);
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, AbstractProject<?, ?> lastProject, boolean showHiddenTasks) throws PipelineException {
+        List<Stage> stages = Stage.extractStages(firstProject, lastProject, showHiddenTasks);
         return new Pipeline(name, firstProject, lastProject, newArrayList(stages));
     }
 
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {
-        List<Stage> stages = Stage.extractStages(firstProject, null);
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, boolean showHiddenTasks) throws PipelineException {
+        List<Stage> stages = Stage.extractStages(firstProject, null, showHiddenTasks);
         return new Pipeline(name, firstProject, null, newArrayList(stages));
     }
 

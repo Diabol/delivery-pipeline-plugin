@@ -167,7 +167,7 @@ public class Task extends AbstractItem {
         return initial;
     }
 
-    public static Task getPrototypeTask(AbstractProject project, boolean initial) {
+    public static Task getPrototypeTask(AbstractProject project, boolean initial, boolean showHiddenTasks) {
         PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
@@ -188,6 +188,7 @@ public class Task extends AbstractItem {
         for (AbstractProject downstreamProject : downStreams) {
 			PipelineProperty dproperty = (PipelineProperty) downstreamProject.getProperty(PipelineProperty.class);
 			boolean dhideTask = dproperty != null ? dproperty.getHideTask() : false;	
+			if(showHiddenTasks) dhideTask = false;
 			if(!dhideTask)		
 			downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));			
         }

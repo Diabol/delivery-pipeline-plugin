@@ -66,14 +66,14 @@ public class PipelineTest {
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
         FreeStyleProject job = jenkins.createFreeStyleProject("job");
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", job);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", job, false);
         assertEquals(1, pipeline.getStages().size());
         assertEquals("job", pipeline.getStages().get(0).getName());
         assertEquals("job", pipeline.getStages().get(0).getTasks().get(0).getName());
 
         job.addProperty(new PipelineProperty("", "", "", false));
 
-        pipeline = Pipeline.extractPipeline("Pipeline", job);
+        pipeline = Pipeline.extractPipeline("Pipeline", job, false);
         assertEquals(1, pipeline.getStages().size());
         assertEquals("job", pipeline.getStages().get(0).getName());
         assertEquals("job", pipeline.getStages().get(0).getTasks().get(0).getName());
@@ -100,7 +100,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
 
 
-        Pipeline pipeline = Pipeline.extractPipeline("Piper", compile);
+        Pipeline pipeline = Pipeline.extractPipeline("Piper", compile, false);
 
         assertNotNull(pipeline);
         assertEquals("Piper", pipeline.getName());
@@ -143,7 +143,7 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
 
         assertEquals(3, pipeline.getStages().size());
         assertEquals(1, pipeline.getStages().get(2).getTasks().size());
@@ -167,7 +167,7 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         assertEquals(2, pipeline.getStages().size());
         assertEquals(2, pipeline.getStages().get(0).getTasks().size());
         assertEquals(1, pipeline.getStages().get(1).getTasks().size());
@@ -188,8 +188,8 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
-        final Pipeline pipe1 = Pipeline.extractPipeline("pipe1", build1);
-        final Pipeline pipe2 = Pipeline.extractPipeline("pipe2", build2);
+        final Pipeline pipe1 = Pipeline.extractPipeline("pipe1", build1, false);
+        final Pipeline pipe2 = Pipeline.extractPipeline("pipe2", build2, false);
 
         Pipeline aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
         Pipeline aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
@@ -300,7 +300,7 @@ public class PipelineTest {
         assertNotNull(ci1.getLastBuild());
         assertNull(ci2.getLastBuild());
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", build);
+        Pipeline pipeline = Pipeline.extractPipeline("test", build, false);
         Pipeline aggregated = pipeline.createPipelineAggregated(jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("ci1", aggregated.getStages().get(1).getTasks().get(0).getName());
@@ -340,7 +340,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         assertNotNull(pipeline);
         assertEquals("Pipeline", pipeline.getName());
         assertEquals(1, pipeline.getStages().size());
@@ -353,7 +353,7 @@ public class PipelineTest {
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
         jenkins.getInstance().rebuildDependencyGraph();
 
-        pipeline = Pipeline.extractPipeline("Pipeline", build);
+        pipeline = Pipeline.extractPipeline("Pipeline", build, false);
 
         buildStage = pipeline.getStages().get(0);
         assertEquals("Build", buildStage.getName());
@@ -393,7 +393,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         Pipeline latest = createPipelineLatest(pipeline, jenkins.getInstance());
         assertNotNull(latest);
         assertEquals(2, latest.getStages().size());
@@ -417,7 +417,7 @@ public class PipelineTest {
         assertNotNull(build.getLastBuild());
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance());
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
@@ -437,7 +437,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline prototype = Pipeline.extractPipeline("Folders", job1);
+        Pipeline prototype = Pipeline.extractPipeline("Folders", job1, false);
 
         assertNotNull(prototype);
 
@@ -469,7 +469,7 @@ public class PipelineTest {
         c.getPublishersList().add(new BuildTrigger("D", false));
         d.getPublishersList().add(new JoinTrigger(new DescribableList<Publisher, Descriptor<Publisher>>(Saveable.NOOP), "", false));
         jenkins.getInstance().rebuildDependencyGraph();
-        Pipeline prototype = Pipeline.extractPipeline("ForkJoin", a);
+        Pipeline prototype = Pipeline.extractPipeline("ForkJoin", a, false);
         assertNotNull(prototype);
         assertEquals(4, prototype.getStages().size());
 
@@ -494,7 +494,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline prototype = Pipeline.extractPipeline("Folders", job1);
+        Pipeline prototype = Pipeline.extractPipeline("Folders", job1, false);
 
         assertNotNull(prototype);
 
@@ -528,7 +528,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline prototype = Pipeline.extractPipeline("Folders", job1);
+        Pipeline prototype = Pipeline.extractPipeline("Folders", job1, false);
 
         assertNotNull(prototype);
 
@@ -572,7 +572,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+        Pipeline pipeline = Pipeline.extractPipeline("test", a, false);
 
         assertEquals("a", pipeline.getStages().get(0).getName());
         assertEquals(0, pipeline.getStages().get(0).getRow());
@@ -624,7 +624,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+        Pipeline pipeline = Pipeline.extractPipeline("test", a, false);
 
         assertEquals("a", pipeline.getStages().get(0).getName());
         assertEquals(0, pipeline.getStages().get(0).getRow());
@@ -686,7 +686,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
 
         try {
-            Pipeline.extractPipeline("Test", a);
+            Pipeline.extractPipeline("Test", a, false);
             fail();
         } catch (StackOverflowError e) {
             fail("Should not throw StackOverflowError");
@@ -699,7 +699,7 @@ public class PipelineTest {
     @Test
     public void testShouldShowPipelineInstanceInQueue() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
+        Pipeline prototype = Pipeline.extractPipeline("Pipe", a, false);
         a.scheduleBuild(2, new Cause.UserIdCause());
         List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance());
         assertEquals(1, pipelines.size());
@@ -862,7 +862,7 @@ public class PipelineTest {
         
         jenkins.getInstance().rebuildDependencyGraph();
         
-    	Pipeline pipeline = Pipeline.extractPipeline("TestHidden", task1);
+    	Pipeline pipeline = Pipeline.extractPipeline("TestHidden", task1, false);
     	
     	assertNotNull(pipeline);
         assertEquals("TestHidden", pipeline.getName());
