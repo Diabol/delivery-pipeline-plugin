@@ -819,7 +819,7 @@ public class PipelineTest {
     }
     
     @Test
-    public void testPipelineWithHiddenTasksRecursively() throws Exception {
+    public void testPipelineWithHiddenTasks() throws Exception {
     	 /* actual with out hidden
         stage1   stage2   stage3   stage4
         task1 -- task2 -- task4 -- task6
@@ -861,15 +861,33 @@ public class PipelineTest {
         task6.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task7", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
         
         jenkins.getInstance().rebuildDependencyGraph();
-
-        try {
-            Pipeline.extractPipeline("Test", task1);
-            fail();
-        } catch (StackOverflowError e) {
-            fail("Should not throw StackOverflowError");
-        } catch (PipelineException e) {
-            //Should throw this
-        }
+        
+    	Pipeline pipeline = Pipeline.extractPipeline("TestHidden", task1);
+    	
+    	assertNotNull(pipeline);
+        assertEquals("TestHidden", pipeline.getName());
+        assertEquals(4, pipeline.getStages().size());
+        
+        Stage stage1 = pipeline.getStages().get(0);
+        assertEquals("stage1", stage1.getName());
+        assertEquals(1, stage1.getTasks().size());
+        assertEquals("task1", stage1.getTasks().get(0).getName());
+        
+        Stage stage2 = pipeline.getStages().get(1);
+        assertEquals("stage2", stage2.getName());
+        assertEquals(1, stage2.getTasks().size());
+        assertEquals("task3", stage2.getTasks().get(0).getName());
+        
+        Stage stage3 = pipeline.getStages().get(2);
+        assertEquals("stage3", stage3.getName());
+        assertEquals(2, stage3.getTasks().size());
+        assertEquals("task4", stage3.getTasks().get(0).getName());
+        assertEquals("task5", stage3.getTasks().get(1).getName());
+        
+        Stage stage4 = pipeline.getStages().get(3);
+        assertEquals("stage4", stage4.getName());
+        assertEquals(1, stage4.getTasks().size());
+        assertEquals("task7", stage4.getTasks().get(0).getName());
     }
 
 }
