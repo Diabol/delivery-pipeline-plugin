@@ -82,7 +82,7 @@ public class PipelinePropertyTest {
         when(request.getParameter("stageName")).thenReturn("");
         when(request.getParameter("descriptionTemplate")).thenReturn("");
         when(request.getParameter("enabled")).thenReturn("on");
-        assertNull(d.newInstance(request, null));
+        assertNotNull(d.newInstance(request, null));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PipelinePropertyTest {
         when(request.getParameter("taskName")).thenReturn(null);
         when(request.getParameter("stageName")).thenReturn(null);
         when(request.getParameter("enabled")).thenReturn("on");
-        assertNull(d.newInstance(request, null));
+        assertNotNull(d.newInstance(request, null));
     }
 
     @Test
