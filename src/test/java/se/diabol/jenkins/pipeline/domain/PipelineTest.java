@@ -817,5 +817,59 @@ public class PipelineTest {
         pipeline.calculateTotalBuildTime();
         assertEquals(0L, pipeline.getTotalBuildTime());
     }
+    
+    @Test
+    public void testPipelineWithHiddenTasksRecursively() throws Exception {
+    	 /* actual with out hidden
+        stage1   stage2   stage3   stage4
+        task1 -- task2 -- task4 -- task6
+              |_ task3 |_ task5 |_ task7
+         */
+    	
+    	/* if task2 & task6 hidden
+        stage1   stage2   stage3   stage4
+        task1 -- task3 -- task4 -- task7
+                       |_ task5
+         */
+    	
+    	FreeStyleProject task1 = jenkins.createFreeStyleProject("task1");
+    	task1.addProperty(new PipelineProperty("task1", "stage1", "", false));
+        
+        FreeStyleProject task2 = jenkins.createFreeStyleProject("task2");
+        task2.addProperty(new PipelineProperty("task2", "stage2", "", true));
+        
+        FreeStyleProject task3 = jenkins.createFreeStyleProject("task3");
+        task3.addProperty(new PipelineProperty("task3", "stage2", "", false));
+        
+        FreeStyleProject task4 = jenkins.createFreeStyleProject("task4");
+        task4.addProperty(new PipelineProperty("task4", "stage3", "", false));
+        
+        FreeStyleProject task5 = jenkins.createFreeStyleProject("task5");
+        task5.addProperty(new PipelineProperty("task5", "stage3", "", false));
+        
+        FreeStyleProject task6 = jenkins.createFreeStyleProject("task6");
+        task6.addProperty(new PipelineProperty("task6", "stage4", "", true));
+        
+        FreeStyleProject task7 = jenkins.createFreeStyleProject("task7");
+        task7.addProperty(new PipelineProperty("task7", "stage4", "", false));
+        
+        task1.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task2", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task2.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task3", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task3.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task4", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task4.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task5", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task5.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task6", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task6.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task7", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        try {
+            Pipeline.extractPipeline("Test", task1);
+            fail();
+        } catch (StackOverflowError e) {
+            fail("Should not throw StackOverflowError");
+        } catch (PipelineException e) {
+            //Should throw this
+        }
+    }
 
 }
