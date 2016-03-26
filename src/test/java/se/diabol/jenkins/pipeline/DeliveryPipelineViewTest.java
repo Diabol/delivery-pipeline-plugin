@@ -236,7 +236,7 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowTestResults());
         view.setShowStaticAnalysisResults(true);
         assertTrue(view.isShowStaticAnalysisResults());
-		View.setShowHiddenTasks(true);
+		view.setShowHiddenTasks(true);
 		assertTrue(view.getShowHiddenTasks());
     }
 

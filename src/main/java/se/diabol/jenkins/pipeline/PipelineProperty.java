@@ -164,10 +164,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
             }
             if ("".equals(description)) {
                 description = null;
-            }
-            if (task == null && stage == null) {
-                return null;
-            }
+            }           
             return new PipelineProperty(task, stage, description, hideTask);
         }
     }

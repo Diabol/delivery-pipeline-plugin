@@ -171,16 +171,14 @@ public class Task extends AbstractItem {
         PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
-				
 		boolean hideTask = property != null ? property.getHideTask() : false;
-
         if (property == null && project.getParent() instanceof AbstractProject) {
             property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
             taskName = property != null && !isNullOrEmpty(property.getTaskName())
                     ? property.getTaskName() + " " + project.getName() : project.getDisplayName();
 			hideTask = property != null ? property.getHideTask() : false;
         }
-
+		
         String descriptionTemplate = property != null && !isNullOrEmpty(property.getDescriptionTemplate())
                 ? property.getDescriptionTemplate() : "";
 
@@ -188,7 +186,10 @@ public class Task extends AbstractItem {
         List<AbstractProject> downStreams = ProjectUtil.getDownstreamProjects(project);
         List<String> downStreamTasks = new ArrayList<String>();
         for (AbstractProject downstreamProject : downStreams) {
-            downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
+			PipelineProperty dproperty = (PipelineProperty) downstreamProject.getProperty(PipelineProperty.class);
+			boolean dhideTask = dproperty != null ? dproperty.getHideTask() : false;	
+			if(!dhideTask)		
+			downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));			
         }
         return new Task(project, project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
                 project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial, descriptionTemplate, hideTask);
