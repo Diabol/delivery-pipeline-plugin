@@ -166,7 +166,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             progressClass = "task-progress-running";
                         }
 
-                        html.push("<div id=\"" + id + "\" class=\"stage-task " + task.status.type +
+                        html.push("<div id=\"" + id + "\" class=\"status stage-task " + task.status.type +
                             "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
                             "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + rootURL + "/" + task.link + "\">" + htmlEncode(task.name) + "</a></div>");
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
@@ -197,8 +197,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html.push(generatePromotionsInfo(data, task));
 
                     }
-                    html.push("</div>");
-                    html.push('</div>');
+                    html.push("</div></div>");
                     column++;
                 }
 
@@ -230,11 +229,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                                 target: target,
                                 anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
                                 overlays: [
-                                    [ "Arrow", { location: 1}]
+                                    [ "Arrow", { location: 1, foldback: 0.9, width: 12, length: 12}]
                                 ],
                                 cssClass: "relation",
                                 connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
-                                paintStyle: { lineWidth: 2, strokeStyle: "rgba(0,0,0,0.5)" },
+                                paintStyle: { lineWidth: 2, strokeStyle: "rgba(118,118,118,1)" },
                                 endpoint: ["Blank"]
                             });
                         });
@@ -542,19 +541,16 @@ function equalheight(container) {
 
         $el = Q(this);
         Q($el).height('auto');
-        topPostion = $el.position().top;
+        topPosition = $el.position().top;
 
-        if (currentRowStart != topPostion) {
-            for (currentDiv = 0; currentDiv < rowDivs.length; currentDiv++) {
-                rowDivs[currentDiv].height(currentTallest);
-            }
+        if (currentRowStart != topPosition) {
             rowDivs.length = 0; // empty the array
-            currentRowStart = topPostion;
-            currentTallest = $el.height();
+            currentRowStart = topPosition;
+            currentTallest = $el.height() + 2;
             rowDivs.push($el);
         } else {
             rowDivs.push($el);
-            currentTallest = (currentTallest < $el.height()) ? ($el.height()) : (currentTallest);
+            currentTallest = (currentTallest < $el.height() + 2) ? ($el.height() + 2) : (currentTallest);
         }
         for (currentDiv = 0; currentDiv < rowDivs.length; currentDiv++) {
             rowDivs[currentDiv].height(currentTallest);
