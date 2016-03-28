@@ -33,7 +33,7 @@ import se.diabol.jenkins.pipeline.RelationshipResolver;
 import java.util.ArrayList;
 import java.util.List;
 
-@Extension(optional = true)
+@Extension(optional = true, ordinal = 150)
 public class PromotedBuildRelationshipResolver extends RelationshipResolver {
 
     // Force a classloading error plugin isn't available

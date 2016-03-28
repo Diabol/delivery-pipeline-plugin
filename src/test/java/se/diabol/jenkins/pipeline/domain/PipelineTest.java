@@ -818,4 +818,32 @@ public class PipelineTest {
         assertEquals(0L, pipeline.getTotalBuildTime());
     }
 
+    @Test
+    @Bug(30043)
+    public void testSubProjectsFirst() throws Exception {
+        FreeStyleProject jobA = jenkins.createFreeStyleProject("Job A");
+        jobA.addProperty(new PipelineProperty(null, "Stage", null));
+        FreeStyleProject util1 = jenkins.createFreeStyleProject("Job Util 1");
+        util1.addProperty(new PipelineProperty(null, "Stage", null));
+        FreeStyleProject util2 = jenkins.createFreeStyleProject("Job Util 2");
+        util2.addProperty(new PipelineProperty(null, "Stage", null));
+        FreeStyleProject jobC = jenkins.createFreeStyleProject("Job C");
+        jobC.addProperty(new PipelineProperty(null, "Stage", null));
+
+        jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 1", new BlockingBehaviour("never", "never", "never"), null)));
+        jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
+        jobA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("Job C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", jobA);
+
+        assertEquals("Job A", pipeline.getStages().get(0).getTasks().get(0).getId());
+        assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
+        assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
+        assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
+
+
+    }
+
 }

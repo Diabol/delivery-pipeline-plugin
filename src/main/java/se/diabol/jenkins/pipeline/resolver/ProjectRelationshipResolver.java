@@ -23,7 +23,7 @@ import se.diabol.jenkins.pipeline.RelationshipResolver;
 
 import java.util.List;
 
-@Extension
+@Extension(ordinal = 100)
 @SuppressWarnings("UnusedDeclaration")
 public class ProjectRelationshipResolver extends RelationshipResolver {
 
