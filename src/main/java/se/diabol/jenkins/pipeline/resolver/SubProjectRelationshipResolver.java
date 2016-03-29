@@ -31,7 +31,7 @@ import java.util.List;
  * It looks for Parameterized Trigger Plugin builders for the current project.
  * They are for some reason not registered as a dependency in Jenkins.
  */
-@Extension
+@Extension(ordinal = 200)
 public class SubProjectRelationshipResolver extends RelationshipResolver {
 
     @Override
