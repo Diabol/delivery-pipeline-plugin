@@ -391,13 +391,14 @@ public class DeliveryPipelineView extends View {
 
         @SuppressWarnings("unchecked")
         List<Cause> prevCauses = build.getCauses();
-        CauseAction causeAction = new CauseAction();
+        List<Cause> newCauses = new ArrayList<Cause>();
         for (Cause cause : prevCauses) {
             if (!(cause instanceof Cause.UserIdCause)) {
-                causeAction.getCauses().add(cause);
+                newCauses.add(cause);
             }
         }
-        causeAction.getCauses().add(new Cause.UserIdCause());
+        newCauses.add(new Cause.UserIdCause());
+        CauseAction causeAction = new CauseAction(newCauses);
         project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
     }
 
