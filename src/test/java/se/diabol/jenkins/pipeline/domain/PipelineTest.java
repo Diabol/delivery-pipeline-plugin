@@ -894,13 +894,13 @@ public class PipelineTest {
     @Bug(30043)
     public void testSubProjectsFirst() throws Exception {
         FreeStyleProject jobA = jenkins.createFreeStyleProject("Job A");
-        jobA.addProperty(new PipelineProperty(null, "Stage", null));
+        jobA.addProperty(new PipelineProperty(null, "Stage", null, false));
         FreeStyleProject util1 = jenkins.createFreeStyleProject("Job Util 1");
-        util1.addProperty(new PipelineProperty(null, "Stage", null));
+        util1.addProperty(new PipelineProperty(null, "Stage", null, false));
         FreeStyleProject util2 = jenkins.createFreeStyleProject("Job Util 2");
-        util2.addProperty(new PipelineProperty(null, "Stage", null));
+        util2.addProperty(new PipelineProperty(null, "Stage", null, false));
         FreeStyleProject jobC = jenkins.createFreeStyleProject("Job C");
-        jobC.addProperty(new PipelineProperty(null, "Stage", null));
+        jobC.addProperty(new PipelineProperty(null, "Stage", null, false));
 
         jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 1", new BlockingBehaviour("never", "never", "never"), null)));
         jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
@@ -908,7 +908,7 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", jobA);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", jobA, false);
 
         assertEquals("Job A", pipeline.getStages().get(0).getTasks().get(0).getId());
         assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
