@@ -53,7 +53,7 @@
             <f:checkbox/>
         </f:entry>
 
-        <f:entry title="Show junit results" field="showTestResults">
+        <f:entry title="Show test results" field="showTestResults">
             <f:checkbox/>
         </f:entry>
 
