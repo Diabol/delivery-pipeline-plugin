@@ -18,7 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain.results;
 
 import hudson.model.AbstractBuild;
-import hudson.tasks.junit.TestResultAction;
+import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.AggregatedTestResultAction;
 
 import java.util.ArrayList;
@@ -59,26 +59,14 @@ public class TestResult extends Result {
     public static List<TestResult> getResults(AbstractBuild<?, ?> build) {
         if (build != null) {
             List<TestResult> result = new ArrayList<TestResult>();
-            /* Maven Project */
-            AggregatedTestResultAction mvn = build.getAction(AggregatedTestResultAction.class);
-            if (mvn != null) {
+            AbstractTestResultAction resultAction = build.getAction(AbstractTestResultAction.class);
+            if (resultAction != null) {
                 result.add(new TestResult(
-                            mvn.getDisplayName(),
-                            build.getUrl() + mvn.getUrlName(),
-                            mvn.getFailCount(),
-                            mvn.getSkipCount(),
-                            mvn.getTotalCount()));
-            } else {
-                /* FreestyleProject */
-                TestResultAction freestyle = build.getAction(TestResultAction.class);
-                if (freestyle != null) {
-                    result.add(new TestResult(
-                                freestyle.getDisplayName(),
-                                build.getUrl() + freestyle.getUrlName(),
-                                freestyle.getFailCount(),
-                                freestyle.getSkipCount(),
-                                freestyle.getTotalCount()));
-                }
+                        resultAction.getDisplayName(),
+                        build.getUrl() + resultAction.getUrlName(),
+                        resultAction.getFailCount(),
+                        resultAction.getSkipCount(),
+                        resultAction.getTotalCount()));
             }
             return result;
         }
