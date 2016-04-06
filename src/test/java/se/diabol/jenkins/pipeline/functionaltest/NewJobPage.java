@@ -41,7 +41,7 @@ public class NewJobPage {
     }
 
     public void setFreeStyle() {
-        webDriver.findElement(By.xpath("/html/body/table[2]/tbody/tr/td[2]/form/table/tbody/tr[3]/td/input")).click();
+        webDriver.findElement(By.cssSelector("#main-panel > form > table > tbody > tr:nth-child(3) > td > input[type=\"radio\"]")).click();
     }
 
     public ConfigureJobPage submit() {
