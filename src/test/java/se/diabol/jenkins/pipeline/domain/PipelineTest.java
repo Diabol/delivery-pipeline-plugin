@@ -66,14 +66,14 @@ public class PipelineTest {
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
         FreeStyleProject job = jenkins.createFreeStyleProject("job");
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", job);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", job, false);
         assertEquals(1, pipeline.getStages().size());
         assertEquals("job", pipeline.getStages().get(0).getName());
         assertEquals("job", pipeline.getStages().get(0).getTasks().get(0).getName());
 
-        job.addProperty(new PipelineProperty("", "", ""));
+        job.addProperty(new PipelineProperty("", "", "", false));
 
-        pipeline = Pipeline.extractPipeline("Pipeline", job);
+        pipeline = Pipeline.extractPipeline("Pipeline", job, false);
         assertEquals(1, pipeline.getStages().size());
         assertEquals("job", pipeline.getStages().get(0).getName());
         assertEquals("job", pipeline.getStages().get(0).getTasks().get(0).getName());
@@ -86,12 +86,12 @@ public class PipelineTest {
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
         FreeStyleProject test = jenkins.createFreeStyleProject("test");
 
-        compile.addProperty(new PipelineProperty("Compile", "Build", ""));
+        compile.addProperty(new PipelineProperty("Compile", "Build", "", false));
         compile.save();
 
-        deploy.addProperty(new PipelineProperty("Deploy", "Deploy", ""));
+        deploy.addProperty(new PipelineProperty("Deploy", "Deploy", "", false));
         deploy.save();
-        test.addProperty(new PipelineProperty("Test", "Test", ""));
+        test.addProperty(new PipelineProperty("Test", "Test", "", false));
         test.save();
 
         compile.getPublishersList().add(new BuildTrigger("test", false));
@@ -100,7 +100,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
 
 
-        Pipeline pipeline = Pipeline.extractPipeline("Piper", compile);
+        Pipeline pipeline = Pipeline.extractPipeline("Piper", compile, false);
 
         assertNotNull(pipeline);
         assertEquals("Piper", pipeline.getName());
@@ -129,13 +129,13 @@ public class PipelineTest {
     @Test
     public void testExtractSimpleForkJoinPipeline() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty(null, "build", ""));
+        build.addProperty(new PipelineProperty(null, "build", "", false));
         FreeStyleProject deploy1 = jenkins.createFreeStyleProject("deploy1");
-        deploy1.addProperty(new PipelineProperty(null, "CI", ""));
+        deploy1.addProperty(new PipelineProperty(null, "CI", "", false));
         FreeStyleProject deploy2 = jenkins.createFreeStyleProject("deploy2");
-        deploy2.addProperty(new PipelineProperty(null, "CI", ""));
+        deploy2.addProperty(new PipelineProperty(null, "CI", "", false));
         FreeStyleProject deploy3 = jenkins.createFreeStyleProject("deploy3");
-        deploy3.addProperty(new PipelineProperty(null, "QA", ""));
+        deploy3.addProperty(new PipelineProperty(null, "QA", "", false));
 
         build.getPublishersList().add(new BuildTrigger("deploy1,deploy2", false));
         deploy1.getPublishersList().add(new BuildTrigger("deploy3", false));
@@ -143,7 +143,7 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
 
         assertEquals(3, pipeline.getStages().size());
         assertEquals(1, pipeline.getStages().get(2).getTasks().size());
@@ -154,12 +154,12 @@ public class PipelineTest {
     @Test
     public void testExtractPipelineWithSubProjects() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty("Build", "Build", ""));
+        build.addProperty(new PipelineProperty("Build", "Build", "", false));
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
-        sonar.addProperty(new PipelineProperty("Sonar", "Build", ""));
+        sonar.addProperty(new PipelineProperty("Sonar", "Build", "", false));
 
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
-        deploy.addProperty(new PipelineProperty("Deploy", "QA", ""));
+        deploy.addProperty(new PipelineProperty("Deploy", "QA", "", false));
 
 
         build.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("sonar", new BlockingBehaviour("never", "never", "never"), null)));
@@ -167,7 +167,7 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         assertEquals(2, pipeline.getStages().size());
         assertEquals(2, pipeline.getStages().get(0).getTasks().size());
         assertEquals(1, pipeline.getStages().get(1).getTasks().size());
@@ -188,8 +188,8 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
-        final Pipeline pipe1 = Pipeline.extractPipeline("pipe1", build1);
-        final Pipeline pipe2 = Pipeline.extractPipeline("pipe2", build2);
+        final Pipeline pipe1 = Pipeline.extractPipeline("pipe1", build1, false);
+        final Pipeline pipe2 = Pipeline.extractPipeline("pipe2", build2, false);
 
         Pipeline aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
         Pipeline aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
@@ -282,8 +282,8 @@ public class PipelineTest {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         FreeStyleProject ci1 = jenkins.createFreeStyleProject("ci1");
         FreeStyleProject ci2 = jenkins.createFreeStyleProject("ci2");
-        ci1.addProperty(new PipelineProperty("ci1", "CI1", ""));
-        ci2.addProperty(new PipelineProperty("ci2", "CI1", ""));
+        ci1.addProperty(new PipelineProperty("ci1", "CI1", "", false));
+        ci2.addProperty(new PipelineProperty("ci2", "CI1", "", false));
         build.getPublishersList().add(new BuildPipelineTrigger("ci1", null));
         build.getPublishersList().add(new BuildPipelineTrigger("ci2", null));
         jenkins.getInstance().rebuildDependencyGraph();
@@ -300,7 +300,7 @@ public class PipelineTest {
         assertNotNull(ci1.getLastBuild());
         assertNull(ci2.getLastBuild());
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", build);
+        Pipeline pipeline = Pipeline.extractPipeline("test", build, false);
         Pipeline aggregated = pipeline.createPipelineAggregated(jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("ci1", aggregated.getStages().get(1).getTasks().get(0).getName());
@@ -332,15 +332,15 @@ public class PipelineTest {
     @Test
     public void testCreatePipelineLatest() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        build.addProperty(new PipelineProperty("", "Build", ""));
+        build.addProperty(new PipelineProperty("", "Build", "", false));
         FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
-        sonar.addProperty(new PipelineProperty("Sonar", "Build", ""));
+        sonar.addProperty(new PipelineProperty("Sonar", "Build", "", false));
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
-        deploy.addProperty(new PipelineProperty("Deploy", "CI", ""));
+        deploy.addProperty(new PipelineProperty("Deploy", "CI", "", false));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         assertNotNull(pipeline);
         assertEquals("Pipeline", pipeline.getName());
         assertEquals(1, pipeline.getStages().size());
@@ -353,7 +353,7 @@ public class PipelineTest {
         build.getPublishersList().add(new BuildTrigger("sonar,deploy", false));
         jenkins.getInstance().rebuildDependencyGraph();
 
-        pipeline = Pipeline.extractPipeline("Pipeline", build);
+        pipeline = Pipeline.extractPipeline("Pipeline", build, false);
 
         buildStage = pipeline.getStages().get(0);
         assertEquals("Build", buildStage.getName());
@@ -393,7 +393,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         Pipeline latest = createPipelineLatest(pipeline, jenkins.getInstance());
         assertNotNull(latest);
         assertEquals(2, latest.getStages().size());
@@ -417,7 +417,7 @@ public class PipelineTest {
         assertNotNull(build.getLastBuild());
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build, false);
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance());
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
@@ -437,7 +437,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline prototype = Pipeline.extractPipeline("Folders", job1);
+        Pipeline prototype = Pipeline.extractPipeline("Folders", job1, false);
 
         assertNotNull(prototype);
 
@@ -469,7 +469,7 @@ public class PipelineTest {
         c.getPublishersList().add(new BuildTrigger("D", false));
         d.getPublishersList().add(new JoinTrigger(new DescribableList<Publisher, Descriptor<Publisher>>(Saveable.NOOP), "", false));
         jenkins.getInstance().rebuildDependencyGraph();
-        Pipeline prototype = Pipeline.extractPipeline("ForkJoin", a);
+        Pipeline prototype = Pipeline.extractPipeline("ForkJoin", a, false);
         assertNotNull(prototype);
         assertEquals(4, prototype.getStages().size());
 
@@ -494,7 +494,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline prototype = Pipeline.extractPipeline("Folders", job1);
+        Pipeline prototype = Pipeline.extractPipeline("Folders", job1, false);
 
         assertNotNull(prototype);
 
@@ -528,7 +528,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline prototype = Pipeline.extractPipeline("Folders", job1);
+        Pipeline prototype = Pipeline.extractPipeline("Folders", job1, false);
 
         assertNotNull(prototype);
 
@@ -572,7 +572,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+        Pipeline pipeline = Pipeline.extractPipeline("test", a, false);
 
         assertEquals("a", pipeline.getStages().get(0).getName());
         assertEquals(0, pipeline.getStages().get(0).getRow());
@@ -624,7 +624,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+        Pipeline pipeline = Pipeline.extractPipeline("test", a, false);
 
         assertEquals("a", pipeline.getStages().get(0).getName());
         assertEquals(0, pipeline.getStages().get(0).getRow());
@@ -671,13 +671,13 @@ public class PipelineTest {
     public void testRecursiveStages() throws Exception {
 
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        a.addProperty(new PipelineProperty("A", "A", ""));
+        a.addProperty(new PipelineProperty("A", "A", "", false));
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        b.addProperty(new PipelineProperty("B", "B", ""));
+        b.addProperty(new PipelineProperty("B", "B", "", false));
         FreeStyleProject c = jenkins.createFreeStyleProject("C");
-        c.addProperty(new PipelineProperty("C", "C", ""));
+        c.addProperty(new PipelineProperty("C", "C", "", false));
         FreeStyleProject d = jenkins.createFreeStyleProject("D");
-        d.addProperty(new PipelineProperty("D", "B", ""));
+        d.addProperty(new PipelineProperty("D", "B", "", false));
 
         a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
         b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
@@ -686,7 +686,7 @@ public class PipelineTest {
         jenkins.getInstance().rebuildDependencyGraph();
 
         try {
-            Pipeline.extractPipeline("Test", a);
+            Pipeline.extractPipeline("Test", a, false);
             fail();
         } catch (StackOverflowError e) {
             fail("Should not throw StackOverflowError");
@@ -699,7 +699,7 @@ public class PipelineTest {
     @Test
     public void testShouldShowPipelineInstanceInQueue() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
+        Pipeline prototype = Pipeline.extractPipeline("Pipe", a, false);
         a.scheduleBuild(2, new Cause.UserIdCause());
         List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance());
         assertEquals(1, pipelines.size());
@@ -817,18 +817,90 @@ public class PipelineTest {
         pipeline.calculateTotalBuildTime();
         assertEquals(0L, pipeline.getTotalBuildTime());
     }
+    
+    @Test
+    public void testPipelineWithHiddenTasks() throws Exception {
+    	 /* actual with out hidden
+        stage1   stage2   stage3   stage4
+        task1 -- task2 -- task4 -- task6
+              |_ task3 |_ task5 |_ task7
+         */
+    	
+    	/* if task2 & task6 hidden
+        stage1   stage2   stage3   stage4
+        task1 -- task3 -- task4 -- task7
+                       |_ task5
+         */
+    	
+    	FreeStyleProject task1 = jenkins.createFreeStyleProject("task1");
+    	task1.addProperty(new PipelineProperty("task1", "stage1", "", false));
+        
+        FreeStyleProject task2 = jenkins.createFreeStyleProject("task2");
+        task2.addProperty(new PipelineProperty("task2", "stage2", "", true));
+        
+        FreeStyleProject task3 = jenkins.createFreeStyleProject("task3");
+        task3.addProperty(new PipelineProperty("task3", "stage2", "", false));
+        
+        FreeStyleProject task4 = jenkins.createFreeStyleProject("task4");
+        task4.addProperty(new PipelineProperty("task4", "stage3", "", false));
+        
+        FreeStyleProject task5 = jenkins.createFreeStyleProject("task5");
+        task5.addProperty(new PipelineProperty("task5", "stage3", "", false));
+        
+        FreeStyleProject task6 = jenkins.createFreeStyleProject("task6");
+        task6.addProperty(new PipelineProperty("task6", "stage4", "", true));
+        
+        FreeStyleProject task7 = jenkins.createFreeStyleProject("task7");
+        task7.addProperty(new PipelineProperty("task7", "stage4", "", false));
+        
+        task1.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task2", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task2.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task3", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task3.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task4", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task4.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task5", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task5.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task6", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        task6.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("task7", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        
+        jenkins.getInstance().rebuildDependencyGraph();
+        
+    	Pipeline pipeline = Pipeline.extractPipeline("TestHidden", task1, false);
+    	
+    	assertNotNull(pipeline);
+        assertEquals("TestHidden", pipeline.getName());
+        assertEquals(4, pipeline.getStages().size());
+        
+        Stage stage1 = pipeline.getStages().get(0);
+        assertEquals("stage1", stage1.getName());
+        assertEquals(1, stage1.getTasks().size());
+        assertEquals("task1", stage1.getTasks().get(0).getName());
+        
+        Stage stage2 = pipeline.getStages().get(1);
+        assertEquals("stage2", stage2.getName());
+        assertEquals(1, stage2.getTasks().size());
+        assertEquals("task3", stage2.getTasks().get(0).getName());
+        
+        Stage stage3 = pipeline.getStages().get(2);
+        assertEquals("stage3", stage3.getName());
+        assertEquals(2, stage3.getTasks().size());
+        assertEquals("task4", stage3.getTasks().get(0).getName());
+        assertEquals("task5", stage3.getTasks().get(1).getName());
+        
+        Stage stage4 = pipeline.getStages().get(3);
+        assertEquals("stage4", stage4.getName());
+        assertEquals(1, stage4.getTasks().size());
+        assertEquals("task7", stage4.getTasks().get(0).getName());
+    }
 
     @Test
     @Bug(30043)
     public void testSubProjectsFirst() throws Exception {
         FreeStyleProject jobA = jenkins.createFreeStyleProject("Job A");
-        jobA.addProperty(new PipelineProperty(null, "Stage", null));
+        jobA.addProperty(new PipelineProperty(null, "Stage", null, false));
         FreeStyleProject util1 = jenkins.createFreeStyleProject("Job Util 1");
-        util1.addProperty(new PipelineProperty(null, "Stage", null));
+        util1.addProperty(new PipelineProperty(null, "Stage", null, false));
         FreeStyleProject util2 = jenkins.createFreeStyleProject("Job Util 2");
-        util2.addProperty(new PipelineProperty(null, "Stage", null));
+        util2.addProperty(new PipelineProperty(null, "Stage", null, false));
         FreeStyleProject jobC = jenkins.createFreeStyleProject("Job C");
-        jobC.addProperty(new PipelineProperty(null, "Stage", null));
+        jobC.addProperty(new PipelineProperty(null, "Stage", null, false));
 
         jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 1", new BlockingBehaviour("never", "never", "never"), null)));
         jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
@@ -836,7 +908,7 @@ public class PipelineTest {
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", jobA);
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", jobA, false);
 
         assertEquals("Job A", pipeline.getStages().get(0).getTasks().get(0).getId());
         assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());

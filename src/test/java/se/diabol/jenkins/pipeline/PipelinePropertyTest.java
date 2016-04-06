@@ -82,7 +82,7 @@ public class PipelinePropertyTest {
         when(request.getParameter("stageName")).thenReturn("");
         when(request.getParameter("descriptionTemplate")).thenReturn("");
         when(request.getParameter("enabled")).thenReturn("on");
-        assertNull(d.newInstance(request, null));
+        assertNotNull(d.newInstance(request, null));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PipelinePropertyTest {
         when(request.getParameter("taskName")).thenReturn(null);
         when(request.getParameter("stageName")).thenReturn(null);
         when(request.getParameter("enabled")).thenReturn("on");
-        assertNull(d.newInstance(request, null));
+        assertNotNull(d.newInstance(request, null));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class PipelinePropertyTest {
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
         jenkins.createFreeStyleProject("build3");
         build2.addProperty(new PipelineProperty());
-        build.addProperty(new PipelineProperty("Build", "Build", ""));
+        build.addProperty(new PipelineProperty("Build", "Build", "", false));
 
 
         AutoCompletionCandidates c1 = d.doAutoCompleteStageName("B");
@@ -162,8 +162,8 @@ public class PipelinePropertyTest {
         Set<String> stageNames = PipelineProperty.getStageNames();
         assertNotNull(stageNames);
         assertEquals(0, stageNames.size());
-        build1.addProperty(new PipelineProperty(null, "Build", ""));
-        build2.addProperty(new PipelineProperty(null, "QA", ""));
+        build1.addProperty(new PipelineProperty(null, "Build", "", false));
+        build2.addProperty(new PipelineProperty(null, "QA", "", false));
 
         stageNames = PipelineProperty.getStageNames();
         assertNotNull(stageNames);

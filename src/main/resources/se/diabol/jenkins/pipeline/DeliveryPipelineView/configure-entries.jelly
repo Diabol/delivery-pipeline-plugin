@@ -64,6 +64,10 @@
         <f:entry title="Show total build time" field="showTotalBuildTime">
             <f:checkbox/>
         </f:entry>
+		
+		<f:entry title="Show Hidden Tasks" field="showHiddenTasks">
+            <f:checkbox/>
+        </f:entry>
 
         <f:entry title="URL for custom CSS file" field="embeddedCss">
             <f:textbox/>

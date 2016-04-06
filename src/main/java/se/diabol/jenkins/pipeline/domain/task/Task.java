@@ -58,10 +58,11 @@ public class Task extends AbstractItem {
     private final boolean initial;
     private final String description;
     private final AbstractProject project;
+	private final boolean hideTask;
 
     public Task(AbstractProject project, String id, String name, Status status, String link,
             ManualStep manual, List<String> downstreamTasks, boolean initial,
-            String description) {
+            String description, boolean hideTask) {
         super(name);
         this.id = id;
         this.link = link;
@@ -74,11 +75,12 @@ public class Task extends AbstractItem {
         this.initial = initial;
         this.description = description;
         this.project = project;
+		this.hideTask = hideTask;
     }
 
     public Task(Task task, String taskName, String buildId, Status status, String link, ManualStep manual,
             List<TestResult> testResults, List<StaticAnalysisResult> staticAnalysisResults,
-            String description) {
+            String description, boolean hideTask) {
         super(taskName);
         this.id = task.id;
         this.link = link;
@@ -91,6 +93,7 @@ public class Task extends AbstractItem {
         this.initial = task.isInitial();
         this.description = description;
         this.project = task.project;
+		this.hideTask = hideTask;
     }
 
     @Exported
@@ -154,22 +157,28 @@ public class Task extends AbstractItem {
             return project.hasPermission(Item.BUILD);
         }
     }
+	
+	@Exported
+    public boolean getHideTask() {
+        return hideTask;
+    }
 
     public boolean isInitial() {
         return initial;
     }
 
-    public static Task getPrototypeTask(AbstractProject project, boolean initial) {
+    public static Task getPrototypeTask(AbstractProject project, boolean initial, boolean showHiddenTasks) {
         PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
-
+		boolean hideTask = property != null ? property.getHideTask() : false;
         if (property == null && project.getParent() instanceof AbstractProject) {
             property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
             taskName = property != null && !isNullOrEmpty(property.getTaskName())
                     ? property.getTaskName() + " " + project.getName() : project.getDisplayName();
+			hideTask = property != null ? property.getHideTask() : false;
         }
-
+		
         String descriptionTemplate = property != null && !isNullOrEmpty(property.getDescriptionTemplate())
                 ? property.getDescriptionTemplate() : "";
 
@@ -177,10 +186,14 @@ public class Task extends AbstractItem {
         List<AbstractProject> downStreams = ProjectUtil.getDownstreamProjects(project);
         List<String> downStreamTasks = new ArrayList<String>();
         for (AbstractProject downstreamProject : downStreams) {
-            downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
+			PipelineProperty dproperty = (PipelineProperty) downstreamProject.getProperty(PipelineProperty.class);
+			boolean dhideTask = dproperty != null ? dproperty.getHideTask() : false;	
+			if(showHiddenTasks) dhideTask = false;
+			if(!dhideTask)		
+			downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));			
         }
         return new Task(project, project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
-                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial, descriptionTemplate);
+                project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial, descriptionTemplate, hideTask);
     }
 
     public Task getLatestTask(ItemGroup context, AbstractBuild firstBuild) {
@@ -201,7 +214,8 @@ public class Task extends AbstractItem {
                         manualStep,
                         TestResult.getResults(build),
                         StaticAnalysisResult.getResults(build),
-                        getBuildDescription(build));
+                        getBuildDescription(build),
+						hideTask);
     }
 
     public Task getAggregatedTask(AbstractBuild versionBuild, ItemGroup context) {
@@ -219,7 +233,8 @@ public class Task extends AbstractItem {
                         manualStep,
                         TestResult.getResults(build),
                         StaticAnalysisResult.getResults(build),
-                        getBuildDescription(build));
+                        getBuildDescription(build),
+						hideTask);
     }
 
     private String getBuildDescription(AbstractBuild<?, ?> build) {
@@ -276,6 +291,7 @@ public class Task extends AbstractItem {
                 .add("status", status)
                 .add("manual", manual)
                 .add("buildId", buildId)
-                .add("downstreamTasks", downstreamTasks).toString();
+                .add("downstreamTasks", downstreamTasks)
+				.add("hideTask", hideTask).toString();
     }
 }

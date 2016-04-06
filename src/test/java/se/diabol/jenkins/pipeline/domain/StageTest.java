@@ -183,7 +183,7 @@ public class StageTest {
     @Test
     @WithoutJenkins
     public void testFindStageForJob() {
-        Task task1 = new Task(null, "build", "Build", StatusFactory.idle(), null, null, Collections.<String>emptyList(), true, "description");
+        Task task1 = new Task(null, "build", "Build", StatusFactory.idle(), null, null, Collections.<String>emptyList(), true, "description", false);
         List<Stage> stages = Lists.newArrayList(new Stage("QA", Lists.newArrayList(task1)));
         assertNull(Stage.findStageForJob("nofind", stages));
         assertNotNull(Stage.findStageForJob("build", stages));
@@ -194,12 +194,12 @@ public class StageTest {
     public void testStageNameForMultiConfiguration() throws Exception {
         MatrixProject project = jenkins.createMatrixProject("Multi");
         project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));
-        project.addProperty(new PipelineProperty("task", "stage", ""));
+        project.addProperty(new PipelineProperty("task", "stage", "", false));
 
         Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
 
         for (MatrixConfiguration configuration : configurations) {
-            List<Stage> stages = Stage.extractStages(configuration, null);
+            List<Stage> stages = Stage.extractStages(configuration, null, false);
             assertEquals(1, stages.size());
             Stage stage = stages.get(0);
             assertEquals("stage", stage.getName());

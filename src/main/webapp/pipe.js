@@ -48,7 +48,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
             Q("#pipeline-message").html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
         }
 
-        plumb.reset();
+        plumb.reset();		
         for (var c = 0; c < data.pipelines.length; c++) {
             html = [];
             component = data.pipelines[c];

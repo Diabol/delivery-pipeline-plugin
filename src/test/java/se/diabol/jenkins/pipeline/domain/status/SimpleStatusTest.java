@@ -348,7 +348,7 @@ public class SimpleStatusTest {
         project1.getPublishersList().add(new BuildPipelineTrigger("project2", null));
 
         jenkins.getInstance().rebuildDependencyGraph();
-        Pipeline pipeline = Pipeline.extractPipeline("name", project1);
+        Pipeline pipeline = Pipeline.extractPipeline("name", project1, false);
         jenkins.buildAndAssertSuccess(project1);
         jenkins.buildAndAssertSuccess(project1);
         jenkins.waitUntilNoActivity();
