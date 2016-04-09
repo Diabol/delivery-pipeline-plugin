@@ -58,6 +58,7 @@ import org.acegisecurity.BadCredentialsException;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
@@ -105,6 +106,7 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean pagingEnabled = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -256,6 +258,19 @@ public class DeliveryPipelineView extends View {
             this.embeddedCss = embeddedCss;
         }
     }
+    
+    @Exported
+    public boolean getPagingEnabled() {
+        return pagingEnabled;
+    }
+
+    public boolean isFullScreenView() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        if (req == null) {
+            return false;
+        }
+        return req.getParameter("fullscreen") == null ? false : Boolean.parseBoolean(req.getParameter("fullscreen"));
+    }
 
     public void onProjectRenamed(Item item, String oldName, String newName) {
         if (componentSpecs != null) {
@@ -347,6 +362,10 @@ public class DeliveryPipelineView extends View {
     public void setShowStaticAnalysisResults(boolean showStaticAnalysisResults) {
         this.showStaticAnalysisResults = showStaticAnalysisResults;
     }
+    
+    public void setPagingEnabled(boolean pagingEnabled) {
+        this.pagingEnabled = pagingEnabled;
+    }
 
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
@@ -436,6 +455,9 @@ public class DeliveryPipelineView extends View {
             }
             LOG.fine("Returning: " + components);
             error = null;
+            for(int i = 0; i< components.size(); i++) {
+                components.get(i).setComponentNumber(i+1);
+            }
             return components;
         } catch (PipelineException e) {
             error = e.getMessage();
@@ -447,10 +469,22 @@ public class DeliveryPipelineView extends View {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
-            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
+            if (!pagingEnabled) {
+                pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
+            }
+            else {
+                if (isFullScreenView()) {
+                    pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
+                }
+            }
         }
-        pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
-        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines);
+        if (isFullScreenView()) {
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
+        }
+        else {
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled));
+        }
+        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines, noOfPipelines, pagingEnabled);
     }
 
     @Override

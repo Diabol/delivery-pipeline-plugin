@@ -1,6 +1,6 @@
-function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout) {
+function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, timeout) {
     Q.ajax({
-        url: rootURL + "/" + view.viewUrl + 'api/json',
+        url: rootURL + "/" + view.viewUrl + 'api/json' + "?page=" + page + "&component=" + component + "&fullscreen=" + fullscreen,
         dataType: 'json',
         async: true,
         cache: false,
@@ -8,14 +8,14 @@ function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, time
         success: function (data) {
             refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges);
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout);
+                updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, timeout);
             }, timeout);
         },
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
             plumb.repaintEverything();
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout);
+                updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, timeout);
             }, timeout);
         }
     });
@@ -64,6 +64,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 html.push("</a>");
             }
             html.push("</h1>");
+            if (!showAvatars) {
+                html.push("<div class='pagination'>");
+                html.push(component.pagingData);
+                html.push("</div>");
+            }
             if (component.pipelines.length === 0) {
                 html.push("No builds done yet.");
             }
