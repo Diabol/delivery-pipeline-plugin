@@ -174,9 +174,15 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html.push("<div id=\"" + id + "\" class=\"status stage-task " + task.status.type +
                             "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
                             "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + rootURL + "/" + task.link + "\">" + htmlEncode(task.name) + "</a></div>");
+
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
+                          if (task.parameterized) {
+                            html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build with parameters" onclick="triggerParameterizedBuild(\'' + task.link + '\', \'' + data.name + '\');">');
+                          }
+                          else {
                             html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">');
                             html.push("</div>");
+                          }
                         } else {
                             if (!pipeline.aggregated && data.allowRebuild && task.rebuildable) {
                                 html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');

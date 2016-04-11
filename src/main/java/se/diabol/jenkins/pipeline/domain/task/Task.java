@@ -155,6 +155,11 @@ public class Task extends AbstractItem {
         }
     }
 
+    @Exported
+    public boolean isParameterized() {
+      return project.isParameterized();
+    }
+
     public boolean isInitial() {
         return initial;
     }
