@@ -27,6 +27,6 @@ div.pipeline-main {
     border-width: 0 1px 1px;
     border-style: none solid solid;
     border-color: #BBBBBB;
-
+    position: relative;
 }
 
