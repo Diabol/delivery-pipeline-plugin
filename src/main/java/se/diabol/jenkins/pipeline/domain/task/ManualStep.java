@@ -29,11 +29,12 @@ import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class ManualStep {
@@ -82,7 +83,8 @@ public class ManualStep {
     }
 
     @CheckForNull
-    public static ManualStep getManualStepLatest(AbstractProject project, AbstractBuild build, AbstractBuild firstBuild) {
+    public static ManualStep getManualStepLatest(AbstractProject project, AbstractBuild build,
+                                                 AbstractBuild firstBuild) {
         if (isManualTrigger(project)) {
 
             List<AbstractProject> upstreams = getUpstreamManualTriggered(project);
@@ -91,18 +93,25 @@ public class ManualStep {
                 @SuppressWarnings("unchecked")
                 AbstractBuild upstreamBuild = BuildUtil.match(upstream.getBuilds(), firstBuild);
                 if (build == null) {
-                    if (upstreamBuild != null && !upstreamBuild.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)) {
+                    if (upstreamBuild != null && !upstreamBuild.isBuilding()
+                            && !ProjectUtil.isQueued(project, firstBuild)) {
                         Result result = upstreamBuild.getResult();
-                        return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), String.valueOf(upstreamBuild.getNumber()), result != null && !result.isWorseThan(Result.UNSTABLE), project.hasPermission(Item.BUILD), null);
+                        return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()),
+                                String.valueOf(upstreamBuild.getNumber()), result != null
+                                && !result.isWorseThan(Result.UNSTABLE), project.hasPermission(Item.BUILD), null);
                     }
                 } else {
                     Result result = build.getResult();
-                    if (upstreamBuild != null && !build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild) && result != null && result.isWorseThan(Result.UNSTABLE)) {
-                        return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), String.valueOf(upstreamBuild.getNumber()), true, project.hasPermission(Item.BUILD), null);
+                    if (upstreamBuild != null && !build.isBuilding() && !ProjectUtil.isQueued(project, firstBuild)
+                            && result != null && result.isWorseThan(Result.UNSTABLE)) {
+                        return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()),
+                                String.valueOf(upstreamBuild.getNumber()), true,
+                                project.hasPermission(Item.BUILD), null);
                     }
                 }
                 if (i == upstreams.size() - 1) {
-                    return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), null, false, project.hasPermission(Item.BUILD), null);
+                    return new ManualStep(upstream.getRelativeNameFrom(JenkinsUtil.getInstance()), null, false,
+                            project.hasPermission(Item.BUILD), null);
                 }
             }
         }

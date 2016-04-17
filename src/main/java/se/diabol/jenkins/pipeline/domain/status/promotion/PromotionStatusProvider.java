@@ -18,21 +18,29 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain.status.promotion;
 
 import hudson.Extension;
-import hudson.model.*;
-import hudson.plugins.promoted_builds.Status;
+import hudson.model.AbstractBuild;
+import hudson.model.BooleanParameterValue;
+import hudson.model.FileParameterValue;
+import hudson.model.ParameterValue;
+import hudson.model.StringParameterValue;
 import hudson.plugins.promoted_builds.PromotedBuildAction;
 import hudson.plugins.promoted_builds.Promotion;
+import hudson.plugins.promoted_builds.Status;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Extension(optional = true)
 public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
 
     // Force a classloading error plugin isn't available
-    static final public Class<PromotedBuildAction> CLASS = PromotedBuildAction.class;
+    public static final Class<PromotedBuildAction> CLASS = PromotedBuildAction.class;
     static final String DEFAULT_ICON_SIZE = "16x16";
 
     private PromotionStatusWrapper promotionStatusWrapper = new PromotionStatusWrapper();
@@ -66,7 +74,8 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
 
     // private
 
-    private PromotionStatus buildNewPromotionStatus(AbstractBuild<?, ?> build, Object status, List<String> params, Object promotionObj) {
+    private PromotionStatus buildNewPromotionStatus(AbstractBuild<?, ?> build, Object status,
+                                                    List<String> params, Object promotionObj) {
         final Promotion promotion = (Promotion) promotionObj;
         final String name = promotionStatusWrapper.getName(status);
         final long startTime = promotion.getStartTimeInMillis();
@@ -88,7 +97,8 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
                 params.add("<strong>" + value.getName() + "</strong>: " + ((FileParameterValue) value).getLocation());
             } else if (value instanceof BooleanParameterValue) {
                 if (((BooleanParameterValue) value).value) {
-                    params.add("<strong>" + value.getName() + "</strong>: " + Boolean.toString(((BooleanParameterValue) value).value));
+                    params.add("<strong>" + value.getName() + "</strong>: "
+                            + Boolean.toString(((BooleanParameterValue) value).value));
                 }
             }
             // TODO: there are more types
