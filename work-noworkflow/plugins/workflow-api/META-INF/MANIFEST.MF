@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: jglick
+Build-Jdk: 1.8.0_74
+Extension-Name: workflow-api
+Specification-Title: The Jenkins Plugins Parent POM Project
+Implementation-Title: workflow-api
+Implementation-Version: 2.0
+Group-Id: org.jenkins-ci.plugins.workflow
+Short-Name: workflow-api
+Long-Name: Pipeline: API
+Url: https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+API+Plugin
+Plugin-Version: 2.0
+Hudson-Version: 1.642.3
+Jenkins-Version: 1.642.3
+Plugin-Dependencies: workflow-step-api:1.15
+Plugin-Developers: 
+

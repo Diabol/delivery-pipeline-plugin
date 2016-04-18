@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: kutzi
+Build-Jdk: 1.6.0_26
+Extension-Name: subversion
+Implementation-Title: subversion
+Implementation-Version: 1.45
+Group-Id: org.jenkins-ci.plugins
+Short-Name: subversion
+Long-Name: Jenkins Subversion Plug-in
+Url: http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin
+Plugin-Version: 1.45
+Hudson-Version: 1.466
+Jenkins-Version: 1.466
+Plugin-Developers: Many:kohsuke abayer dodok1 dty huybrechts mindless 
+ pgweiss stephenconnolly rseguy kutzi etc:
+

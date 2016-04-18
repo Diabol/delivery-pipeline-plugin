@@ -1,0 +1,27 @@
+<l:dependencies xmlns:l='licenses' groupId='org.jenkins-ci.plugins' artifactId='parameterized-trigger' version='2.21'>
+  <l:dependency name='Jenkins Parameterized Trigger plugin' groupId='org.jenkins-ci.plugins' artifactId='parameterized-trigger' version='2.21' url='http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin'>
+    <l:description />
+  </l:dependency>
+  <l:dependency name='XML Commons External Components XML APIs' groupId='xml-apis' artifactId='xml-apis' version='1.3.04' url='http://xml.apache.org/commons/components/external/'>
+    <l:description>xml-commons provides an Apache-hosted set of DOM, SAX, and 
+    JAXP interfaces for use in other xml-based projects. Our hope is that we 
+    can standardize on both a common version and packaging scheme for these 
+    critical XML standards interfaces to make the lives of both our developers 
+    and users easier. The External Components portion of xml-commons contains 
+    interfaces that are defined by external standards organizations. For DOM, 
+    that's the W3C; for SAX it's David Megginson and sax.sourceforge.net; for 
+    JAXP it's Sun.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Xerces2 Java Parser' groupId='xerces' artifactId='xercesImpl' version='2.9.1' url='http://xerces.apache.org/xerces2-j'>
+    <l:description>Xerces2 is the next generation of high performance, fully compliant XML parsers in the
+    Apache Xerces family. This new version of Xerces introduces the Xerces Native Interface (XNI),
+    a complete framework for building parser components and configurations that is extremely
+    modular and easy to program.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Sisu Guava - Core Library' groupId='org.sonatype.sisu' artifactId='sisu-guava' version='0.9.9' url='http://code.google.com/p/guava-libraries/sisu-guava/'>
+    <l:description>Patched build of Guava: Google Core Libraries for Java 1.5+</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+</l:dependencies>

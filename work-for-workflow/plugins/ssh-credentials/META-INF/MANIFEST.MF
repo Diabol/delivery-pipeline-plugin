@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: jglick
+Build-Jdk: 1.7.0_67
+Extension-Name: ssh-credentials
+Implementation-Title: ssh-credentials
+Implementation-Version: 1.10
+Group-Id: org.jenkins-ci.plugins
+Short-Name: ssh-credentials
+Long-Name: SSH Credentials Plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/SSH+Credentials+Plugin
+Compatible-Since-Version: 1.0
+Plugin-Version: 1.10
+Hudson-Version: 1.532.2
+Jenkins-Version: 1.532.2
+Plugin-Dependencies: credentials:1.16.1
+Plugin-Developers: Stephen Connolly:stephenconnolly:
+

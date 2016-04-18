@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<l:dependencies xmlns:l='licenses' groupId='org.jenkins-ci.plugins' artifactId='translation' version='1.10'><l:dependency name='Jenkins Translation Assistance plugin' groupId='org.jenkins-ci.plugins' artifactId='translation' version='1.10' url='http://wiki.jenkins-ci.org/display/JENKINS/Translation+Assistance+Plugin'><l:description/></l:dependency></l:dependencies>

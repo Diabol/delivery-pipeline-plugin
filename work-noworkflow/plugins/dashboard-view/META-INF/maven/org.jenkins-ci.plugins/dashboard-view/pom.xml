@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jenkins-ci.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>1.509.1</version>
+	</parent>
+	<artifactId>dashboard-view</artifactId>
+	<packaging>hpi</packaging>
+	<name>Dashboard View</name>
+	<version>2.9.2</version>
+	<description>Jenkins view that shows various cuts of build information via configured portlets.</description>
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/Dashboard+View</url>
+
+	<distributionManagement>
+		<repository>
+			<id>maven.jenkins-ci.org</id>
+			<url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+		</repository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:git://github.com/jenkinsci/dashboard-view-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:jenkinsci/dashboard-view-plugin.git</developerConnection>
+		<url>https://github.com/jenkinsci/dashboard-view-plugin</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>petehayes</id>
+			<name>Peter Hayes</name>
+			<email>petehayes@gmail.com</email>
+			<url>http://spiffysspace.blogspot.com/</url>
+			<timezone>-6</timezone>
+		</developer>
+		<developer>
+			<id>mambu</id>
+			<name>Marco Ambu</name>
+			<email>marco.ambu+jenkins@gmail.com</email>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+
+	<dependencies>       
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.main</groupId>
+			<artifactId>maven-plugin</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-gitexe</artifactId>
+						<version>1.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>  
+

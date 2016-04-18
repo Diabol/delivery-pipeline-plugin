@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1.14">
+  <actions>
+    <hudson.model.CauseAction>
+      <causes>
+        <hudson.model.Cause_-UserIdCause/>
+      </causes>
+    </hudson.model.CauseAction>
+  </actions>
+  <queueId>7</queueId>
+  <timestamp>1466952803353</timestamp>
+  <startTime>1466952803354</startTime>
+  <result>SUCCESS</result>
+  <duration>18125</duration>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>SUCCESS</result>
+    <script>node {
+   stage &apos;Commit stage&apos;
+   task &apos;Commit stage&apos;
+   echo &apos;Hello World 1&apos;
+   sleep 6
+   
+   stage &apos;Test&apos;
+   task &apos;Test&apos;
+   echo &apos;Hello World 2&apos;
+   sleep 6
+   
+   stage &apos;Deploy&apos;
+   task &apos;Deploy&apos;
+   echo &apos;Deploying...&apos;
+   sleep 6
+}</script>
+    <loadedScripts class="map"/>
+    <sandbox>false</sandbox>
+    <iota>19</iota>
+    <head>1:19</head>
+  </execution>
+  <checkouts class="hudson.util.PersistedList"/>
+</flow-build>

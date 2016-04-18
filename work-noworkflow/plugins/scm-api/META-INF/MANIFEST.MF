@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: recena
+Build-Jdk: 1.8.0_45
+Extension-Name: scm-api
+Specification-Title: This plugin provides a new enhanced API for inter
+ acting with SCM systems.
+Implementation-Title: scm-api
+Implementation-Version: 1.2
+Group-Id: org.jenkins-ci.plugins
+Short-Name: scm-api
+Long-Name: SCM API Plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/SCM+API+Plugin
+Plugin-Version: 1.2
+Hudson-Version: 1.596.1
+Jenkins-Version: 1.596.1
+Plugin-Developers: Stephen Connolly:stephenconnolly:
+

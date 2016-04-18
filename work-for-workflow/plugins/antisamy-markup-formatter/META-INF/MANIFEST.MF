@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: jglick
+Build-Jdk: 1.7.0_51
+Extension-Name: antisamy-markup-formatter
+Specification-Title: Uses policy definitions to allow limited HTML mar
+ kup in user-submitted text.
+Implementation-Title: antisamy-markup-formatter
+Implementation-Version: 1.0
+Group-Id: org.jenkins-ci.plugins
+Short-Name: antisamy-markup-formatter
+Long-Name: AntiSamy Markup Formatter Plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/AntiSamy+Markup+Format
+ ter+Plugin
+Plugin-Version: 1.0
+Hudson-Version: 1.551
+Jenkins-Version: 1.551
+Plugin-Developers: 
+

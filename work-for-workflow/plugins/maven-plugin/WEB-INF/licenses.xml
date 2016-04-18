@@ -1,0 +1,342 @@
+<l:dependencies xmlns:l='licenses'>
+  <l:dependency name='Maven Integration plugin' groupId='org.jenkins-ci.main' artifactId='maven-plugin' version='1.448' url='http://wiki.jenkins-ci.org/display/JENKINS/Maven+2+Project+Plugin'>
+    <l:description>This plug-in provides deep integration of Jenkins and Maven. This functionality used to be part of the Jenkins core.
+  Now it is a plug-in that is installed by default, but can be disabled.</l:description>
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Aether :: SPI' groupId='org.sonatype.aether' artifactId='aether-spi' version='1.13' url='http://aether.sonatype.org/aether-spi/'>
+    <l:description>The service provider interface for repository system implementations and repository connectors.</l:description>
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='SLF4J API Module' groupId='org.slf4j' artifactId='slf4j-api' version='1.6.2' url='http://www.slf4j.org'>
+    <l:description>The slf4j API</l:description>
+    <l:license name='MIT License' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Jackrabbit WebDAV Library' groupId='org.apache.jackrabbit' artifactId='jackrabbit-webdav' version='2.2.5' url='http://jackrabbit.apache.org/jackrabbit-parent/jackrabbit-webdav/'>
+    <l:description>WebDAV library used by the Jackrabbit WebDAV support</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='config-provider-model' groupId='org.jenkins-ci.lib' artifactId='config-provider-model' version='1.1' url='http://jenkins-ci.org/config-provider-model/'>
+    <l:description />
+    <l:license name='MIT' />
+  </l:dependency>
+  <l:dependency name='Jackrabbit JCR Commons' groupId='org.apache.jackrabbit' artifactId='jackrabbit-jcr-commons' version='2.2.5' url='http://jackrabbit.apache.org/jackrabbit-parent/jackrabbit-jcr-commons/'>
+    <l:description>General purpose classes for use with the JCR API</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Guava: Google Core Libraries for Java' groupId='com.google.guava' artifactId='guava' version='10.0.1' url='http://code.google.com/p/guava-libraries/guava'>
+    <l:description>Guava is a suite of core and expanded libraries that include
+    utility classes, google's collections, io classes, and much
+    much more.
+
+    This project is a complete packaging of all the Guava libraries
+    into a single jar.  Individual portions of Guava can be used
+    by downloading the appropriate module and its dependencies.
+
+    Guava (complete) has only one code dependency - javax.annotation,
+    per the JSR-305 spec.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Commons Logging' groupId='commons-logging' artifactId='commons-logging' version='1.1.1' url='http://commons.apache.org/logging'>
+    <l:description>Commons Logging is a thin adapter allowing configurable bridging to other,
+    well known logging systems.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Reporting API' groupId='org.apache.maven.reporting' artifactId='maven-reporting-api' version='3.0' url='http://maven.apache.org/shared/maven-reporting-api/'>
+    <l:description>API to manage report generation.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Artifact' groupId='org.apache.maven' artifactId='maven-artifact' version='3.0.3' url='http://maven.apache.org/maven-artifact/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: File Provider' groupId='org.apache.maven.wagon' artifactId='wagon-file' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-file'>
+    <l:description>Wagon that gets and puts artifacts using file system protocol</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Plexus Default Interactivity Handler' groupId='org.codehaus.plexus' artifactId='plexus-interactivity-api' version='1.0-alpha-6'>
+    <l:description />
+    <l:license name='MIT License' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Maven Model Builder' groupId='org.apache.maven' artifactId='maven-model-builder' version='3.0.3' url='http://maven.apache.org/maven-model-builder/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Core' groupId='org.apache.maven' artifactId='maven-core' version='3.0.3' url='http://maven.apache.org/maven-core/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='JSch' groupId='com.jcraft' artifactId='jsch' version='0.1.44-1' url='http://www.jcraft.com/jsch/'>
+    <l:description>JSch is a pure Java implementation of SSH2</l:description>
+    <l:license name='Revised BSD' url='http://www.jcraft.com/jsch/LICENSE.txt' />
+  </l:dependency>
+  <l:dependency name='XML Commons External Components XML APIs' groupId='xml-apis' artifactId='xml-apis' version='1.3.04' url='http://xml.apache.org/commons/components/external/'>
+    <l:description>xml-commons provides an Apache-hosted set of DOM, SAX, and 
+    JAXP interfaces for use in other xml-based projects. Our hope is that we 
+    can standardize on both a common version and packaging scheme for these 
+    critical XML standards interfaces to make the lives of both our developers 
+    and users easier. The External Components portion of xml-commons contains 
+    interfaces that are defined by external standards organizations. For DOM, 
+    that's the W3C; for SAX it's David Megginson and sax.sourceforge.net; for 
+    JAXP it's Sun.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: HTTP Shared Library' groupId='org.apache.maven.wagon' artifactId='wagon-http-shared' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-http-shared'>
+    <l:description>Shared Library for the wagon-http, and wagon-http-lightweight wagon
+    providers.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: WebDav Provider' groupId='org.apache.maven.wagon' artifactId='wagon-webdav-jackrabbit' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-webdav-jackrabbit'>
+    <l:description>Wagon that gets and puts artifacts through webdav protocol</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Commons Net' groupId='commons-net' artifactId='commons-net' version='3.0.1' url='http://commons.apache.org/net/'>
+    <l:description>Apache Commons Net library contains a collection of network utilities and protocol implementations.
+Supported protocols include: Echo, Finger, FTP, NNTP, NTP, POP3(S), SMTP(S), Telnet, Whois</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Sisu-Inject-Plexus : Aggregate OSGi bundle' groupId='org.sonatype.sisu' artifactId='sisu-inject-plexus' version='2.3.0' url='http://sisu.sonatype.org/sisu-inject/containers/guice-bean/guice-plexus/sisu-inject-plexus/'>
+    <l:description />
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='Plexus Cipher: encryption/decryption Component' groupId='org.sonatype.plexus' artifactId='plexus-cipher' version='1.4' url='http://spice.sonatype.org/plexus-cipher'>
+    <l:description />
+    <l:license name='Apache Public License 2.0' url='http://www.apache.org/licenses/LICENSE-2.0' />
+  </l:dependency>
+  <l:dependency name='Jenkins Maven3 CLI Agent' groupId='org.jenkins-ci.main.maven' artifactId='maven3-agent' version='1.2' url='http://jenkins-ci.org/maven-modules/maven3-agent/'>
+    <l:description />
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Plexus Security Dispatcher Component' groupId='org.sonatype.plexus' artifactId='plexus-sec-dispatcher' version='1.3' url='http://spice.sonatype.org/plexus-sec-dispatcher'>
+    <l:description />
+    <l:license name='Apache Public License 2.0' url='http://www.apache.org/licenses/LICENSE-2.0' />
+  </l:dependency>
+  <l:dependency name='Aether :: Connector :: Wagon' groupId='org.sonatype.aether' artifactId='aether-connector-wagon' version='1.13' url='http://aether.sonatype.org/aether-connector-wagon/'>
+    <l:description>A repository connector implementation based on Maven Wagon.</l:description>
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='HttpClient' groupId='commons-httpclient' artifactId='commons-httpclient' version='3.1' url='http://jakarta.apache.org/httpcomponents/httpclient-3.x/'>
+    <l:description>The HttpClient  component supports the client-side of RFC 1945 (HTTP/1.0)  and RFC 2616 (HTTP/1.1) , several related specifications (RFC 2109 (Cookies) , RFC 2617 (HTTP Authentication) , etc.), and provides a framework by which new request types (methods) or HTTP extensions can be created easily.</l:description>
+    <l:license name='Apache License' url='http://www.apache.org/licenses/LICENSE-2.0' />
+  </l:dependency>
+  <l:dependency name='Maven Aether Provider' groupId='org.apache.maven' artifactId='maven-aether-provider' version='3.0.3' url='http://maven.apache.org/maven-aether-provider/'>
+    <l:description>This module provides extensions to Aether for utilizing the Maven POM and Maven metadata.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Aether :: Utilities' groupId='org.sonatype.aether' artifactId='aether-util' version='1.13' url='http://aether.sonatype.org/aether-util/'>
+    <l:description>A collection of utility classes to ease usage of the repository system.</l:description>
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='Maven Plugin API' groupId='org.apache.maven' artifactId='maven-plugin-api' version='3.0.3' url='http://maven.apache.org/maven-plugin-api/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='AOP alliance' groupId='aopalliance' artifactId='aopalliance' version='1.0' url='http://aopalliance.sourceforge.net'>
+    <l:description>AOP Alliance</l:description>
+    <l:license name='Public Domain' />
+  </l:dependency>
+  <l:dependency name='Aether :: Implementation' groupId='org.sonatype.aether' artifactId='aether-impl' version='1.13' url='http://aether.sonatype.org/aether-impl/'>
+    <l:description>An implementation of the repository system.</l:description>
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='Commons CLI' groupId='commons-cli' artifactId='commons-cli' version='1.2' url='http://commons.apache.org/cli/'>
+    <l:description>Commons CLI provides a simple API for presenting, processing and validating a command line interface.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='org.apache.tools.ant' groupId='org.apache.ant' artifactId='ant' version='1.8.0' url='http://ant.apache.org/ant/'>
+    <l:description>Apache Ant</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Settings' groupId='org.apache.maven' artifactId='maven-settings' version='3.0.3' url='http://maven.apache.org/maven-settings/'>
+    <l:description>Maven Settings</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Plexus Interpolation API' groupId='org.codehaus.plexus' artifactId='plexus-interpolation' version='1.14' url='http://plexus.codehaus.org/plexus-components/plexus-interpolation'>
+    <l:description>The Plexus project provides a full software stack for creating and executing software projects.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='javadoc' groupId='org.jenkins-ci.plugins' artifactId='javadoc' version='1.0' url='http://wiki.jenkins-ci.org/display/JENKINS/Javadoc+Plugin'>
+    <l:description />
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Maven Settings Builder' groupId='org.apache.maven' artifactId='maven-settings-builder' version='3.0.3' url='http://maven.apache.org/maven-settings-builder/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: SSH External Provider' groupId='org.apache.maven.wagon' artifactId='wagon-ssh-external' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-ssh-external'>
+    <l:description>Wagon that gets and puts artifacts using SSH protocol with a preinstalled SSH client</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Commons IO' groupId='commons-io' artifactId='commons-io' version='1.4' url='http://commons.apache.org/io/'>
+    <l:description>Commons-IO contains utility classes, stream implementations, file filters, file comparators and endian classes.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='FindBugs-jsr305' groupId='com.google.code.findbugs' artifactId='jsr305' version='1.3.9' url='http://findbugs.sourceforge.net/'>
+    <l:description>JSR305 Annotations for Findbugs</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: SSH Provider' groupId='org.apache.maven.wagon' artifactId='wagon-ssh' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-ssh'>
+    <l:description>Tools to manage artifacts and deployment</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Repository Metadata Model' groupId='org.apache.maven' artifactId='maven-repository-metadata' version='3.0.3' url='http://maven.apache.org/maven-repository-metadata/'>
+    <l:description>Per-directory repository metadata.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: FTP Provider' groupId='org.apache.maven.wagon' artifactId='wagon-ftp' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-ftp'>
+    <l:description>Wagon that gets and puts artifacts from and to remote server using FTP protocol</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Aether :: API' groupId='org.sonatype.aether' artifactId='aether-api' version='1.13' url='http://aether.sonatype.org/aether-api/'>
+    <l:description>The application programming interface for the repository system.</l:description>
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='Sisu Guice - Core Library' groupId='org.sonatype.sisu' artifactId='sisu-guice' version='3.1.0' url='http://code.google.com/p/google-guice/sisu-guice/'>
+    <l:description>Patched build of Guice: a lightweight dependency injection framework for Java 5 and above</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Plexus Common Utilities' groupId='org.codehaus.plexus' artifactId='plexus-utils' version='2.0.6' url='http://plexus.codehaus.org/plexus-utils'>
+    <l:description>A collection of various utility classes to ease working with strings, files, command lines, XML and more.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: API' groupId='org.apache.maven.wagon' artifactId='wagon-provider-api' version='2.2' url='http://maven.apache.org/wagon/wagon-provider-api'>
+    <l:description>Maven Wagon API that defines the contract between different Wagon implementations</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Commons Codec' groupId='commons-codec' artifactId='commons-codec' version='1.4' url='http://commons.apache.org/codec/'>
+    <l:description>The codec package contains simple encoder and decoders for
+     various formats such as Base64 and Hexadecimal.  In addition to these
+     widely used encoders and decoders, the codec package also maintains a
+     collection of phonetic encoding utilities.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Jenkins Maven3 Interceptor' groupId='org.jenkins-ci.main.maven' artifactId='maven3-interceptor' version='1.2' url='http://jenkins-ci.org/maven-modules/maven3-interceptor/'>
+    <l:description />
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Xerces2 Java Parser' groupId='xerces' artifactId='xercesImpl' version='2.9.1' url='http://xerces.apache.org/xerces2-j'>
+    <l:description>Xerces2 is the next generation of high performance, fully compliant XML parsers in the
+    Apache Xerces family. This new version of Xerces introduces the Xerces Native Interface (XNI),
+    a complete framework for building parser components and configurations that is extremely
+    modular and easy to program.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Plexus Classworlds' groupId='org.codehaus.plexus' artifactId='plexus-classworlds' version='2.3' url='http://plexus.codehaus.org/plexus-classworlds/'>
+    <l:description>A class loader framework</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Sisu-Inject-Bean : Aggregate OSGi bundle' groupId='org.sonatype.sisu' artifactId='sisu-inject-bean' version='2.3.0' url='http://sisu.sonatype.org/sisu-inject/containers/guice-bean/sisu-inject-bean/'>
+    <l:description />
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+    <l:license name='Eclipse Public License, Version 1.0' url='http://www.eclipse.org/legal/epl-v10.html' />
+  </l:dependency>
+  <l:dependency name='Neko HTML' groupId='net.sourceforge.nekohtml' artifactId='nekohtml' version='1.9.13' url='http://nekohtml.sourceforge.net/'>
+    <l:description />
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Compat' groupId='org.apache.maven' artifactId='maven-compat' version='3.0.3' url='http://maven.apache.org/maven-compat/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='javax.inject' groupId='javax.inject' artifactId='javax.inject' version='1' url='http://code.google.com/p/atinject/'>
+    <l:description>The javax.inject API</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: HTTP Provider' groupId='org.apache.maven.wagon' artifactId='wagon-http' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-http'>
+    <l:description>Wagon that gets and puts artifacts through http using Apache httpclient-4.x.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Apache Maven Wagon :: Providers :: SSH Common Library' groupId='org.apache.maven.wagon' artifactId='wagon-ssh-common' version='2.2' url='http://maven.apache.org/wagon/wagon-providers/wagon-ssh-common'>
+    <l:description>Tools to manage artifacts and deployment</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Maven Model' groupId='org.apache.maven' artifactId='maven-model' version='3.0.3' url='http://maven.apache.org/maven-model/'>
+    <l:description>Maven Model</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Plexus :: Component Annotations' groupId='org.codehaus.plexus' artifactId='plexus-component-annotations' version='1.5.5' url='http://plexus.codehaus.org/plexus-containers/plexus-component-annotations/'>
+    <l:description>Plexus Component "Java 5" Annotations, to describe plexus components properties in java sources with
+    standard annotations instead of javadoc annotations.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Hudson Maven Artifact Manager' groupId='org.jenkins-ci.lib' artifactId='lib-jenkins-maven-artifact-manager' version='1.2' url='https://hudson.dev.java.net/lib/lib-jenkins-maven-artifact-manager/'>
+    <l:description>hackhish version of artifact manager to continue support uniqueVersion = false with maven2 builds</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='maven2.1-interceptor' groupId='org.jvnet.hudson' artifactId='maven2.1-interceptor' version='1.2' url='https://hudson.dev.java.net/extras/maven2.1-interceptor/'>
+    <l:description>Plexus component descriptor to override key Maven components in 2.1</l:description>
+    <l:license name='MIT License' url='http://jenkins-ci.org/mit-license' />
+  </l:dependency>
+  <l:dependency name='Maven Embedder' groupId='org.apache.maven' artifactId='maven-embedder' version='3.0.3' url='http://maven.apache.org/maven-embedder/'>
+    <l:description>Maven is a project development management and
+    comprehension tool. Based on the concept of a project object model:
+    builds, dependency management, documentation creation, site
+    publication, and distribution publication are all controlled from
+    the declarative file. Maven can be extended by plugins to utilise a
+    number of other development tools for reporting or the build
+    process.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='ant-launcher' groupId='org.apache.ant' artifactId='ant-launcher' version='1.8.0' url='http://ant.apache.org/ant-launcher/'>
+    <l:description>master POM</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Sisu Guava - Core Library' groupId='org.sonatype.sisu' artifactId='sisu-guava' version='0.9.9' url='http://code.google.com/p/guava-libraries/sisu-guava/'>
+    <l:description>Patched build of Guava: Google Core Libraries for Java 1.5+</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+  <l:dependency name='Jenkins Maven Embedder' groupId='org.jenkins-ci.lib' artifactId='lib-jenkins-maven-embedder' version='3.9' url='http://jenkins-ci.org/lib-jenkins-maven-embedder/'>
+    <l:description />
+    <l:license name='MIT License' url='http://jenkins-ci.org/mit-license' />
+  </l:dependency>
+  <l:dependency name='Jenkins Maven2 CLI agent' groupId='org.jenkins-ci.main.maven' artifactId='maven-agent' version='1.2' url='http://jenkins-ci.org/maven-modules/maven-agent/'>
+    <l:description>Code that boots up Maven2 with Jenkins's remoting support in place.
+    Used for the native maven support.</l:description>
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Jenkins Maven 2 PluginManager interceptor' groupId='org.jenkins-ci.main.maven' artifactId='maven-interceptor' version='1.2' url='http://jenkins-ci.org/maven-modules/maven-interceptor/'>
+    <l:description>Plexus module that intercepts invocations of key Maven components
+    so that Jenkins can monitor what's going on in Maven.</l:description>
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+  <l:dependency name='Doxia :: Sink API' groupId='org.apache.maven.doxia' artifactId='doxia-sink-api' version='1.0' url='http://maven.apache.org/doxia/doxia/doxia-sink-api'>
+    <l:description>Doxia Sink API.</l:description>
+    <l:license name='The Apache Software License, Version 2.0' url='http://www.apache.org/licenses/LICENSE-2.0.txt' />
+  </l:dependency>
+</l:dependencies>

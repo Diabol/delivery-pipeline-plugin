@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: yasuke
+Build-Jdk: 1.7.0_17
+Extension-Name: parameterized-trigger
+Implementation-Title: parameterized-trigger
+Implementation-Version: 2.21
+Plugin-Class: hudson.plugins.parameterizedtrigger.Plugin
+Group-Id: org.jenkins-ci.plugins
+Short-Name: parameterized-trigger
+Long-Name: Jenkins Parameterized Trigger plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+
+ Plugin
+Plugin-Version: 2.21
+Hudson-Version: 1.480
+Jenkins-Version: 1.480
+Plugin-Dependencies: subversion:1.25;resolution:=optional,promoted-bui
+ lds:2.10;resolution:=optional,conditional-buildstep:1.3.1;resolution:
+ =optional
+Plugin-Developers: Tom Huybrechts:huybrechts:,Kohsuke Kawaguchi:kohsuke:
+

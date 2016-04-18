@@ -1,0 +1,181 @@
+{
+  "list":   [
+        {
+      "id": "3.3.9",
+      "name": "3.3.9",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.9/apache-maven-3.3.9-bin.zip"
+    },
+        {
+      "id": "3.3.3",
+      "name": "3.3.3",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.3/apache-maven-3.3.3-bin.zip"
+    },
+        {
+      "id": "3.3.1",
+      "name": "3.3.1",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.3.1/apache-maven-3.3.1-bin.zip"
+    },
+        {
+      "id": "3.2.5",
+      "name": "3.2.5",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.2.5/apache-maven-3.2.5-bin.zip"
+    },
+        {
+      "id": "3.2.3",
+      "name": "3.2.3",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.2.3/apache-maven-3.2.3-bin.zip"
+    },
+        {
+      "id": "3.2.2",
+      "name": "3.2.2",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.2.2/apache-maven-3.2.2-bin.zip"
+    },
+        {
+      "id": "3.2.1",
+      "name": "3.2.1",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.2.1/apache-maven-3.2.1-bin.zip"
+    },
+        {
+      "id": "3.1.1",
+      "name": "3.1.1",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.1.1/apache-maven-3.1.1-bin.zip"
+    },
+        {
+      "id": "3.1.0",
+      "name": "3.1.0",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.1.0/apache-maven-3.1.0-bin.zip"
+    },
+        {
+      "id": "3.0.5",
+      "name": "3.0.5",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.0.5/apache-maven-3.0.5-bin.zip"
+    },
+        {
+      "id": "3.0.4",
+      "name": "3.0.4",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.0.4/apache-maven-3.0.4-bin.zip"
+    },
+        {
+      "id": "3.0.3",
+      "name": "3.0.3",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.0.3/apache-maven-3.0.3-bin.zip"
+    },
+        {
+      "id": "3.0.2",
+      "name": "3.0.2",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.0.2/apache-maven-3.0.2-bin.zip"
+    },
+        {
+      "id": "3.0.1",
+      "name": "3.0.1",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.0.1/apache-maven-3.0.1-bin.zip"
+    },
+        {
+      "id": "3.0",
+      "name": "3.0",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.0/apache-maven-3.0-bin.zip"
+    },
+        {
+      "id": "2.2.1",
+      "name": "2.2.1",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/2.2.1/apache-maven-2.2.1-bin.zip"
+    },
+        {
+      "id": "2.2.0",
+      "name": "2.2.0",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/2.2.0/apache-maven-2.2.0-bin.zip"
+    },
+        {
+      "id": "2.1.0",
+      "name": "2.1.0",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/2.1.0/apache-maven-2.1.0-bin.zip"
+    },
+        {
+      "id": "2.0.11",
+      "name": "2.0.11",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/2.0.11/apache-maven-2.0.11-bin.zip"
+    },
+        {
+      "id": "2.0.10",
+      "name": "2.0.10",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/2.0.10/apache-maven-2.0.10-bin.zip"
+    },
+        {
+      "id": "2.0.9",
+      "name": "2.0.9",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/2.0.9/apache-maven-2.0.9-bin.zip"
+    },
+        {
+      "id": "2.0.8",
+      "name": "2.0.8",
+      "url": "https://archive.apache.org/dist/maven/binaries/apache-maven-2.0.8-bin.zip"
+    },
+        {
+      "id": "2.0.7",
+      "name": "2.0.7",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.7-bin.zip"
+    },
+        {
+      "id": "2.0.6",
+      "name": "2.0.6",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.6-bin.zip"
+    },
+        {
+      "id": "2.0.5",
+      "name": "2.0.5",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.5-bin.zip"
+    },
+        {
+      "id": "2.0.4",
+      "name": "2.0.4",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.4-bin.zip"
+    },
+        {
+      "id": "2.0.3",
+      "name": "2.0.3",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.3-bin.zip"
+    },
+        {
+      "id": "2.0.2",
+      "name": "2.0.2",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.2-bin.zip"
+    },
+        {
+      "id": "2.0.1",
+      "name": "2.0.1",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0.1-bin.zip"
+    },
+        {
+      "id": "2.0",
+      "name": "2.0",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-2.0-bin.zip"
+    },
+        {
+      "id": "1.1",
+      "name": "1.1",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-1.1.zip"
+    },
+        {
+      "id": "1.0.2",
+      "name": "1.0.2",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-1.0.2.zip"
+    },
+        {
+      "id": "1.0.1",
+      "name": "1.0.1",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-1.0.1.zip"
+    },
+        {
+      "id": "1.0",
+      "name": "1.0",
+      "url": "https://archive.apache.org/dist/maven/binaries/maven-1.0.zip"
+    }
+  ],
+  "signature":   {
+    "certificates": ["MIIC3TCCAcUCBQDerb73MA0GCSqGSIb3DQEBDQUAMIGKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEaMBgGA1UEAxMRS29oc3VrZSBLYXdhZ3VjaGkxHTAbBgkqhkiG9w0BCQEWDmtrQGtvaHN1a2Uub3JnMB4XDTE2MDEyOTEwNDYwMloXDTE3MDEyODEwNDYwMlowXjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEgMB4GA1UEAxMXQ29tbXVuaXR5IFVwZGF0ZSBDZW50ZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKTDDxjInVBgniu4TpRQoI29ci8lwzXsPX4anFI+1LiPsPk2RmIg05WEohD6RCzldgiNtaPGujyeR/+xXYd8Gev3Abm1OjlN6bZbzZHAX8FoDr4PJJWftq0LDg+YVki1p8eF65ByoHIVHmNeE7NH09kAnbT4w2DNGstwHcFO90RbAgMBAAEwDQYJKoZIhvcNAQENBQADggEBAH96iGUruYwF4Pv/DffI3AmCOlE4/hG/2uqacBrRN52LjIbVWEOOUesEIFMmyjbFcGKMzMwndOF+f8N6MAA4/EONvbLgJyC0VrL66VX0OrTfk1NZcfZkIMh5rrPoCpuIi8TF5GGM9ulwa82o50POjbdjInFvbW7L927Zil2dP/UvugeRnGYKCi9o62h96foJu/N1e3aSzEKA8KUwoW4peCPiv6LJ2xrnQXbYG1UN0hO4n4Cdw3Vebgewl31qRUJGFLKF6tslt/LAGk66y5XcKhel2guCfUa1Dhz4/6UlEK1NrnldiAsYBa4pnp4BcZ0RJcEdCiYe0b9D6BplUx1DDTo="],
+    "correct_digest": "pTuOAt6BKc49sJ4YqcS1m5XyNoU=",
+    "correct_signature": "hXLZq44dOCrXwSNgUN2MbhFSPheThTYLcNJVepOqklV8sUlbNJn73kNAqRzNvhUOKBqvh6Ix2A7R4E7W8Lu9/PsTP2bREB4S+GDB5CDy2APrtZ6ogHw0YfMnWGUtOP43l9wpAsMrSzSdY+s61qcH8Do2ng2Yt2BXWf+J0FOnO3U=",
+    "digest": "2jmj7l5rSw0yVb/vlWAYkK/YBwk=",
+    "signature": "m6UxuBwiblfpmbZ8b4ynXnYj0dH66giB7qdFN0oU6saZcP5Nx3dZPcZa27Ac6K8LSiuz7Yq88NeQCusKTHGoWDd16X6+DNxcOQQg+UyTlUc3Mq+7D21DuYYYaiHGNhesg5gzyql4P9afxyM6hCKb3il1AX8eJJq74CiXVAz9WlM="
+  }
+}

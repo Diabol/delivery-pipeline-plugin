@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: jglick
+Build-Jdk: 1.8.0_74
+Extension-Name: workflow-cps-global-lib
+Specification-Title: The Jenkins Plugins Parent POM Project
+Implementation-Title: workflow-cps-global-lib
+Implementation-Version: 2.0
+Group-Id: org.jenkins-ci.plugins.workflow
+Short-Name: workflow-cps-global-lib
+Long-Name: Pipeline: Shared Groovy Libraries
+Url: https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+Shared+Groov
+ y+Libraries+Plugin
+Plugin-Version: 2.0
+Hudson-Version: 1.642.3
+Jenkins-Version: 1.642.3
+Plugin-Dependencies: workflow-cps:1.15,git-server:1.5
+Plugin-Developers: 
+

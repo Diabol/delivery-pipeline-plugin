@@ -1,0 +1,5 @@
+<l:dependencies xmlns:l='licenses'>
+  <l:dependency name='Jenkins promoted builds plugin' groupId='org.jenkins-ci.plugins' artifactId='promoted-builds' version='2.17' url='http://wiki.jenkins-ci.org/display/JENKINS/Promoted+Builds+Plugin'>
+    <l:description />
+  </l:dependency>
+</l:dependencies>

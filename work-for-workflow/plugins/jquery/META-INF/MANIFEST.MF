@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: chris
+Build-Jdk: 1.7.0_09
+Extension-Name: jquery
+Implementation-Title: jquery
+Implementation-Version: 1.7.2-1
+Group-Id: org.jenkins-ci.plugins
+Short-Name: jquery
+Long-Name: Jenkins jQuery plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/jQuery+Plugin
+Plugin-Version: 1.7.2-1
+Hudson-Version: 1.424
+Jenkins-Version: 1.424
+Plugin-Developers: Kiyotaka Oku:kiy0taka:,Kohsuke Kawaguchi:kohsuke:
+

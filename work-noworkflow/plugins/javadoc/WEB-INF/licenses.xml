@@ -1,0 +1,6 @@
+<l:dependencies xmlns:l='licenses'>
+  <l:dependency name='javadoc' groupId='org.jenkins-ci.plugins' artifactId='javadoc' version='1.0' url='http://wiki.jenkins-ci.org/display/JENKINS/Javadoc+Plugin'>
+    <l:description />
+    <l:license name='The MIT license' url='http://www.opensource.org/licenses/mit-license.php' />
+  </l:dependency>
+</l:dependencies>

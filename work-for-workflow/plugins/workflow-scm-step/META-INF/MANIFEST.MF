@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: jglick
+Build-Jdk: 1.8.0_74
+Extension-Name: workflow-scm-step
+Specification-Title: The Jenkins Plugins Parent POM Project
+Implementation-Title: workflow-scm-step
+Implementation-Version: 2.0
+Group-Id: org.jenkins-ci.plugins.workflow
+Short-Name: workflow-scm-step
+Long-Name: Pipeline: SCM Step
+Url: https://wiki.jenkins-ci.org/display/JENKINS/Pipeline+SCM+Step+Plu
+ gin
+Plugin-Version: 2.0
+Hudson-Version: 1.642.3
+Jenkins-Version: 1.642.3
+Plugin-Dependencies: git:2.4.1;resolution:=optional,subversion:2.5;res
+ olution:=optional,workflow-step-api:1.15
+Plugin-Developers: 
+

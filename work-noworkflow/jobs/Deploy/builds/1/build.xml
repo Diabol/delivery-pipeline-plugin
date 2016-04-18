@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<build>
+  <actions>
+    <hudson.model.ParametersAction>
+      <parameters class="java.util.Arrays$ArrayList">
+        <a class="hudson.model.ParameterValue-array">
+          <hudson.model.StringParameterValue>
+            <name>KEY</name>
+            <value>VALUE</value>
+          </hudson.model.StringParameterValue>
+        </a>
+      </parameters>
+    </hudson.model.ParametersAction>
+    <hudson.model.CauseAction>
+      <causes>
+        <hudson.model.Cause_-UpstreamCause>
+          <upstreamProject>Test</upstreamProject>
+          <upstreamUrl>job/Test/</upstreamUrl>
+          <upstreamBuild>2</upstreamBuild>
+          <upstreamCauses>
+            <hudson.model.Cause_-UpstreamCause>
+              <upstreamProject>Build</upstreamProject>
+              <upstreamUrl>job/Build/</upstreamUrl>
+              <upstreamBuild>2</upstreamBuild>
+              <upstreamCauses>
+                <hudson.model.Cause_-UserIdCause/>
+              </upstreamCauses>
+            </hudson.model.Cause_-UpstreamCause>
+          </upstreamCauses>
+        </hudson.model.Cause_-UpstreamCause>
+      </causes>
+    </hudson.model.CauseAction>
+  </actions>
+  <id>2016-10-24_09-09-05</id>
+  <timestamp>1477292945000</timestamp>
+  <startTime>1477292945026</startTime>
+  <result>SUCCESS</result>
+  <duration>21</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <builtOn></builtOn>
+  <workspace>/Users/tommy/dev/projects/delivery-pipeline-plugin/work/workspace/Deploy</workspace>
+  <hudsonVersion>1.565</hudsonVersion>
+  <scm class="hudson.scm.NullChangeLogParser"/>
+  <culprits class="com.google.common.collect.EmptyImmutableSortedSet"/>
+</build>

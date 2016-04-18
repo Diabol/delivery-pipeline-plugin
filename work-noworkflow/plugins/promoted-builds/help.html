@@ -1,0 +1,29 @@
+<div>
+    Configure build promotions.
+  <p>
+    The notion of build promotion is a mechanism that lets you differenciate good builds
+    from bad builds. It is also often used for throttling changes that the downstream sees
+    &mdash; for example, let's say your builds are going through QA and performance
+    testing, each of which takes 3 hours to run. If you let them pick up the last successful
+    build while your project is producing a new build every 15 mins, then chances are those
+    two downstream efforts will pick up different versions of your build. This problem
+    is particularly evident when downstream efforts involve human activities. They can get
+    overwhelmed if you are building too frequently.
+
+    By promoting builds selectively, you can make sure the downstream efforts are concentrated
+    on smaller number of builds.
+  <p>
+    Build promotion process configuration consists of three things:
+  <ul>
+    <li>
+      <b>Name</b> of the promotion criterion. This is primarily for humans for easier identification
+      of multiple promotion criteria.
+    <li>
+      <b>Criteria</b> that determine when a build is qualified for a promotion. If multiple
+      conditions are specified, all of them must be met for a build to be qualified.
+    <li>
+      <b>Actions</b> that determine what happens when a build is promoted.
+  </ul>
+  <p>
+    
+</div>

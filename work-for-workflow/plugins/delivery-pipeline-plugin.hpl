@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Group-Id: se.diabol.jenkins.pipeline
+Short-Name: delivery-pipeline-plugin
+Long-Name: Delivery Pipeline Plugin
+Url: https://wiki.jenkins-ci.org/display/JENKINS/Delivery+Pipeline+Plu
+ gin
+Plugin-Version: 0.9.12-SNAPSHOT (private-21f189f8-tommy)
+Hudson-Version: 1.565
+Jenkins-Version: 1.565
+Plugin-Dependencies: parameterized-trigger:2.21,jquery:1.7.2-1,promote
+ d-builds:2.17;resolution:=optional,analysis-core:1.54;resolution:=opt
+ ional,credentials:1.22,build-name-setter:1.3,build-pipeline-plugin:1.
+ 4.4;resolution:=optional,join:1.16,git:2.2.10;resolution:=optional,to
+ ken-macro:1.9,cloudbees-folder:4.7
+Plugin-Developers: Patrik Bostrom:patbos:,Per Huss:perhuss:,Andreas Re
+ hn:mrfatstrat:,Rickard von Essen:rickard_v_essen:,Gustav Ranby:gusran
+ :,Tommy Tynja:tommysdk:
+Libraries: /Users/tommy/dev/projects/delivery-pipeline-plugin/target/c
+ lasses,/Users/tommy/.m2/repository/org/jgrapht/jgrapht-jdk1.5/0.7.3/j
+ grapht-jdk1.5-0.7.3.jar
+Resource-Path: /Users/tommy/dev/projects/delivery-pipeline-plugin/src/
+ main/webapp
+

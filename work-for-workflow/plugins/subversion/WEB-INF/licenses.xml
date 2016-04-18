@@ -1,0 +1,19 @@
+<l:dependencies xmlns:l='licenses' groupId='org.jenkins-ci.plugins' artifactId='subversion' version='1.45'>
+  <l:dependency name='Jenkins Subversion Plug-in' groupId='org.jenkins-ci.plugins' artifactId='subversion' version='1.45' url='http://wiki.jenkins-ci.org/display/JENKINS/Subversion+Plugin'>
+    <l:description />
+    <l:license name='MIT license' />
+  </l:dependency>
+  <l:dependency name='sqljet' groupId='org.tmatesoft.sqljet' artifactId='sqljet' version='1.1.0'>
+    <l:description />
+  </l:dependency>
+  <l:dependency name='sequence-library' groupId='de.regnis.q.sequence' artifactId='sequence-library' version='1.0.1'>
+    <l:description />
+  </l:dependency>
+  <l:dependency name='Antlr 3.4 Runtime' groupId='org.antlr' artifactId='antlr-runtime' version='3.4' url='http://www.antlr.org'>
+    <l:description>A framework for constructing recognizers, compilers, and translators from grammatical descriptions containing Java, C#, C++, or Python actions.</l:description>
+  </l:dependency>
+  <l:dependency name='SVNKit' groupId='org.jenkins-ci.svnkit' artifactId='svnkit' version='1.7.6-jenkins-1' url='http://svnkit.com/'>
+    <l:description>A pure Java Subversion library, formerly known as JavaSVN</l:description>
+    <l:license url='http://svnkit.com/license.html' />
+  </l:dependency>
+</l:dependencies>
