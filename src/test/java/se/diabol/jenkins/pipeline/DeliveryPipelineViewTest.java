@@ -202,6 +202,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowPromotions());
         assertFalse(view.isShowTestResults());
         assertFalse(view.isShowStaticAnalysisResults());
+        assertFalse(view.isLinkRelative());
     }
 
     @Test
@@ -235,6 +236,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowTestResults());
         view.setShowStaticAnalysisResults(true);
         assertTrue(view.isShowStaticAnalysisResults());
+        view.setLinkRelative(true);
+        assertTrue(view.isLinkRelative());
     }
 
     @Test
