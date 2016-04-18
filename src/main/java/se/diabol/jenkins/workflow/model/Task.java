@@ -118,11 +118,16 @@ public class Task extends AbstractItem {
 
         List<FlowNode> taskNodes = Util.getTaskNodes(stageNodes);
 
-        for (FlowNode flowNode : taskNodes) {
-            TaskAction action = flowNode.getAction(TaskAction.class);
-            List<FlowNode> tasks = Util.getTaskNodes(stageNodes, flowNode);
+        if (!taskNodes.isEmpty()) {
+            for (FlowNode flowNode : taskNodes) {
+                TaskAction action = flowNode.getAction(TaskAction.class);
+                List<FlowNode> tasks = Util.getTaskNodes(stageNodes, flowNode);
 
-            result.add(new Task(flowNode.getId(), action.getTaskName(), resolveStatus(build, tasks), "", null, null));
+                result.add(new Task(flowNode.getId(), action.getTaskName(), resolveStatus(build, tasks), "", null, null));
+            }
+        } else {
+            result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(),
+                    resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode)), "", null, null));
         }
         return result;
     }
