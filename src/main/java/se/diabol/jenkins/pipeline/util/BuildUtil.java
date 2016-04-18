@@ -78,6 +78,29 @@ public final class BuildUtil {
     }
 
     /**
+     * Finds the first upstream build in the chain of triggered builds.
+     *
+     * @param build the build to find the first upstream for
+     * @return the first upstream build for the given build
+     */
+    @CheckForNull
+    public static AbstractBuild getFirstUpstreamBuild(AbstractBuild build) {
+        if (build == null) {
+            return null;
+        }
+
+        AbstractBuild upstreamBuild = BuildUtil.getUpstreamBuild(build);
+        if (upstreamBuild != null) {
+            return getFirstUpstreamBuild(upstreamBuild);
+        } else {
+            return build;
+        }
+    }
+
+
+
+
+    /**
      * Returns the build for a projects that has been triggered by the supplied upstream project.
      */
     @CheckForNull

@@ -73,6 +73,10 @@
             <f:textbox/>
         </f:entry>
 
+        <f:entry title="Show upstream (experimental feature)" field="showUpstream">
+            <f:checkbox/>
+        </f:entry>
+
     </f:section>
 
     <f:section title="Pipelines">

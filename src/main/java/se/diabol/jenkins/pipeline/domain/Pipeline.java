@@ -27,6 +27,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import se.diabol.jenkins.pipeline.domain.task.Task;
+import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.ArrayList;
@@ -160,7 +161,7 @@ public class Pipeline extends AbstractItem {
 
     void calculatePipelineRoutes(Task task, final Route route, List<Route> allRoutes) {
         if (task.getDownstreamTasks() != null && task.getDownstreamTasks().size() > 0) {
-            for (String downstreamTaskName: task.getDownstreamTasks()) {
+            for (String downstreamTaskName : task.getDownstreamTasks()) {
                 // assume each task only appears once in the pipeline
                 Route currentRoute = createRouteAndCopyTasks(route, task);
                 calculatePipelineRoutes(getTaskFromName(downstreamTaskName), currentRoute, allRoutes);
@@ -206,39 +207,61 @@ public class Pipeline extends AbstractItem {
      * Populates and return pipelines for the supplied pipeline prototype with the current status.
      *
      * @param noOfPipelines number of pipeline instances
+     * @param showUpstream
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean showUpstream) throws PipelineException {
         List<Pipeline> result = new ArrayList<Pipeline>();
-        int no = noOfPipelines;
-        if (firstProject.isInQueue()) {
-            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
-            List<Stage> pipelineStages = new ArrayList<Stage>();
-            for (Stage stage : getStages()) {
-                pipelineStages.add(stage.createLatestStage(context, null));
+        if (showUpstream) {
+            Iterator it = firstProject.getBuilds().iterator();
+            for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
+                AbstractBuild build = (AbstractBuild) it.next();
+                AbstractBuild firstBuild = BuildUtil.getFirstUpstreamBuild(build);
+                Pipeline pipeline = Pipeline.extractPipeline(getName(), firstBuild.getProject(), lastProject);
+                List<Change> pipelineChanges = Change.getChanges(firstBuild);
+                String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
+                List<Stage> pipelineStages = new ArrayList<Stage>();
+                for (Stage stage : pipeline.getStages()) {
+                    pipelineStages.add(stage.createLatestStage(context, firstBuild));
+                }
+                Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, build.getDisplayName(),
+                        pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
+                        UserInfo.getContributors(firstBuild), pipelineStages, false);
+                pipelineLatest.setChanges(pipelineChanges);
+                pipelineLatest.calculateTotalBuildTime();
+                result.add(pipelineLatest);
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, "#"
-                    + firstProject.getNextBuildNumber(), pipeLineTimestamp,
-                    TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false);
-            result.add(pipelineLatest);
-            no--;
-        }
+        } else {
+            int no = noOfPipelines;
+            if (firstProject.isInQueue()) {
+                String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
+                List<Stage> pipelineStages = new ArrayList<Stage>();
+                for (Stage stage : getStages()) {
+                    pipelineStages.add(stage.createLatestStage(context, null));
+                }
+                Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, "#"
+                        + firstProject.getNextBuildNumber(), pipeLineTimestamp,
+                        TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false);
+                result.add(pipelineLatest);
+                no--;
+            }
 
 
-        Iterator it = firstProject.getBuilds().iterator();
-        for (int i = 0; i < no && it.hasNext(); i++) {
-            AbstractBuild firstBuild = (AbstractBuild) it.next();
-            List<Change> pipelineChanges = Change.getChanges(firstBuild);
-            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
-            List<Stage> pipelineStages = new ArrayList<Stage>();
-            for (Stage stage : getStages()) {
-                pipelineStages.add(stage.createLatestStage(context, firstBuild));
+            Iterator it = firstProject.getBuilds().iterator();
+            for (int i = 0; i < no && it.hasNext(); i++) {
+                AbstractBuild firstBuild = (AbstractBuild) it.next();
+                List<Change> pipelineChanges = Change.getChanges(firstBuild);
+                String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
+                List<Stage> pipelineStages = new ArrayList<Stage>();
+                for (Stage stage : getStages()) {
+                    pipelineStages.add(stage.createLatestStage(context, firstBuild));
+                }
+                Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
+                        pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
+                        UserInfo.getContributors(firstBuild), pipelineStages, false);
+                pipelineLatest.setChanges(pipelineChanges);
+                pipelineLatest.calculateTotalBuildTime();
+                result.add(pipelineLatest);
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
-                    pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
-                    UserInfo.getContributors(firstBuild), pipelineStages, false);
-            pipelineLatest.setChanges(pipelineChanges);
-            pipelineLatest.calculateTotalBuildTime();
-            result.add(pipelineLatest);
         }
         return result;
     }

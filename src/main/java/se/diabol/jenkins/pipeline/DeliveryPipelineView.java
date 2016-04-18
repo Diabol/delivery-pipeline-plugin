@@ -105,6 +105,7 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean showUpstream = false;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -117,6 +118,14 @@ public class DeliveryPipelineView extends View {
 
     public DeliveryPipelineView(String name, ViewGroup owner) {
         super(name, owner);
+    }
+
+    public boolean isShowUpstream() {
+        return showUpstream;
+    }
+
+    public void setShowUpstream(boolean showUpstream) {
+        this.showUpstream = showUpstream;
     }
 
     public List<RegExpSpec> getRegexpFirstJobs() {
@@ -449,7 +458,7 @@ public class DeliveryPipelineView extends View {
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
         }
-        pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
+        pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), showUpstream));
         return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines);
     }
 
