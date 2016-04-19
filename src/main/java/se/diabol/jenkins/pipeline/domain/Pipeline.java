@@ -207,7 +207,7 @@ public class Pipeline extends AbstractItem {
      *
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
         List<Pipeline> result = new ArrayList<Pipeline>();
         int no = noOfPipelines;
         if (firstProject.isInQueue()) {
@@ -222,10 +222,13 @@ public class Pipeline extends AbstractItem {
             result.add(pipelineLatest);
             no--;
         }
-
-
+        
+        int pipelineCount = noOfPipelines;
+        if (pagingEnabled) {
+        	pipelineCount = firstProject.getBuilds().size();
+        }
         Iterator it = firstProject.getBuilds().iterator();
-        for (int i = 0; i < no && it.hasNext(); i++) {
+        for (int i = 0; i < pipelineCount && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());

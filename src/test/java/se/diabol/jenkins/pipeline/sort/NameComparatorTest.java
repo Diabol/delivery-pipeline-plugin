@@ -29,10 +29,12 @@ import static org.junit.Assert.*;
 
 public class NameComparatorTest {
 
+    private final static boolean pagingEnabledFalse = false;
+
     @Test
     public void testCompare() {
-        Component componentB = new Component("B", "B", "job/A", false, new ArrayList<Pipeline>());
-        Component componentA = new Component("A", "A", "job/B", false, new ArrayList<Pipeline>());
+        Component componentB = new Component("B", "B", "job/A", false, new ArrayList<Pipeline>(), 3, pagingEnabledFalse);
+        Component componentA = new Component("A", "A", "job/B", false, new ArrayList<Pipeline>(), 3, pagingEnabledFalse);
         List<Component> list = new ArrayList<Component>();
         list.add(componentB);
         list.add(componentA);
