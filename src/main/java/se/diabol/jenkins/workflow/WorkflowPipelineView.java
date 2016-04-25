@@ -32,6 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.AncestorInPath;
@@ -57,6 +59,7 @@ public class WorkflowPipelineView extends View {
     private int noOfColumns = 1;
     private boolean allowPipelineStart = false;
     private String project;
+    private WorkflowApi workflowApi = new WorkflowApi(jenkins());
 
     private transient String error;
 
@@ -121,7 +124,7 @@ public class WorkflowPipelineView extends View {
     public List<Component> getPipelines() {
         try {
             if (project != null) {
-                WorkflowJob job = JenkinsUtil.getInstance().getItem(project, JenkinsUtil.getInstance(), WorkflowJob.class);
+                WorkflowJob job = getWorkflowJob(project);
 
                 List<Pipeline> pipelines = new ArrayList<Pipeline>();
 
@@ -142,6 +145,10 @@ public class WorkflowPipelineView extends View {
             error = e.getMessage();
             return Collections.EMPTY_LIST;
         }
+    }
+
+    private WorkflowJob getWorkflowJob(final String projectName) {
+        return jenkins().getItem(projectName, jenkins(), WorkflowJob.class);
     }
 
     private List<Change> getChangelog(WorkflowRun build) {
@@ -168,7 +175,7 @@ public class WorkflowPipelineView extends View {
         if (!isDefault()) {
             return getOwner().getPrimaryView().doCreateItem(req, rsp);
         } else {
-            return JenkinsUtil.getInstance().doCreateItem(req, rsp);
+            return jenkins().doCreateItem(req, rsp);
         }
     }
 
@@ -183,6 +190,10 @@ public class WorkflowPipelineView extends View {
         public String getDisplayName() {
             return "Delivery Pipeline View for Pipeline/Workflow plugin";
         }
-
     }
+
+    private static Jenkins jenkins() {
+        return JenkinsUtil.getInstance();
+    }
+
 }
