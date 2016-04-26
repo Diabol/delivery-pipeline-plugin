@@ -39,6 +39,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -127,7 +128,9 @@ public class WorkflowPipelineView extends View {
                 Iterator<WorkflowRun> it = job.getBuilds().iterator();
                 for (int i = 0; i < 3 && it.hasNext(); i++) {
                     WorkflowRun build = it.next();
-                    pipelines.add(Pipeline.resolve(job, build));
+                    Pipeline pipeline = Pipeline.resolve(job, build);
+                    pipeline.setChanges(getChangelog(build));
+                    pipelines.add(pipeline);
                 }
                 Component component = new Component("Component", pipelines);
                 this.error = null;
@@ -139,6 +142,10 @@ public class WorkflowPipelineView extends View {
             error = e.getMessage();
             return Collections.EMPTY_LIST;
         }
+    }
+
+    private List<Change> getChangelog(WorkflowRun build) {
+        return Change.getChanges(build.getChangeSets());
     }
 
     @Override
