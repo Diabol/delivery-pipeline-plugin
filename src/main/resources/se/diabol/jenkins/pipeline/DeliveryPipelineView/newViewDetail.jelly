@@ -1,3 +1,3 @@
 <div>
-    Shows one or more delivery pipeline instances.
+    Shows one or more delivery pipeline instances. Based on traditional Jenkins jobs with upstream/downstream dependencies.
 </div>
