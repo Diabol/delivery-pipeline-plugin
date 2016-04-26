@@ -489,12 +489,7 @@ public class DeliveryPipelineView extends View {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
-            if (!pagingEnabled) {
-                pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
-            }
-            else if (isFullScreenView()) {
-                pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
-            }
+            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         if (isFullScreenView()) {
             pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
