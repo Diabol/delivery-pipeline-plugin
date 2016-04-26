@@ -3,8 +3,17 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
     <f:section title="View settings">
+        <f:entry title="Number of pipeline instances per pipeline" field="noOfPipelines">
+            <f:select/>
+        </f:entry>
         <f:entry title="Update interval" field="updateInterval" default="2">
             <f:textbox/>
+        </f:entry>
+        <f:entry title="Number of columns" field="noOfColumns">
+            <f:select/>
+        </f:entry>
+        <f:entry title="Enable start of new pipeline build" field="allowPipelineStart">
+            <f:checkbox/>
         </f:entry>
         <f:entry title="Pipeline project" field="project">
             <f:select/>

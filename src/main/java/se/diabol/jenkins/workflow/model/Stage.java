@@ -126,7 +126,6 @@ public class Stage extends AbstractItem {
         this.taskConnections = taskConnections;
     }
 
-
     public static List<Stage> extractStages(WorkflowRun build, List<FlowNode> stageNodes) throws PipelineException {
         List<Stage> result = new ArrayList<Stage>();
         for (FlowNode stageNode : stageNodes) {
@@ -140,11 +139,7 @@ public class Stage extends AbstractItem {
             }
             stage.setColumn(i);
             stage.setRow(0);
-
         }
-
         return result;
     }
-
-
 }

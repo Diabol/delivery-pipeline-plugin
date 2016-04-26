@@ -50,12 +50,13 @@ import javax.servlet.ServletException;
 
 public class WorkflowPipelineView extends View {
 
-    private int noOfColumns = 1;
     public static final int DEFAULT_INTERVAL = 2;
 
     private int updateInterval = DEFAULT_INTERVAL;
-
+    private int noOfColumns = 1;
+    private boolean allowPipelineStart = false;
     private String project;
+
     private transient String error;
 
     @DataBoundConstructor
@@ -68,7 +69,11 @@ public class WorkflowPipelineView extends View {
     }
 
     public int getNoOfColumns() {
-        return 1;
+        return noOfColumns;
+    }
+
+    public void setNoOfColumns(int noOfColumns) {
+        this.noOfColumns = noOfColumns;
     }
 
     public int getUpdateInterval() {
@@ -81,16 +86,24 @@ public class WorkflowPipelineView extends View {
         return updateInterval;
     }
 
+    public void setUpdateInterval(int updateInterval) {
+        this.updateInterval = updateInterval;
+    }
+
+    public boolean isAllowPipelineStart() {
+        return allowPipelineStart;
+    }
+
+    public void setAllowPipelineStart(boolean allowPipelineStart) {
+        this.allowPipelineStart = allowPipelineStart;
+    }
+
     public String getProject() {
         return project;
     }
 
     public void setProject(String project) {
         this.project = project;
-    }
-
-    public void setUpdateInterval(int updateInterval) {
-        this.updateInterval = updateInterval;
     }
 
     @Exported
@@ -105,7 +118,6 @@ public class WorkflowPipelineView extends View {
 
     @Exported
     public List<Component> getPipelines() {
-
         try {
             if (project != null) {
                 WorkflowJob job = JenkinsUtil.getInstance().getItem(project, JenkinsUtil.getInstance(), WorkflowJob.class);
@@ -115,13 +127,8 @@ public class WorkflowPipelineView extends View {
                 Iterator<WorkflowRun> it = job.getBuilds().iterator();
                 for (int i = 0; i < 3 && it.hasNext(); i++) {
                     WorkflowRun build = it.next();
-
                     pipelines.add(Pipeline.resolve(job, build));
-
-
                 }
-
-
                 Component component = new Component("Component", pipelines);
                 this.error = null;
                 return Collections.singletonList(component);
@@ -133,7 +140,6 @@ public class WorkflowPipelineView extends View {
             return Collections.EMPTY_LIST;
         }
     }
-
 
     @Override
     public Collection<TopLevelItem> getItems() {
@@ -165,7 +171,6 @@ public class WorkflowPipelineView extends View {
         public ListBoxModel doFillProjectItems(@AncestorInPath ItemGroup<?> context) {
             return ProjectUtil.fillAllProjects(context, WorkflowJob.class);
         }
-
 
         @Override
         public String getDisplayName() {
