@@ -28,8 +28,6 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
-import se.diabol.jenkins.pipeline.domain.results.StaticAnalysisResult;
-import se.diabol.jenkins.pipeline.domain.results.TestResult;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.task.ManualStep;
@@ -40,8 +38,6 @@ public class Task extends AbstractItem {
 
     private final String id;
     private final String link;
-    private final List<TestResult> testResults;
-    private final List<StaticAnalysisResult> staticAnalysisResults;
     private final Status status;
     private final ManualStep manual;
     private final String buildId;
@@ -52,8 +48,6 @@ public class Task extends AbstractItem {
         super(name);
         this.id = id;
         this.link = link;
-        this.testResults = null;
-        this.staticAnalysisResults = null;
         this.status = status;
         this.manual = manual;
         this.buildId = null;
@@ -86,16 +80,6 @@ public class Task extends AbstractItem {
     }
 
     @Exported
-    public List<TestResult> getTestResults() {
-        return testResults;
-    }
-
-    @Exported
-    public List<StaticAnalysisResult> getStaticAnalysisResults() {
-        return staticAnalysisResults;
-    }
-
-    @Exported
     public Status getStatus() {
         return status;
     }
@@ -109,7 +93,6 @@ public class Task extends AbstractItem {
     public boolean isRebuildable() {
         return false;
     }
-
 
     public static List<Task> resolve(WorkflowRun build, FlowNode stageStartNode) {
         List<Task> result = new ArrayList<Task>();
@@ -132,20 +115,15 @@ public class Task extends AbstractItem {
         return result;
     }
 
-
     private static Status resolveStatus(WorkflowRun build, List<FlowNode> taskNodes) {
         boolean allExecuted = isAllExecuted(taskNodes);
         boolean allIdle = isAllNotExecuted(taskNodes);
         if (Result.FAILURE.equals(build.getResult())) {
-            return StatusFactory.failed(0, 0,false, null);
+            return StatusFactory.failed(0, 0, false, null);
         }
         if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
             return StatusFactory.running(99, 0, 0);
         }
-
-
-
-
         if (allExecuted) {
             for (int i = 0; i < taskNodes.size(); i++) {
                 FlowNode node = taskNodes.get(i);
@@ -156,14 +134,10 @@ public class Task extends AbstractItem {
                 long duration = getDuration(taskNodes);
                 return StatusFactory.success(getStartTime(taskNodes), duration, false, null);
             }
-        } else {
-
-            if (allIdle) {
-                return StatusFactory.idle();
-            }
+        } else if (allIdle) {
+            return StatusFactory.idle();
         }
         return StatusFactory.idle();
-
     }
 
     private static boolean isAllExecuted(List<FlowNode> nodes) {
@@ -183,7 +157,6 @@ public class Task extends AbstractItem {
         }
         return false;
     }
-
 
     private static boolean isAllNotExecuted(List<FlowNode> nodes) {
         for (FlowNode node : nodes) {
