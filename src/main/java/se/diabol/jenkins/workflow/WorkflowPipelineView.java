@@ -174,7 +174,7 @@ public class WorkflowPipelineView extends View {
 
         @Override
         public String getDisplayName() {
-            return "Workflow Pipeline View";
+            return "Delivery Pipeline View for Pipeline/Workflow plugin";
         }
 
     }
