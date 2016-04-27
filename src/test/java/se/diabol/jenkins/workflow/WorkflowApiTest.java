@@ -17,16 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
-import com.google.common.io.Resources;
 import jenkins.model.Jenkins;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,19 +36,11 @@ public class WorkflowApiTest {
     public void setup() {
         when(jenkins.getRootUrl()).thenReturn("http://localhost:8080/jenkins");
     }
-    
-    @Test
-    public void shouldGetInformationAboutLastRun() {
-        // TODO: Implement
-    }
 
-    private static String loadResource(String name) {
-        URL url = Resources.getResource("wfapi-last_run.json");
-        try {
-            return Resources.toString(url, Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
+    @Test
+    @Ignore // TODO: Implement
+    public void shouldGetInformationAboutLastRun() {
+        WorkflowApi workflowApi = new WorkflowApi(jenkins);
+        workflowApi.lastRunFor("Test Workflow");
     }
-    
 }

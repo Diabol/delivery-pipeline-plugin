@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -28,8 +29,12 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson.JacksonFactory;
 import jenkins.model.Jenkins;
+import se.diabol.jenkins.workflow.api.Json;
+import se.diabol.jenkins.workflow.api.Run;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class WorkflowApi {
@@ -43,14 +48,24 @@ public class WorkflowApi {
         this.jenkins = instance;
     }
 
-    public void lastRunFor(String job) {
+    public Run lastRunFor(String job) {
         try {
             HttpRequest request = requestFor(workflowApiUrl(job) + "runs");
             LOG.info("Getting workflow runs for " + job + " from Workflow API: " + request.getUrl());
             HttpResponse response = request.execute();
             LOG.info("Received workflow runs for " + job + ": " + response.parseAsString());
+            List<Run> runs = asListOfRuns(response);
+            return returnFirstOrNull(runs);
         } catch (Exception e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    private static Run returnFirstOrNull(List<Run> runs) {
+        if (!runs.isEmpty()) {
+            return runs.get(0);
+        } else {
+            return null;
         }
     }
 
@@ -58,6 +73,10 @@ public class WorkflowApi {
         HttpRequest request = requestFactory().buildGetRequest(new GenericUrl(url));
         request.setConnectTimeout(WorkflowPipelineView.DEFAULT_INTERVAL - 250);
         request.setReadTimeout(WorkflowPipelineView.DEFAULT_INTERVAL - 250);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType("text/plain");
+        headers.setContentLength(0L);
+        request.setHeaders(headers);
         return request;
     }
 
@@ -68,6 +87,11 @@ public class WorkflowApi {
                 request.setParser(new JsonObjectParser(JSON_FACTORY));
             }
         });
+    }
+
+    public static List<Run> asListOfRuns(HttpResponse response) {
+        Run[] runs = Json.deserialize(response, Run[].class);
+        return Arrays.asList(runs);
     }
 
     private String workflowApiUrl(String jobName) {
