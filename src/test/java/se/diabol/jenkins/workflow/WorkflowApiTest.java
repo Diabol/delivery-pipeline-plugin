@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,5 +44,16 @@ public class WorkflowApiTest {
     public void shouldGetInformationAboutLastRun() {
         WorkflowApi workflowApi = new WorkflowApi(jenkins);
         workflowApi.lastRunFor("Test Workflow");
+    }
+
+    @Test
+    public void timeoutThresholdShouldAlwaysBePositive() {
+        assertThat(WorkflowApi.timeoutThreshold(WorkflowPipelineView.DEFAULT_INTERVAL), greaterThan(0));
+        assertThat(WorkflowApi.timeoutThreshold(1), greaterThan(0));
+    }
+
+    @Test
+    public void timeoutThresholdShouldDefaultIfNegative() {
+        assertThat(WorkflowApi.timeoutThreshold(-1000), greaterThan(0));
     }
 }
