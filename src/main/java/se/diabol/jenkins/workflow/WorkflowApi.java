@@ -71,13 +71,17 @@ public class WorkflowApi {
 
     private static HttpRequest requestFor(String url) throws IOException {
         HttpRequest request = requestFactory().buildGetRequest(new GenericUrl(url));
-        request.setConnectTimeout(WorkflowPipelineView.DEFAULT_INTERVAL - 250);
-        request.setReadTimeout(WorkflowPipelineView.DEFAULT_INTERVAL - 250);
+        request.setConnectTimeout(timeoutThreshold(WorkflowPipelineView.DEFAULT_INTERVAL));
+        request.setReadTimeout(timeoutThreshold(WorkflowPipelineView.DEFAULT_INTERVAL));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType("text/plain");
         headers.setContentLength(0L);
         request.setHeaders(headers);
         return request;
+    }
+
+    protected static int timeoutThreshold(int updateInterval) {
+        return (updateInterval <= 0 ? 1 : updateInterval) * 1000 - 250;
     }
 
     public static HttpRequestFactory requestFactory() {
