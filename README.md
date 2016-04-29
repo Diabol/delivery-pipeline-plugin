@@ -26,7 +26,7 @@ It basically comes down to the following guidelines:
  6. If you have multiple commits, please make sure to squash them before creating a pull request
     + It's hard to follow contributions when they are scattered across several commits
  7. Create a pull request to get feedback from the maintainers
- 8. Add a link to the pull request to the associated Jira issue
+    + Add a link to the pull request to the associated Jira issue
 
 Build
 ---
