@@ -67,6 +67,21 @@ public class Change {
         return changeLink;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Change change = (Change) o;
+
+        return commitId.equals(change.commitId);
+    }
+
+    @Override
+    public int hashCode() {
+        return commitId.hashCode();
+    }
+
     public static List<Change> getChanges(AbstractBuild<?, ?> build) {
         RepositoryBrowser repositoryBrowser = build.getProject().getScm().getBrowser();
         List<Change> result = new ArrayList<Change>();

@@ -107,6 +107,8 @@ public class DeliveryPipelineView extends View {
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
     private boolean pagingEnabled = false;
+    private boolean showAggregatedChanges = false;
+    private String aggregatedChangesGroupingPattern = null;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -258,7 +260,7 @@ public class DeliveryPipelineView extends View {
             this.embeddedCss = embeddedCss;
         }
     }
-    
+
     @Exported
     public boolean getPagingEnabled() {
         return pagingEnabled;
@@ -362,9 +364,27 @@ public class DeliveryPipelineView extends View {
     public void setShowStaticAnalysisResults(boolean showStaticAnalysisResults) {
         this.showStaticAnalysisResults = showStaticAnalysisResults;
     }
-    
+
     public void setPagingEnabled(boolean pagingEnabled) {
         this.pagingEnabled = pagingEnabled;
+    }
+
+    @Exported
+    public boolean isShowAggregatedChanges() {
+        return showAggregatedChanges;
+    }
+
+    public void setShowAggregatedChanges(boolean showAggregatedChanges) {
+        this.showAggregatedChanges = showAggregatedChanges;
+    }
+
+    @Exported
+    public String getAggregatedChangesGroupingPattern() {
+        return aggregatedChangesGroupingPattern;
+    }
+
+    public void setAggregatedChangesGroupingPattern(String aggregatedChangesGroupingPattern) {
+        this.aggregatedChangesGroupingPattern = aggregatedChangesGroupingPattern;
     }
 
     @JavaScriptMethod
@@ -469,14 +489,7 @@ public class DeliveryPipelineView extends View {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
-            if (!pagingEnabled) {
-                pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
-            }
-            else {
-                if (isFullScreenView()) {
-                    pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
-                }
-            }
+            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         if (isFullScreenView()) {
             pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
@@ -665,7 +678,6 @@ public class DeliveryPipelineView extends View {
 
         }
     }
-
 
     @Extension
     public static class ItemListenerImpl extends ItemListener {
