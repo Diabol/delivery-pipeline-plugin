@@ -12,19 +12,21 @@ Contributed by [Diabol AB](http://www.diabol.se)
 
 How to contribute
 ---
-Have a look at https://guides.github.com/activities/contributing-to-open-source/#contributing
+Read GitHub's general contribution guidelines: https://guides.github.com/activities/contributing-to-open-source/#contributing
 
-Basically it's about this:
- 1. If applicable create a [Jira issue](https://issues.jenkins-ci.org/browse/JENKINS/component/18134)
-    + Make sure a similar issue to the one you want to create doesn't exist
- 2. [Fork](https://github.com/jesperps/delivery-pipeline-plugin/edit/contributionsguide/README.md#fork-destination-box) the repo
- 3. Do contributions
- 4. Add as much unit testing as possible to the contribution
-    + This will make the code much more easy to maintain
- 5. Make sure to add the Jira issue number in the commit message together with a descriptive
+It basically comes down to the following guidelines:
+ 1. If applicable, create a [Jira issue](https://issues.jenkins-ci.org/browse/JENKINS/component/18134)
+    + Make sure a similar issue doesn't already exist
+ 2. [Fork](https://github.com/Diabol/delivery-pipeline-plugin/edit/contributionsguide/README.md#fork-destination-box) the repo
+ 3. Contribute and have fun!
+ 4. Add as much unit testing as possible to any new code changes
+    + This will make the code much more easy to maintain and to understand its intent
+ 5. Make sure your code is well formatted and aligns with the projects code style conventions
+ 5. Make sure to prefix the commit message with the associated Jira issue number together with a descriptive commit message
  6. If you have multiple commits, please make sure to squash them before creating a pull request
-    + It's hard to read contributions when they are scattered across several commits
+    + It's hard to follow contributions when they are scattered across several commits
  7. Create a pull request to get feedback from the maintainers
+ 8. Add a link to the pull request to the associated Jira issue
 
 Build
 ---
