@@ -11,6 +11,14 @@
             <f:checkbox/>
         </f:entry>
 
+        <f:entry title="Display aggregated changelog in aggregated view" field="showAggregatedChanges">
+            <f:checkbox/>
+        </f:entry>
+
+        <f:entry title="Group aggregated changelog by regular expression" field="aggregatedChangesGroupingPattern">
+            <f:textbox/>
+        </f:entry>
+
         <f:entry title="Number of columns" field="noOfColumns">
             <f:select/>
         </f:entry>
