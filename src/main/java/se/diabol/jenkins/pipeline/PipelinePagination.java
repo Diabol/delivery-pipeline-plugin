@@ -54,21 +54,13 @@ public class PipelinePagination {
 
     private void setNextPage(StringBuilder sb) {
         sb.append("<a href='").append(moveLink)
-                .append(nextPage).append("'>\n").append("Next").append("<img src='").append(rootUrl)
-                .append("/plugin/delivery-pipeline-plugin/nextbutton.gif' width='3' height='5' alt='' border='0'>\n")
+                .append(nextPage).append("'>\n").append("Next")
                 .append("</a>\n");
     }
 
     private void setPrePage(StringBuilder sb) {
         sb.append("<a href='").append(moveLink).append(prevPage).append("'>\n")
-                .append("<img src='").append(rootUrl)
-                .append("/plugin/delivery-pipeline-plugin/prevbutton.gif' width='3' height='5' alt='' border='0'>\n")
                 .append("Prev").append("</a>\n");
-    }
-
-    private void setBlankSpan(StringBuilder sb) {
-        sb.append("<span class='page dark'>\n");
-        sb.append("</span>");
     }
 
     private void setIndex(StringBuilder sb) {

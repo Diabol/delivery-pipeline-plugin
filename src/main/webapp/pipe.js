@@ -351,7 +351,7 @@ function generatePromotionsInfo(data, task) {
     if (data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
         var html = ["<div class='infoPanelOuter'>"];
         Q.each(task.status.promotions, function(i, promo) {
-            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+            html.push("<div class='infoPanel'><div class='infoPanelInner'><div class='promo-layer'>");
             html.push("<img class='promo-icon' height='16' width='16' src='" + rootURL + promo.icon + "'/>");
             html.push("<span class='promo-name'><a href='" + rootURL + "/" + task.link + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
             if (promo.user != 'anonymous') {
@@ -364,7 +364,7 @@ function generatePromotionsInfo(data, task) {
             Q.each(promo.params, function (j, param) {
                 html.push(param.replace(/\r\n/g, '<br/>') + "<br />");
             });
-            html.push("</div></div>");
+            html.push("</div></div></div>");
         });
         html.push("</div>");
         return html.join("");

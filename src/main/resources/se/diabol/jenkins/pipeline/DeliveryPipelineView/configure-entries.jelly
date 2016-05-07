@@ -85,6 +85,12 @@
             <f:checkbox/>
         </f:entry>
 
+        <f:entry name="theme" title="Theme" field="theme">
+            <select name="theme" class="setting-input  select">
+                <option value="default" selected="${instance.getTheme().equals('default')? 'true':null}">Default</option>
+            </select>
+        </f:entry>
+
     </f:section>
 
     <f:section title="Pipelines">

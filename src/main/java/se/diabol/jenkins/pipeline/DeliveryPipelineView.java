@@ -88,6 +88,8 @@ public class DeliveryPipelineView extends View {
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     public static final String NONE_SORTER = "none";
 
+    public static final String DEFAULT_THEME = "default";
+
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
     private boolean showAggregatedPipeline = false;
@@ -109,6 +111,7 @@ public class DeliveryPipelineView extends View {
     private boolean pagingEnabled = false;
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
+    private String theme = DEFAULT_THEME;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -264,6 +267,14 @@ public class DeliveryPipelineView extends View {
     @Exported
     public boolean getPagingEnabled() {
         return pagingEnabled;
+    }
+
+    public String getTheme() {
+        return this.theme == null ? DEFAULT_THEME : this.theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
     public boolean isFullScreenView() {
