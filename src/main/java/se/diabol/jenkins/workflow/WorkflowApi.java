@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
+import com.google.api.client.http.EmptyContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
@@ -69,13 +70,16 @@ public class WorkflowApi {
         }
     }
 
-    private static HttpRequest requestFor(String url) throws IOException {
+    protected static HttpRequest requestFor(String url) throws IOException {
         HttpRequest request = requestFactory().buildGetRequest(new GenericUrl(url));
         request.setConnectTimeout(timeoutThreshold(WorkflowPipelineView.DEFAULT_INTERVAL));
         request.setReadTimeout(timeoutThreshold(WorkflowPipelineView.DEFAULT_INTERVAL));
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType("text/plain");
-        headers.setContentLength(0L);
+        headers.setContentType("application/json; charset=UTF-8");
+        headers.setAcceptEncoding("UTF-8");
+        headers.setAccept("*/*");
+        request.setContent(new EmptyContent());
+        headers.setContentLength(request.getContent().getLength());
         request.setHeaders(headers);
         return request;
     }
