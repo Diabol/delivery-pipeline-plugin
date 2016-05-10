@@ -36,7 +36,7 @@ public class WorkflowApiTest {
 
     @Before
     public void setup() {
-        when(jenkins.getRootUrl()).thenReturn("http://localhost:8080/jenkins");
+        when(jenkins.getRootUrl()).thenReturn("http://localhost:8080/jenkins/");
     }
 
     @Test
