@@ -204,6 +204,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowStaticAnalysisResults());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
+        assertEquals("default", view.getTheme());
     }
 
     @Test
@@ -241,6 +242,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.getPagingEnabled());
         view.setAllowPipelineStart(true);
         assertTrue(view.isAllowPipelineStart());
+        view.setTheme("test");
+        assertEquals("test", view.getTheme());
     }
 
     @Test
