@@ -248,6 +248,14 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    public void testSetDefaultThemeIfNull() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setTheme(null);
+        assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
+    }
+
+    @Test
+    @WithoutJenkins
     public void testCssUrl() {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setEmbeddedCss("");
