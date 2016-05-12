@@ -68,8 +68,8 @@ div.task-progress {
     left: 50%;
     width: 30em;
     height: 18em;
-    margin-top: -9em; /*set to a negative number 1/2 of your height*/
-    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+    margin-top: -9em;
+    margin-left: -15em;
 }
 
 .pipeline-message a:visited {
@@ -81,44 +81,43 @@ div.task-progress {
 }
 
 .QUEUED {
-    border-left: 6px solid #2e6e9e;
+    border-left: 6px solid #3095c6;
 }
 
 .FAILED {
     border-left: 6px solid red;
     font-weight: bold;
-    color: red;
-    background-color: inherit;
+    color: black;
+    background-color: #ff6347;
 }
 
 .SUCCESS {
     border-left: 6px solid #228b22;
-    background-color: inherit;
+    background-color: #1bd130;
 }
 
 .UNSTABLE {
     border-left: 6px solid #fcae3f;
     font-weight: bold;
+    background-color: #fad42e;
     color: #fcae3f;
-    background-color: inherit;
 }
 
 .CANCELLED {
     border-left: 6px solid #8b8989;
     font-weight: bold;
-    background-color: inherit;
+    background-color: #d3d3d3;
 }
 
 .NOT_BUILT {
     border-left: 6px solid #8b8989;
     font-weight: bold;
-    background-color: inherit;
+    background-color: #d3d3d3;
 }
 
 .DISABLED {
     border-left: 6px solid transparent;
     color: #a9a9a9;
-    background-color: inherit;
 }
 
 .RUNNING {
@@ -139,4 +138,10 @@ div.infoPanelOuter {
     color: #fefefe;
     background-color: #646060;
     border: 1px solid darkgray;
+}
+
+div.aggregatedChangesPanelOuter {
+    margin: 8px;
+    border: 1px solid lightgray;
+    background-color: #646060;
 }

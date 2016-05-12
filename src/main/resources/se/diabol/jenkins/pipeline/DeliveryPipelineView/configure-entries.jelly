@@ -11,6 +11,14 @@
             <f:checkbox/>
         </f:entry>
 
+        <f:entry title="Display aggregated changelog in aggregated view" field="showAggregatedChanges">
+            <f:checkbox/>
+        </f:entry>
+
+        <f:entry title="Group aggregated changelog by regular expression" field="aggregatedChangesGroupingPattern">
+            <f:textbox/>
+        </f:entry>
+
         <f:entry title="Number of columns" field="noOfColumns">
             <f:select/>
         </f:entry>
@@ -71,6 +79,17 @@
 
         <f:entry title="URL for custom CSS file (fullscreen)" field="fullScreenCss">
             <f:textbox/>
+        </f:entry>
+        
+        <f:entry title="Enable paging" field="pagingEnabled">
+            <f:checkbox/>
+        </f:entry>
+
+        <f:entry name="theme" title="Theme" field="theme">
+            <select name="theme" class="setting-input  select">
+                <option value="default" selected="${instance.getTheme().equals('default')? 'true':null}">Default</option>
+                <option value="contrast" selected="${instance.getTheme().equals('contrast')? 'true':null}">Contrast</option>
+            </select>
         </f:entry>
 
     </f:section>

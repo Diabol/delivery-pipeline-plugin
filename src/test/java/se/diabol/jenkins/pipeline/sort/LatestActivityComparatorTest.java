@@ -34,6 +34,8 @@ import static org.junit.Assert.assertEquals;
 
 public class LatestActivityComparatorTest {
 
+    private final static boolean pagingEnabledFalse = false;
+
     @Test
     public void testCompare() {
         Task taskA = new Task(null, "task", "Build", StatusFactory.success(0, 20, false,
@@ -61,8 +63,8 @@ public class LatestActivityComparatorTest {
         pipelinesB.add(pipelineB);
 
 
-        Component componentB = new Component("B", "B", "job/A", false, pipelinesB);
-        Component componentA = new Component("A", "A", "job/B", false, pipelinesA);
+        Component componentB = new Component("B", "B", "job/A", false, pipelinesB, 3, pagingEnabledFalse);
+        Component componentA = new Component("A", "A", "job/B", false, pipelinesA, 3, pagingEnabledFalse);
         List<Component> list = new ArrayList<Component>();
         list.add(componentB);
         list.add(componentA);

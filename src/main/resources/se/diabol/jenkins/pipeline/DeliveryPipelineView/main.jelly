@@ -5,18 +5,24 @@
     <st:bind var="view" value="${it}"/>
     <st:bind var="fullscreen" value='${request.getParameter("fullscreen")}'/>
 
-    <j:set var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+    <j:set var="fullscreen" value='${request.getParameter("fullscreen") == null ? "false" : request.getParameter("fullscreen")}'/>
 
-    <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-common.css"/>
+    <st:bind var="page" value='${request.getParameter("page")}'/>
+    <j:set var="page" value='${request.getParameter("page") == null ? 1 : request.getParameter("page")}'/>
+
+    <st:bind var="component" value='${request.getParameter("component")}'/>
+    <j:set var="component" value='${request.getParameter("component") == null ? 1 : request.getParameter("component")}'/>
+
+    <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipeline-common.css"/>
     <j:switch on="${fullscreen}">
         <j:case value="true">
-            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline-fullscreen.css"/>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipeline-fullscreen.css"/>
             <j:if test="${it.fullScreenCss != null}">
                 <link rel="stylesheet" href="${it.fullScreenCss}"/>
             </j:if>
         </j:case>
         <j:default>
-            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/pipeline.css"/>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipeline.css"/>
             <j:if test="${it.embeddedCss != null}">
                 <link rel="stylesheet" href="${it.embeddedCss}"/>
             </j:if>
@@ -73,7 +79,12 @@
 
         view.viewUrl = '${it.getViewUrl()}';
 
-        updatePipelines(pipelineContainers, "pipelineerror", view, fullscreen, ${it.isShowChanges()},
+        updatePipelines(pipelineContainers, "pipelineerror", view, ${fullscreen}, ${page}, ${component}, ${it.isShowChanges()},
+
+        <j:choose>
+            <j:when test="it.getAggregatedChangesGroupingPattern()">/${it.getAggregatedChangesGroupingPattern()}/g</j:when>
+            <j:otherwise>null</j:otherwise>
+        </j:choose>,
         ${it.updateInterval * 1000});
     </script>
     </div>

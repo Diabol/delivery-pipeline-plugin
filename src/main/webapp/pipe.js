@@ -1,27 +1,27 @@
-function updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout) {
+function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout) {
     Q.ajax({
-        url: rootURL + "/" + view.viewUrl + 'api/json',
+        url: rootURL + "/" + view.viewUrl + 'api/json' + "?page=" + page + "&component=" + component + "&fullscreen=" + fullscreen,
         dataType: 'json',
         async: true,
         cache: false,
         timeout: 20000,
         success: function (data) {
-            refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges);
+            refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern);
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout);
+                updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout);
             }, timeout);
         },
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
             plumb.repaintEverything();
             setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, showChanges, timeout);
+                updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout);
             }, timeout);
         }
     });
 }
 
-function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges) {
+function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern) {
     var lastUpdate = data.lastUpdated,
         cErrorDiv = Q("#" + errorDiv),
         pipeline,
@@ -64,6 +64,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                 html.push("</a>");
             }
             html.push("</h1>");
+            if (!showAvatars) {
+                html.push("<div class='pagination'>");
+                html.push(component.pagingData);
+                html.push("</div>");
+            }
             if (component.pipelines.length === 0) {
                 html.push("No builds done yet.");
             }
@@ -197,6 +202,11 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html.push(generatePromotionsInfo(data, task));
 
                     }
+
+                    if (pipeline.aggregated && stage.changes && stage.changes.length > 0) {
+                        html.push(generateAggregatedChangelog(stage.changes, aggregatedChangesGroupingPattern));
+                    }
+
                     html.push("</div></div>");
                     column++;
                 }
@@ -341,7 +351,7 @@ function generatePromotionsInfo(data, task) {
     if (data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
         var html = ["<div class='infoPanelOuter'>"];
         Q.each(task.status.promotions, function(i, promo) {
-            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+            html.push("<div class='infoPanel'><div class='infoPanelInner'><div class='promo-layer'>");
             html.push("<img class='promo-icon' height='16' width='16' src='" + rootURL + promo.icon + "'/>");
             html.push("<span class='promo-name'><a href='" + rootURL + "/" + task.link + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
             if (promo.user != 'anonymous') {
@@ -354,7 +364,7 @@ function generatePromotionsInfo(data, task) {
             Q.each(promo.params, function (j, param) {
                 html.push(param.replace(/\r\n/g, '<br/>') + "<br />");
             });
-            html.push("</div></div>");
+            html.push("</div></div></div>");
         });
         html.push("</div>");
         return html.join("");
@@ -385,6 +395,62 @@ function generateChangeLog(changes) {
     }
     html.push('</div>');
     return html.join("");
+}
+
+function generateAggregatedChangelog(stageChanges, aggregatedChangesGroupingPattern) {
+    var html = [];
+    html.push("<div class='aggregatedChangesPanelOuter'>");
+    html.push("<div class='aggregatedChangesPanel'>");
+    html.push("<div class='aggregatedChangesPanelInner'>");
+    html.push("<b>Changes:</b>");
+    html.push("<ul>");
+
+    var changes = {};
+
+    var unmatchedChangesKey = '';
+
+    if (aggregatedChangesGroupingPattern) {
+        var re = new RegExp(aggregatedChangesGroupingPattern);
+
+        stageChanges.forEach(function(stageChange) {
+            var matches = stageChange.message.match(re) || [unmatchedChangesKey];
+
+            Q.unique(matches).forEach(function (match) {
+                (changes[match] || (changes[match] = [])).push(stageChange);
+            });
+        });
+    } else {
+        changes[unmatchedChangesKey] = stageChanges;
+    }
+
+    var keys = Object.keys(changes).sort().filter(function(matchKey) {
+        return matchKey !== unmatchedChangesKey;
+    });
+
+    keys.push(unmatchedChangesKey);
+
+    keys.forEach(function(matchKey) {
+        if (matchKey != unmatchedChangesKey) {
+            html.push("<li class='aggregatedKey'><b>" + matchKey + "</b><ul>");
+        }
+
+        (changes[matchKey] || []).forEach(function (change) {
+            html.push("<li>");
+            html.push(change.message || "&nbsp;");
+            html.push("</li>");
+        });
+
+        if (matchKey != unmatchedChangesKey) {
+            html.push("</ul></li>");
+        }
+    });
+
+    html.push("</ul>");
+    html.push("</div>");
+    html.push("</div>");
+    html.push("</div>");
+
+    return html.join("")
 }
 
 function getStageClassName(stagename) {
@@ -519,9 +585,9 @@ function triggerBuild(url, taskId) {
 
 function htmlEncode(html) {
     return document.createElement('a')
-            .appendChild(document.createTextNode(html))
-            .parentNode.innerHTML
-            .replace(/\n/g, '<br/>');
+        .appendChild(document.createTextNode(html))
+        .parentNode.innerHTML
+        .replace(/\n/g, '<br/>');
 }
 
 function getStageId(name, count) {
@@ -557,3 +623,5 @@ function equalheight(container) {
         }
     });
 }
+
+ 
