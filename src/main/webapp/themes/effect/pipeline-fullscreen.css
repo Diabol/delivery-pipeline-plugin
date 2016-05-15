@@ -1,0 +1,61 @@
+body {
+    background: #fff;
+    color:#000;
+    font-size: 14px;
+}
+
+div.pipeline-main {
+    font-family: "Courier New", Courier, monospace !important;
+}
+
+div.pipeline-loading-icon {
+    content: url("dark-load.gif");
+}
+
+section.pipeline-component {
+    padding-left: 20px;
+}
+
+section.pipeline-component h1 {
+    font-size: 38px;
+    font-weight: bold;
+}
+
+section.pipeline-component h2 {
+    font-size: 24px;
+}
+
+div.changes h1 {
+    font-size: 14px;
+}
+
+div.stage-task {
+    min-height: 50px;
+}
+
+div.task-progress {
+    min-height: 50px;
+}
+
+.timestamp {
+    font-size: 12px;
+}
+
+.duration {
+    font-size: 12px;
+}
+
+.pipeline-message {
+    position: fixed;
+    font-size: 36px;
+    top: 50%;
+    left: 50%;
+    width: 30em;
+    height: 18em;
+    margin-top: -9em; /*set to a negative number 1/2 of your height*/
+    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+}
+
+.pipeline-message a:visited {
+    color: inherit;
+}
