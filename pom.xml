@@ -107,7 +107,6 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.jvnet</groupId>
                 <artifactId>animal-sniffer</artifactId>
