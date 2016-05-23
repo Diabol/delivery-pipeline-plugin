@@ -1,4 +1,8 @@
 language: java
+env:
+  global:
+    - JENKINSCI_USERNAME=diabol_jenkins
+    - secure: "R3Wz/PgUYQqelwxXu+mMkHHzpLaFTxWmj6m+fOxnlJ85njJXOf/4jrMwMMLlvUM3DgZ+dJp8nANNxUPkOBIBLfbSNWGZTsLEJkGu+hEtBKCZhHLLXfIYhVc8tVFgEvfQo4QP+LXk63COfaIlE45cD8NIqFzebbMeN9K/MCOAIuw="
 jdk:
 - oraclejdk7
 notifications:
@@ -13,3 +17,4 @@ script:
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
+  - "[[ $TRAVIS_BRANCH == \"master\" && $TRAVIS_PULL_REQUEST == \"false\" ]] && { mvn release:prepare release:perform --settings settings.xml -Darguments="-DskipTests=true" -DskipTests=true  -B; };"
