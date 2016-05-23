@@ -17,4 +17,4 @@ script:
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
-  - "[[ $TRAVIS_BRANCH == \"master\" && $TRAVIS_PULL_REQUEST == \"false\" ]] && { mvn release:prepare release:perform --settings settings.xml -Darguments="-DskipTests=true" -DskipTests=true  -B; };"
+  - "[[ $TRAVIS_BRANCH == \"master\" && $TRAVIS_PULL_REQUEST == \"false\" ]] && { mvn release:prepare release:perform --settings settings.xml -Darguments=\"-DskipTests=true\" -DskipTests=true  -B; };"
