@@ -31,7 +31,7 @@ Build and run the Delivery Pipeline plugin in a Docker container
 
 Run Jenkins with the latest released Delivery Pipeline plugin in a Docker container
 ---
-	docker run -dt -p 8080:8080 diabol/delivery-pipeline-plugin:0.9.5
+	docker run -dt -p 8080:8080 diabol/delivery-pipeline-plugin:0.9.9
 
 If you run on Mac and use boot2docker, enable port forwarding between your host and boot2docker VM:
 
@@ -69,6 +69,30 @@ Here is an example of a corresponding JobDSL pipeline view configuration:
         enableManualTriggers(true)
         showAvatars(false)
         showChangeLog(true)
+        pipelines {
+            component("My pipeline", "the-name-of-the-first-job-in-the-pipeline")
+        }
+    }
+
+Using a custom CSS
+----
+Here is an example of how to specify a custom CSS for the Delivery Pipeline Plugin using a JobDSL pipeline view configuration:
+
+    deliveryPipelineView("my-pipeline") {
+        name("my-pipeline")
+        description("Delivery pipeline with custom full screen CSS")
+        pipelineInstances(1)
+        showAggregatedPipeline(false)
+        columns(1)
+        updateInterval(2)
+        enableManualTriggers(true)
+        showAvatars(false)
+        showChangeLog(true)
+        configure { node ->
+            node << {
+                fullScreenCss('https://my-jenkins-instance/userContent/my-pipeline-fullscreen.css')
+            }
+        }
         pipelines {
             component("My pipeline", "the-name-of-the-first-job-in-the-pipeline")
         }

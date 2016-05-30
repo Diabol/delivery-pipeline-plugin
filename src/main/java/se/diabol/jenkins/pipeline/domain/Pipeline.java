@@ -23,6 +23,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 
+import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -38,6 +39,7 @@ import java.util.Set;
 
 import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Pipeline extends AbstractItem {
@@ -197,10 +199,34 @@ public class Pipeline extends AbstractItem {
     }
 
     public Pipeline createPipelineAggregated(ItemGroup context) {
+        return createPipelineAggregated(context, false);
+    }
+
+    public Pipeline createPipelineAggregated(ItemGroup context, boolean showAggregatedChanges) {
         List<Stage> pipelineStages = new ArrayList<Stage>();
         for (Stage stage : getStages()) {
             pipelineStages.add(stage.createAggregatedStage(context, firstProject));
         }
+
+        if (showAggregatedChanges) {
+            // We use size() - 1 because last stage's changelog can't be calculated against next stage (no such)
+            for (int i = 0; i < pipelineStages.size() - 1; i++) {
+                Stage stage = pipelineStages.get(i);
+                Stage nextStage = pipelineStages.get(i + 1);
+
+                final AbstractBuild nextBuild = nextStage.getHighestBuild(firstProject, context, Result.SUCCESS);
+
+                Set<Change> changes = newHashSet();
+
+                AbstractBuild build = stage.getHighestBuild(firstProject, context, Result.SUCCESS);
+                for (; build != null && build != nextBuild; build = build.getPreviousBuild()) {
+                    changes.addAll(Change.getChanges(build));
+                }
+
+                stage.setChanges(changes);
+            }
+        }
+
         return new Pipeline(getName(), firstProject, lastProject, null, null, null, null, pipelineStages, true);
     }
 
@@ -209,7 +235,7 @@ public class Pipeline extends AbstractItem {
      *
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
         List<Pipeline> result = new ArrayList<Pipeline>();
         int no = noOfPipelines;
         if (firstProject.isInQueue()) {
@@ -224,10 +250,13 @@ public class Pipeline extends AbstractItem {
             result.add(pipelineLatest);
             no--;
         }
-
-
+        
+        int pipelineCount = noOfPipelines;
+        if (pagingEnabled) {
+        	pipelineCount = firstProject.getBuilds().size();
+        }
         Iterator it = firstProject.getBuilds().iterator();
-        for (int i = 0; i < no && it.hasNext(); i++) {
+        for (int i = 0; i < pipelineCount && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());

@@ -11,6 +11,14 @@
             <f:checkbox/>
         </f:entry>
 
+        <f:entry title="Display aggregated changelog in aggregated view" field="showAggregatedChanges">
+            <f:checkbox/>
+        </f:entry>
+
+        <f:entry title="Group aggregated changelog by regular expression" field="aggregatedChangesGroupingPattern">
+            <f:textbox/>
+        </f:entry>
+
         <f:entry title="Number of columns" field="noOfColumns">
             <f:select/>
         </f:entry>
@@ -53,7 +61,7 @@
             <f:checkbox/>
         </f:entry>
 
-        <f:entry title="Show junit results" field="showTestResults">
+        <f:entry title="Show test results" field="showTestResults">
             <f:checkbox/>
         </f:entry>
 
@@ -71,6 +79,10 @@
 
         <f:entry title="URL for custom CSS file (fullscreen)" field="fullScreenCss">
             <f:textbox/>
+        </f:entry>
+        
+        <f:entry title="Enable paging" field="pagingEnabled">
+            <f:checkbox/>
         </f:entry>
 
     </f:section>

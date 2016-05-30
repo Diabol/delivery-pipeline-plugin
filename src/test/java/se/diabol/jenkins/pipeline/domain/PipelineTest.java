@@ -20,8 +20,6 @@ package se.diabol.jenkins.pipeline.domain;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
@@ -51,13 +49,10 @@ import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.gson.internal.$Gson$Preconditions.checkArgument;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -65,7 +60,7 @@ public class PipelineTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-
+    private final static boolean pagingEnabledFalse = false;
 
     @Test
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
@@ -423,7 +418,7 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance());
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -706,14 +701,14 @@ public class PipelineTest {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance());
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse);
         assertEquals(1, pipelines.size());
 
 
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
@@ -824,46 +819,31 @@ public class PipelineTest {
     }
 
     @Test
-    public void testExtractExcludeJobsRegex() throws Exception {
-        String firstJobName = "project-build";
-        List<String> expectedJobNames = newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
-        createLinkedProjects(expectedJobNames);
-        createLinkedProjects(newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
+    @Bug(30043)
+    public void testSubProjectsFirst() throws Exception {
+        FreeStyleProject jobA = jenkins.createFreeStyleProject("Job A");
+        jobA.addProperty(new PipelineProperty(null, "Stage", null));
+        FreeStyleProject util1 = jenkins.createFreeStyleProject("Job Util 1");
+        util1.addProperty(new PipelineProperty(null, "Stage", null));
+        FreeStyleProject util2 = jenkins.createFreeStyleProject("Job Util 2");
+        util2.addProperty(new PipelineProperty(null, "Stage", null));
+        FreeStyleProject jobC = jenkins.createFreeStyleProject("Job C");
+        jobC.addProperty(new PipelineProperty(null, "Stage", null));
+
+        jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 1", new BlockingBehaviour("never", "never", "never"), null)));
+        jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
+        jobA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("Job C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+
         jenkins.getInstance().rebuildDependencyGraph();
-        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
 
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", firstJob, null, "project-(?!build|country1).*");
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", jobA);
 
-        assertEquals(expectedJobNames, getProjectNames(pipeline));
-    }
+        assertEquals("Job A", pipeline.getStages().get(0).getTasks().get(0).getId());
+        assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
+        assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
+        assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
 
-    private void createLinkedProjects(List<String> projectNames) {
-        checkArgument(projectNames.size() > 0);
-        FreeStyleProject fromProject = getOrCreateProject(projectNames.get(0));
-        Iterable<String> subsequentProjectNames = Iterables.skip(projectNames, 1);
-        for (String toProjectName : subsequentProjectNames) {
-            fromProject.getPublishersList().add(new BuildTrigger(toProjectName, false));
-            fromProject = getOrCreateProject(toProjectName);
-        }
-    }
 
-    private FreeStyleProject getOrCreateProject(String projectName) {
-        FreeStyleProject existingProject = jenkins.getInstance().getItemByFullName(projectName, FreeStyleProject.class);
-        try {
-            return existingProject != null ? existingProject : jenkins.createFreeStyleProject(projectName);
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
-    }
-
-    private List<String> getProjectNames(Pipeline pipeline) {
-        List<String> projectNames = newArrayList();
-        for (Stage stage : pipeline.getStages()) {
-            for (Task task : stage.getTasks()) {
-                projectNames.add(task.getName());
-            }
-        }
-        return projectNames;
     }
 
 }

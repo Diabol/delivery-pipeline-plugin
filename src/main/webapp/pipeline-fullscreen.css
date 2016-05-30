@@ -140,3 +140,9 @@ div.infoPanelOuter {
     background-color: #646060;
     border: 1px solid darkgray;
 }
+
+div.aggregatedChangesPanelOuter {
+    margin: 8px;
+    border: 1px solid lightgray;
+    background-color: #646060;
+}

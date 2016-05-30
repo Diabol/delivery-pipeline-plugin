@@ -58,6 +58,7 @@ import org.acegisecurity.BadCredentialsException;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
@@ -105,6 +106,9 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean pagingEnabled = false;
+    private boolean showAggregatedChanges = false;
+    private String aggregatedChangesGroupingPattern = null;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -257,6 +261,19 @@ public class DeliveryPipelineView extends View {
         }
     }
 
+    @Exported
+    public boolean getPagingEnabled() {
+        return pagingEnabled;
+    }
+
+    public boolean isFullScreenView() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        if (req == null) {
+            return false;
+        }
+        return req.getParameter("fullscreen") == null ? false : Boolean.parseBoolean(req.getParameter("fullscreen"));
+    }
+
     public void onProjectRenamed(Item item, String oldName, String newName) {
         if (componentSpecs != null) {
             Iterator<ComponentSpec> it = componentSpecs.iterator();
@@ -348,6 +365,28 @@ public class DeliveryPipelineView extends View {
         this.showStaticAnalysisResults = showStaticAnalysisResults;
     }
 
+    public void setPagingEnabled(boolean pagingEnabled) {
+        this.pagingEnabled = pagingEnabled;
+    }
+
+    @Exported
+    public boolean isShowAggregatedChanges() {
+        return showAggregatedChanges;
+    }
+
+    public void setShowAggregatedChanges(boolean showAggregatedChanges) {
+        this.showAggregatedChanges = showAggregatedChanges;
+    }
+
+    @Exported
+    public String getAggregatedChangesGroupingPattern() {
+        return aggregatedChangesGroupingPattern;
+    }
+
+    public void setAggregatedChangesGroupingPattern(String aggregatedChangesGroupingPattern) {
+        this.aggregatedChangesGroupingPattern = aggregatedChangesGroupingPattern;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
         try {
@@ -381,13 +420,14 @@ public class DeliveryPipelineView extends View {
 
         @SuppressWarnings("unchecked")
         List<Cause> prevCauses = build.getCauses();
-        CauseAction causeAction = new CauseAction();
+        List<Cause> newCauses = new ArrayList<Cause>();
         for (Cause cause : prevCauses) {
             if (!(cause instanceof Cause.UserIdCause)) {
-                causeAction.getCauses().add(cause);
+                newCauses.add(cause);
             }
         }
-        causeAction.getCauses().add(new Cause.UserIdCause());
+        newCauses.add(new Cause.UserIdCause());
+        CauseAction causeAction = new CauseAction(newCauses);
         project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
     }
 
@@ -437,6 +477,9 @@ public class DeliveryPipelineView extends View {
             }
             LOG.fine("Returning: " + components);
             error = null;
+            for(int i = 0; i< components.size(); i++) {
+                components.get(i).setComponentNumber(i+1);
+            }
             return components;
         } catch (PipelineException e) {
             error = e.getMessage();
@@ -448,10 +491,15 @@ public class DeliveryPipelineView extends View {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
-            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
+            pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
-        pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
-        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines);
+        if (isFullScreenView()) {
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
+        }
+        else {
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled));
+        }
+        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines, noOfPipelines, pagingEnabled);
     }
 
     @Override
@@ -638,7 +686,6 @@ public class DeliveryPipelineView extends View {
 
         }
     }
-
 
     @Extension
     public static class ItemListenerImpl extends ItemListener {
