@@ -208,6 +208,8 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isAllowPipelineStart());
         assertEquals("default", view.getTheme());
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
+        assertFalse(view.isShowAggregatedChanges());
+        assertNull(view.getAggregatedChangesGroupingPattern());
     }
 
     @Test
@@ -251,6 +253,10 @@ public class DeliveryPipelineViewTest {
         assertEquals("test", view.getTheme());
         view.setMaxNumberOfVisiblePipelines(10);
         assertEquals(10, view.getMaxNumberOfVisiblePipelines());
+        view.setShowAggregatedChanges(true);
+        assertTrue(view.isShowAggregatedChanges());
+        view.setAggregatedChangesGroupingPattern("TestRegex");
+        assertEquals("TestRegex", view.getAggregatedChangesGroupingPattern());
     }
 
     @Test
