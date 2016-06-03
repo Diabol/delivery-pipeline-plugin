@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.CheckForNull;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Extension;
 import hudson.model.AbstractProject;
@@ -24,10 +28,6 @@ import hudson.model.Descriptor;
 import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
-
-import javax.annotation.CheckForNull;
-import java.util.ArrayList;
-import java.util.List;
 
 @Extension(optional = true)
 public class BPPManualTriggerResolver extends ManualTriggerResolver {
@@ -40,11 +40,13 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
     @Override
     @CheckForNull
     public ManualTrigger getManualTrigger(AbstractProject<?, ?> project, AbstractProject<?, ?> downstream) {
-        BuildPipelineTrigger bppTrigger = downstream.getPublishersList().get(BuildPipelineTrigger.class);
-        if (bppTrigger != null) {
-            String names = bppTrigger.getDownstreamProjectNames();
-            if (ProjectUtil.getProjectList(names, project.getParent(), null).contains(project)) {
-                return new BPPManualTrigger();
+        List<BuildPipelineTrigger> bppTriggers = downstream.getPublishersList().getAll(BuildPipelineTrigger.class);
+        for (BuildPipelineTrigger bppTrigger : bppTriggers) {
+            if (bppTrigger != null) {
+                String names = bppTrigger.getDownstreamProjectNames();
+                if (ProjectUtil.getProjectList(names, project.getParent(), null).contains(project)) {
+                    return new BPPManualTrigger();
+                }
             }
         }
         return null;
