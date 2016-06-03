@@ -26,6 +26,7 @@ import org.jvnet.hudson.test.MockFolder;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class BPPManualTriggerResolverTest {
 
@@ -58,6 +59,23 @@ public class BPPManualTriggerResolverTest {
     }
 
     @Test
+    public void testGetTriggerBPPManualTriggerInTree() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        FreeStyleProject c = jenkins.createFreeStyleProject("c");
+        jenkins.createFreeStyleProject("d");
+
+
+        a.getPublishersList().addAll(newArrayList(new BuildPipelineTrigger("b", null), new BuildPipelineTrigger("c", null)));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));
+        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(c, a));
+        assertNull(new BPPManualTriggerResolver().getManualTrigger(b, c));
+    }
+
+    @Test
     public void testGetTriggerBPPManualTriggerFolders() throws Exception {
         MockFolder folder = jenkins.createFolder("folder");
         FreeStyleProject a = folder.createProject(FreeStyleProject.class, "a");
@@ -67,5 +85,7 @@ public class BPPManualTriggerResolverTest {
 
         assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));
     }
+
+
 
 }
