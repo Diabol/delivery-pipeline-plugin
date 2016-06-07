@@ -453,7 +453,9 @@ public class DeliveryPipelineView extends View {
                     AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
                     AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
-                        components.add(getComponent(componentSpec.getName(), firstJob, lastJob, showAggregatedPipeline));
+                        String name = componentSpec.getName();
+                        String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
+                        components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -463,7 +465,7 @@ public class DeliveryPipelineView extends View {
                 for (RegExpSpec regexp : regexpFirstJobs) {
                     Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
                     for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
-                        components.add(getComponent(entry.getKey(), entry.getValue(), null, showAggregatedPipeline));
+                        components.add(getComponent(entry.getKey(), entry.getValue(), null, null, showAggregatedPipeline));
                     }
                 }
             }
@@ -485,8 +487,8 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, boolean showAggregatedPipeline) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
+    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, String excludeJobsRegex, boolean showAggregatedPipeline) throws PipelineException {
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
@@ -621,12 +623,14 @@ public class DeliveryPipelineView extends View {
         private String name;
         private String firstJob;
         private String lastJob;
+        private String excludeJobsRegex;
 
         @DataBoundConstructor
-        public ComponentSpec(String name, String firstJob, String lastJob) {
+        public ComponentSpec(String name, String firstJob, String lastJob, String excludeJobsRegex) {
             this.name = name;
             this.firstJob = firstJob;
             this.lastJob = lastJob;
+            this.excludeJobsRegex = excludeJobsRegex;
         }
 
         public String getName() {
@@ -647,6 +651,10 @@ public class DeliveryPipelineView extends View {
 
         public void setLastJob(String lastJob) {
             this.lastJob = lastJob;
+        }
+
+        public String getExcludeJobsRegex() {
+            return excludeJobsRegex;
         }
 
         @Extension
