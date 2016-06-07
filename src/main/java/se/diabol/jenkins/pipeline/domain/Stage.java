@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Objects.toStringHelper;
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -59,6 +60,9 @@ import static java.util.Collections.singleton;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
+
+    private static final Pattern MATCH_NONE_PATTERN = Pattern.compile(".^");
+
     private List<Task> tasks;
 
     private String version;
@@ -167,27 +171,32 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject) throws PipelineException {
+    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject, String excludeJobsRegex) throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
+        Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
-            Task task = Task.getPrototypeTask(project, project.getFullName().equals(firstProject.getFullName()));
-            /* if current project is last we need clean downStreamTasks*/
-            if (lastProject != null && project.getFullName().equals(lastProject.getFullName())) {
-                task.getDownstreamTasks().clear();
-            }
+            String projectName = project.getName();
+            if (!excludeJobsPattern.matcher(projectName).matches()) {
+                boolean isInitialTask = project.getFullName().equals(firstProject.getFullName());
+                Task task = Task.getPrototypeTask(project, isInitialTask, excludeJobsPattern);
+                /* if current project is last we need clean downStreamTasks*/
+                if (lastProject != null && project.getFullName().equals(lastProject.getFullName())) {
+                    task.getDownstreamTasks().clear();
+                }
 
-            PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
-            if (property == null && project.getParent() instanceof AbstractProject) {
-                property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
+                PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
+                if (property == null && project.getParent() instanceof AbstractProject) {
+                    property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
+                }
+                String stageName = property != null && !isNullOrEmpty(property.getStageName())
+                        ? property.getStageName() : project.getDisplayName();
+                Stage stage = stages.get(stageName);
+                if (stage == null) {
+                    stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
+                }
+                stages.put(stageName,
+                        Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
             }
-            String stageName = property != null && !isNullOrEmpty(property.getStageName())
-                    ? property.getStageName() : project.getDisplayName();
-            Stage stage = stages.get(stageName);
-            if (stage == null) {
-                stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
-            }
-            stages.put(stageName,
-                    Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
         Collection<Stage> stagesResult = stages.values();
 
