@@ -21,6 +21,7 @@ import com.cloudbees.workflow.flownode.FlowNodeUtil;
 import hudson.model.Result;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -33,6 +34,9 @@ import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.task.ManualStep;
 import se.diabol.jenkins.workflow.step.TaskAction;
 import se.diabol.jenkins.workflow.util.Util;
+
+import static java.lang.Math.round;
+import static java.lang.System.currentTimeMillis;
 
 public class Task extends AbstractItem {
 
@@ -122,7 +126,7 @@ public class Task extends AbstractItem {
             return StatusFactory.failed(0, 0, false, null);
         }
         if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
-            return StatusFactory.running(99, 0, 0);
+            return runningStatus(build, taskNodes);
         }
         if (allExecuted) {
             for (int i = 0; i < taskNodes.size(); i++) {
@@ -138,6 +142,15 @@ public class Task extends AbstractItem {
             return StatusFactory.idle();
         }
         return StatusFactory.idle();
+    }
+
+    private static Status runningStatus(WorkflowRun build, List<FlowNode> taskNodes) {
+        int progress = (int) round(100.0d *
+                (currentTimeMillis() - build.getTimestamp().getTimeInMillis()) / build.getEstimatedDuration());
+        if (progress > 100) {
+            progress = 99;
+        }
+        return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
     }
 
     private static boolean isAllExecuted(List<FlowNode> nodes) {
