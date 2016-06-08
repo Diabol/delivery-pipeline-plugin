@@ -52,14 +52,19 @@ public class WorkflowApi {
     public Run lastRunFor(String job) {
         try {
             HttpRequest request = requestFor(workflowApiUrl(job) + "runs");
-            LOG.info("Getting workflow runs for " + job + " from Workflow API: " + request.getUrl());
-            HttpResponse response = request.execute();
-            LOG.info("Received workflow runs for " + job + ": " + response.parseAsString());
-            List<Run> runs = asListOfRuns(response);
+            LOG.fine("Getting workflow runs for " + job + " from Workflow API: " + request.getUrl());
+            String responseString = execute(request);
+            LOG.fine("Received workflow runs for " + job + ": " + responseString);
+            List<Run> runs = asListOfRuns(responseString);
             return returnFirstOrNull(runs);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    protected String execute(HttpRequest request) throws IOException {
+        HttpResponse response = request.execute();
+        return response.parseAsString();
     }
 
     private static Run returnFirstOrNull(List<Run> runs) {
@@ -97,7 +102,7 @@ public class WorkflowApi {
         });
     }
 
-    public static List<Run> asListOfRuns(HttpResponse response) {
+    public static List<Run> asListOfRuns(String response) {
         Run[] runs = Json.deserialize(response, Run[].class);
         return Arrays.asList(runs);
     }
@@ -106,7 +111,7 @@ public class WorkflowApi {
         return jenkinsUrl() + "job/" + jobName + "/wfapi/";
     }
 
-    private String jenkinsUrl() {
+    protected String jenkinsUrl() {
         return jenkins.getRootUrl();
     }
 }

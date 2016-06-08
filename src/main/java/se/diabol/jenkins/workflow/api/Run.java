@@ -17,12 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.api.client.util.DateTime;
 
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Run {
 
     public final Map<String, ?> _links;
