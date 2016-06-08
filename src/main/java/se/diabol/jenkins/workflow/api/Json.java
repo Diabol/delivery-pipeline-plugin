@@ -19,7 +19,6 @@ package se.diabol.jenkins.workflow.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.http.HttpResponse;
 
 import java.io.IOException;
 
@@ -27,9 +26,9 @@ public class Json {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static <T> T deserialize(HttpResponse jsonResponse, Class<T> type) {
+    public static <T> T deserialize(String jsonResponse, Class<T> type) {
         try {
-            return OBJECT_MAPPER.readValue(jsonResponse.parseAsString().getBytes(), type);
+            return OBJECT_MAPPER.readValue(jsonResponse.getBytes(), type);
         } catch (IOException ioe) {
             throw new IllegalArgumentException(ioe);
         }
