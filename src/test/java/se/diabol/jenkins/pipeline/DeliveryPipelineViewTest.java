@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import hudson.model.TopLevelItem;
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
@@ -45,6 +46,7 @@ import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -561,7 +563,7 @@ public class DeliveryPipelineViewTest {
         assertTrue(names.contains("Project2"));
         assertTrue(names.contains("Project3"));
 
-        assertEquals(4, view.getItems().size());
+        assertEquals(3, view.getItems().size());
     }
 
     @Test
@@ -822,6 +824,27 @@ public class DeliveryPipelineViewTest {
     public void testComponentSpecDescriptorImpldoFillFirstJobItems() throws Exception {
         jenkins.createFreeStyleProject("a");
         assertEquals(1, new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance()).size());
+    }
+
+    @Test
+    public void testGetItems() throws IOException {
+        FreeStyleProject firstJob = jenkins.createFreeStyleProject("Project1");
+        FreeStyleProject secondJob = jenkins.createFreeStyleProject("Project2");
+        FreeStyleProject thirdJob = jenkins.createFreeStyleProject("Project3");
+
+        firstJob.getPublishersList().add((new BuildTrigger(secondJob.getName(), true)));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        DeliveryPipelineView pipeline = new DeliveryPipelineView("Pipeline");
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Spec", firstJob.getName(), NONE, NONE));
+        pipeline.setComponentSpecs(componentSpecs);
+        jenkins.getInstance().addView(pipeline);
+
+        Collection<TopLevelItem> jobs = pipeline.getItems();
+        assertTrue(jobs.contains(firstJob));
+        assertTrue(jobs.contains(secondJob));
+        assertFalse(jobs.contains(thirdJob));
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {
