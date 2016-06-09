@@ -60,7 +60,7 @@ public final class ProjectUtil {
     }
 
     /**
-     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map)
      *
      */
     public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last) {
@@ -69,36 +69,30 @@ public final class ProjectUtil {
     }
 
     /**
-     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map)
      * Version of the method that returns a map of projects without the ones that match given regex.
      */
-    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
-                                                                              AbstractProject last,
-                                                                              Map<String, AbstractProject<?, ?>>
-                                                                                      projects,
-                                                                              String excludeJobsRegex) {
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last, String excludeJobsRegex) {
+        Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
+        return getAllDownstreamProjects(first, last, projects, excludeJobsRegex);
+    }
+
+    /**
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map, String)
+     * Version of the method that returns a map of projects without the ones that match given regex.
+     */
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last, Map<String,
+        AbstractProject<?, ?>> projects, String excludeJobsRegex) {
+
         Map<String, AbstractProject<?, ?>> matchingProjects = newLinkedHashMap();
         Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
-        for (Map.Entry<String, AbstractProject<?, ?>> entry : getAllDownstreamProjects(first, last,
-                projects).entrySet()) {
+        for (Map.Entry<String, AbstractProject<?, ?>> entry : getAllDownstreamProjects(first, last, projects).entrySet()) {
             String projectName = entry.getValue().getName();
             if (!excludeJobsPattern.matcher(projectName).matches()) {
                 matchingProjects.put(entry.getKey(), entry.getValue());
             }
         }
         return matchingProjects;
-    }
-
-    /**
-     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java
-     * .util.Map)
-     * Version of the method that returns a map of projects without the ones that match given regex.
-     */
-    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
-                                                                              AbstractProject last,
-                                                                              String excludeJobsRegex) {
-        Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
-        return getAllDownstreamProjects(first, last, projects, excludeJobsRegex);
     }
 
     /**
