@@ -417,11 +417,11 @@ public class DeliveryPipelineView extends View {
             throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
-            AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+            AbstractProject project = getProject(projectName, Jenkins.getInstance());
             if (!project.hasPermission(Item.BUILD)) {
                 throw new BadCredentialsException("Not auth to build");
             }
-            AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
+            AbstractProject upstream = getProject(upstreamName, Jenkins.getInstance());
             ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
             if (trigger != null) {
                 trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
@@ -438,7 +438,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public void triggerRebuild(String projectName, String buildId) {
-        AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+        AbstractProject project = getProject(projectName, Jenkins.getInstance());
         if (!project.hasPermission(Item.BUILD)) {
             throw new BadCredentialsException("Not auth to build");
         }
@@ -478,8 +478,8 @@ public class DeliveryPipelineView extends View {
             List<Component> components = new ArrayList<Component>();
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
-                    AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-                    AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup());
+					          AbstractProject firstJob = getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+					          AbstractProject lastJob = getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
@@ -574,7 +574,7 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    @Override
+	@Override
     public boolean contains(TopLevelItem item) {
         return getItems().contains(item);
     }

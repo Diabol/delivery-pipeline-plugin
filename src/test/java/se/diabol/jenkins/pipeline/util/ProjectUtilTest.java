@@ -136,4 +136,23 @@ public class ProjectUtilTest {
         Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(null, null);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    public void testGetAllDownstreamProjectsWithoutExcluded() throws IOException {
+        String excludeJobsRegex = "compile";
+        FreeStyleProject baseProject = jenkins.createFreeStyleProject("Base");
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("compile-Project1");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("compile-Project2");
+        FreeStyleProject notMatchingProject = jenkins.createFreeStyleProject("compile");
+
+        baseProject.getPublishersList().add(new BuildTrigger(firstProject.getName(), true));
+        firstProject.getPublishersList().add(new BuildTrigger(secondProject.getName(), true));
+        secondProject.getPublishersList().add(new BuildTrigger(notMatchingProject.getName(), true));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(baseProject, secondProject, excludeJobsRegex);
+        assertTrue(result.containsValue(firstProject));
+        assertTrue(result.containsValue(secondProject));
+        assertFalse(result.containsValue(notMatchingProject));
+    }
 }
