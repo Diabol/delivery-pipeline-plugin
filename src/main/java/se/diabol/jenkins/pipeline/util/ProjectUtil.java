@@ -46,6 +46,8 @@ public final class ProjectUtil {
 
     private static final Logger LOG = Logger.getLogger(ProjectUtil.class.getName());
 
+    private static final Pattern MATCH_NONE_PATTERN = Pattern.compile(".^");
+
     private ProjectUtil() {
     }
 
@@ -58,7 +60,7 @@ public final class ProjectUtil {
     }
 
     /**
-     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map)
      *
      */
     public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last) {
@@ -67,9 +69,38 @@ public final class ProjectUtil {
     }
 
     /**
-     * Get all downstream projects for a given project. This will recursively call all downstream projects for a given first project.
-     *
-     * A project that has a downstream project and will eventually loop back to itself will log a warning, and will NOT add. Adding
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map)
+     * Version of the method that returns a map of projects without the ones that match given regex.
+     */
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last, String excludeJobsRegex) {
+        Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
+        return getAllDownstreamProjects(first, last, projects, excludeJobsRegex);
+    }
+
+    /**
+     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map, String)
+     * Version of the method that returns a map of projects without the ones that match given regex.
+     */
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last, Map<String,
+        AbstractProject<?, ?>> projects, String excludeJobsRegex) {
+
+        Map<String, AbstractProject<?, ?>> matchingProjects = newLinkedHashMap();
+        Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
+        for (Map.Entry<String, AbstractProject<?, ?>> entry : getAllDownstreamProjects(first, last, projects).entrySet()) {
+            String projectName = entry.getValue().getName();
+            if (!excludeJobsPattern.matcher(projectName).matches()) {
+                matchingProjects.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return matchingProjects;
+    }
+
+    /**
+     * Get all downstream projects for a given project. This will recursively call all downstream projects for a
+     * given first project.
+     * <p>
+     * A project that has a downstream project and will eventually loop back to itself will log a warning, and will
+     * NOT add. Adding
      * a project that already exists will produce a stack overflow.
      *
      * @param first The first project

@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
@@ -44,6 +45,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -52,7 +54,6 @@ import java.util.regex.PatternSyntaxException;
 import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
-
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
 import org.kohsuke.stapler.AncestorInPath;
@@ -63,7 +64,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
-
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
@@ -75,6 +75,10 @@ import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getAllDownstreamProjects;
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProjects;
 
 public class DeliveryPipelineView extends View {
 
@@ -391,11 +395,11 @@ public class DeliveryPipelineView extends View {
     public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
-            AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+            AbstractProject project = getProject(projectName, Jenkins.getInstance());
             if (!project.hasPermission(Item.BUILD)) {
                 throw new BadCredentialsException("Not auth to build");
             }
-            AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
+            AbstractProject upstream = getProject(upstreamName, Jenkins.getInstance());
             ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
             if (trigger != null) {
                 trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
@@ -412,7 +416,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public void triggerRebuild(String projectName, String buildId) {
-        AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+        AbstractProject project = getProject(projectName, Jenkins.getInstance());
         if (!project.hasPermission(Item.BUILD)) {
             throw new BadCredentialsException("Not auth to build");
         }
@@ -450,8 +454,8 @@ public class DeliveryPipelineView extends View {
             List<Component> components = new ArrayList<Component>();
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
-                    AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-                    AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup());
+                    AbstractProject firstJob = getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+                    AbstractProject lastJob = getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
@@ -463,7 +467,7 @@ public class DeliveryPipelineView extends View {
             }
             if (regexpFirstJobs != null) {
                 for (RegExpSpec regexp : regexpFirstJobs) {
-                    Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
+                    Map<String, AbstractProject> matches = getProjects(regexp.getRegexp());
                     for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
                         components.add(getComponent(entry.getKey(), entry.getValue(), null, null, showAggregatedPipeline));
                     }
@@ -504,7 +508,36 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        return (Collection)getOwnerItemGroup().getItems();
+        Set<TopLevelItem> jobs = Sets.newHashSet();
+        addJobsFromComponentSpecs(jobs);
+        addRegexpFirstJobs(jobs);
+        return jobs;
+    }
+
+    private void addRegexpFirstJobs(Set<TopLevelItem> jobs) {
+        if (regexpFirstJobs == null) {
+            return;
+        }
+        for (RegExpSpec spec : regexpFirstJobs) {
+            Map<String, AbstractProject> regexpJobs = getProjects(spec.getRegexp());
+            for (AbstractProject project : regexpJobs.values()) {
+                jobs.add((TopLevelItem) project);
+            }
+        }
+    }
+
+    private void addJobsFromComponentSpecs(Set<TopLevelItem> jobs) {
+        if (componentSpecs == null) {
+            return;
+        }
+        for (ComponentSpec spec : componentSpecs) {
+            AbstractProject first = getProject(spec.getFirstJob(), getOwnerItemGroup());
+            AbstractProject last = getProject(spec.getLastJob(), getOwnerItemGroup());
+            Collection<AbstractProject<?, ?>> downstreamProjects = getAllDownstreamProjects(first, last, spec.getExcludeJobsRegex()).values();
+            for (AbstractProject project : downstreamProjects) {
+                jobs.add((TopLevelItem) project);
+            }
+        }
     }
 
     @Override

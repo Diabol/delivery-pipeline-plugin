@@ -174,9 +174,7 @@ public class Stage extends AbstractItem {
     public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject, String excludeJobsRegex) throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
         Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
-        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
-            String projectName = project.getName();
-            if (!excludeJobsPattern.matcher(projectName).matches()) {
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject, excludeJobsRegex).values()) {
                 boolean isInitialTask = project.getFullName().equals(firstProject.getFullName());
                 Task task = Task.getPrototypeTask(project, isInitialTask, excludeJobsPattern);
                 /* if current project is last we need clean downStreamTasks*/
@@ -197,7 +195,6 @@ public class Stage extends AbstractItem {
                 stages.put(stageName,
                         Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
             }
-        }
         Collection<Stage> stagesResult = stages.values();
 
         return Stage.placeStages(firstProject, stagesResult);
