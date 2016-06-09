@@ -478,8 +478,8 @@ public class DeliveryPipelineView extends View {
             List<Component> components = new ArrayList<Component>();
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
-					          AbstractProject firstJob = getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-					          AbstractProject lastJob = getProject(componentSpec.getLastJob(), getOwnerItemGroup());
+                    AbstractProject firstJob = getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+                    AbstractProject lastJob = getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
