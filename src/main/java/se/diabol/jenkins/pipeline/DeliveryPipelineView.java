@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getAllDownstreamProjects;
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProjects;
+
 import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
@@ -78,10 +82,6 @@ import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getAllDownstreamProjects;
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProjects;
-
 public class DeliveryPipelineView extends View {
 
     private static final Logger LOG = Logger.getLogger(DeliveryPipelineView.class.getName());
@@ -114,6 +114,7 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean linkRelative = false;
     private boolean pagingEnabled = false;
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
@@ -363,6 +364,15 @@ public class DeliveryPipelineView extends View {
     @Exported
     public boolean isShowStaticAnalysisResults() {
         return showStaticAnalysisResults;
+    }
+
+    @Exported
+    public boolean isLinkRelative() {
+        return linkRelative;
+    }
+
+    public void setLinkRelative(boolean linkRelative) {
+        this.linkRelative = linkRelative;
     }
 
     public void setShowDescription(boolean showDescription)

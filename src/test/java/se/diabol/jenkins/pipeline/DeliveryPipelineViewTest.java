@@ -203,6 +203,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowPromotions());
         assertFalse(view.isShowTestResults());
         assertFalse(view.isShowStaticAnalysisResults());
+        assertFalse(view.isLinkRelative());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
         assertEquals("default", view.getTheme());
@@ -239,6 +240,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowTestResults());
         view.setShowStaticAnalysisResults(true);
         assertTrue(view.isShowStaticAnalysisResults());
+        view.setLinkRelative(true);
+        assertTrue(view.isLinkRelative());
         view.setPagingEnabled(true);
         assertTrue(view.getPagingEnabled());
         view.setAllowPipelineStart(true);
