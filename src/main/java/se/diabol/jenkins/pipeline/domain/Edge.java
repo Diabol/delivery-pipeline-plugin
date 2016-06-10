@@ -19,8 +19,8 @@ package se.diabol.jenkins.pipeline.domain;
 
 public class Edge {
 
-    private Stage source;
-    private Stage target;
+    private final Stage source;
+    private final Stage target;
 
     public Edge(Stage source, Stage target) {
         this.source = source;

@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class PipelineApi extends Api {
 
-    private DeliveryPipelineView view;
+    private final DeliveryPipelineView view;
 
     public PipelineApi(DeliveryPipelineView view) {
         super(view);

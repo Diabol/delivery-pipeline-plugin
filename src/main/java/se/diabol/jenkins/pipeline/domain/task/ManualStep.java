@@ -38,11 +38,11 @@ import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class ManualStep {
-    private String upstreamProject;
-    private String upstreamId;
-    private boolean enabled;
-    private boolean permission;
-    private Map<String, String> possibleVersions;
+    private final String upstreamProject;
+    private final String upstreamId;
+    private final boolean enabled;
+    private final boolean permission;
+    private final Map<String, String> possibleVersions;
 
     public ManualStep(String upstreamProject, String upstreamId, boolean enabled, boolean permission,
                       Map<String, String> possibleVersions) {
@@ -63,7 +63,7 @@ public class ManualStep {
     }
 
 
-    protected static boolean isManualTrigger(AbstractProject<?, ?> project) {
+    static boolean isManualTrigger(AbstractProject<?, ?> project) {
         List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
         for (ManualTriggerResolver manualTriggerResolver : resolvers) {
             if (manualTriggerResolver.isManualTrigger(project)) {
@@ -73,7 +73,7 @@ public class ManualStep {
         return false;
     }
 
-    protected static List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project) {
+    private static List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project) {
         List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
         List<AbstractProject> result = new ArrayList<AbstractProject>();
         for (ManualTriggerResolver manualTriggerResolver : resolvers) {

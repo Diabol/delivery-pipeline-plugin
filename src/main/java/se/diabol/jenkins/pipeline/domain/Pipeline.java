@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+
 import com.google.common.collect.ImmutableList;
 
 import hudson.model.AbstractBuild;
@@ -37,17 +41,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Objects.toStringHelper;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Pipeline extends AbstractItem {
 
-    private AbstractProject firstProject;
-    private AbstractProject lastProject;
+    private final AbstractProject firstProject;
+    private final AbstractProject lastProject;
 
-    private List<Stage> stages;
+    private final List<Stage> stages;
 
     private String version;
 
@@ -253,7 +253,7 @@ public class Pipeline extends AbstractItem {
         
         int pipelineCount = noOfPipelines;
         if (pagingEnabled) {
-        	pipelineCount = firstProject.getBuilds().size();
+            pipelineCount = firstProject.getBuilds().size();
         }
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < pipelineCount && it.hasNext(); i++) {

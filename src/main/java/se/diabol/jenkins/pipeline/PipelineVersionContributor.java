@@ -44,7 +44,7 @@ public class PipelineVersionContributor extends BuildWrapper {
 
     public static final String VERSION_PARAMETER = "PIPELINE_VERSION";
 
-    private String versionTemplate;
+    private final String versionTemplate;
     private boolean updateDisplayName = false;
 
     private static final Logger LOG = Logger.getLogger(PipelineVersionContributor.class.getName());

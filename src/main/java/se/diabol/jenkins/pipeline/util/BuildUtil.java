@@ -38,7 +38,8 @@ public final class BuildUtil {
         for (CauseAction action : actions) {
             List<Cause.UpstreamCause> causes = Util.filter(action.getCauses(), Cause.UpstreamCause.class);
 
-            for (Cause.UpstreamCause upstreamCause : causes) {
+            if (!causes.isEmpty()) {
+                Cause.UpstreamCause upstreamCause = causes.get(0);
                 AbstractProject upstreamProject = JenkinsUtil.getInstance().getItemByFullName(
                         upstreamCause.getUpstreamProject(), AbstractProject.class);
                 //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers

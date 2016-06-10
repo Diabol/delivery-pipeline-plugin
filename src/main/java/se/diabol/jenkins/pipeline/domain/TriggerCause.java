@@ -32,8 +32,8 @@ import java.util.Set;
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class TriggerCause {
 
-    private String type;
-    private String description;
+    private final String type;
+    private final String description;
 
     public static final String TYPE_UPSTREAM = "UPSTREAM";
     public static final String TYPE_MANUAL = "MANUAL";

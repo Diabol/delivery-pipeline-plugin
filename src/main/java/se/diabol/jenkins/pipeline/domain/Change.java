@@ -32,10 +32,10 @@ import java.util.logging.Logger;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Change {
-    private UserInfo author;
-    private String message;
-    private String commitId;
-    private String changeLink;
+    private final UserInfo author;
+    private final String message;
+    private final String commitId;
+    private final String changeLink;
 
     private static final Logger LOG = Logger.getLogger(Change.class.getName());
 
@@ -68,11 +68,15 @@ public class Change {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
 
-        Change change = (Change) o;
+        Change change = (Change) obj;
 
         return commitId.equals(change.commitId);
     }

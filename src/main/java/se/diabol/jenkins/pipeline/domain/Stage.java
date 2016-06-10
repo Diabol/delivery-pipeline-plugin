@@ -64,7 +64,7 @@ import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
-    private List<Task> tasks;
+    private final List<Task> tasks;
 
     private String version;
     private int row;
@@ -72,7 +72,7 @@ public class Stage extends AbstractItem {
     private Map<String, List<String>> taskConnections;
     private List<String> downstreamStages;
     private List<Long> downstreamStageIds;
-    private long id;
+    private final long id;
     private Set<Change> changes = new HashSet<Change>();
 
     public Stage(String name, List<Task> tasks) {
@@ -409,7 +409,8 @@ public class Stage extends AbstractItem {
     }
 
     @CheckForNull
-    private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first, Result minResult) {
+    private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first,
+                                                Result minResult) {
         RunList<? extends AbstractBuild> builds = project.getBuilds();
         for (AbstractBuild build : builds) {
             if (minResult != null && (build.isBuilding() || build.getResult().isWorseThan(minResult))) {

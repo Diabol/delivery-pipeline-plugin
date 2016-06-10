@@ -80,15 +80,15 @@ public class DeliveryPipelineView extends View {
 
     private static final Logger LOG = Logger.getLogger(DeliveryPipelineView.class.getName());
 
-    public static final int DEFAULT_INTERVAL = 2;
+    private static final int DEFAULT_INTERVAL = 2;
 
-    public static final int DEFAULT_NO_OF_PIPELINES = 3;
+    private static final int DEFAULT_NO_OF_PIPELINES = 3;
     private static final int MAX_NO_OF_PIPELINES = 50;
 
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
-    public static final String NONE_SORTER = "none";
+    private static final String NONE_SORTER = "none";
 
-    public static final String DEFAULT_THEME = "default";
+    static final String DEFAULT_THEME = "default";
 
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
@@ -282,7 +282,7 @@ public class DeliveryPipelineView extends View {
         if (req == null) {
             return false;
         }
-        return req.getParameter("fullscreen") == null ? false : Boolean.parseBoolean(req.getParameter("fullscreen"));
+        return req.getParameter("fullscreen") != null && Boolean.parseBoolean(req.getParameter("fullscreen"));
     }
 
     public void onProjectRenamed(Item item, String oldName, String newName) {
@@ -488,8 +488,8 @@ public class DeliveryPipelineView extends View {
             }
             LOG.fine("Returning: " + components);
             error = null;
-            for(int i = 0; i< components.size(); i++) {
-                components.get(i).setComponentNumber(i+1);
+            for (int i = 0; i < components.size(); i++) {
+                components.get(i).setComponentNumber(i + 1);
             }
             return components;
         } catch (PipelineException e) {
@@ -507,11 +507,11 @@ public class DeliveryPipelineView extends View {
         }
         if (isFullScreenView()) {
             pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
-        }
-        else {
+        } else {
             pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled));
         }
-        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines, noOfPipelines, pagingEnabled);
+        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines,
+                noOfPipelines, pagingEnabled);
     }
 
     @Override
