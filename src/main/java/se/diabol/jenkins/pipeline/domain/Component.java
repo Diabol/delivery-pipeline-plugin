@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static com.google.common.base.Objects.toStringHelper;
+
 import com.google.common.collect.ImmutableList;
 
 import org.kohsuke.stapler.Stapler;
@@ -28,7 +30,6 @@ import se.diabol.jenkins.pipeline.PipelinePagination;
 
 import java.util.List;
 
-import static com.google.common.base.Objects.toStringHelper;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {

@@ -18,14 +18,20 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.AbstractProject;
+import hudson.model.AutoCompletionCandidates;
+import hudson.model.Job;
+import hudson.model.JobProperty;
+import hudson.model.JobPropertyDescriptor;
 import hudson.util.FormValidation;
+
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
+
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.HashSet;
@@ -103,15 +109,15 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
         public AutoCompletionCandidates doAutoCompleteStageName(@QueryParameter String value) {
             if (value != null) {
-                AutoCompletionCandidates c = new AutoCompletionCandidates();
+                AutoCompletionCandidates candidates = new AutoCompletionCandidates();
                 Set<String> stages = getStageNames();
 
                 for (String stage : stages) {
                     if (stage.toLowerCase().startsWith(value.toLowerCase())) {
-                        c.add(stage);
+                        candidates.add(stage);
                     }
                 }
-                return c;
+                return candidates;
             } else {
                 return new AutoCompletionCandidates();
             }
@@ -137,26 +143,25 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
         @Override
         public PipelineProperty newInstance(StaplerRequest sr, JSONObject formData) throws FormException {
-            String task = sr.getParameter("taskName");
-            String stage = sr.getParameter("stageName");
-            String description = sr.getParameter("descriptionTemplate");
             boolean configEnabled = sr.getParameter("enabled") != null;
             if (!configEnabled) {
                 return null;
             }
-            if ("".equals(task)) {
-                task = null;
-            }
-            if ("".equals(stage)) {
-                stage = null;
-            }
-            if ("".equals(description)) {
-                description = null;
-            }
+            String task = nullIfEmpty(sr.getParameter("taskName"));
+            String stage = nullIfEmpty(sr.getParameter("stageName"));
+            String description = nullIfEmpty(sr.getParameter("descriptionTemplate"));
             if (task == null && stage == null) {
                 return null;
             }
             return new PipelineProperty(task, stage, description);
+        }
+
+        private static String nullIfEmpty(String string) {
+            if ("".equals(string)) {
+                return null;
+            } else {
+                return string;
+            }
         }
     }
 }

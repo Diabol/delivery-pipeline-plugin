@@ -186,10 +186,12 @@ public class Pipeline extends AbstractItem {
     }
 
     /**
-     * Created a pipeline prototype for the supplied first project
+     * Created a pipeline prototype for the supplied first project.
      */
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, AbstractProject<?, ?> lastProject) throws PipelineException {
-        return new Pipeline(name, firstProject, lastProject, newArrayList(Stage.extractStages(firstProject, lastProject)));
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject,
+                                           AbstractProject<?, ?> lastProject) throws PipelineException {
+        return new Pipeline(name, firstProject, lastProject,
+                newArrayList(Stage.extractStages(firstProject, lastProject)));
     }
 
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {

@@ -17,14 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.token;
 
-import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import hudson.model.TaskListener;
 
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class TokenUtils {
 

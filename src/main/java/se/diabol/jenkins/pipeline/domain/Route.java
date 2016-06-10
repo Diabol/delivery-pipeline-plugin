@@ -17,10 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import se.diabol.jenkins.pipeline.domain.task.Task;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import se.diabol.jenkins.pipeline.domain.task.Task;
 
 /**
  * A possible route in the pipeline, comprised of tasks.

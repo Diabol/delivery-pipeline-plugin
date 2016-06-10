@@ -17,6 +17,18 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
+import static java.lang.Math.round;
+import static java.lang.System.currentTimeMillis;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.CANCELLED;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.DISABLED;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.FAILED;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.IDLE;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.NOT_BUILT;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.QUEUED;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.RUNNING;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.SUCCESS;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.UNSTABLE;
+
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Result;
@@ -33,45 +45,38 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.Math.round;
-import static java.lang.System.currentTimeMillis;
-import static se.diabol.jenkins.pipeline.domain.status.StatusType.*;
-
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class SimpleStatus implements Status {
     private final StatusType type;
     private final long lastActivity;
     private final long duration;
-
     private final boolean promoted;
-	private final List<PromotionStatus> promotions;
-
+    private final List<PromotionStatus> promotions;
     private static PromotionStatusProviderWrapper promotionStatusProviderWrapper = new PromotionStatusProviderWrapper();
 
     public SimpleStatus(StatusType type, long lastActivity, long duration) {
         this(type, lastActivity, duration, false, Collections.<PromotionStatus>emptyList());
     }
 
-    public SimpleStatus(StatusType type, long lastActivity, long duration, boolean promoted, List<PromotionStatus> promotions) {
+    public SimpleStatus(StatusType type, long lastActivity, long duration, boolean promoted,
+                        List<PromotionStatus> promotions) {
         this.type = type;
         this.lastActivity = lastActivity;
         this.duration = duration;
-		this.promoted = promoted;
-		this.promotions = promotions;
+        this.promoted = promoted;
+        this.promotions = promotions;
     }
 
-	@Exported
-	public List<PromotionStatus> getPromotions()
-	{
-		return promotions;
-	}
+    @Exported
+    public List<PromotionStatus> getPromotions() {
+        return promotions;
+    }
 
     @Exported
-	@Override
-	public boolean isPromoted()
-	{
-		return promoted;
-	}
+    @Override
+    public boolean isPromoted() {
+        return promoted;
+    }
 
     @Exported
     public StatusType getType() {
@@ -162,7 +167,8 @@ public class SimpleStatus implements Status {
                 progress = 99;
             }
 
-            return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
+            return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis()
+                    - build.getTimestamp().getTimeInMillis());
         }
         return getStatusFromResult(build);
     }
@@ -173,10 +179,12 @@ public class SimpleStatus implements Status {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
         }
         if (Result.SUCCESS.equals(result)) {
-            return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build), getPromotionStatusList(build));
+            return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build),
+                    getPromotionStatusList(build));
         }
         if (Result.FAILURE.equals(result)) {
-            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build), getPromotionStatusList(build));
+            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build),
+                    getPromotionStatusList(build));
         }
         if (Result.UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
@@ -188,8 +196,9 @@ public class SimpleStatus implements Status {
     }
 
     private static boolean isBuildPromoted(AbstractBuild build) {
-        final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
-        if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders =
+                SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
+        if (CollectionUtils.isNotEmpty(promotionStatusProviders)) {
             final AbstractPromotionStatusProvider promotionStatusProvider = promotionStatusProviders.get(0);
             if (promotionStatusProvider != null) {
                 return promotionStatusProvider.isBuildPromoted(build);
@@ -201,8 +210,9 @@ public class SimpleStatus implements Status {
     private static List<PromotionStatus> getPromotionStatusList(AbstractBuild build) {
         final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
 
-        final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
-        if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders =
+                SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
+        if (CollectionUtils.isNotEmpty(promotionStatusProviders)) {
             final AbstractPromotionStatusProvider promotionStatusProvider = promotionStatusProviders.get(0);
             if (promotionStatusProvider != null) {
                 promotionStatusList.addAll(promotionStatusProvider.getPromotionStatusList(build));
