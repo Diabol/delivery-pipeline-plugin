@@ -28,14 +28,16 @@ import hudson.model.ParametersAction;
 import hudson.model.StringParameterValue;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
+
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.CheckForNull;
 
 public class PipelineVersionContributor extends BuildWrapper {
 
@@ -79,7 +81,8 @@ public class PipelineVersionContributor extends BuildWrapper {
         }
         return new Environment() {
             @Override
-            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+            public boolean tearDown(AbstractBuild build, BuildListener listener)
+                    throws IOException, InterruptedException {
                 return true;
             }
         };

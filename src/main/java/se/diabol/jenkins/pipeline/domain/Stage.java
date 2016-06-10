@@ -17,6 +17,13 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static java.util.Collections.singleton;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,19 +33,22 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
 import hudson.util.RunList;
+
 import jenkins.model.Jenkins;
+
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.SimpleDirectedGraph;
+
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,12 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Objects.toStringHelper;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-import static java.util.Collections.singleton;
+import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
@@ -77,12 +82,12 @@ public class Stage extends AbstractItem {
     }
 
     private Stage(Stage stage, List<Task> tasks, String version, long id) {
-        this(stage.getName(), tasks, stage.getDownstreamStages(), stage.getDownstreamStageIds(), stage.getTaskConnections(), version,
-                stage.getRow(), stage.getColumn(), id);
+        this(stage.getName(), tasks, stage.getDownstreamStages(), stage.getDownstreamStageIds(),
+                stage.getTaskConnections(), version, stage.getRow(), stage.getColumn(), id);
     }
 
-    private Stage(String name, List<Task> tasks, List<String> downstreamStages, List<Long> downstreamStageIds, Map<String,
-            List<String>> taskConnections, String version, int row, int column, long id) {
+    private Stage(String name, List<Task> tasks, List<String> downstreamStages, List<Long> downstreamStageIds,
+                  Map<String, List<String>> taskConnections, String version, int row, int column, long id) {
         super(name);
         this.tasks = tasks;
         this.version = version;
@@ -167,7 +172,8 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject) throws PipelineException {
+    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject)
+            throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
             Task task = Task.getPrototypeTask(project, project.getFullName().equals(firstProject.getFullName()));
@@ -178,7 +184,8 @@ public class Stage extends AbstractItem {
 
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property == null && project.getParent() instanceof AbstractProject) {
-                property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
+                property = (PipelineProperty) ((AbstractProject)
+                        project.getParent()).getProperty(PipelineProperty.class);
             }
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
                     ? property.getStageName() : project.getDisplayName();
@@ -222,12 +229,13 @@ public class Stage extends AbstractItem {
     }
 
 
-    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) throws PipelineException {
+    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages)
+            throws PipelineException {
         DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(new StageEdgeFactory());
         for (Stage stage : stages) {
             stage.setTaskConnections(getStageConnections(stage, stages));
             graph.addVertex(stage);
-            List<Stage> downstreamStages = getDownstreamStages(stage, stages);
+            List<Stage> downstreamStages = getDownstreamStagesForStage(stage, stages);
             List<String> downstreamStageNames = new ArrayList<String>();
             List<Long> downstreamStageIds = new ArrayList<Long>();
             for (Stage downstream : downstreamStages) {
@@ -252,7 +260,8 @@ public class Stage extends AbstractItem {
         }
 
 
-        List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(Jenkins.getInstance()), stages), graph);
+        List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(
+                Jenkins.getInstance()), stages), graph);
         Collections.sort(allPaths, new Comparator<List<Stage>>() {
             public int compare(List<Stage> stages1, List<Stage> stages2) {
                 return stages2.size() - stages1.size();
@@ -270,19 +279,20 @@ public class Stage extends AbstractItem {
                 
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
-	                stage.setColumn(Math.max(stage.getColumn(), column));
-	                
-	                final int effectiveColumn = stage.getColumn();
-	                
-	                final Integer previousRowForThisColumn = columnRowMap.get(effectiveColumn);
-	                //set it to 0 if no previous setting is set; if found, previous value + 1
-	                final int currentRowForThisColumn = previousRowForThisColumn == null ? 0 : previousRowForThisColumn + 1;
-	                //update/set row number in the columnRowMap for this effective column
-	            	columnRowMap.put(effectiveColumn, currentRowForThisColumn);
-	
-	            	stage.setRow(currentRowForThisColumn);
-	            	
-	            	processedStages.add(stage);
+                    stage.setColumn(Math.max(stage.getColumn(), column));
+
+                    final int effectiveColumn = stage.getColumn();
+
+                    final Integer previousRowForThisColumn = columnRowMap.get(effectiveColumn);
+                    //set it to 0 if no previous setting is set; if found, previous value + 1
+                    final int currentRowForThisColumn = previousRowForThisColumn == null
+                            ? 0 : previousRowForThisColumn + 1;
+                    //update/set row number in the columnRowMap for this effective column
+                    columnRowMap.put(effectiveColumn, currentRowForThisColumn);
+
+                    stage.setRow(currentRowForThisColumn);
+
+                    processedStages.add(stage);
                 }
             }
         }
@@ -346,7 +356,7 @@ public class Stage extends AbstractItem {
     }
 
 
-    private static List<Stage> getDownstreamStages(Stage stage, Collection<Stage> stages) {
+    private static List<Stage> getDownstreamStagesForStage(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();
         for (int i = 0; i < stage.getTasks().size(); i++) {
             Task task = stage.getTasks().get(i);
