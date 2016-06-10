@@ -19,8 +19,8 @@ package se.diabol.jenkins.pipeline.trigger;
 
 import hudson.model.AbstractProject;
 
-import javax.annotation.CheckForNull;
 import java.util.List;
+import javax.annotation.CheckForNull;
 
 public final class ManualTriggerFactory {
 

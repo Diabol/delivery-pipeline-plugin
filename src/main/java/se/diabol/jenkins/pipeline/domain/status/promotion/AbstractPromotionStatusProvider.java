@@ -26,13 +26,15 @@ import java.util.List;
 
 public abstract class AbstractPromotionStatusProvider implements ExtensionPoint {
 
-    static private JenkinsInstanceProvider jenkinsInstanceProvider = new JenkinsInstanceProvider();
+    private static JenkinsInstanceProvider jenkinsInstanceProvider = new JenkinsInstanceProvider();
 
-    abstract public boolean isBuildPromoted(AbstractBuild<?, ?> build);
-    abstract public List<PromotionStatus> getPromotionStatusList(AbstractBuild<?, ?> build);
+    public abstract boolean isBuildPromoted(AbstractBuild<?, ?> build);
+
+    public abstract List<PromotionStatus> getPromotionStatusList(AbstractBuild<?, ?> build);
 
     public static ExtensionList<AbstractPromotionStatusProvider> all() {
-        return AbstractPromotionStatusProvider.jenkinsInstanceProvider.getJenkinsInstance().getExtensionList(AbstractPromotionStatusProvider.class);
+        return AbstractPromotionStatusProvider.jenkinsInstanceProvider.getJenkinsInstance()
+                .getExtensionList(AbstractPromotionStatusProvider.class);
     }
 
     // package scope setters for unit testing
