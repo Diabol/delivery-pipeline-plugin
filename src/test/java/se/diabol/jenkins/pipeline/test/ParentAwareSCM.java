@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.test;
 
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -24,7 +25,11 @@ import hudson.model.BuildListener;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.NullSCM;
+import hudson.scm.SCM;
+import hudson.scm.SCMDescriptor;
+import net.sf.json.JSONObject;
 import org.jvnet.hudson.test.FakeChangeLogSCM;
+import org.kohsuke.stapler.StaplerRequest;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -74,6 +79,22 @@ public class ParentAwareSCM extends NullSCM {
     static class Entry extends FakeChangeLogSCM.EntryImpl {
         public void setParent(ChangeLogSet changeLogSet) {
             super.setParent(changeLogSet);
+        }
+    }
+
+    @Extension(ordinal = Integer.MAX_VALUE)
+    public static class DescriptorImpl extends SCMDescriptor<ParentAwareSCM> {
+        public DescriptorImpl() {
+            super(null);
+        }
+
+        @Override public String getDisplayName() {
+            return "ParentAwareSCM";
+        }
+
+        @Override
+        public SCM newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+            return new ParentAwareSCM();
         }
     }
 }
