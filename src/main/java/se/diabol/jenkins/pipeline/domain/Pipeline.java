@@ -28,6 +28,8 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 
 import hudson.model.Result;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -89,6 +91,14 @@ public class Pipeline extends AbstractItem {
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
         this.timestamp = timestamp;
+    }
+
+    public AbstractProject getFirstProject() {
+        return this.firstProject;
+    }
+
+    public AbstractProject getLastProject() {
+        return this.lastProject;
     }
 
     @Exported
@@ -244,7 +254,8 @@ public class Pipeline extends AbstractItem {
      *
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context,
+                                               boolean pagingEnabled, Component component) {
         List<Pipeline> result = new ArrayList<Pipeline>();
         int no = noOfPipelines;
         if (firstProject.isInQueue()) {
@@ -259,13 +270,18 @@ public class Pipeline extends AbstractItem {
             result.add(pipelineLatest);
             no--;
         }
-        
-        int pipelineCount = noOfPipelines;
-        if (pagingEnabled) {
-            pipelineCount = firstProject.getBuilds().size();
+        int totalNoOfPipelines = firstProject.getBuilds().size();
+        component.setTotalNoOfPipelines(totalNoOfPipelines);
+        int startIndex = 0;
+        int retrieveSize = noOfPipelines;
+        if (pagingEnabled && !component.isFullScreenView()) {
+            startIndex = (component.getCurrentPage() - 1) * noOfPipelines;
+            retrieveSize = Math.min(totalNoOfPipelines - ((component.getCurrentPage() - 1) * noOfPipelines),
+                    noOfPipelines);
         }
-        Iterator it = firstProject.getBuilds().iterator();
-        for (int i = 0; i < pipelineCount && it.hasNext(); i++) {
+
+        Iterator it = firstProject.getBuilds().listIterator(startIndex);
+        for (int i = startIndex; i < (startIndex + retrieveSize) && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
