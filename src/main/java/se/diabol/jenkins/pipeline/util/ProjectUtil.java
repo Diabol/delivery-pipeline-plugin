@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.AbstractBuild;
@@ -39,9 +41,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static com.google.common.collect.Maps.newLinkedHashMap;
-
-
 public final class ProjectUtil {
 
     private static final Logger LOG = Logger.getLogger(ProjectUtil.class.getName());
@@ -58,26 +57,29 @@ public final class ProjectUtil {
     }
 
     /**
-     * @see se.diabol.jenkins.pipeline.util.ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
+     * @see ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
      *
      */
-    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last) {
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
+                                                                              AbstractProject last) {
         Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
         return  getAllDownstreamProjects(first, last, projects);
     }
 
     /**
-     * Get all downstream projects for a given project. This will recursively call all downstream projects for a given first project.
-     *
-     * A project that has a downstream project and will eventually loop back to itself will log a warning, and will NOT add. Adding
-     * a project that already exists will produce a stack overflow.
+     * Get all downstream projects for a given project. This will recursively call all downstream projects
+     * for a given first project.
+     * A project that has a downstream project and will eventually loop back to itself will log a warning,
+     * and will NOT add. Adding a project that already exists will produce a stack overflow.
      *
      * @param first The first project
      * @param last The last project to visualize
      * @param projects Current map of all sub projects.
      * @return A map of all downstream projects.
      */
-    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first, AbstractProject last, Map<String, AbstractProject<?, ?>> projects) {
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
+                                                                              AbstractProject last, Map<String,
+            AbstractProject<?, ?>> projects) {
         if (first == null) {
             return projects;
         }
@@ -140,14 +142,17 @@ public final class ProjectUtil {
             if (firstBuild == null) {
                 return true;
             } else {
-                List<Cause.UpstreamCause> causes = Util.filter(project.getQueueItem().getCauses(), Cause.UpstreamCause.class);
+                List<Cause.UpstreamCause> causes = Util.filter(project.getQueueItem().getCauses(),
+                        Cause.UpstreamCause.class);
                 @SuppressWarnings("unchecked")
                 List<AbstractProject<?,?>> upstreamProjects = project.getUpstreamProjects();
                 for (AbstractProject<?, ?> upstreamProject : upstreamProjects) {
                     AbstractBuild upstreamBuild = BuildUtil.match(upstreamProject.getBuilds(), firstBuild);
                     if (upstreamBuild != null) {
                         for (Cause.UpstreamCause upstreamCause : causes) {
-                            if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild() && upstreamProject.getRelativeNameFrom(JenkinsUtil.getInstance()).equals(upstreamCause.getUpstreamProject())) {
+                            if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild()
+                                    && upstreamProject.getRelativeNameFrom(JenkinsUtil.getInstance()).equals(
+                                    upstreamCause.getUpstreamProject())) {
                                 return true;
                             }
 

@@ -17,20 +17,20 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.results;
 
-import hudson.model.Action;
 import hudson.model.AbstractBuild;
-import hudson.plugins.analysis.core.ResultAction;
+import hudson.model.Action;
 import hudson.plugins.analysis.core.AbstractResultAction;
 import hudson.plugins.analysis.core.BuildResult;
 import hudson.plugins.analysis.core.MavenResultAction;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import hudson.plugins.analysis.core.ResultAction;
 
 import org.kohsuke.stapler.export.Exported;
 
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class StaticAnalysisResult extends Result {
 

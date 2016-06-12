@@ -25,8 +25,8 @@ import se.diabol.jenkins.pipeline.domain.AbstractItem;
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Result {
 
-    protected String name;
-    protected String url;
+    protected final String name;
+    protected final String url;
 
     public Result(String name, String url) {
         this.name = name;
