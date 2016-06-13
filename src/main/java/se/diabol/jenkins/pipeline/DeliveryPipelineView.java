@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
@@ -66,6 +67,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -522,7 +524,36 @@ public class DeliveryPipelineView extends View {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        return (Collection)getOwnerItemGroup().getItems();
+        Set<TopLevelItem> jobs = Sets.newHashSet();
+        addJobsFromComponentSpecs(jobs);
+        addRegexpFirstJobs(jobs);
+        return jobs;
+    }
+
+    private void addJobsFromComponentSpecs(Set<TopLevelItem> jobs) {
+        if (componentSpecs == null) {
+            return;
+        }
+        for (ComponentSpec spec : componentSpecs) {
+            AbstractProject first = ProjectUtil.getProject(spec.getFirstJob(), getOwnerItemGroup());
+            AbstractProject last = ProjectUtil.getProject(spec.getLastJob(), getOwnerItemGroup());
+            Collection<AbstractProject<?, ?>> downstreamProjects = ProjectUtil.getAllDownstreamProjects(first, last).values();
+            for (AbstractProject project : downstreamProjects) {
+                jobs.add((TopLevelItem) project);
+            }
+        }
+    }
+
+    private void addRegexpFirstJobs(Set<TopLevelItem> jobs) {
+        if (regexpFirstJobs == null) {
+            return;
+        }
+        for (RegExpSpec spec : regexpFirstJobs) {
+            Map<String, AbstractProject> regexpJobs = ProjectUtil.getProjects(spec.getRegexp());
+            for (AbstractProject project : regexpJobs.values()) {
+                jobs.add((TopLevelItem) project);
+            }
+        }
     }
 
     @Override
