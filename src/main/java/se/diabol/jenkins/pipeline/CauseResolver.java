@@ -19,9 +19,11 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionPoint;
 import hudson.model.Cause;
-import java.util.List;
+
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
+
+import java.util.List;
 
 import javax.annotation.CheckForNull;
 
@@ -32,7 +34,7 @@ public abstract class CauseResolver implements ExtensionPoint {
      *
      * @param cause cause from the Jenkins build
      * @return a TriggerCause or null if the CauseResolver implementation cant find a proper cause indication that
-     * other resolvers should make a try
+     *      other resolvers should make a try
      */
     @CheckForNull
     public abstract TriggerCause resolveCause(Cause cause);

@@ -18,19 +18,22 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.model.Api;
+
 import org.acegisecurity.AuthenticationException;
+
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
+import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 public class PipelineApi extends Api {
 
-    private DeliveryPipelineView view;
+    private final DeliveryPipelineView view;
 
     public PipelineApi(DeliveryPipelineView view) {
         super(view);
