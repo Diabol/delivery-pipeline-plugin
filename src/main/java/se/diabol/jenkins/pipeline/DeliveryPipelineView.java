@@ -17,18 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getAllDownstreamProjects;
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProjects;
-
-import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
-import hudson.model.ViewGroup;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.AbstractProject;
@@ -46,24 +36,7 @@ import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.servlet.ServletException;
-
 import jenkins.model.Jenkins;
-
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
 import org.kohsuke.stapler.AncestorInPath;
@@ -74,7 +47,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
-
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
@@ -86,6 +58,19 @@ import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class DeliveryPipelineView extends View {
 
