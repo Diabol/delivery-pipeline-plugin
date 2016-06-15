@@ -498,10 +498,10 @@ public class DeliveryPipelineView extends View {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         if (isFullScreenView()) {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
-        }
-        else {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled));
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges));
+        } else {
+            pipelines.addAll(pipeline
+                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled, showChanges));
         }
         return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines, noOfPipelines, pagingEnabled);
     }

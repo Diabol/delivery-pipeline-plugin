@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.domain;
 
 import hudson.model.AbstractBuild;
+import hudson.plugins.git.GitChangeSet;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.RepositoryBrowser;
 import org.kohsuke.stapler.export.Exported;
@@ -86,7 +87,13 @@ public class Change {
         RepositoryBrowser repositoryBrowser = build.getProject().getScm().getBrowser();
         List<Change> result = new ArrayList<Change>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
-            UserInfo user = UserInfo.getUser(entry.getAuthor());
+            UserInfo user;
+            if (entry instanceof GitChangeSet) {
+                GitChangeSet gitChangeSet = (GitChangeSet) entry;
+                user = new UserInfo(gitChangeSet.getAuthorName(), "");
+            } else {
+                user = UserInfo.getUser(entry.getAuthor());
+            }
             String changeLink = null;
             if (repositoryBrowser != null) {
                 try {
