@@ -554,7 +554,7 @@ public class PipelineTest {
 
     /**
      * A -> B -> D -> E
-     *        -> C     
+     *        -> C
      * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
