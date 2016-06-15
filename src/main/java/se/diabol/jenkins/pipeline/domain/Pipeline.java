@@ -235,7 +235,8 @@ public class Pipeline extends AbstractItem {
      *
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context,
+                                               boolean pagingEnabled, boolean showChanges) {
         List<Pipeline> result = new ArrayList<Pipeline>();
         int no = noOfPipelines;
         if (firstProject.isInQueue()) {
@@ -258,7 +259,9 @@ public class Pipeline extends AbstractItem {
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < pipelineCount && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
-            List<Change> pipelineChanges = Change.getChanges(firstBuild);
+            List<Change> pipelineChanges = showChanges ? Change.getChanges(firstBuild) : null;
+            Set<UserInfo> contributors = showChanges ? UserInfo.getContributors(pipelineChanges) : null;
+
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
             List<Stage> pipelineStages = new ArrayList<Stage>();
             for (Stage stage : getStages()) {
@@ -266,7 +269,7 @@ public class Pipeline extends AbstractItem {
             }
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
                     pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
-                    UserInfo.getContributors(firstBuild), pipelineStages, false);
+                    contributors, pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
             pipelineLatest.calculateTotalBuildTime();
             result.add(pipelineLatest);

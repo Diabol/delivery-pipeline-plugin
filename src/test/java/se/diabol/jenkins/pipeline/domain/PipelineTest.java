@@ -61,6 +61,7 @@ public class PipelineTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
     private final static boolean pagingEnabledFalse = false;
+    private final static boolean showChanges = true;
 
     @Test
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
@@ -418,7 +419,7 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -701,14 +702,14 @@ public class PipelineTest {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges);
         assertEquals(1, pipelines.size());
 
 
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
