@@ -32,6 +32,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import se.diabol.jenkins.pipeline.domain.task.Task;
+import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.ArrayList;
@@ -235,9 +236,17 @@ public class Pipeline extends AbstractItem {
      *
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled,
+                                               boolean showUpstream) throws PipelineException {
+        if (showUpstream) {
+            return createPipelineLatestUpstream(noOfPipelines, context);
+        } else {
+            return createPipelineLatest(noOfPipelines, context, pagingEnabled);
+        }
+    }
+
+    private List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
         List<Pipeline> result = new ArrayList<Pipeline>();
-        int no = noOfPipelines;
         if (firstProject.isInQueue()) {
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
             List<Stage> pipelineStages = new ArrayList<Stage>();
@@ -248,9 +257,8 @@ public class Pipeline extends AbstractItem {
                     + firstProject.getNextBuildNumber(), pipeLineTimestamp,
                     TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false);
             result.add(pipelineLatest);
-            no--;
         }
-        
+
         int pipelineCount = noOfPipelines;
         if (pagingEnabled) {
             pipelineCount = firstProject.getBuilds().size();
@@ -264,7 +272,31 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject,
+                    firstBuild.getDisplayName(), pipeLineTimestamp,
+                    TriggerCause.getTriggeredBy(firstProject, firstBuild), UserInfo.getContributors(firstBuild),
+                    pipelineStages, false);
+            pipelineLatest.setChanges(pipelineChanges);
+            pipelineLatest.calculateTotalBuildTime();
+            result.add(pipelineLatest);
+        }
+        return result;
+    }
+
+    private List<Pipeline> createPipelineLatestUpstream(int noOfPipelines, ItemGroup context) throws PipelineException {
+        List<Pipeline> result = new ArrayList<Pipeline>();
+        Iterator it = firstProject.getBuilds().iterator();
+        for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
+            AbstractBuild build = (AbstractBuild) it.next();
+            AbstractBuild firstBuild = BuildUtil.getFirstUpstreamBuild(build);
+            Pipeline pipeline = Pipeline.extractPipeline(getName(), firstBuild.getProject(), lastProject);
+            List<Change> pipelineChanges = Change.getChanges(firstBuild);
+            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
+            List<Stage> pipelineStages = new ArrayList<Stage>();
+            for (Stage stage : pipeline.getStages()) {
+                pipelineStages.add(stage.createLatestStage(context, firstBuild));
+            }
+            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, build.getDisplayName(),
                     pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
                     UserInfo.getContributors(firstBuild), pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);

@@ -418,7 +418,7 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, false);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -701,14 +701,14 @@ public class PipelineTest {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, false);
         assertEquals(1, pipelines.size());
 
 
     }
 
-    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse);
+    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) throws PipelineException {
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, false);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
@@ -843,6 +843,27 @@ public class PipelineTest {
         assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
         assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
 
+
+    }
+
+    @Test
+    public void testShowUpstream() throws Exception {
+        FreeStyleProject compA = jenkins.createFreeStyleProject("CompA");
+        FreeStyleProject compB = jenkins.createFreeStyleProject("CompB");
+        FreeStyleProject packageStep = jenkins.createFreeStyleProject("Package");
+        compA.getPublishersList().add(new BuildTrigger("Package", false));
+        compB.getPublishersList().add(new BuildTrigger("Package", false));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.setQuietPeriod(0);
+        jenkins.buildAndAssertSuccess(compA);
+        jenkins.waitUntilNoActivity();
+
+        List<Pipeline> pipelines = Pipeline.extractPipeline("Pipeline", packageStep).createPipelineLatest(1,
+                jenkins.jenkins, false, true);
+        assertEquals(1, pipelines.size());
+
+        assertEquals(2, pipelines.get(0).getStages().size());
 
     }
 
