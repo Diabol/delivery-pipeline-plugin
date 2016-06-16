@@ -105,8 +105,10 @@ public class BuildUtilTest {
 
     }
 
-
-
-
+    @Test
+    @WithoutJenkins
+    public void testGetFirstUpstreamBuildParameterNull() {
+        assertNull(BuildUtil.getFirstUpstreamBuild(null));
+    }
 
 }
