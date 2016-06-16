@@ -176,7 +176,8 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject, String excludeJobsRegex) throws PipelineException {
+    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject,
+                                            String excludeJobsRegex) throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
         Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
         for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
@@ -191,7 +192,8 @@ public class Stage extends AbstractItem {
 
                 PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
                 if (property == null && project.getParent() instanceof AbstractProject) {
-                    property = (PipelineProperty) ((AbstractProject) project.getParent()).getProperty(PipelineProperty.class);
+                    property = (PipelineProperty) ((AbstractProject) project.getParent())
+                        .getProperty(PipelineProperty.class);
                 }
                 String stageName = property != null && !isNullOrEmpty(property.getStageName())
                         ? property.getStageName() : project.getDisplayName();
@@ -200,7 +202,8 @@ public class Stage extends AbstractItem {
                     stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
                 }
                 stages.put(stageName,
-                        Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
+                        Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(),
+                            singleton(task)))));
             }
         }
         Collection<Stage> stagesResult = stages.values();
@@ -236,7 +239,8 @@ public class Stage extends AbstractItem {
     }
 
 
-    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages) throws PipelineException {
+    public static List<Stage> placeStages(AbstractProject firstProject,
+                                          Collection<Stage> stages) throws PipelineException {
         DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(new StageEdgeFactory());
         for (Stage stage : stages) {
             stage.setTaskConnections(getStageConnections(stage, stages));

@@ -485,7 +485,8 @@ public class DeliveryPipelineView extends View {
                 for (RegExpSpec regexp : regexpFirstJobs) {
                     Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
                     for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
-                        components.add(getComponent(entry.getKey(), entry.getValue(), null, null, showAggregatedPipeline));
+                        components.add(getComponent(entry.getKey(), entry.getValue(),
+                            null, null, showAggregatedPipeline));
                     }
                 }
             }
@@ -507,7 +508,8 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, String excludeJobsRegex, boolean showAggregatedPipeline) throws PipelineException {
+    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
+                                   String excludeJobsRegex, boolean showAggregatedPipeline) throws PipelineException {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
