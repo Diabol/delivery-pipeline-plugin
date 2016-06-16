@@ -229,11 +229,13 @@ div.task-progress-running {
 
 .FAILED {
     border-left: 6px solid #8b0000;
-    background-color: #ff6347;
+    background-color: rgba(255, 16, 0, 0.78);
+    color: #ffffff;
 }
 
 .SUCCESS {
     border-left: 6px solid #228b22;
+    background-color: rgba(30, 255, 55, 0.25);
 }
 
 .UNSTABLE {
@@ -367,15 +369,15 @@ div.aggregatedChangesPanelInner > ul {
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:14px;
 	font-weight:normal;
-	margin-bottom:5px;
+	margin-bottom:8px;
+	margin-left:10px;
 }
 
-.pagination a:link, .pagination a:visited{
-	padding:7px;	
+.pagination a, .pagination a:visited{
+	padding:7px;
 	padding-top:2px;
 	padding-bottom:2px;
 	border:1px solid #EBEBEB;
-	margin-left:10px;
 	text-decoration:none;
 	background-color:#F5F5F5;
 	color:#0072bc;
@@ -389,12 +391,10 @@ div.aggregatedChangesPanelInner > ul {
 	color:#0072BC;	
 }
 
-.pagination .active_link {
-	padding:7px;
+.pagination .active_link a {
 	padding-top:2px;
 	padding-bottom:2px;
 	border:1px solid #BBDDFF;
-	margin-left:10px;
 	text-decoration:none;
 	background-color:#DDEEFF;
 	color:#0072BC;

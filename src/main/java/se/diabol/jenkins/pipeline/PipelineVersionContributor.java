@@ -22,27 +22,28 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
+import hudson.model.CauseAction;
 import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
 import hudson.model.StringParameterValue;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
+
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.CheckForNull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.CheckForNull;
 
 public class PipelineVersionContributor extends BuildWrapper {
 
     public static final String VERSION_PARAMETER = "PIPELINE_VERSION";
 
-    private String versionTemplate;
+    private final String versionTemplate;
     private boolean updateDisplayName = false;
 
     private static final Logger LOG = Logger.getLogger(PipelineVersionContributor.class.getName());
@@ -80,7 +81,8 @@ public class PipelineVersionContributor extends BuildWrapper {
         }
         return new Environment() {
             @Override
-            public boolean tearDown(AbstractBuild build, BuildListener listener) throws IOException, InterruptedException {
+            public boolean tearDown(AbstractBuild build, BuildListener listener)
+                    throws IOException, InterruptedException {
                 return true;
             }
         };
@@ -88,30 +90,40 @@ public class PipelineVersionContributor extends BuildWrapper {
 
     @CheckForNull
     public static String getVersion(AbstractBuild build)  {
-        List<ParametersAction> parameters = build.getActions(ParametersAction.class);
-        for (ParametersAction parameter : parameters) {
-            ParameterValue value = parameter.getParameter(PipelineVersionContributor.VERSION_PARAMETER);
-            if (value instanceof StringParameterValue) {
-                return  ((StringParameterValue) value).value;
-            }
+        PipelineVersionAction action = build.getAction(PipelineVersionAction.class);
+        if (action != null) {
+            return action.getVersion();
         }
         return null;
     }
 
-    public static void setVersion(AbstractBuild build, String version) {
-        ParameterValue value = new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version);
-        ParametersAction action = build.getAction(ParametersAction.class);
+    static void setVersion(AbstractBuild build, String version) {
+        PipelineVersionAction action = build.getAction(PipelineVersionAction.class);
         if (action == null) {
-            action = new ParametersAction(value);
-            build.addAction(action);
+            build.addAction(new PipelineVersionAction(version));
         } else {
-            List<ParameterValue> parameters = new ArrayList<ParameterValue>(action.getParameters());
-            parameters.add(value);
-            action = new ParametersAction(parameters);
             build.replaceAction(action);
         }
+        build.replaceAction(getVersionParameterAction(version));
     }
 
+    // Backwards compatibility for 0.9.9 and older
+    private static ParametersAction getVersionParameterAction(String version) {
+        ParameterValue value = new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version);
+        return new ParametersAction(value);
+    }
+
+    static class PipelineVersionAction extends CauseAction {
+        private final String version;
+
+        PipelineVersionAction(final String version) {
+            this.version = version;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+    }
 
     @Extension
     public static class DescriptorImpl extends BuildWrapperDescriptor {

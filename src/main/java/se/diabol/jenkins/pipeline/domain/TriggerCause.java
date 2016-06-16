@@ -32,8 +32,8 @@ import java.util.Set;
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class TriggerCause {
 
-    private String type;
-    private String description;
+    private final String type;
+    private final String description;
 
     public static final String TYPE_UPSTREAM = "UPSTREAM";
     public static final String TYPE_MANUAL = "MANUAL";
@@ -78,14 +78,14 @@ public class TriggerCause {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()){
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        TriggerCause trigger = (TriggerCause) o;
+        TriggerCause trigger = (TriggerCause) obj;
 
         return description.equals(trigger.description) && type.equals(trigger.type);
 

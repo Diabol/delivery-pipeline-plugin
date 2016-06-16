@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static com.google.common.base.Objects.toStringHelper;
+
 import com.google.common.collect.ImmutableList;
 
 import org.kohsuke.stapler.Stapler;
@@ -28,7 +30,6 @@ import se.diabol.jenkins.pipeline.PipelinePagination;
 
 import java.util.List;
 
-import static com.google.common.base.Objects.toStringHelper;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
@@ -54,9 +55,10 @@ public class Component extends AbstractItem {
     @Exported
     public List<Pipeline> getPipelines() {
         if (pagingEnabled && !isFullScreenView()) {
-                int startIndex = ((this.getCurrentPage() - 1) * noOfPipelines);
-                int retrieveSize = Math.min(pipelines.size() - ((this.getCurrentPage() - 1) * noOfPipelines), noOfPipelines);
-                return pipelines.subList(startIndex, startIndex + retrieveSize);
+            int startIndex = ((this.getCurrentPage() - 1) * noOfPipelines);
+            int retrieveSize = Math.min(pipelines.size() - ((this.getCurrentPage() - 1) * noOfPipelines),
+                    noOfPipelines);
+            return pipelines.subList(startIndex, startIndex + retrieveSize);
         }
         return pipelines;
     }
@@ -89,33 +91,34 @@ public class Component extends AbstractItem {
         return getPagination().getTag();
     }
 
-    public PipelinePagination getPagination() {
+    private PipelinePagination getPagination() {
         if (pagingEnabled) {
-            return new PipelinePagination(this.getCurrentPage(), pipelines.size(), noOfPipelines, "?" + (this.isFullScreenView() == true ? "fullscreen=true&" : "fullscreen=false&") + "component=" + componentNumber + "&page=");
+            return new PipelinePagination(this.getCurrentPage(), pipelines.size(), noOfPipelines, "?"
+                    + (this.isFullScreenView() ? "fullscreen=true&" : "fullscreen=false&")
+                    + "component=" + componentNumber + "&page=");
         }
         return null;
     }
 
-    public int getCurrentPage() {
+    private int getCurrentPage() {
         StaplerRequest req = Stapler.getCurrentRequest();    
         if (req == null) {
             return 1;
         }
         int page = req.getParameter("page") == null ? 1 : Integer.parseInt(req.getParameter("page").toString());
-        page = Math.max(page, 1);	
-        int component = req.getParameter("component") == null ? 1 : Integer.parseInt(req.getParameter("component").toString());
+        page = Math.max(page, 1);
+        int component = req.getParameter("component") == null ? 1 :
+                Integer.parseInt(req.getParameter("component").toString());
         if (component != componentNumber) {
             page = 1;
         }
         return page;
     }
 
-    public boolean isFullScreenView() {
-    	StaplerRequest req = Stapler.getCurrentRequest();    
-    	if (req == null) {
-    		return false;
-    	}
-    	return req.getParameter("fullscreen") == null ? false : Boolean.parseBoolean(req.getParameter("fullscreen"));
+    private boolean isFullScreenView() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        return req != null && req.getParameter("fullscreen") != null
+                && Boolean.parseBoolean(req.getParameter("fullscreen"));
     }
 
     @Exported

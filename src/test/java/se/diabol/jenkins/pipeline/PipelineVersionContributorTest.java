@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 
 public class PipelineVersionContributorTest {
 
-    public static final String PIPELINE_VERSION = "PIPELINE_VERSION";
+    private static final String PIPELINE_VERSION = "PIPELINE_VERSION";
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
@@ -70,7 +70,6 @@ public class PipelineVersionContributorTest {
 
         assertNotNull(firstProject.getLastBuild());
         assertNotNull(secondProject.getLastBuild());
-
     }
 
     @Test
@@ -92,8 +91,6 @@ public class PipelineVersionContributorTest {
         assertNotNull(firstProject.getLastBuild());
         assertNotNull(secondProject.getLastBuild());
         assertEquals("#1", firstProject.getLastBuild().getDisplayName());
-
-
     }
 
     @Test
@@ -116,8 +113,6 @@ public class PipelineVersionContributorTest {
         assertNotNull(firstProject.getLastBuild());
         assertNotNull(secondProject.getLastBuild());
         assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
-
-
     }
 
     @Test
@@ -150,14 +145,12 @@ public class PipelineVersionContributorTest {
         jenkins.waitUntilNoActivity();
 
         assertNotNull(secondProject.getLastBuild());
-
     }
 
     @Test
     public void testIsApplicable() throws Exception {
         PipelineVersionContributor.DescriptorImpl d = new PipelineVersionContributor.DescriptorImpl();
         assertTrue(d.isApplicable(jenkins.createFreeStyleProject("a")));
-
     }
 
     @Test
@@ -177,11 +170,13 @@ public class PipelineVersionContributorTest {
         assertTrue(log.contains("Error creating version"));
     }
 
-
     @Test
-    public void testGetVersionFound() throws Exception {
+    @Bug(34805)
+    public void shouldGetPipelineVersionFromBuildAction() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
-        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(), new ParametersAction(new StringParameterValue("HEPP", "HOPP"), new StringParameterValue(PIPELINE_VERSION, "1.1"))).get();
+        FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(),
+                                                      new ParametersAction(new StringParameterValue("HEPP", "HOPP")),
+                                                      new PipelineVersionContributor.PipelineVersionAction("1.1")).get();
         assertEquals("1.1", PipelineVersionContributor.getVersion(build));
     }
 
@@ -235,8 +230,10 @@ public class PipelineVersionContributorTest {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                BuildListener listener) throws InterruptedException, IOException {
             EnvVars env = build.getEnvironment(new StreamTaskListener(System.out, null));
-            assertTrue(env.containsKey(PIPELINE_VERSION));
-            assertEquals(version, env.get(PIPELINE_VERSION));
+            PipelineVersionContributor.PipelineVersionAction versionAction =
+                    build.getAction(PipelineVersionContributor.PipelineVersionAction.class);
+            assertNotNull(versionAction);
+            assertEquals(version, versionAction.getVersion());
             return true;
         }
     }

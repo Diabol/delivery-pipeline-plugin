@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
+
 import com.google.common.collect.ImmutableList;
 
 import hudson.model.AbstractBuild;
@@ -37,17 +41,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Objects.toStringHelper;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
-
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Pipeline extends AbstractItem {
 
-    private AbstractProject firstProject;
-    private AbstractProject lastProject;
+    private final AbstractProject firstProject;
+    private final AbstractProject lastProject;
 
-    private List<Stage> stages;
+    private final List<Stage> stages;
 
     private String version;
 
@@ -78,7 +78,8 @@ public class Pipeline extends AbstractItem {
                     String timestamp,
                     List<TriggerCause> triggeredBy,
                     Set<UserInfo> contributors,
-                    List<Stage> stages, boolean aggregated) {
+                    List<Stage> stages,
+                    boolean aggregated) {
         super(name);
         this.firstProject = firstProject;
         this.lastProject = lastProject;
@@ -186,20 +187,24 @@ public class Pipeline extends AbstractItem {
     }
 
     /**
-     * Created a pipeline prototype for the supplied first project
+     * Created a pipeline prototype for the supplied first project.
      */
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, AbstractProject<?, ?> lastProject, String excludeJobsRegex) throws PipelineException {
-        List<Stage> stages = Stage.extractStages(firstProject, lastProject, excludeJobsRegex);
-        return new Pipeline(name, firstProject, lastProject, newArrayList(stages));
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject,
+                                           AbstractProject<?, ?> lastProject) throws PipelineException {
+        return new Pipeline(name, firstProject, lastProject,
+                newArrayList(Stage.extractStages(firstProject, lastProject)));
     }
 
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {
-        List<Stage> stages = Stage.extractStages(firstProject, null, null);
-        return new Pipeline(name, firstProject, null, newArrayList(stages));
+        return new Pipeline(name, firstProject, null, newArrayList(Stage.extractStages(firstProject, null)));
     }
 
-    public Pipeline createPipelineAggregated(ItemGroup context) {
+    Pipeline createPipelineAggregatedWithoutChangesShown(ItemGroup context) {
         return createPipelineAggregated(context, false);
+    }
+
+    Pipeline createPipelineAggregatedWithChangesShown(ItemGroup context) {
+        return createPipelineAggregated(context, true);
     }
 
     public Pipeline createPipelineAggregated(ItemGroup context, boolean showAggregatedChanges) {
@@ -209,25 +214,29 @@ public class Pipeline extends AbstractItem {
         }
 
         if (showAggregatedChanges) {
-            // We use size() - 1 because last stage's changelog can't be calculated against next stage (no such)
-            for (int i = 0; i < pipelineStages.size() - 1; i++) {
-                Stage stage = pipelineStages.get(i);
-                Stage nextStage = pipelineStages.get(i + 1);
-
-                final AbstractBuild nextBuild = nextStage.getHighestBuild(firstProject, context, Result.SUCCESS);
-
-                Set<Change> changes = newHashSet();
-
-                AbstractBuild build = stage.getHighestBuild(firstProject, context, Result.SUCCESS);
-                for (; build != null && build != nextBuild; build = build.getPreviousBuild()) {
-                    changes.addAll(Change.getChanges(build));
-                }
-
-                stage.setChanges(changes);
-            }
+            setAggregatedChanges(context, pipelineStages);
         }
 
         return new Pipeline(getName(), firstProject, lastProject, null, null, null, null, pipelineStages, true);
+    }
+
+    void setAggregatedChanges(ItemGroup context, List<Stage> pipelineStages) {
+        // We use size() - 1 because last stage's changelog can't be calculated against next stage (no such)
+        for (int i = 0; i < pipelineStages.size() - 1; i++) {
+            Stage stage = pipelineStages.get(i);
+            Stage nextStage = pipelineStages.get(i + 1);
+
+            final AbstractBuild nextBuild = nextStage.getHighestBuild(firstProject, context, Result.SUCCESS);
+
+            Set<Change> changes = newHashSet();
+
+            AbstractBuild build = stage.getHighestBuild(firstProject, context, Result.SUCCESS);
+            for (; build != null && build != nextBuild; build = build.getPreviousBuild()) {
+                changes.addAll(Change.getChanges(build));
+            }
+
+            stage.setChanges(changes);
+        }
     }
 
     /**
@@ -253,7 +262,7 @@ public class Pipeline extends AbstractItem {
         
         int pipelineCount = noOfPipelines;
         if (pagingEnabled) {
-        	pipelineCount = firstProject.getBuilds().size();
+            pipelineCount = firstProject.getBuilds().size();
         }
         Iterator it = firstProject.getBuilds().iterator();
         for (int i = 0; i < pipelineCount && it.hasNext(); i++) {
