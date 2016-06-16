@@ -17,38 +17,27 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import static com.google.common.base.Objects.toStringHelper;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-import static java.util.Collections.singleton;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
 import hudson.util.RunList;
-
 import jenkins.model.Jenkins;
-
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.SimpleDirectedGraph;
-
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
+import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +50,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.annotation.CheckForNull;
+import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.Iterables.concat;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+import static java.util.Collections.singleton;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
@@ -368,15 +362,13 @@ public class Stage extends AbstractItem {
 
     private static List<Stage> getDownstreamStagesForStage(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();
-        List<Task> stageTasks = stage.getTasks();
-        for (Task task : stageTasks) {
+        for (Task task : stage.getTasks()) {
             if (hasDirectDownstreamTasks(task)) {
                 for (String downstreamTaskJobName : task.getDownstreamTasks()) {
                     addStages(stage, stages, result, downstreamTaskJobName);
                 }
             } else {
-                List<AbstractProject> projectDownstreamJobs = getAllDownstreamJobs(task);
-                for (AbstractProject job : projectDownstreamJobs) {
+                for (AbstractProject job : getAllDownstreamJobs(task)) {
                     String downstreamProjectJobName = job.getRelativeDisplayNameFrom(Jenkins.getInstance());
                     addStages(stage, stages, result, downstreamProjectJobName);
                 }
@@ -397,18 +389,18 @@ public class Stage extends AbstractItem {
     }
 
     private static List<AbstractProject> getAllDownstreamJobs(Task task) {
-        List<AbstractProject> downstreamProjects = Lists.newArrayList();
         AbstractProject project = ProjectUtil.getProject(task.getId(), Jenkins.getInstance());
-        addDownstreamJobs(project, downstreamProjects);
-        return downstreamProjects;
+        return addDownstreamJobs(project);
     }
 
-    private static void addDownstreamJobs(AbstractProject baseProject, List<AbstractProject> list) {
+    private static List<AbstractProject> addDownstreamJobs(AbstractProject baseProject) {
+        List<AbstractProject> downstreamProjects = Lists.newArrayList();
         List<AbstractProject> directDownstreamProjects = ProjectUtil.getDownstreamProjects(baseProject);
         for (AbstractProject downstreamProject : directDownstreamProjects) {
             List<AbstractProject> secondaryDownstreamProjects = ProjectUtil.getDownstreamProjects(downstreamProject);
-            list.addAll(secondaryDownstreamProjects);
+            downstreamProjects.addAll(secondaryDownstreamProjects);
         }
+        return downstreamProjects;
     }
 
     @CheckForNull
