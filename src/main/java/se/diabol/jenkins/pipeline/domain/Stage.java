@@ -267,35 +267,35 @@ public class Stage extends AbstractItem {
                 return stages2.size() - stages1.size();
             }
         });
-        
+
         //for keeping track of which row has an available column
         final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
-        
+
         for (int row = 0; row < allPaths.size(); row++) {
-            List<Stage> path = allPaths.get(row);            
+            List<Stage> path = allPaths.get(row);
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-                
+
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
 	                stage.setColumn(Math.max(stage.getColumn(), column));
-	                
+
 	                final int effectiveColumn = stage.getColumn();
-	                
+
 	                final Integer previousRowForThisColumn = columnRowMap.get(effectiveColumn);
 	                //set it to 0 if no previous setting is set; if found, previous value + 1
 	                final int currentRowForThisColumn = previousRowForThisColumn == null ? 0 : previousRowForThisColumn + 1;
 	                //update/set row number in the columnRowMap for this effective column
 	            	columnRowMap.put(effectiveColumn, currentRowForThisColumn);
-	
+
 	            	stage.setRow(currentRowForThisColumn);
-	            	
+
 	            	processedStages.add(stage);
                 }
             }
         }
-        
+
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);
@@ -357,17 +357,47 @@ public class Stage extends AbstractItem {
 
     private static List<Stage> getDownstreamStages(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();
-        for (int i = 0; i < stage.getTasks().size(); i++) {
-            Task task = stage.getTasks().get(i);
-            for (int j = 0; j < task.getDownstreamTasks().size(); j++) {
-                String jobName = task.getDownstreamTasks().get(j);
-                Stage target = findStageForJob(jobName, stages);
-                if (target != null && !target.getName().equals(stage.getName())) {
-                    result.add(target);
+        List<Task> stageTasks = stage.getTasks();
+        for (Task task : stageTasks) {
+            if (hasDirectDownstreamTasks(task)) {
+                for (String downstreamTaskJobName : task.getDownstreamTasks()) {
+                    addStages(stage, stages, result, downstreamTaskJobName);
+                }
+            } else {
+                List<AbstractProject> projectDownstreamJobs = getAllDownstreamJobs(task);
+                for (AbstractProject job : projectDownstreamJobs) {
+                    String downstreamProjectJobName = job.getRelativeDisplayNameFrom(Jenkins.getInstance());
+                    addStages(stage, stages, result, downstreamProjectJobName);
                 }
             }
         }
         return result;
+    }
+
+    private static boolean hasDirectDownstreamTasks(Task task) {
+        return task.getDownstreamTasks().size() > 0;
+    }
+
+    private static void addStages(Stage stage, Collection<Stage> stages, List<Stage> result, String jobName) {
+        Stage target = findStageForJob(jobName, stages);
+        if (target != null && !target.getName().equals(stage.getName())) {
+            result.add(target);
+        }
+    }
+
+    private static List<AbstractProject> getAllDownstreamJobs(Task task) {
+        List<AbstractProject> downstreamProjects = Lists.newArrayList();
+        AbstractProject project = ProjectUtil.getProject(task.getId(), Jenkins.getInstance());
+        addDownstreamJobs(project, downstreamProjects);
+        return downstreamProjects;
+    }
+
+    private static void addDownstreamJobs(AbstractProject baseProject, List<AbstractProject> list) {
+        List<AbstractProject> directDownstreamProjects = ProjectUtil.getDownstreamProjects(baseProject);
+        for (AbstractProject downstreamProject : directDownstreamProjects) {
+            List<AbstractProject> secondaryDownstreamProjects = ProjectUtil.getDownstreamProjects(downstreamProject);
+            list.addAll(secondaryDownstreamProjects);
+        }
     }
 
     @CheckForNull
