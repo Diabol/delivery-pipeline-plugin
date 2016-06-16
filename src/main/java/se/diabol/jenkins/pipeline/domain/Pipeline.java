@@ -78,7 +78,8 @@ public class Pipeline extends AbstractItem {
                     String timestamp,
                     List<TriggerCause> triggeredBy,
                     Set<UserInfo> contributors,
-                    List<Stage> stages, boolean aggregated) {
+                    List<Stage> stages,
+                    boolean aggregated) {
         super(name);
         this.firstProject = firstProject;
         this.lastProject = lastProject;
@@ -198,8 +199,12 @@ public class Pipeline extends AbstractItem {
         return new Pipeline(name, firstProject, null, newArrayList(Stage.extractStages(firstProject, null)));
     }
 
-    public Pipeline createPipelineAggregated(ItemGroup context) {
+    Pipeline createPipelineAggregatedWithoutChangesShown(ItemGroup context) {
         return createPipelineAggregated(context, false);
+    }
+
+    Pipeline createPipelineAggregatedWithChangesShown(ItemGroup context) {
+        return createPipelineAggregated(context, true);
     }
 
     public Pipeline createPipelineAggregated(ItemGroup context, boolean showAggregatedChanges) {
@@ -209,25 +214,29 @@ public class Pipeline extends AbstractItem {
         }
 
         if (showAggregatedChanges) {
-            // We use size() - 1 because last stage's changelog can't be calculated against next stage (no such)
-            for (int i = 0; i < pipelineStages.size() - 1; i++) {
-                Stage stage = pipelineStages.get(i);
-                Stage nextStage = pipelineStages.get(i + 1);
-
-                final AbstractBuild nextBuild = nextStage.getHighestBuild(firstProject, context, Result.SUCCESS);
-
-                Set<Change> changes = newHashSet();
-
-                AbstractBuild build = stage.getHighestBuild(firstProject, context, Result.SUCCESS);
-                for (; build != null && build != nextBuild; build = build.getPreviousBuild()) {
-                    changes.addAll(Change.getChanges(build));
-                }
-
-                stage.setChanges(changes);
-            }
+            setAggregatedChanges(context, pipelineStages);
         }
 
         return new Pipeline(getName(), firstProject, lastProject, null, null, null, null, pipelineStages, true);
+    }
+
+    void setAggregatedChanges(ItemGroup context, List<Stage> pipelineStages) {
+        // We use size() - 1 because last stage's changelog can't be calculated against next stage (no such)
+        for (int i = 0; i < pipelineStages.size() - 1; i++) {
+            Stage stage = pipelineStages.get(i);
+            Stage nextStage = pipelineStages.get(i + 1);
+
+            final AbstractBuild nextBuild = nextStage.getHighestBuild(firstProject, context, Result.SUCCESS);
+
+            Set<Change> changes = newHashSet();
+
+            AbstractBuild build = stage.getHighestBuild(firstProject, context, Result.SUCCESS);
+            for (; build != null && build != nextBuild; build = build.getPreviousBuild()) {
+                changes.addAll(Change.getChanges(build));
+            }
+
+            stage.setChanges(changes);
+        }
     }
 
     /**
