@@ -22,7 +22,6 @@ import hudson.model.Result;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -129,14 +128,10 @@ public class Task extends AbstractItem {
             return runningStatus(build, taskNodes);
         }
         if (allExecuted) {
-            for (int i = 0; i < taskNodes.size(); i++) {
-                FlowNode node = taskNodes.get(i);
-                ErrorAction errorAction = node.getError();
-                if (errorAction != null) {
-                    return StatusFactory.failed(0, 0,false, null);
-                }
-                long duration = getDuration(taskNodes);
-                return StatusFactory.success(getStartTime(taskNodes), duration, false, null);
+            if (failed(taskNodes.get(0))) {
+                return StatusFactory.failed(0, 0, false, null);
+            } else {
+                return StatusFactory.success(getStartTime(taskNodes), getDuration(taskNodes), false, null);
             }
         } else if (allIdle) {
             return StatusFactory.idle();
@@ -144,13 +139,18 @@ public class Task extends AbstractItem {
         return StatusFactory.idle();
     }
 
+    private static boolean failed(FlowNode node) {
+        return node.getError() != null;
+    }
+
     private static Status runningStatus(WorkflowRun build, List<FlowNode> taskNodes) {
+        long buildTimestamp = build.getTimeInMillis();
         int progress = (int) round(100.0d *
-                (currentTimeMillis() - build.getTimestamp().getTimeInMillis()) / build.getEstimatedDuration());
+                (currentTimeMillis() - buildTimestamp) / build.getEstimatedDuration());
         if (progress > 100) {
             progress = 99;
         }
-        return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
+        return StatusFactory.running(progress, buildTimestamp, currentTimeMillis() - buildTimestamp);
     }
 
     private static boolean isAllExecuted(List<FlowNode> nodes) {
