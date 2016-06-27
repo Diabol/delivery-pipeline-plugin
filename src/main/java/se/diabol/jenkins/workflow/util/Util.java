@@ -17,15 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.util;
 
-import com.cloudbees.workflow.flownode.FlowNodeUtil;
-import com.cloudbees.workflow.rest.external.StageNodeExt;
 import java.util.ArrayList;
 import java.util.List;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import se.diabol.jenkins.workflow.step.TaskAction;
 
 public class Util {
-
 
     public static List<FlowNode> getTaskNodes(List<FlowNode> stageNodes) {
         List<FlowNode> result = new ArrayList<FlowNode>();
@@ -62,9 +59,5 @@ public class Util {
 
         return nodes;
     }
-
-
-
-
 
 }
