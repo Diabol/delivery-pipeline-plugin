@@ -277,16 +277,16 @@ public class Stage extends AbstractItem {
                 return stages2.size() - stages1.size();
             }
         });
-        
+
         //for keeping track of which row has an available column
         final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
-        
+
         for (int row = 0; row < allPaths.size(); row++) {
-            List<Stage> path = allPaths.get(row);            
+            List<Stage> path = allPaths.get(row);
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-                
+
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
                     stage.setColumn(Math.max(stage.getColumn(), column));
@@ -306,7 +306,7 @@ public class Stage extends AbstractItem {
                 }
             }
         }
-        
+
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);
@@ -335,20 +335,24 @@ public class Stage extends AbstractItem {
 
     private static List<List<Stage>> findAllRunnablePaths(Stage start, DirectedGraph<Stage, Edge> graph) {
         List<List<Stage>> paths = new LinkedList<List<Stage>>();
-        if (graph.outDegreeOf(start) == 0) {
-            List<Stage> path = new LinkedList<Stage>();
-            path.add(start);
-            paths.add(path);
-        } else {
-            for (Edge edge : graph.outgoingEdgesOf(start)) {
-                List<List<Stage>> allPathsFromTarget = findAllRunnablePaths(edge.getTarget(), graph);
-                for (List<Stage> path : allPathsFromTarget) {
-                    path.add(0, start);
+        if (start == null) {
+            throw new IllegalArgumentException("The pipeline graph lacks the start node.");
+        }  else {
+            if (graph.outDegreeOf(start) == 0) {
+                List<Stage> path = new LinkedList<Stage>();
+                path.add(start);
+                paths.add(path);
+            } else {
+                for (Edge edge : graph.outgoingEdgesOf(start)) {
+                    List<List<Stage>> allPathsFromTarget = findAllRunnablePaths(edge.getTarget(), graph);
+                    for (List<Stage> path : allPathsFromTarget) {
+                        path.add(0, start);
+                    }
+                    paths.addAll(allPathsFromTarget);
                 }
-                paths.addAll(allPathsFromTarget);
             }
+            return paths;
         }
-        return paths;
     }
 
     protected static void sortByRowsCols(List<Stage> stages) {
