@@ -336,7 +336,7 @@ public class Stage extends AbstractItem {
     private static List<List<Stage>> findAllRunnablePaths(Stage start, DirectedGraph<Stage, Edge> graph) {
         List<List<Stage>> paths = new LinkedList<List<Stage>>();
         if (start == null) {
-            throw new IllegalArgumentException("The pipeline graph lacks the start node.");
+            throw new IllegalArgumentException("The pipeline graph lacks a start node.");
         }  else {
             if (graph.outDegreeOf(start) == 0) {
                 List<Stage> path = new LinkedList<Stage>();

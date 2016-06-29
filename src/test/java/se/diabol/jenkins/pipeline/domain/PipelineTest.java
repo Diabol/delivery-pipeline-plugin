@@ -862,6 +862,20 @@ public class PipelineTest {
         assertEquals(expectedJobNames, getProjectNames(pipeline));
     }
 
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExcludeStartNode() throws Exception {
+        String firstJobName = "project-build";
+        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
+        FreeStyleProject firstDependantJob = getOrCreateProject("project-test1");
+        FreeStyleProject secondDependantJob = getOrCreateProject("project-test2");
+        firstJob.getPublishersList().add(new BuildTrigger(firstDependantJob.getName(), false));
+        firstJob.getPublishersList().add(new BuildTrigger(secondDependantJob.getName(), false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline.extractPipeline("Pipeline", firstJob, null, "project-build");
+    }
+
     private void createLinkedProjects(List<String> projectNames) {
         checkArgument(projectNames.size() > 0);
         FreeStyleProject fromProject = getOrCreateProject(projectNames.get(0));
