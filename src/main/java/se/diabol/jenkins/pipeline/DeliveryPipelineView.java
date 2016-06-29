@@ -111,7 +111,7 @@ public class DeliveryPipelineView extends View {
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
     private String theme = DEFAULT_THEME;
-
+    private int maxNumberOfJobs = -1;
     private List<RegExpSpec> regexpFirstJobs;
 
     private transient String error;
@@ -404,6 +404,14 @@ public class DeliveryPipelineView extends View {
         this.aggregatedChangesGroupingPattern = aggregatedChangesGroupingPattern;
     }
 
+    public int getMaxNumberOfJobs() {
+        return maxNumberOfJobs;
+    }
+
+    public void setMaxNumberOfJobs(int maxNumberOfJobs) {
+        this.maxNumberOfJobs = maxNumberOfJobs;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId)
             throws TriggerException, AuthenticationException {
@@ -493,6 +501,10 @@ public class DeliveryPipelineView extends View {
                 if (comparatorDescriptor != null) {
                     Collections.sort(components, comparatorDescriptor.createInstance());
                 }
+            }
+            if (maxNumberOfJobs > 0) {
+                LOG.fine("Limiting number of jobs to: " + maxNumberOfJobs);
+                components = components.subList(0, Math.min(components.size(), maxNumberOfJobs));
             }
             LOG.fine("Returning: " + components);
             error = null;
