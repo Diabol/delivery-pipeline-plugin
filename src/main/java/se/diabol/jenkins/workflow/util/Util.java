@@ -60,4 +60,12 @@ public class Util {
         return nodes;
     }
 
+    public static <T> T head(List<T> list) {
+        if (list != null && !list.isEmpty()) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
+
 }
