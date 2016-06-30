@@ -128,7 +128,7 @@ public class Task extends AbstractItem {
             return runningStatus(build, taskNodes);
         }
         if (allExecuted) {
-            if (failed(taskNodes.get(0))) {
+            if (failed(Util.head(taskNodes))) {
                 return StatusFactory.failed(0, 0, false, null);
             } else {
                 return StatusFactory.success(getStartTime(taskNodes), getDuration(taskNodes), false, null);
@@ -140,7 +140,7 @@ public class Task extends AbstractItem {
     }
 
     private static boolean failed(FlowNode node) {
-        return node.getError() != null;
+        return node != null && node.getError() != null;
     }
 
     private static Status runningStatus(WorkflowRun build, List<FlowNode> taskNodes) {

@@ -58,6 +58,7 @@ public class WorkflowPipelineView extends View {
     private int updateInterval = DEFAULT_INTERVAL;
     private int noOfColumns = 1;
     private boolean allowPipelineStart = false;
+    private boolean showChanges = false;
     private String project;
     private WorkflowApi workflowApi = new WorkflowApi(jenkins());
 
@@ -102,6 +103,14 @@ public class WorkflowPipelineView extends View {
         this.allowPipelineStart = allowPipelineStart;
     }
 
+    public boolean isShowChanges() {
+        return showChanges;
+    }
+
+    public void setShowChanges(boolean showChanges) {
+        this.showChanges = showChanges;
+    }
+
     public String getProject() {
         return project;
     }
@@ -131,20 +140,27 @@ public class WorkflowPipelineView extends View {
                 Iterator<WorkflowRun> it = job.getBuilds().iterator();
                 for (int i = 0; i < 3 && it.hasNext(); i++) {
                     WorkflowRun build = it.next();
-                    Pipeline pipeline = Pipeline.resolve(job, build);
-                    pipeline.setChanges(getChangelog(build));
+                    Pipeline pipeline = resolvePipeline(job, build);
                     pipelines.add(pipeline);
                 }
                 Component component = new Component("Component", pipelines);
                 this.error = null;
                 return Collections.singletonList(component);
             } else {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         } catch (PipelineException e) {
             error = e.getMessage();
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
+    }
+
+    private Pipeline resolvePipeline(WorkflowJob job, WorkflowRun build) throws PipelineException {
+        Pipeline pipeline = Pipeline.resolve(job, build);
+        if (showChanges) {
+            pipeline.setChanges(getChangelog(build));
+        }
+        return pipeline;
     }
 
     private WorkflowJob getWorkflowJob(final String projectName) {
