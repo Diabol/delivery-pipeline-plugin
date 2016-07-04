@@ -34,6 +34,8 @@ import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -104,12 +106,18 @@ public class PipelineVersionContributor extends BuildWrapper {
         } else {
             build.replaceAction(action);
         }
-        build.replaceAction(getVersionParameterAction(version));
+        build.replaceAction(getVersionParameterAction(build, version));
     }
 
     // Backwards compatibility for 0.9.9 and older
-    private static ParametersAction getVersionParameterAction(String version) {
+    private static ParametersAction getVersionParameterAction(AbstractBuild build, String version) {
         ParameterValue value = new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version);
+        ParametersAction action = build.getAction(ParametersAction.class);
+        if (action != null) {
+            List<ParameterValue> parameters = new ArrayList<ParameterValue>(action.getParameters());
+            parameters.add(value);
+            return new ParametersAction(parameters);
+        }
         return new ParametersAction(value);
     }
 
