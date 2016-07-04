@@ -17,12 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import hudson.model.AbstractBuild;
 import hudson.model.User;
-import hudson.scm.ChangeLogSet;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class UserInfo extends AbstractItem {
@@ -43,10 +42,10 @@ public class UserInfo extends AbstractItem {
         return new UserInfo(user.getDisplayName(), user.getUrl());
     }
 
-    public static Set<UserInfo> getContributors(AbstractBuild<?, ?> build) {
+    public static Set<UserInfo> getContributors(List<Change> changes) {
         Set<UserInfo> contributors = new HashSet<UserInfo>();
-        for (ChangeLogSet.Entry entry : build.getChangeSet()) {
-            contributors.add(UserInfo.getUser(entry.getAuthor()));
+        for (Change change : changes) {
+            contributors.add(change.getAuthor());
         }
         return contributors;
     }

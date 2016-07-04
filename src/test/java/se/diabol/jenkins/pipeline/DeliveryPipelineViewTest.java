@@ -406,13 +406,20 @@ public class DeliveryPipelineViewTest {
         jenkins.setQuietPeriod(0);
         jenkins.buildAndAssertSuccess(build);
 
+        view.setShowChanges(false);
+        components = view.getPipelines();
+        Pipeline pipeline = components.get(0).getPipelines().get(0);
+        assertNull(pipeline.getContributors());
+        assertNull(pipeline.getChanges());
+
+        view.setShowChanges(true);
         components = view.getPipelines();
         assertNull(view.getError());
         assertEquals(1, components.size());
         component = components.get(0);
         assertEquals(1, component.getPipelines().size());
         assertEquals("Comp", component.getName());
-        Pipeline pipeline = component.getPipelines().get(0);
+        pipeline = component.getPipelines().get(0);
         assertEquals("#1", pipeline.getVersion());
         assertNotNull(pipeline.getTimestamp());
         assertFalse(pipeline.isAggregated());

@@ -68,6 +68,7 @@ public class PipelineTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
     private final static boolean pagingEnabledFalse = false;
+    private final static boolean showChanges = true;
 
     @Test
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
@@ -178,8 +179,8 @@ public class PipelineTest {
         assertEquals(2, pipeline.getStages().size());
         assertEquals(2, pipeline.getStages().get(0).getTasks().size());
         assertEquals(1, pipeline.getStages().get(1).getTasks().size());
-
     }
+
 
     @Test
     public void testCreatePipelineAggregatedSharedTask() throws Exception {
@@ -229,6 +230,7 @@ public class PipelineTest {
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isIdle());
         assertEquals("job/sonar1/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
         assertNull(aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
+
 
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
@@ -425,13 +427,11 @@ public class PipelineTest {
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
         Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, component);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
-
     }
-
 
     @Test
     public void getPipelineLatestWithDifferntFolders() throws Exception {
@@ -461,9 +461,7 @@ public class PipelineTest {
         assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
         assertEquals(0, pipeline.getStages().get(0).getColumn());
         assertEquals(1, pipeline.getStages().get(1).getColumn());
-
     }
-
 
     @Test
     public void testForkJoin() throws Exception {
@@ -488,7 +486,6 @@ public class PipelineTest {
         assertEquals(0, prototype.getStages().get(2).getRow());
         assertEquals(1, prototype.getStages().get(3).getColumn());
         assertEquals(1, prototype.getStages().get(3).getRow());
-
     }
 
     @Test
@@ -519,9 +516,7 @@ public class PipelineTest {
 
         assertTrue(pipeline.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-
     }
-
 
     @Test
     public void getPipelineLatestWithNestedFolders() throws Exception {
@@ -553,7 +548,6 @@ public class PipelineTest {
 
         assertTrue(pipeline.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-
     }
 
     /**
@@ -664,9 +658,7 @@ public class PipelineTest {
         assertEquals("h", pipeline.getStages().get(7).getName());
         assertEquals(2, pipeline.getStages().get(7).getRow());
         assertEquals(4, pipeline.getStages().get(7).getColumn());
-
     }
-
 
     /**
      * A --> B --> C --> D
@@ -700,7 +692,6 @@ public class PipelineTest {
         } catch (PipelineException e) {
             //Should throw this
         }
-
     }
 
     @Test
@@ -710,16 +701,14 @@ public class PipelineTest {
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
         Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, component);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
-
-
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, component);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
@@ -853,8 +842,5 @@ public class PipelineTest {
         assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
         assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
         assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
-
-
     }
-
 }

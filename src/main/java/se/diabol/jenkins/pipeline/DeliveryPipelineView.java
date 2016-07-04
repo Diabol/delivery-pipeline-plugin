@@ -516,10 +516,11 @@ public class DeliveryPipelineView extends View {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         if (isFullScreenView()) {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, component));
+            pipelines.addAll(pipeline
+                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges, component));
         } else {
             pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(),
-                    pagingEnabled, component));
+                    pagingEnabled, showChanges, component));
         }
         component.setPipelines(pipelines);
         return component;
@@ -757,7 +758,5 @@ public class DeliveryPipelineView extends View {
                 }
             }
         }
-
     }
-
 }
