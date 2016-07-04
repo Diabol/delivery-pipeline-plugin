@@ -44,13 +44,20 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
+import org.kohsuke.stapler.RequestImpl;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.WebApp;
+import org.mockito.Mockito;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -404,6 +411,7 @@ public class PipelineTest {
 
     @Test
     public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
         FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         upstream.getPublishersList().add(new BuildTrigger("build", false));
@@ -416,7 +424,8 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse);
+        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -696,17 +705,21 @@ public class PipelineTest {
 
     @Test
     public void testShouldShowPipelineInstanceInQueue() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse);
+        Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, component);
         assertEquals(1, pipelines.size());
 
 
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse);
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }

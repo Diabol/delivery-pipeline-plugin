@@ -33,8 +33,8 @@ public class NameComparatorTest {
 
     @Test
     public void testCompare() {
-        Component componentB = new Component("B", "B", "job/A", false, new ArrayList<Pipeline>(), 3, pagingEnabledFalse);
-        Component componentA = new Component("A", "A", "job/B", false, new ArrayList<Pipeline>(), 3, pagingEnabledFalse);
+        Component componentB = new Component("B", "B", "job/A", false, 3, pagingEnabledFalse, 1);
+        Component componentA = new Component("A", "A", "job/B", false, 3, pagingEnabledFalse, 2);
         List<Component> list = new ArrayList<Component>();
         list.add(componentB);
         list.add(componentA);

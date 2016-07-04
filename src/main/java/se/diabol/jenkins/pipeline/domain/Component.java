@@ -30,37 +30,35 @@ import se.diabol.jenkins.pipeline.PipelinePagination;
 
 import java.util.List;
 
-
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
-    private final List<Pipeline> pipelines;
+    private List<Pipeline> pipelines;
     private final String firstJob;
     private final String firstJobUrl;
     private final boolean firstJobParameterized;
     private final int noOfPipelines;
     private int componentNumber = 0;
     private boolean pagingEnabled = false;
+    private int totalNoOfPipelines = 0;
 
     public Component(String name, String firstJob, String firstJobUrl, boolean firstJobParameterized,
-            List<Pipeline> pipelines, int noOfPipelines, boolean pagingEnabled) {
+                     int noOfPipelines, boolean pagingEnabled, int componentNumber) {
         super(name);
-        this.pipelines = ImmutableList.copyOf(pipelines);
         this.firstJob = firstJob;
         this.firstJobUrl = firstJobUrl;
         this.firstJobParameterized = firstJobParameterized;
         this.noOfPipelines = noOfPipelines;
         this.pagingEnabled = pagingEnabled;
+        this.componentNumber = componentNumber;
     }
 
     @Exported
     public List<Pipeline> getPipelines() {
-        if (pagingEnabled && !isFullScreenView()) {
-            int startIndex = ((this.getCurrentPage() - 1) * noOfPipelines);
-            int retrieveSize = Math.min(pipelines.size() - ((this.getCurrentPage() - 1) * noOfPipelines),
-                    noOfPipelines);
-            return pipelines.subList(startIndex, startIndex + retrieveSize);
-        }
         return pipelines;
+    }
+
+    public void setPipelines(List<Pipeline> pipelines) {
+        this.pipelines = ImmutableList.copyOf(pipelines);
     }
 
     @Exported
@@ -91,23 +89,25 @@ public class Component extends AbstractItem {
         return getPagination().getTag();
     }
 
-    private PipelinePagination getPagination() {
+    public int getTotalNoOfPipelines() {
+        return totalNoOfPipelines;
+    }
+
+    public PipelinePagination getPagination() {
         if (pagingEnabled) {
-            return new PipelinePagination(this.getCurrentPage(), pipelines.size(), noOfPipelines, "?"
-                    + (this.isFullScreenView() ? "fullscreen=true&" : "fullscreen=false&")
+            return new PipelinePagination(this.getCurrentPage(), totalNoOfPipelines, noOfPipelines, "?"
+                    + (this.isFullScreenView() == true ? "fullscreen=true&" : "fullscreen=false&")
                     + "component=" + componentNumber + "&page=");
         }
         return null;
     }
 
-    private int getCurrentPage() {
-        StaplerRequest req = Stapler.getCurrentRequest();    
-        if (req == null) {
-            return 1;
-        }
-        int page = req.getParameter("page") == null ? 1 : Integer.parseInt(req.getParameter("page").toString());
+    public int getCurrentPage() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        int page = req == null ? 1 : req.getParameter("page") == null ? 1 :
+                Integer.parseInt(req.getParameter("page").toString());
         page = Math.max(page, 1);
-        int component = req.getParameter("component") == null ? 1 :
+        int component = req == null ? 1 : req.getParameter("component") == null ? 1 :
                 Integer.parseInt(req.getParameter("component").toString());
         if (component != componentNumber) {
             page = 1;
@@ -115,10 +115,10 @@ public class Component extends AbstractItem {
         return page;
     }
 
-    private boolean isFullScreenView() {
+    public boolean isFullScreenView() {
         StaplerRequest req = Stapler.getCurrentRequest();
-        return req != null && req.getParameter("fullscreen") != null
-                && Boolean.parseBoolean(req.getParameter("fullscreen"));
+        return req == null ? false : req.getParameter("fullscreen") == null ? false :
+                Boolean.parseBoolean(req.getParameter("fullscreen"));
     }
 
     @Exported
@@ -126,7 +126,7 @@ public class Component extends AbstractItem {
         return componentNumber;
     }
 
-    public void setComponentNumber(int componentNumber) {
-        this.componentNumber = componentNumber;
+    public void setTotalNoOfPipelines(int totalNoOfPipelines) {
+        this.totalNoOfPipelines = totalNoOfPipelines;
     }
 }
