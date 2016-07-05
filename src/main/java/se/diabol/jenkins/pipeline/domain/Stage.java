@@ -32,12 +32,16 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
 import hudson.util.RunList;
+
 import jenkins.model.Jenkins;
+
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.SimpleDirectedGraph;
+
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
@@ -57,12 +61,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 
-import static com.google.common.base.Objects.toStringHelper;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-import static java.util.Collections.singleton;
+import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
