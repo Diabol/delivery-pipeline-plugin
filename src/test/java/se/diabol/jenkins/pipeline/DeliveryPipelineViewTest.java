@@ -71,6 +71,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
@@ -928,6 +929,33 @@ public class DeliveryPipelineViewTest {
         assertTrue(jobs.contains(firstJob));
         assertTrue(jobs.contains(secondJob));
         assertFalse(jobs.contains(thirdJob));
+    }
+
+    @Test
+    public void testCreatingDownstreamStagesForHiddenTasks() throws IOException, PipelineException {
+        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        FreeStyleProject test = jenkins.createFreeStyleProject("test");
+        FreeStyleProject testPrep = jenkins.createFreeStyleProject("testPrep");
+        FreeStyleProject testCleanUp = jenkins.createFreeStyleProject("testCleanUp");
+        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+
+        build.getPublishersList().add(new BuildTrigger(test.getName(), false));
+        test.getPublishersList().add(new BuildTrigger(testPrep.getName(), false));
+        test.getPublishersList().add(new BuildTrigger(testCleanUp.getName(), false));
+        testCleanUp.getPublishersList().add(new BuildTrigger(deploy.getName(), false));
+
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp", "build", NONE, NONE));
+        DeliveryPipelineView view = new DeliveryPipelineView("Test");
+        view.setComponentSpecs(componentSpecs);
+        jenkins.getInstance().rebuildDependencyGraph();
+        List<Stage> stages = Stage.extractStages(build, deploy, "test");
+        List<String> buildStageDownstreams = stages.get(0).getDownstreamStages();
+
+
+        assertEquals(2, buildStageDownstreams.size());
+        assertTrue(buildStageDownstreams.contains("testPrep"));
+        assertTrue(buildStageDownstreams.contains("testCleanUp"));
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {

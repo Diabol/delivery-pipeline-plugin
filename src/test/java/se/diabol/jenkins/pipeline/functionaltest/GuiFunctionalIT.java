@@ -26,6 +26,7 @@ import hudson.model.View;
 import hudson.tasks.BuildTrigger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -39,6 +40,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Ignore
 public class GuiFunctionalIT {
 
     private WebDriver webDriver;
