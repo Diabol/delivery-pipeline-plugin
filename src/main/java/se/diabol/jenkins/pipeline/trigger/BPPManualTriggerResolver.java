@@ -40,8 +40,8 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
     @Override
     @CheckForNull
     public ManualTrigger getManualTrigger(AbstractProject<?, ?> project, AbstractProject<?, ?> downstream) {
-        BuildPipelineTrigger bppTrigger = downstream.getPublishersList().get(BuildPipelineTrigger.class);
-        if (bppTrigger != null) {
+        List<BuildPipelineTrigger> bppTriggers = downstream.getPublishersList().getAll(BuildPipelineTrigger.class);
+        for (BuildPipelineTrigger bppTrigger : bppTriggers) {
             String names = bppTrigger.getDownstreamProjectNames();
             if (ProjectUtil.getProjectList(names, project.getParent(), null).contains(project)) {
                 return new BPPManualTrigger();
