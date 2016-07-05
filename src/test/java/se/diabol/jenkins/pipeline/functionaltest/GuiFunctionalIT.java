@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -41,6 +42,7 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTr
 
 import com.cloudbees.hudson.plugins.folder.Folder;
 
+@Ignore
 public class GuiFunctionalIT {
 
     private WebDriver webDriver;
