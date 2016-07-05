@@ -25,18 +25,15 @@ public class PipelinePagination {
     private int prevPage = 0;
     private int nextPage = 0;
     private int totalPage = 0;
-    private int count = 0;
     private int pageSize = 10;
     private final String moveLink;
-    private String rootUrl = "";
 
-	
+
     public PipelinePagination(int currentPage, int totalCount, int pagingSize, String moveLink) {
         this.currentPage = currentPage;
         this.totalCount = totalCount;
         this.pageSize = pagingSize == 0 ? 10 : pagingSize;
         this.moveLink = moveLink;
-        this.rootUrl = Jenkins.getInstance() != null ?  Jenkins.getInstance().getRootUrlFromRequest() : "/";
     }
 
     public String getTag() {
@@ -54,25 +51,17 @@ public class PipelinePagination {
 
     private void setNextPage(StringBuilder sb) {
         sb.append("<a href='").append(moveLink)
-                .append(nextPage).append("'>\n").append("Next").append("<img src='").append(rootUrl)
-                .append("/plugin/delivery-pipeline-plugin/nextbutton.gif' width='3' height='5' alt='' border='0'>\n")
+                .append(nextPage).append("'>\n").append("Next")
                 .append("</a>\n");
     }
 
     private void setPrePage(StringBuilder sb) {
         sb.append("<a href='").append(moveLink).append(prevPage).append("'>\n")
-                .append("<img src='").append(rootUrl)
-                .append("/plugin/delivery-pipeline-plugin/prevbutton.gif' width='3' height='5' alt='' border='0'>\n")
                 .append("Prev").append("</a>\n");
     }
 
-    private void setBlankSpan(StringBuilder sb) {
-        sb.append("<span class='page dark'>\n");
-        sb.append("</span>");
-    }
-
     private void setIndex(StringBuilder sb) {
-        for (count = prevPage + 1; count < nextPage && count <= totalPage; count++) {
+        for (int count = prevPage + 1; count < nextPage && count <= totalPage; count++) {
             if (count == currentPage) {
                 sb.append("<span");
                 sb.append(" class='active_link'>\n");

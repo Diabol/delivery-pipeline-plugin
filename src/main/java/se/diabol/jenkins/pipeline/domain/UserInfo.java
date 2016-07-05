@@ -51,15 +51,15 @@ public class UserInfo extends AbstractItem {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        UserInfo userInfo = (UserInfo) o;
+        UserInfo userInfo = (UserInfo) obj;
 
         return userInfo.getName().equals(getName());
     }

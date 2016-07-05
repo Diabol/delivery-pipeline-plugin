@@ -53,5 +53,5 @@ public interface Status {
 
     boolean isPromoted();
 
-	List<PromotionStatus> getPromotions();
+    List<PromotionStatus> getPromotions();
 }

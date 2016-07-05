@@ -26,7 +26,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import hudson.model.TopLevelItem;
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
@@ -204,8 +203,10 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isShowPromotions());
         assertFalse(view.isShowTestResults());
         assertFalse(view.isShowStaticAnalysisResults());
+        assertFalse(view.isLinkRelative());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
+        assertEquals("default", view.getTheme());
     }
 
     @Test
@@ -239,10 +240,22 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowTestResults());
         view.setShowStaticAnalysisResults(true);
         assertTrue(view.isShowStaticAnalysisResults());
+        view.setLinkRelative(true);
+        assertTrue(view.isLinkRelative());
         view.setPagingEnabled(true);
         assertTrue(view.getPagingEnabled());
         view.setAllowPipelineStart(true);
         assertTrue(view.isAllowPipelineStart());
+        view.setTheme("test");
+        assertEquals("test", view.getTheme());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testSetDefaultThemeIfNull() {
+        DeliveryPipelineView view = new DeliveryPipelineView("name");
+        view.setTheme(null);
+        assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
     }
 
     @Test

@@ -43,7 +43,7 @@ import com.cloudbees.hudson.plugins.folder.Folder;
 
 public class GuiFunctionalIT {
 
-    protected WebDriver webDriver;
+    private WebDriver webDriver;
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
