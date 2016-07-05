@@ -476,7 +476,7 @@ public class DeliveryPipelineView extends View {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
                         components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline,
-                        (componentSpecs.indexOf(componentSpec) + 1)));
+                            (componentSpecs.indexOf(componentSpec) + 1)));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -508,8 +508,9 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, String excludeJobRegex,
-                                   boolean showAggregatedPipeline, int componentNumber) throws PipelineException {
+    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
+                                   String excludeJobRegex, boolean showAggregatedPipeline,
+                                   int componentNumber) throws PipelineException {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobRegex);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
                 noOfPipelines, pagingEnabled, componentNumber);

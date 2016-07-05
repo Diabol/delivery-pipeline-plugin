@@ -199,7 +199,9 @@ public class Pipeline extends AbstractItem {
     /**
      * Created a pipeline prototype for the supplied first project.
      */
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject, AbstractProject<?, ?> lastProject, String excludeJobsRegex) throws PipelineException {
+    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject,
+                                           AbstractProject<?, ?> lastProject,
+                                           String excludeJobsRegex) throws PipelineException {
         List<Stage> stages = Stage.extractStages(firstProject, lastProject, excludeJobsRegex);
         return new Pipeline(name, firstProject, lastProject, newArrayList(stages));
     }
