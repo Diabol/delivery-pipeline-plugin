@@ -42,7 +42,7 @@ public class UserInfoTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        Set<UserInfo> contributors = UserInfo.getContributors(project.getLastBuild());
+        Set<UserInfo> contributors = UserInfo.getContributors(Change.getChanges(project.getLastBuild()));
         assertEquals(0, contributors.size());
     }
 
@@ -56,7 +56,7 @@ public class UserInfoTest {
         jenkins.setQuietPeriod(0);
         project.scheduleBuild(new Cause.UserIdCause());
         jenkins.waitUntilNoActivity();
-        Set<UserInfo> contributors = UserInfo.getContributors(project.getLastBuild());
+        Set<UserInfo> contributors = UserInfo.getContributors(Change.getChanges(project.getLastBuild()));
         assertEquals(2, contributors.size());
         assertTrue(contributors.contains(new UserInfo("test-user1", null)));
         assertTrue(contributors.contains(new UserInfo("test-user2", null)));
@@ -85,7 +85,7 @@ public class UserInfoTest {
 
         assertEquals(3, build.getCulprits().size());
 
-        Set<UserInfo> contributors = UserInfo.getContributors(project.getLastBuild());
+        Set<UserInfo> contributors = UserInfo.getContributors(Change.getChanges(project.getLastBuild()));
         assertEquals(1, contributors.size());
         UserInfo user = contributors.iterator().next();
         assertEquals("test-user", user.getName());

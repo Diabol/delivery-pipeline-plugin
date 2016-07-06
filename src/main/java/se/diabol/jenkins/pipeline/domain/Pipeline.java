@@ -28,6 +28,8 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 
 import hudson.model.Result;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -89,6 +91,14 @@ public class Pipeline extends AbstractItem {
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
         this.timestamp = timestamp;
+    }
+
+    public AbstractProject getFirstProject() {
+        return this.firstProject;
+    }
+
+    public AbstractProject getLastProject() {
+        return this.lastProject;
     }
 
     @Exported
@@ -190,15 +200,13 @@ public class Pipeline extends AbstractItem {
      * Created a pipeline prototype for the supplied first project.
      */
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject,
-                                           AbstractProject<?, ?> lastProject,
-                                           String excludeJobsRegex) throws PipelineException {
-        List<Stage> stages = Stage.extractStages(firstProject, lastProject, excludeJobsRegex);
-        return new Pipeline(name, firstProject, lastProject, newArrayList(stages));
+                                           AbstractProject<?, ?> lastProject) throws PipelineException {
+        return new Pipeline(name, firstProject, lastProject,
+                newArrayList(Stage.extractStages(firstProject, lastProject)));
     }
 
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {
-        List<Stage> stages = Stage.extractStages(firstProject, null, null);
-        return new Pipeline(name, firstProject, null, newArrayList(stages));
+        return new Pipeline(name, firstProject, null, newArrayList(Stage.extractStages(firstProject, null)));
     }
 
     Pipeline createPipelineAggregatedWithoutChangesShown(ItemGroup context) {
@@ -246,7 +254,11 @@ public class Pipeline extends AbstractItem {
      *
      * @param noOfPipelines number of pipeline instances
      */
-    public List<Pipeline> createPipelineLatest(int noOfPipelines, ItemGroup context, boolean pagingEnabled) {
+    public List<Pipeline> createPipelineLatest(int noOfPipelines,
+                                               ItemGroup context,
+                                               boolean pagingEnabled,
+                                               boolean showChanges,
+                                               Component component) {
         List<Pipeline> result = new ArrayList<Pipeline>();
         int no = noOfPipelines;
         if (firstProject.isInQueue()) {
@@ -261,15 +273,22 @@ public class Pipeline extends AbstractItem {
             result.add(pipelineLatest);
             no--;
         }
-
-        int pipelineCount = noOfPipelines;
-        if (pagingEnabled) {
-            pipelineCount = firstProject.getBuilds().size();
+        int totalNoOfPipelines = firstProject.getBuilds().size();
+        component.setTotalNoOfPipelines(totalNoOfPipelines);
+        int startIndex = 0;
+        int retrieveSize = noOfPipelines;
+        if (pagingEnabled && !component.isFullScreenView()) {
+            startIndex = (component.getCurrentPage() - 1) * noOfPipelines;
+            retrieveSize = Math.min(totalNoOfPipelines - ((component.getCurrentPage() - 1) * noOfPipelines),
+                    noOfPipelines);
         }
-        Iterator it = firstProject.getBuilds().iterator();
-        for (int i = 0; i < pipelineCount && it.hasNext(); i++) {
+
+        Iterator it = firstProject.getBuilds().listIterator(startIndex);
+        for (int i = startIndex; i < (startIndex + retrieveSize) && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
-            List<Change> pipelineChanges = Change.getChanges(firstBuild);
+            List<Change> pipelineChanges = showChanges ? Change.getChanges(firstBuild) : null;
+            Set<UserInfo> contributors = showChanges ? UserInfo.getContributors(pipelineChanges) : null;
+
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
             List<Stage> pipelineStages = new ArrayList<Stage>();
             for (Stage stage : getStages()) {
@@ -277,7 +296,7 @@ public class Pipeline extends AbstractItem {
             }
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
                     pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
-                    UserInfo.getContributors(firstBuild), pipelineStages, false);
+                    contributors, pipelineStages, false);
             pipelineLatest.setChanges(pipelineChanges);
             pipelineLatest.calculateTotalBuildTime();
             result.add(pipelineLatest);

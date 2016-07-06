@@ -473,9 +473,8 @@ public class DeliveryPipelineView extends View {
                     AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
                     AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
-                        String name = componentSpec.getName();
-                        String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
-                        components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline));
+                        components.add(getComponent(componentSpec.getName(), firstJob,
+                                lastJob, showAggregatedPipeline, (componentSpecs.indexOf(componentSpec) + 1)));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -484,9 +483,11 @@ public class DeliveryPipelineView extends View {
             if (regexpFirstJobs != null) {
                 for (RegExpSpec regexp : regexpFirstJobs) {
                     Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
+                    int index = 1;
                     for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
-                        components.add(getComponent(entry.getKey(), entry.getValue(),
-                            null, null, showAggregatedPipeline));
+                        components.add(getComponent(entry.getKey(), entry.getValue(), null,
+                                showAggregatedPipeline, index));
+                        index++;
                     }
                 }
             }
@@ -498,9 +499,6 @@ public class DeliveryPipelineView extends View {
             }
             LOG.fine("Returning: " + components);
             error = null;
-            for (int i = 0; i < components.size(); i++) {
-                components.get(i).setComponentNumber(i + 1);
-            }
             return components;
         } catch (PipelineException e) {
             error = e.getMessage();
@@ -509,19 +507,23 @@ public class DeliveryPipelineView extends View {
     }
 
     private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
-                                   String excludeJobsRegex, boolean showAggregatedPipeline) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
+                                   boolean showAggregatedPipeline, int componentNumber) throws PipelineException {
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
+        Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
+                noOfPipelines, pagingEnabled, componentNumber);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         if (isFullScreenView()) {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false));
+            pipelines.addAll(pipeline
+                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges, component));
         } else {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled));
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(),
+                    pagingEnabled, showChanges, component));
         }
-        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines,
-                noOfPipelines, pagingEnabled);
+        component.setPipelines(pipelines);
+        return component;
     }
 
     @Override
@@ -676,14 +678,12 @@ public class DeliveryPipelineView extends View {
         private String name;
         private String firstJob;
         private String lastJob;
-        private String excludeJobsRegex;
 
         @DataBoundConstructor
-        public ComponentSpec(String name, String firstJob, String lastJob, String excludeJobsRegex) {
+        public ComponentSpec(String name, String firstJob, String lastJob) {
             this.name = name;
             this.firstJob = firstJob;
             this.lastJob = lastJob;
-            this.excludeJobsRegex = excludeJobsRegex;
         }
 
         public String getName() {
@@ -704,10 +704,6 @@ public class DeliveryPipelineView extends View {
 
         public void setLastJob(String lastJob) {
             this.lastJob = lastJob;
-        }
-
-        public String getExcludeJobsRegex() {
-            return excludeJobsRegex;
         }
 
         @Extension
@@ -762,8 +758,5 @@ public class DeliveryPipelineView extends View {
                 }
             }
         }
-
-
     }
-
 }

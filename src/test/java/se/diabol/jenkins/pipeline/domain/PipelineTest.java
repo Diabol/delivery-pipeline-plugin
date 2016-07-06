@@ -44,29 +44,31 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
+import org.kohsuke.stapler.RequestImpl;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.WebApp;
+import org.mockito.Mockito;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.collect.Lists.*;
-import static com.google.gson.internal.$Gson$Preconditions.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 
 public class PipelineTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
     private final static boolean pagingEnabledFalse = false;
+    private final static boolean showChanges = true;
 
     @Test
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
@@ -177,8 +179,8 @@ public class PipelineTest {
         assertEquals(2, pipeline.getStages().size());
         assertEquals(2, pipeline.getStages().get(0).getTasks().size());
         assertEquals(1, pipeline.getStages().get(1).getTasks().size());
-
     }
+
 
     @Test
     public void testCreatePipelineAggregatedSharedTask() throws Exception {
@@ -228,6 +230,7 @@ public class PipelineTest {
         assertEquals(true, aggregated2.getStages().get(1).getTasks().get(0).getStatus().isIdle());
         assertEquals("job/sonar1/", aggregated2.getStages().get(1).getTasks().get(0).getLink());
         assertNull(aggregated2.getStages().get(1).getTasks().get(0).getBuildId());
+
 
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
@@ -410,6 +413,7 @@ public class PipelineTest {
 
     @Test
     public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
         FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         upstream.getPublishersList().add(new BuildTrigger("build", false));
@@ -422,13 +426,12 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse);
+        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
-
     }
-
 
     @Test
     public void getPipelineLatestWithDifferntFolders() throws Exception {
@@ -458,9 +461,7 @@ public class PipelineTest {
         assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
         assertEquals(0, pipeline.getStages().get(0).getColumn());
         assertEquals(1, pipeline.getStages().get(1).getColumn());
-
     }
-
 
     @Test
     public void testForkJoin() throws Exception {
@@ -485,7 +486,6 @@ public class PipelineTest {
         assertEquals(0, prototype.getStages().get(2).getRow());
         assertEquals(1, prototype.getStages().get(3).getColumn());
         assertEquals(1, prototype.getStages().get(3).getRow());
-
     }
 
     @Test
@@ -516,9 +516,7 @@ public class PipelineTest {
 
         assertTrue(pipeline.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-
     }
-
 
     @Test
     public void getPipelineLatestWithNestedFolders() throws Exception {
@@ -550,12 +548,11 @@ public class PipelineTest {
 
         assertTrue(pipeline.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-
     }
 
     /**
      * A -> B -> D -> E
-     *        -> C
+     *        -> C     
      * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
@@ -661,9 +658,7 @@ public class PipelineTest {
         assertEquals("h", pipeline.getStages().get(7).getName());
         assertEquals(2, pipeline.getStages().get(7).getRow());
         assertEquals(4, pipeline.getStages().get(7).getColumn());
-
     }
-
 
     /**
      * A --> B --> C --> D
@@ -697,22 +692,23 @@ public class PipelineTest {
         } catch (PipelineException e) {
             //Should throw this
         }
-
     }
 
     @Test
     public void testShouldShowPipelineInstanceInQueue() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse);
+        Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
-
-
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse);
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
@@ -846,62 +842,5 @@ public class PipelineTest {
         assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
         assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
         assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
-    }
-
-    @Test
-    public void testExtractExcludeJobsRegex() throws Exception {
-        String firstJobName = "project-build";
-        List<String> expectedJobNames = newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
-        createLinkedProjects(expectedJobNames);
-        createLinkedProjects(newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
-        jenkins.getInstance().rebuildDependencyGraph();
-        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
-
-        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", firstJob, null, "project-(?!build|country1).*");
-
-        assertEquals(expectedJobNames, getProjectNames(pipeline));
-    }
-
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testExcludeStartNode() throws Exception {
-        String firstJobName = "project-build";
-        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
-        FreeStyleProject firstDependantJob = getOrCreateProject("project-test1");
-        FreeStyleProject secondDependantJob = getOrCreateProject("project-test2");
-        firstJob.getPublishersList().add(new BuildTrigger(firstDependantJob.getName(), false));
-        firstJob.getPublishersList().add(new BuildTrigger(secondDependantJob.getName(), false));
-        jenkins.getInstance().rebuildDependencyGraph();
-
-        Pipeline.extractPipeline("Pipeline", firstJob, null, "project-build");
-    }
-
-    private void createLinkedProjects(List<String> projectNames) {
-        checkArgument(projectNames.size() > 0);
-        FreeStyleProject fromProject = getOrCreateProject(projectNames.get(0));
-        Iterable<String> subsequentProjectNames = Iterables.skip(projectNames, 1);
-        for (String toProjectName : subsequentProjectNames) {
-            fromProject.getPublishersList().add(new BuildTrigger(toProjectName, false));
-            fromProject = getOrCreateProject(toProjectName);
-        }
-    }
-
-    private FreeStyleProject getOrCreateProject(String projectName) {
-        FreeStyleProject existingProject = jenkins.getInstance().getItemByFullName(projectName, FreeStyleProject.class);
-        try {
-            return existingProject != null ? existingProject : jenkins.createFreeStyleProject(projectName);
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
-    }
-
-    private List<String> getProjectNames(Pipeline pipeline) {
-        List<String> projectNames = newArrayList();
-        for (Stage stage : pipeline.getStages()) {
-            for (Task task : stage.getTasks()) {
-                projectNames.add(task.getName());
-            }
-        }
-        return projectNames;
     }
 }

@@ -61,10 +61,8 @@ public class PipelinePaginationTest {
     
     @Test
     public void testComponentNumber() {
-        Component componentB = new Component("B", "B", "job/A", false, new ArrayList<Pipeline>(), 3, pagingEnabledTrue);
-        componentB.setComponentNumber(2);
-        Component componentA = new Component("A", "A", "job/B", false, new ArrayList<Pipeline>(), 3, pagingEnabledTrue);
-        componentA.setComponentNumber(1);
+        Component componentB = new Component("B", "B", "job/A", false, 3, pagingEnabledTrue, 2);
+        Component componentA = new Component("A", "A", "job/B", false, 3, pagingEnabledTrue, 1);
         List<Component> list = new ArrayList<Component>();
         list.add(componentA);  
         list.add(componentB);
@@ -74,8 +72,8 @@ public class PipelinePaginationTest {
     
     @Test
     public void testComponent() {
-        Component componentA = new Component("A", "A", "job/B", false, new ArrayList<Pipeline>(), 3, pagingEnabledTrue);
-        componentA.setComponentNumber(1);
+        Component componentA = new Component("A", "A", "job/B", false, 3, pagingEnabledTrue, 1);
+        componentA.setPipelines(new ArrayList<Pipeline>());
         assertNotNull(componentA.getPagingData());
         assertNotNull(componentA.getPipelines());
     }

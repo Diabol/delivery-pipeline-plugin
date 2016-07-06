@@ -31,6 +31,9 @@ import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
+import hudson.plugins.parameterizedtrigger.AbstractBuildParameters;
+import hudson.plugins.parameterizedtrigger.BooleanParameterConfig;
+import hudson.plugins.parameterizedtrigger.BooleanParameters;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
 import org.apache.commons.io.FileUtils;
@@ -42,6 +45,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -210,6 +214,40 @@ public class PipelineVersionContributorTest {
         assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
         assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
     }
+
+    @Test
+    public void testVersionContributorIsNotBreakingParametersPassing() throws Exception {
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        firstProject.getPublishersList().add(
+            new BuildPipelineTrigger("secondProject", Arrays.<AbstractBuildParameters>asList(new BooleanParameters(Arrays.asList(new BooleanParameterConfig("test", true))))));
+        firstProject.save();
+
+        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
+
+        firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+        secondProject.getBuildersList().add(new AssertNoPipelineVersion());
+
+        jenkins.setQuietPeriod(0);
+        jenkins.getInstance().rebuildDependencyGraph();
+        jenkins.buildAndAssertSuccess(firstProject);
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(firstProject.getLastBuild());
+        assertNull(secondProject.getLastBuild());
+        assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
+
+        secondProject.getBuildersList().clear();
+        secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+
+        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("firstProject"), "1", false, null);
+        view.triggerManualBuild(1, "secondProject", "firstProject");
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(secondProject.getLastBuild());
+        assertEquals("true", secondProject.getLastBuild().getBuildVariableResolver().resolve("test"));
+    }
+
 
     private class AssertNoPipelineVersion extends TestBuilder {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,

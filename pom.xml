@@ -232,6 +232,7 @@
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
+                    <argLine>-Xmx1024m</argLine>
                 </configuration>
                 <executions>
                     <execution>
