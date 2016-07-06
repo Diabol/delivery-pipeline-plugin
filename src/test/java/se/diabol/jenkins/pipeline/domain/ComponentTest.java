@@ -74,7 +74,7 @@ public class ComponentTest {
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setPagingEnabled(true);
 
-        DeliveryPipelineView.ComponentSpec componentSpec = new DeliveryPipelineView.ComponentSpec("Pipeline","comp", null);
+        DeliveryPipelineView.ComponentSpec componentSpec = new DeliveryPipelineView.ComponentSpec("Pipeline","comp", null, null);
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(componentSpec);
         view.setComponentSpecs(componentSpecs);

@@ -199,7 +199,7 @@ public class StageTest {
         Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
 
         for (MatrixConfiguration configuration : configurations) {
-            List<Stage> stages = Stage.extractStages(configuration, null);
+            List<Stage> stages = Stage.extractStages(configuration, null, null);
             assertEquals(1, stages.size());
             Stage stage = stages.get(0);
             assertEquals("stage", stage.getName());

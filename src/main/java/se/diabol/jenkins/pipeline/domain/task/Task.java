@@ -43,6 +43,7 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Task extends AbstractItem {
@@ -158,7 +159,7 @@ public class Task extends AbstractItem {
         return initial;
     }
 
-    public static Task getPrototypeTask(AbstractProject project, boolean initial) {
+    public static Task getPrototypeTask(AbstractProject project, boolean initial, Pattern excludeJobsPattern) {
         PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
         String taskName = property != null && !isNullOrEmpty(property.getTaskName())
                 ? property.getTaskName() : project.getDisplayName();
@@ -176,7 +177,10 @@ public class Task extends AbstractItem {
         List<AbstractProject> downStreams = ProjectUtil.getDownstreamProjects(project);
         List<String> downStreamTasks = new ArrayList<String>();
         for (AbstractProject downstreamProject : downStreams) {
-            downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
+            String downstreamTaskName = downstreamProject.getRelativeNameFrom(Jenkins.getInstance());
+            if (!excludeJobsPattern.matcher(downstreamTaskName).matches()) {
+                downStreamTasks.add(downstreamTaskName);
+            }
         }
         return new Task(project, project.getRelativeNameFrom(Jenkins.getInstance()), taskName, status,
                 project.getUrl(), ManualStep.resolveManualStep(project), downStreamTasks, initial, descriptionTemplate);

@@ -11,6 +11,9 @@
         <f:entry title="Final Job (optional)" field="lastJob">
             <f:select/>
         </f:entry>
+        <f:entry title="Exclude jobs regular expression">
+            <f:textbox field="excludeJobsRegex"/>
+        </f:entry>
         <div align="right">
             <f:repeatableDeleteButton/>
         </div>

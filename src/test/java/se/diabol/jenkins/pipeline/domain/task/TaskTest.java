@@ -48,10 +48,10 @@ import org.jvnet.hudson.test.UnstableBuilder;
 
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.pipeline.PipelineProperty;
-import se.diabol.jenkins.pipeline.domain.task.Task;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -60,12 +60,14 @@ public class TaskTest {
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
 
+    private Pattern excludeNone = Pattern.compile(".^");
+
     @Test
     public void testGetAg() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("test");
         jenkins.getInstance().setQuietPeriod(0);
 
-        Task task = Task.getPrototypeTask(project, true);
+        Task task = Task.getPrototypeTask(project, true, excludeNone);
         assertNotNull(task);
         assertFalse(task.isManual());
         assertFalse(task.isRebuildable());
@@ -92,7 +94,7 @@ public class TaskTest {
         a.getPublishersList().add(new BuildPipelineTrigger("b", null));
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Task task = Task.getPrototypeTask(b, false);
+        Task task = Task.getPrototypeTask(b, false, excludeNone);
         assertTrue(task.isManual());
 
     }
@@ -113,7 +115,7 @@ public class TaskTest {
                 return true;
             }
         });
-        Task prototype = Task.getPrototypeTask(project, true);
+        Task prototype = Task.getPrototypeTask(project, true, excludeNone);
 
         project.scheduleBuild2(0);
         buildStarted.block(); // wait for the build to really start
@@ -143,7 +145,7 @@ public class TaskTest {
         Collection<MatrixConfiguration> configurations = project.getActiveConfigurations();
 
         for (MatrixConfiguration configuration : configurations) {
-            Task task = Task.getPrototypeTask(configuration, true);
+            Task task = Task.getPrototypeTask(configuration, true, excludeNone);
             assertEquals("task "  + configuration.getName(), task.getName());
 
         }
@@ -158,7 +160,7 @@ public class TaskTest {
         a.getPublishersList().add(new BuildPipelineTrigger("b", null));
         b.getBuildersList().add(new FailureBuilder());
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
-        Task task = Task.getPrototypeTask(b, false);
+        Task task = Task.getPrototypeTask(b, false, excludeNone);
         assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isIdle());
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline", jenkins.getInstance());
@@ -177,7 +179,7 @@ public class TaskTest {
     public void testIsRebuildable() throws Exception {
         jenkins.setQuietPeriod(0);
         FreeStyleProject project = jenkins.createFreeStyleProject("project");
-        Task task = Task.getPrototypeTask(project, false);
+        Task task = Task.getPrototypeTask(project, false, excludeNone);
         //IDLE
         assertFalse(task.getLatestTask(jenkins.getInstance(), null).isRebuildable());
         //FAILED
@@ -214,7 +216,7 @@ public class TaskTest {
 
         SecurityContext oldContext = ACL.impersonate(User.get("devel").impersonate());
 
-        Task prototype  = Task.getPrototypeTask(b, false);
+        Task prototype  = Task.getPrototypeTask(b, false, excludeNone);
         Task task = prototype.getLatestTask(jenkins.getInstance(), firstBuild);
         assertNotNull(task);
         assertFalse(task.isRebuildable());
@@ -253,8 +255,8 @@ public class TaskTest {
         jenkins.setQuietPeriod(0);
         jenkins.getInstance().rebuildDependencyGraph();
 
-        Task taskA = Task.getPrototypeTask(a, true).getLatestTask(jenkins.getInstance(), null);
-        Task taskB = Task.getPrototypeTask(b, false).getLatestTask(jenkins.getInstance(), null);
+        Task taskA = Task.getPrototypeTask(a, true, excludeNone).getLatestTask(jenkins.getInstance(), null);
+        Task taskB = Task.getPrototypeTask(b, false, excludeNone).getLatestTask(jenkins.getInstance(), null);
 
         assertEquals(expectedBeforeA, taskA.getName());
         assertEquals(expectedBeforeB, taskB.getName());
@@ -262,8 +264,8 @@ public class TaskTest {
         FreeStyleBuild firstBuild = jenkins.buildAndAssertSuccess(a);
         jenkins.waitUntilNoActivity();
 
-        taskA = Task.getPrototypeTask(a, true).getLatestTask(jenkins.getInstance(), firstBuild);
-        taskB = Task.getPrototypeTask(b, false).getLatestTask(jenkins.getInstance(), firstBuild);
+        taskA = Task.getPrototypeTask(a, true, excludeNone).getLatestTask(jenkins.getInstance(), firstBuild);
+        taskB = Task.getPrototypeTask(b, false, excludeNone).getLatestTask(jenkins.getInstance(), firstBuild);
 
         assertEquals(expectedAfterA, taskA.getName());
         assertEquals(expectedAfterB, taskB.getName());

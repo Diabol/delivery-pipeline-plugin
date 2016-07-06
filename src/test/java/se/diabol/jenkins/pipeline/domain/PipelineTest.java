@@ -20,6 +20,9 @@ package se.diabol.jenkins.pipeline.domain;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
@@ -55,11 +58,13 @@ import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -842,5 +847,62 @@ public class PipelineTest {
         assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
         assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
         assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
+    }
+
+    @Test
+    public void testExtractExcludeJobsRegex() throws Exception {
+        String firstJobName = "project-build";
+        List<String> expectedJobNames = Lists.newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
+        createLinkedProjects(expectedJobNames);
+        createLinkedProjects(Lists.newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
+        jenkins.getInstance().rebuildDependencyGraph();
+        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
+
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", firstJob, null, "project-(?!build|country1).*");
+
+        assertEquals(expectedJobNames, getProjectNames(pipeline));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExcludeStartNode() throws Exception {
+        String firstJobName = "project-build";
+        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
+        FreeStyleProject firstDependantJob = getOrCreateProject("project-test1");
+        FreeStyleProject secondDependantJob = getOrCreateProject("project-test2");
+        firstJob.getPublishersList().add(new BuildTrigger(firstDependantJob.getName(), false));
+        firstJob.getPublishersList().add(new BuildTrigger(secondDependantJob.getName(), false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline.extractPipeline("Pipeline", firstJob, null, "project-build");
+    }
+
+    private void createLinkedProjects(List<String> projectNames) {
+        checkArgument(projectNames.size() > 0);
+        FreeStyleProject fromProject = getOrCreateProject(projectNames.get(0));
+        Iterable<String> subsequentProjectNames = Iterables.skip(projectNames, 1);
+        for (String toProjectName : subsequentProjectNames) {
+            fromProject.getPublishersList().add(new BuildTrigger(toProjectName, false));
+            fromProject = getOrCreateProject(toProjectName);
+        }
+    }
+
+    private FreeStyleProject getOrCreateProject(String projectName) {
+        FreeStyleProject existingProject = jenkins.getInstance().getItemByFullName(projectName, FreeStyleProject.class);
+        try {
+            return existingProject != null ? existingProject : jenkins.createFreeStyleProject(projectName);
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    private List<String> getProjectNames(Pipeline pipeline) {
+        List<String> projectNames = Lists.newArrayList();
+        for (Stage stage : pipeline.getStages()) {
+            for (Task task : stage.getTasks()) {
+                projectNames.add(task.getName());
+            }
+        }
+        return projectNames;
     }
 }
