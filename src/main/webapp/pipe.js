@@ -21,6 +21,14 @@ function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, 
     });
 }
 
+function getLink(data, link) {
+    if (data.linkRelative) {
+        return link;
+    } else {
+        return rootURL + "/" + link;
+    }
+}
+
 function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern) {
     var lastUpdate = data.lastUpdated,
         cErrorDiv = Q("#" + errorDiv),
@@ -173,7 +181,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                         html.push("<div id=\"" + id + "\" class=\"status stage-task " + task.status.type +
                             "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
-                            "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + rootURL + "/" + task.link + "\">" + htmlEncode(task.name) + "</a></div>");
+                            "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + getLink(data, task.link) + "\">" + htmlEncode(task.name) + "</a></div>");
                         if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                             html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">');
                             html.push("</div>");
@@ -294,7 +302,7 @@ function generateTestInfo(data, task) {
         var html = ["<div class='infoPanelOuter'>"];
         Q.each(task.testResults, function(i, analysis) {
             html.push("<div class='infoPanel'><div class='infoPanelInner'>");
-                html.push("<a href=" + rootURL + "/" + analysis.url + ">" + analysis.name + "</a>");
+                html.push("<a href=" + getLink(data,analysis.url) + ">" + analysis.name + "</a>");
                 html.push("<table id='priority.summary' class='pane'>");
                 html.push("<tbody>");
                     html.push("<tr>");
@@ -323,7 +331,7 @@ function generateStaticAnalysisInfo(data, task) {
         var html = ["<div class='infoPanelOuter'>"];
         Q.each(task.staticAnalysisResults, function(i, analysis) {
             html.push("<div class='infoPanel'><div class='infoPanelInner'>");
-                html.push("<a href=" + rootURL + "/" + analysis.url + ">" + analysis.name + "</a>");
+                html.push("<a href=" + getLink(data,analysis.url) + ">" + analysis.name + "</a>");
                 html.push("<table id='priority.summary' class='pane'>");
                 html.push("<tbody>");
                     html.push("<tr>");
@@ -351,9 +359,9 @@ function generatePromotionsInfo(data, task) {
     if (data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
         var html = ["<div class='infoPanelOuter'>"];
         Q.each(task.status.promotions, function(i, promo) {
-            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+            html.push("<div class='infoPanel'><div class='infoPanelInner'><div class='promo-layer'>");
             html.push("<img class='promo-icon' height='16' width='16' src='" + rootURL + promo.icon + "'/>");
-            html.push("<span class='promo-name'><a href='" + rootURL + "/" + task.link + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
+            html.push("<span class='promo-name'><a href='" + getLink(data,task.link) + "promotion'>" + htmlEncode(promo.name) + "</a></span><br/>");
             if (promo.user != 'anonymous') {
                 html.push("<span class='promo-user'>" + promo.user + "</span>");
             }
@@ -364,7 +372,7 @@ function generatePromotionsInfo(data, task) {
             Q.each(promo.params, function (j, param) {
                 html.push(param.replace(/\r\n/g, '<br/>') + "<br />");
             });
-            html.push("</div></div>");
+            html.push("</div></div></div>");
         });
         html.push("</div>");
         return html.join("");
@@ -624,4 +632,3 @@ function equalheight(container) {
     });
 }
 
- 

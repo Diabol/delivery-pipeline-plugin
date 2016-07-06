@@ -34,8 +34,8 @@ public class PipelineVersionTokenMacro extends DataBoundTokenMacro {
             MacroEvaluationException, IOException, InterruptedException {
         String version = PipelineVersionContributor.getVersion(context);
         if (version == null) {
-            throw new MacroEvaluationException("Could not find " + PipelineVersionContributor.VERSION_PARAMETER +
-                    " parameter on this build!");
+            throw new MacroEvaluationException("Could not find " + PipelineVersionContributor.VERSION_PARAMETER
+                    + " parameter on this build!");
         }
         return version;
     }

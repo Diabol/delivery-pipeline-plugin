@@ -20,6 +20,9 @@ package se.diabol.jenkins.pipeline.domain;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
@@ -44,23 +47,26 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
+import org.kohsuke.stapler.RequestImpl;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.WebApp;
+import org.mockito.Mockito;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.collect.Lists.*;
-import static com.google.gson.internal.$Gson$Preconditions.*;
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-
-import com.google.common.base.Throwables;
-import com.google.common.collect.Iterables;
 
 public class PipelineTest {
 
@@ -178,7 +184,6 @@ public class PipelineTest {
         assertEquals(2, pipeline.getStages().size());
         assertEquals(2, pipeline.getStages().get(0).getTasks().size());
         assertEquals(1, pipeline.getStages().get(1).getTasks().size());
-
     }
 
 
@@ -198,8 +203,8 @@ public class PipelineTest {
         final Pipeline pipe1 = Pipeline.extractPipeline("pipe1", build1);
         final Pipeline pipe2 = Pipeline.extractPipeline("pipe2", build2);
 
-        Pipeline aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
-        Pipeline aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
+        Pipeline aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
+        Pipeline aggregated2 = pipe2.createPipelineAggregatedWithChangesShown(jenkins.getInstance());
 
         assertNull(aggregated1.getStages().get(0).getVersion());
         assertNull(aggregated2.getStages().get(0).getVersion());
@@ -218,8 +223,8 @@ public class PipelineTest {
         assertEquals(4, pipe1.getStages().size());
         assertEquals(2, pipe2.getStages().size());
 
-        aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
-        aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
+        aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
+        aggregated2 = pipe2.createPipelineAggregatedWithChangesShown(jenkins.getInstance());
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
         assertEquals("job/sonar1/1/", aggregated1.getStages().get(3).getTasks().get(0).getLink());
@@ -237,8 +242,8 @@ public class PipelineTest {
         jenkins.buildAndAssertSuccess(build2);
         jenkins.waitUntilNoActivity();
 
-        aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
-        aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
+        aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
+        aggregated2 = pipe2.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
 
         assertEquals("#1", aggregated1.getStages().get(1).getVersion());
         assertEquals("#1", aggregated2.getStages().get(1).getVersion());
@@ -250,8 +255,8 @@ public class PipelineTest {
         jenkins.buildAndAssertSuccess(build1);
         jenkins.waitUntilNoActivity();
 
-        aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
-        aggregated2 = pipe2.createPipelineAggregated(jenkins.getInstance());
+        aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
+        aggregated2 = pipe2.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
 
 
         assertEquals("#2", aggregated1.getStages().get(1).getVersion());
@@ -276,7 +281,7 @@ public class PipelineTest {
         BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
         view.triggerManualBuild(1, "prod", "test");
         jenkins.waitUntilNoActivity();
-        aggregated1 = pipe1.createPipelineAggregated(jenkins.getInstance());
+        aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
         assertEquals("#1", aggregated1.getStages().get(2).getVersion());
 
@@ -308,7 +313,7 @@ public class PipelineTest {
         assertNull(ci2.getLastBuild());
 
         Pipeline pipeline = Pipeline.extractPipeline("test", build);
-        Pipeline aggregated = pipeline.createPipelineAggregated(jenkins.getInstance());
+        Pipeline aggregated = pipeline.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("ci1", aggregated.getStages().get(1).getTasks().get(0).getName());
         assertEquals("ci2", aggregated.getStages().get(1).getTasks().get(1).getName());
@@ -319,7 +324,7 @@ public class PipelineTest {
         jenkins.buildAndAssertSuccess(build);
         jenkins.waitUntilNoActivity();
 
-        aggregated = pipeline.createPipelineAggregated(jenkins.getInstance());
+        aggregated = pipeline.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("#2", build.getLastBuild().getDisplayName());
         assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
@@ -328,7 +333,7 @@ public class PipelineTest {
 
         view.triggerManualBuild(2, "ci2", "build");
         jenkins.waitUntilNoActivity();
-        aggregated = pipeline.createPipelineAggregated(jenkins.getInstance());
+        aggregated = pipeline.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
         assertNotNull(aggregated);
         assertEquals("IDLE", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
         assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
@@ -413,6 +418,7 @@ public class PipelineTest {
 
     @Test
     public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
         FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         upstream.getPublishersList().add(new BuildTrigger("build", false));
@@ -425,13 +431,12 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges);
+        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
-
     }
-
 
     @Test
     public void getPipelineLatestWithDifferntFolders() throws Exception {
@@ -461,9 +466,7 @@ public class PipelineTest {
         assertEquals("folder2/job2", pipeline.getStages().get(1).getTasks().get(0).getId());
         assertEquals(0, pipeline.getStages().get(0).getColumn());
         assertEquals(1, pipeline.getStages().get(1).getColumn());
-
     }
-
 
     @Test
     public void testForkJoin() throws Exception {
@@ -488,7 +491,6 @@ public class PipelineTest {
         assertEquals(0, prototype.getStages().get(2).getRow());
         assertEquals(1, prototype.getStages().get(3).getColumn());
         assertEquals(1, prototype.getStages().get(3).getRow());
-
     }
 
     @Test
@@ -519,9 +521,7 @@ public class PipelineTest {
 
         assertTrue(pipeline.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-
     }
-
 
     @Test
     public void getPipelineLatestWithNestedFolders() throws Exception {
@@ -553,12 +553,11 @@ public class PipelineTest {
 
         assertTrue(pipeline.getStages().get(0).getTasks().get(0).getStatus().isSuccess());
         assertTrue(pipeline.getStages().get(1).getTasks().get(0).getStatus().isSuccess());
-
     }
 
     /**
      * A -> B -> D -> E
-     *        -> C
+     *        -> C     
      * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
@@ -664,9 +663,7 @@ public class PipelineTest {
         assertEquals("h", pipeline.getStages().get(7).getName());
         assertEquals(2, pipeline.getStages().get(7).getRow());
         assertEquals(4, pipeline.getStages().get(7).getColumn());
-
     }
-
 
     /**
      * A --> B --> C --> D
@@ -700,22 +697,23 @@ public class PipelineTest {
         } catch (PipelineException e) {
             //Should throw this
         }
-
     }
 
     @Test
     public void testShouldShowPipelineInstanceInQueue() throws Exception {
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges);
+        Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
-
-
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges);
+        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
@@ -854,15 +852,29 @@ public class PipelineTest {
     @Test
     public void testExtractExcludeJobsRegex() throws Exception {
         String firstJobName = "project-build";
-        List<String> expectedJobNames = newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
+        List<String> expectedJobNames = Lists.newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
         createLinkedProjects(expectedJobNames);
-        createLinkedProjects(newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
+        createLinkedProjects(Lists.newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
         jenkins.getInstance().rebuildDependencyGraph();
         FreeStyleProject firstJob = getOrCreateProject(firstJobName);
 
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", firstJob, null, "project-(?!build|country1).*");
 
         assertEquals(expectedJobNames, getProjectNames(pipeline));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExcludeStartNode() throws Exception {
+        String firstJobName = "project-build";
+        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
+        FreeStyleProject firstDependantJob = getOrCreateProject("project-test1");
+        FreeStyleProject secondDependantJob = getOrCreateProject("project-test2");
+        firstJob.getPublishersList().add(new BuildTrigger(firstDependantJob.getName(), false));
+        firstJob.getPublishersList().add(new BuildTrigger(secondDependantJob.getName(), false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline.extractPipeline("Pipeline", firstJob, null, "project-build");
     }
 
     private void createLinkedProjects(List<String> projectNames) {
@@ -885,7 +897,7 @@ public class PipelineTest {
     }
 
     private List<String> getProjectNames(Pipeline pipeline) {
-        List<String> projectNames = newArrayList();
+        List<String> projectNames = Lists.newArrayList();
         for (Stage stage : pipeline.getStages()) {
             for (Task task : stage.getTasks()) {
                 projectNames.add(task.getName());

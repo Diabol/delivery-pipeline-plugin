@@ -30,8 +30,8 @@ public final class PipelineUtils {
     }
 
     public static String formatTimestamp(long timestamp) {
-        DateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        return f.format(new Date(timestamp));
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        return format.format(new Date(timestamp));
     }
 
     public static long getRandom() {

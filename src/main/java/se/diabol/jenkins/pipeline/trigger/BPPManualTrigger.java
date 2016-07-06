@@ -32,7 +32,8 @@ public class BPPManualTrigger implements ManualTrigger {
         if (upstream != null && upstream.getBuild(buildId) != null) {
 
             try {
-                view.triggerManualBuild(Integer.parseInt(buildId), project.getRelativeNameFrom(itemGroup), upstream.getRelativeNameFrom(itemGroup));
+                view.triggerManualBuild(Integer.parseInt(buildId), project.getRelativeNameFrom(itemGroup),
+                        upstream.getRelativeNameFrom(itemGroup));
             } catch (Exception e) {
                 throw new TriggerException("Could not trigger", e);
             }
@@ -45,7 +46,7 @@ public class BPPManualTrigger implements ManualTrigger {
     @edu.umd.cs.findbugs.annotations.SuppressWarnings("SIC_INNER_SHOULD_BE_STATIC")
     public class MyView extends BuildPipelineView {
 
-        ItemGroup<? extends TopLevelItem> context;
+        final ItemGroup<? extends TopLevelItem> context;
 
         public MyView(ItemGroup<? extends TopLevelItem> context) {
             super("", "", new DownstreamProjectGridBuilder(""), "1", false, "");

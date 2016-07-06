@@ -20,39 +20,23 @@ package se.diabol.jenkins.pipeline;
 import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
-import hudson.model.AbstractDescribableImpl;
-import hudson.model.Item;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
-import hudson.model.ViewGroup;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractDescribableImpl;
 import hudson.model.AbstractProject;
 import hudson.model.Api;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Descriptor;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.ParametersAction;
+import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
+import hudson.model.ViewGroup;
 import hudson.model.listeners.ItemListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
-import javax.servlet.ServletException;
-
 import jenkins.model.Jenkins;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.BadCredentialsException;
@@ -76,21 +60,33 @@ import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getAllDownstreamProjects;
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
-import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProjects;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.servlet.ServletException;
 
 public class DeliveryPipelineView extends View {
 
     private static final Logger LOG = Logger.getLogger(DeliveryPipelineView.class.getName());
 
-    public static final int DEFAULT_INTERVAL = 2;
+    private static final int DEFAULT_INTERVAL = 2;
 
-    public static final int DEFAULT_NO_OF_PIPELINES = 3;
+    private static final int DEFAULT_NO_OF_PIPELINES = 3;
     private static final int MAX_NO_OF_PIPELINES = 50;
 
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
-    public static final String NONE_SORTER = "none";
+    private static final String NONE_SORTER = "none";
+
+    static final String DEFAULT_THEME = "default";
 
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
@@ -110,9 +106,11 @@ public class DeliveryPipelineView extends View {
     private boolean showPromotions = false;
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
+    private boolean linkRelative = false;
     private boolean pagingEnabled = false;
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
+    private String theme = DEFAULT_THEME;
 
     private List<RegExpSpec> regexpFirstJobs;
 
@@ -270,12 +268,20 @@ public class DeliveryPipelineView extends View {
         return pagingEnabled;
     }
 
+    public String getTheme() {
+        return this.theme == null ? DEFAULT_THEME : this.theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
     public boolean isFullScreenView() {
         StaplerRequest req = Stapler.getCurrentRequest();
         if (req == null) {
             return false;
         }
-        return req.getParameter("fullscreen") == null ? false : Boolean.parseBoolean(req.getParameter("fullscreen"));
+        return req.getParameter("fullscreen") != null && Boolean.parseBoolean(req.getParameter("fullscreen"));
     }
 
     public void onProjectRenamed(Item item, String oldName, String newName) {
@@ -332,8 +338,7 @@ public class DeliveryPipelineView extends View {
     }
 
     @Exported
-    public boolean isShowDescription()
-    {
+    public boolean isShowDescription() {
         return showDescription;
     }
 
@@ -352,8 +357,16 @@ public class DeliveryPipelineView extends View {
         return showStaticAnalysisResults;
     }
 
-    public void setShowDescription(boolean showDescription)
-    {
+    @Exported
+    public boolean isLinkRelative() {
+        return linkRelative;
+    }
+
+    public void setLinkRelative(boolean linkRelative) {
+        this.linkRelative = linkRelative;
+    }
+
+    public void setShowDescription(boolean showDescription) {
         this.showDescription = showDescription;
     }
 
@@ -392,20 +405,21 @@ public class DeliveryPipelineView extends View {
     }
 
     @JavaScriptMethod
-    public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
+    public void triggerManual(String projectName, String upstreamName, String buildId)
+            throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
-            AbstractProject project = getProject(projectName, Jenkins.getInstance());
+            AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
             if (!project.hasPermission(Item.BUILD)) {
                 throw new BadCredentialsException("Not auth to build");
             }
-            AbstractProject upstream = getProject(upstreamName, Jenkins.getInstance());
+            AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
             ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
             if (trigger != null) {
                 trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
             } else {
-                String message = "Trigger not found for manual build " + projectName + " for upstream " +
-                                        upstreamName + " id: " + buildId;
+                String message = "Trigger not found for manual build " + projectName + " for upstream "
+                        + upstreamName + " id: " + buildId;
                 LOG.log(Level.WARNING, message);
                 throw new TriggerException(message);
             }
@@ -416,7 +430,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public void triggerRebuild(String projectName, String buildId) {
-        AbstractProject project = getProject(projectName, Jenkins.getInstance());
+        AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
         if (!project.hasPermission(Item.BUILD)) {
             throw new BadCredentialsException("Not auth to build");
         }
@@ -435,8 +449,10 @@ public class DeliveryPipelineView extends View {
         project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
     }
 
-    protected static String triggerExceptionMessage(final String projectName, final String upstreamName, final String buildId) {
-        String message = "Could not trigger manual build " + projectName + " for upstream " + upstreamName + " id: " + buildId;
+    protected static String triggerExceptionMessage(final String projectName, final String upstreamName,
+                                                    final String buildId) {
+        String message = "Could not trigger manual build " + projectName + " for upstream " + upstreamName
+                + " id: " + buildId;
         if (projectName.contains("/")) {
             message += ". Did you mean to specify " + withoutFolderPrefix(projectName) + "?";
         }
@@ -454,12 +470,13 @@ public class DeliveryPipelineView extends View {
             List<Component> components = new ArrayList<Component>();
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
-                    AbstractProject firstJob = getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-                    AbstractProject lastJob = getProject(componentSpec.getLastJob(), getOwnerItemGroup());
+                    AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+                    AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup()) ;
                     if (firstJob != null) {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
-                        components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline));
+                        components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline,
+                            (componentSpecs.indexOf(componentSpec) + 1)));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -467,9 +484,12 @@ public class DeliveryPipelineView extends View {
             }
             if (regexpFirstJobs != null) {
                 for (RegExpSpec regexp : regexpFirstJobs) {
-                    Map<String, AbstractProject> matches = getProjects(regexp.getRegexp());
+                    Map<String, AbstractProject> matches = ProjectUtil.getProjects(regexp.getRegexp());
+                    int index = 1;
                     for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
-                        components.add(getComponent(entry.getKey(), entry.getValue(), null, null, showAggregatedPipeline));
+                        components.add(getComponent(entry.getKey(), entry.getValue(), null, null,
+                                showAggregatedPipeline, index));
+                        index++;
                     }
                 }
             }
@@ -481,9 +501,6 @@ public class DeliveryPipelineView extends View {
             }
             LOG.fine("Returning: " + components);
             error = null;
-            for(int i = 0; i< components.size(); i++) {
-                components.get(i).setComponentNumber(i+1);
-            }
             return components;
         } catch (PipelineException e) {
             error = e.getMessage();
@@ -491,19 +508,25 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, String excludeJobsRegex, boolean showAggregatedPipeline) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
+    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
+                                   String excludeJobRegex, boolean showAggregatedPipeline,
+                                   int componentNumber) throws PipelineException {
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobRegex);
+        Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
+                noOfPipelines, pagingEnabled, componentNumber);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
         if (isFullScreenView()) {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges));
-        } else {
             pipelines.addAll(pipeline
-                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), pagingEnabled, showChanges));
+                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges, component));
+        } else {
+            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(),
+                    pagingEnabled, showChanges, component));
         }
-        return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines, noOfPipelines, pagingEnabled);
+        component.setPipelines(pipelines);
+        return component;
     }
 
     @Override
@@ -519,7 +542,7 @@ public class DeliveryPipelineView extends View {
             return;
         }
         for (RegExpSpec spec : regexpFirstJobs) {
-            Map<String, AbstractProject> regexpJobs = getProjects(spec.getRegexp());
+            Map<String, AbstractProject> regexpJobs = ProjectUtil.getProjects(spec.getRegexp());
             for (AbstractProject project : regexpJobs.values()) {
                 jobs.add((TopLevelItem) project);
             }
@@ -531,9 +554,10 @@ public class DeliveryPipelineView extends View {
             return;
         }
         for (ComponentSpec spec : componentSpecs) {
-            AbstractProject first = getProject(spec.getFirstJob(), getOwnerItemGroup());
-            AbstractProject last = getProject(spec.getLastJob(), getOwnerItemGroup());
-            Collection<AbstractProject<?, ?>> downstreamProjects = getAllDownstreamProjects(first, last, spec.getExcludeJobsRegex()).values();
+            AbstractProject first = ProjectUtil.getProject(spec.getFirstJob(), getOwnerItemGroup());
+            AbstractProject last = ProjectUtil.getProject(spec.getLastJob(), getOwnerItemGroup());
+            Collection<AbstractProject<?, ?>> downstreamProjects =
+                    ProjectUtil.getAllDownstreamProjects(first, last, spec.getExcludeJobsRegex()).values();
             for (AbstractProject project : downstreamProjects) {
                 jobs.add((TopLevelItem) project);
             }
@@ -583,7 +607,8 @@ public class DeliveryPipelineView extends View {
         }
 
         public ListBoxModel doFillSortingItems() {
-            DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors = ComponentComparator.all();
+            DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors =
+                    ComponentComparator.all();
             ListBoxModel options = new ListBoxModel();
             options.add("None", NONE_SORTER);
             for (ComponentComparatorDescriptor descriptor : descriptors) {
@@ -742,8 +767,5 @@ public class DeliveryPipelineView extends View {
                 }
             }
         }
-
-
     }
-
 }
