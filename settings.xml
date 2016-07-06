@@ -11,7 +11,7 @@
     <profile>
       <id>jenkins</id>
       <activation>
-        <activeByDefault>true</activeByDefault> <!-- change this to false, if you don't like to have it on per default -->
+        <activeByDefault>true</activeByDefault>
       </activation>
       <repositories>
         <repository>
@@ -38,7 +38,7 @@
 
   <servers>
     <server>
-      <id>maven.jenkins-ci.org</id> <!-- For parent 1.397 or newer; before this use id java.net-m2-repository -->
+      <id>maven.jenkins-ci.org</id>
       <username>${env.JENKINSCI_USERNAME}</username>
       <password>${env.JENKINSCI_PASSWORD}</password>
     </server>
