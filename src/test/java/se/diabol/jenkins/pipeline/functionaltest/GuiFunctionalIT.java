@@ -42,7 +42,6 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTr
 
 import com.cloudbees.hudson.plugins.folder.Folder;
 
-@Ignore
 public class GuiFunctionalIT {
 
     private WebDriver webDriver;
