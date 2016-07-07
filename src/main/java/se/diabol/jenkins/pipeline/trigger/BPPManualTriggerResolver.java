@@ -53,8 +53,7 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
 
     public boolean isManualTrigger(AbstractProject<?, ?> project) {
         List<AbstractProject> upstreamProjects = project.getUpstreamProjects();
-        if (upstreamProjects.size() > 0) {
-            AbstractProject<?,?> upstreamProject = upstreamProjects.get(0);
+        for (AbstractProject upstreamProject : upstreamProjects) {
             DescribableList<Publisher, Descriptor<Publisher>> upstreamPublishersLists =
                     upstreamProject.getPublishersList();
             for (Publisher upstreamPub : upstreamPublishersLists) {
