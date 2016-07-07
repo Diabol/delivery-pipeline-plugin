@@ -22,17 +22,12 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 
 import com.google.common.collect.ImmutableList;
-
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
-
 import hudson.model.Result;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 

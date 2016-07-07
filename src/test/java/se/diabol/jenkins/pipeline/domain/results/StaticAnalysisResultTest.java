@@ -17,27 +17,26 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.results;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import hudson.Plugin;
-import hudson.model.Action;
 import hudson.model.AbstractBuild;
+import hudson.model.Action;
 import hudson.plugins.analysis.core.AbstractResultAction;
 import hudson.plugins.analysis.core.BuildResult;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import jenkins.model.Jenkins;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Jenkins.class)

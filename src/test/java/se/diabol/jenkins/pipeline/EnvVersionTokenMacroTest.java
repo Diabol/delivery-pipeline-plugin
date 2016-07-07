@@ -17,21 +17,21 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import hudson.model.FreeStyleBuild;
-import hudson.model.TaskListener;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersAction;
 import hudson.model.StringParameterValue;
+import hudson.model.TaskListener;
 import hudson.util.StreamTaskListener;
-
-import java.nio.charset.Charset;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
+
+import java.nio.charset.Charset;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class EnvVersionTokenMacroTest {
 

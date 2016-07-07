@@ -17,7 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.FreeStyleProject;
+import hudson.model.Run;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import org.junit.Rule;

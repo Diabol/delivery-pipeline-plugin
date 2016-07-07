@@ -17,8 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
-import jenkins.model.Jenkins;
-
 public class PipelinePagination {
     private int totalCount = 0;
     private int currentPage = 1;

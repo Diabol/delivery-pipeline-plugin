@@ -1,7 +1,3 @@
-package se.diabol.jenkins.pipeline.resolver;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 /*
 This file is part of Delivery Pipeline Plugin.
 
@@ -19,14 +15,16 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-import static org.junit.Assert.assertNull;
+package se.diabol.jenkins.pipeline.resolver;
 
 import hudson.model.Cause;
 import hudson.plugins.git.GitStatus;
-
 import org.junit.Test;
-
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class GitCauseResolverTest {
 

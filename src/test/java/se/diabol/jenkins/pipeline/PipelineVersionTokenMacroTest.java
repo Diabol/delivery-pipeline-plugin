@@ -21,7 +21,6 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import hudson.util.StreamTaskListener;
-
 import org.jenkinsci.plugins.buildnamesetter.BuildNameSetter;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.junit.Rule;
@@ -31,10 +30,10 @@ import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class PipelineVersionTokenMacroTest {
 
