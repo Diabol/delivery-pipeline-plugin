@@ -23,9 +23,7 @@ import hudson.plugins.analysis.core.AbstractResultAction;
 import hudson.plugins.analysis.core.BuildResult;
 import hudson.plugins.analysis.core.MavenResultAction;
 import hudson.plugins.analysis.core.ResultAction;
-
 import org.kohsuke.stapler.export.Exported;
-
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.ArrayList;
