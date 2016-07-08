@@ -93,6 +93,7 @@
             <select name="theme" class="setting-input  select">
                 <option value="default" selected="${instance.getTheme().equals('default')? 'true':null}">Default</option>
                 <option value="contrast" selected="${instance.getTheme().equals('contrast')? 'true':null}">Contrast</option>
+                <option value="effect" selected="${instance.getTheme().equals('effect')? 'true':null}">Effect</option>
             </select>
         </f:entry>
 

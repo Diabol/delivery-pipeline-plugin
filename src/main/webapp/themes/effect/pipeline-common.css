@@ -1,0 +1,492 @@
+div.hide {
+    visibility: hidden;
+}
+
+div.pipeline-main {
+    font-family: "Courier New", Courier, monospace !important;
+}
+
+div.pipeline-loading-icon {
+    content: url("white-load.gif");
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
+section.pipeline-component h1 {
+    font-size: 20px;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin: 0;
+}
+
+section.pipeline-component h2 {
+    font-size: 16px;
+    font-weight: bold;
+    font-stretch: expanded;
+    margin: 0;
+}
+
+section.pipeline-component h3 {
+    margin: 0;
+}
+
+section.pipeline {
+    display: table;
+    border-collapse: separate;
+}
+
+div.changes {
+    padding-top: 0;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    display: table;
+}
+
+div.changes a {
+    text-decoration: none;
+    color: inherit;
+}
+
+div.changes a:visited {
+    color: inherit;
+}
+
+div.changes a:hover {
+    text-decoration: underline;
+}
+
+div.changes h1 {
+    font-size: 12px;
+    line-height: 12px;
+    padding: 0;
+    margin-bottom: 5px;
+}
+
+div.change {
+    clear: both;
+    padding-left: 5px;
+    display: table-row;
+}
+
+div.change-author {
+    vertical-align: top;
+    min-width: 75px;
+    display: table-cell;
+    padding-right: 10px;
+}
+
+div.change-commit-id {
+    vertical-align: top;
+    display: table-cell;
+    padding-right: 10px;
+}
+
+div.change-message {
+    display: table-cell;
+    padding-left: 10px;
+}
+
+div.pipeline-row {
+    display: table-row;
+    padding: 10px 10px 10px 10px;
+}
+
+div.pipeline-cell {
+    display: table-cell;
+    padding-bottom: 30px;
+}
+
+div.stage {
+    margin-right: 60px;
+    min-width: 220px;
+    border: solid 1px #DDD;
+    border-radius: 5px;
+    padding-right: 3px;
+    padding-left: 2px;
+    box-shadow: inset 0px 0px 5px 0px #606060;
+    -webkit-box-shadow: inset 0px 0px 5px 0px #606060;
+    -moz-box-shadow: inset 0px 0px 5px 0px #606060;
+    -o-box-shadow: inset 0px 0px 5px 0px #606060;
+}
+
+div.stage a {
+    text-decoration: none;
+    color: inherit;
+}
+
+div.stage a:visited {
+    color: inherit;
+}
+
+div.stage-task {
+    white-space: nowrap;
+    margin: 2px 2px 10px 2px;
+    border: 1px solid #a9a9a9;
+}
+
+div.task-content {
+    padding: 3px 3px 3px 3px;
+    width: 100%;
+}
+
+div.stage-header {
+    background: transparent;
+    border-bottom: 4px solid #ccc;
+    font-size: 16px;
+    font-weight: bold;
+    display: table;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.stage-name {
+    padding: 8px;
+    display: table-cell;
+    vertical-align: top;
+}
+
+.stage-version {
+    padding: 3px 6px 3px 3px;
+    display: table-cell;
+    float: right;
+    vertical-align: top;
+}
+
+div.task-header {
+    display: table;
+    white-space: nowrap;
+    width: 100%;
+    border: none;
+}
+
+div.taskname {
+    display: table-cell;
+}
+
+div.task-manual {
+    display: table-cell;
+    background: url("play.png") no-repeat;
+    background-size: 75%;
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+    float: right;
+    padding-right: 5px;
+    z-index: 100;
+}
+
+div.task-rebuild {
+    display: table-cell;
+    background-color: #808080;
+    background: url("refresh.png") no-repeat;
+    background-size: 75%;
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+    float: right;
+    padding-right: 5px;
+    z-index: 100;
+
+}
+
+.timestamp {
+    display: table-cell;
+}
+
+.duration {
+    display: table-cell;
+    padding-left: 20px;
+}
+
+div.task-progress-running {
+    background-color: lightskyblue;
+    animation-duration: 1s;
+    animation-name: bluePulse;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: bluePulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+
+    box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+}
+
+@keyframes bluePulse {
+    0% {
+        background-color: #0197fe;
+    }
+    50% {
+        background-color: #2daebf;
+    }
+    100% {
+        background-color: #0197fe;
+    }
+}
+
+@-webkit-keyframes bluePulse {
+    from {
+        background-color: #0197fe;
+    }
+    50% {
+        background-color: #2daebf;
+    }
+    to {
+        background-color: #0197fe;
+    }
+}
+
+.QUEUED {
+    border-left: 6px solid darkblue !important;
+}
+
+.FAILED {
+    background-color: #c9302c;
+    font-weight: bold;
+    box-shadow: inset 0px 0px 10px 0px #681E1C, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #681E1C, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #681E1C, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #681E1C, 5px 5px 5px -1px #606060;
+    color: #ffffff;
+}
+
+.SUCCESS {
+    background-color: #449d44;
+    font-weight: bold;
+    box-shadow: inset 0px 0px 10px 0px #265626, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #265626, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #265626, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #265626, 5px 5px 5px -1px #606060;
+    color: #ffffff;
+    max-height: 15px;
+}
+
+.UNSTABLE {
+    background-color: #ec971f;
+    font-weight: bold;
+    box-shadow: inset 0px 0px 10px 0px #B37319, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #B37319, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #B37319, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #B37319, 5px 5px 5px -1px #606060;
+    color: #ffffff;
+}
+
+.CANCELLED {
+    background-color: #b3b3b3;
+    font-weight: bold;
+    box-shadow: inset 0px 0px 10px 0px #818181, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #818181, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #818181, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #818181, 5px 5px 5px -1px #606060;
+    color: #ffffff;
+}
+
+.NOT_BUILT, .IDLE {
+    background-color: #ffffff;
+    font-weight: bold;
+    box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    color: #000;
+}
+
+.DISABLED {
+    color: #a9a9a9;
+}
+
+.RUNNING {
+    border-left: 6px solid #0092ef;
+    box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    color: #000;
+    background-color: #fff;
+}
+
+div.left {
+    float: left;
+}
+
+div.right {
+    float: right;
+}
+
+div.clear {
+    clear: both;
+}
+
+div.pipelineerror {
+    background-color: red;
+    font-size: 22px;
+    color: #ffffff;
+    display: none;
+}
+
+div.button-start {
+    content: url("play.gif");
+}
+
+div.pipeline-message {
+    font-size: 15px;
+    z-index: -50;
+}
+
+._jsPlumb_connector {
+    z-index: -100;
+}
+
+div.infoPanel {
+    display:block;
+    max-width:300px;
+    padding-left:2px;
+    padding-right:2px;
+    margin-top:-2px;
+    border-top:none;
+}
+div.infoPanelInner {
+    padding:8px 4px;
+    overflow: hidden;
+    border: 0;
+}
+div.infoPanelInner a {
+    font-weight: bold;
+}
+div.infoPanelOuter {
+    margin: 4px 4px 4px 4px;
+    border: 1px solid #dddddd;
+    background-color: #f7f7f9;
+    color: #000;
+}
+
+div.aggregatedChangesPanel {
+    display:block;
+    max-width:300px;
+    padding-left:2px;
+    padding-right:2px;
+    margin:4px;
+    border-top:none;
+}
+
+div.aggregatedChangesPanelInner {
+    overflow: hidden;
+}
+
+div.aggregatedChangesPanelOuter {
+    margin: 4px;
+    border: 1px solid #DDD;
+    background-color: #F7F7F9;
+    color: #000;
+}
+
+div.aggregatedChangesPanelInner > ul, .promo-layer {
+    padding: 4px;
+    border: 1px solid #BBB;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px #D3D3D3 inset, 5px 5px 5px -1px #606060;
+}
+
+div.infoPanel table.pane {
+    width: 100%;
+    color: #000;
+    font-size: 14px;
+    background-color: #ffffff;
+    border: 1px solid #BBB;
+    border-collapse: collapse;
+    box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -webkit-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -moz-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+    -o-box-shadow: inset 0px 0px 10px 0px #d3d3d3, 5px 5px 5px -1px #606060;
+}
+div.infoPanel td.pane-header {
+    background-color: #ffffff;
+    border-right: 0px solid #bbb;
+}
+.pane td {
+    padding: 4px 4px 3px;
+    vertical-align: middle;
+    border-width: 1px medium;
+    border-style: solid none;
+    border-color: #BBB;
+    border-right: 1px solid #bbb;
+}
+.MANUALTASK {
+    border-right: 6px solid #FFE4E1;
+}
+.promo-icon {
+    padding-left: 2px;
+}
+.promo-name {
+    padding-left: 6px;
+}
+.promo-user {
+    padding-left: 4px;
+}
+.promo-time {
+    padding-left: 24px;
+}
+
+.pagination {
+	display:block;
+	text-align:left;
+	height:22px;
+	line-height:21px;
+	clear:both;	
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:14px;
+	font-weight:normal;
+	margin-bottom:8px;
+	margin-left:10px;
+}
+
+.pagination a, .pagination a:visited{
+	padding:7px;
+	padding-top:2px;
+	padding-bottom:2px;
+	border:1px solid #EBEBEB;
+	text-decoration:none;
+	background-color:#F5F5F5;
+	color:#337ab7;
+	width:22px;
+	font-weight:normal;
+	cursor: default;
+    background-color: #ffffff;
+    border-color: #dddddd;
+}
+
+.pagination a:hover {
+	background-color:#DDEEFF;
+	border:1px solid #BBDDFF;
+	color:#0072BC;	
+}
+
+.pagination .active_link a {
+	padding-top:2px;
+	padding-bottom:2px;
+	border:1px solid #BBDDFF;
+	text-decoration:none;
+	background-color:#DDEEFF;
+	color:#0072BC;
+	cursor:default;
+
+	color: #fff;
+    cursor: default;
+    background-color: #337ab7;
+    border-color: #337ab7;
+}
+
+.pagination .disabled_pagination {
+	padding:7px;
+	padding-top:2px;
+	padding-bottom:2px;
+	border:1px solid #EBEBEB;
+	margin-left:10px;
+	text-decoration:none;
+	background-color:#F5F5F5;
+	color:#D7D7D7;
+	cursor:default;
+}
