@@ -11,8 +11,10 @@
         <f:entry title="Final Job (optional)" field="lastJob">
             <f:select/>
         </f:entry>
-        <div align="right">
-            <f:repeatableDeleteButton/>
-        </div>
+        <f:entry>
+            <div align="right">
+                <f:repeatableDeleteButton/>
+            </div>
+        </f:entry>
     </div>
 </j:jelly>
