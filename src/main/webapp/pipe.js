@@ -88,9 +88,9 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     for (var y = 0; y < pipeline.triggeredBy.length; y++) {
                         trigger = pipeline.triggeredBy[y];
                         triggered = triggered + ' <span class="' + trigger.type + '">' + htmlEncode(trigger.description) + '</span>';
-                    }
-                    if (y < pipeline.triggeredBy.length - 1) {
-                        triggered = triggered + ", ";
+                        if (y < pipeline.triggeredBy.length - 1) {
+                            triggered = triggered + ", ";
+                        }
                     }
                 }
 
