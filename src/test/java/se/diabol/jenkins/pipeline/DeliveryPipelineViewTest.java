@@ -207,8 +207,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
         assertEquals("default", view.getTheme());
-        assertEquals(-1, view.getMaxNumberOfJobs());
-
+        assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
     }
 
     @Test
@@ -250,8 +249,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isAllowPipelineStart());
         view.setTheme("test");
         assertEquals("test", view.getTheme());
-        view.setMaxNumberOfJobs(10);
-        assertEquals(10, view.getMaxNumberOfJobs());
+        view.setMaxNumberOfVisiblePipelines(10);
+        assertEquals(10, view.getMaxNumberOfVisiblePipelines());
     }
 
     @Test
@@ -398,7 +397,7 @@ public class DeliveryPipelineViewTest {
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "build", NONE));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
-        view.setMaxNumberOfJobs(1);
+        view.setMaxNumberOfVisiblePipelines(1);
         jenkins.getInstance().addView(view);
         List<Component> pipelines = view.getPipelines();
         assertEquals(1, pipelines.size());
@@ -432,7 +431,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setRegexpFirstJobs(regExpSpecs);
-        view.setMaxNumberOfJobs(2);
+        view.setMaxNumberOfVisiblePipelines(2);
         assertEquals(regExpSpecs, view.getRegexpFirstJobs());
 
         jenkins.getInstance().addView(view);

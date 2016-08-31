@@ -27,7 +27,7 @@
             <f:select/>
         </f:entry>
 
-        <f:entry title="Max number of pipelines" field="maxNumberOfJobs" default="-1">
+        <f:entry title="Max number of pipelines" field="maxNumberOfVisiblePipelines" default="-1">
             <f:textbox/>
         </f:entry>
 
