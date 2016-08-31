@@ -104,10 +104,10 @@
 
     <f:section title="Pipelines">
         <f:entry title="Components">
-            <f:repeatableProperty minimum="0" field="componentSpecs"/>
+            <f:repeatableProperty minimum="0" field="componentSpecs" header="Component"/>
         </f:entry>
         <f:entry title="Regular Expression">
-            <f:repeatableProperty minimum="0" field="regexpFirstJobs"/>
+            <f:repeatableProperty minimum="0" field="regexpFirstJobs" header="RegEx"/>
         </f:entry>
     </f:section>
 
