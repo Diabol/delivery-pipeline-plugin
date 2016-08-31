@@ -207,6 +207,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
         assertEquals("default", view.getTheme());
+        assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
     }
 
     @Test
@@ -248,6 +249,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isAllowPipelineStart());
         view.setTheme("test");
         assertEquals("test", view.getTheme());
+        view.setMaxNumberOfVisiblePipelines(10);
+        assertEquals(10, view.getMaxNumberOfVisiblePipelines());
     }
 
     @Test
@@ -385,6 +388,59 @@ public class DeliveryPipelineViewTest {
         view.getPipelines();
         assertNull(view.getError());
     }
+
+    @Test
+    public void testGetPipelinesUsesMaxNumberOfJobs() throws Exception {
+        jenkins.createFreeStyleProject("build");
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "build", NONE));
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        view.setComponentSpecs(specs);
+        view.setMaxNumberOfVisiblePipelines(1);
+        jenkins.getInstance().addView(view);
+        List<Component> pipelines = view.getPipelines();
+        assertEquals(1, pipelines.size());
+        assertNull(view.getError());
+    }
+
+    @Test
+    public void allJobsAreReturnedWhenMaxNotSet() throws Exception {
+        jenkins.createFreeStyleProject("build");
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        for(int i = 0;i<100;i++) {
+            specs.add(new DeliveryPipelineView.ComponentSpec("Comp"+i, "build", NONE));
+        }
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        view.setComponentSpecs(specs);
+        jenkins.getInstance().addView(view);
+        List<Component> pipelines = view.getPipelines();
+        assertEquals(specs.size(), pipelines.size());
+        assertNull(view.getError());
+    }
+
+    @Test
+    public void testMaxItemsWorksWithRegexp() throws Exception {
+        jenkins.createFreeStyleProject("compile-Project1");
+        jenkins.createFreeStyleProject("compile-Project2");
+        jenkins.createFreeStyleProject("compile-Project3");
+
+        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)");
+        List<DeliveryPipelineView.RegExpSpec> regExpSpecs = new ArrayList<DeliveryPipelineView.RegExpSpec>();
+        regExpSpecs.add(regExpSpec);
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        view.setRegexpFirstJobs(regExpSpecs);
+        view.setMaxNumberOfVisiblePipelines(2);
+        assertEquals(regExpSpecs, view.getRegexpFirstJobs());
+
+        jenkins.getInstance().addView(view);
+
+        List<Component> components = view.getPipelines();
+        assertNull(view.getError());
+        assertEquals(2, components.size());
+    }
+
 
     @Test
     public void testGetPipelines() throws Exception {

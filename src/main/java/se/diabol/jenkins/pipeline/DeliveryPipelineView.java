@@ -111,7 +111,7 @@ public class DeliveryPipelineView extends View {
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
     private String theme = DEFAULT_THEME;
-
+    private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
 
     private transient String error;
@@ -404,6 +404,14 @@ public class DeliveryPipelineView extends View {
         this.aggregatedChangesGroupingPattern = aggregatedChangesGroupingPattern;
     }
 
+    public int getMaxNumberOfVisiblePipelines() {
+        return maxNumberOfVisiblePipelines;
+    }
+
+    public void setMaxNumberOfVisiblePipelines(int maxNumberOfVisiblePipelines) {
+        this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId)
             throws TriggerException, AuthenticationException {
@@ -496,6 +504,10 @@ public class DeliveryPipelineView extends View {
                 if (comparatorDescriptor != null) {
                     Collections.sort(components, comparatorDescriptor.createInstance());
                 }
+            }
+            if (maxNumberOfVisiblePipelines > 0) {
+                LOG.fine("Limiting number of jobs to: " + maxNumberOfVisiblePipelines);
+                components = components.subList(0, Math.min(components.size(), maxNumberOfVisiblePipelines));
             }
             LOG.fine("Returning: " + components);
             error = null;

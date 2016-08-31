@@ -27,6 +27,10 @@
             <f:select/>
         </f:entry>
 
+        <f:entry title="Max number of pipelines" field="maxNumberOfVisiblePipelines" default="-1">
+            <f:textbox/>
+        </f:entry>
+
 
         <f:entry title="Update interval" field="updateInterval" default="2">
             <f:textbox/>
