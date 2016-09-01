@@ -182,6 +182,4 @@ public final class ProjectUtil {
         projectList.addAll(Items.fromNameList(context, projectNames.toString(), AbstractProject.class));
         return projectList;
     }
-
-
 }

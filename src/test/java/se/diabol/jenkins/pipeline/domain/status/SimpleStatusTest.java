@@ -49,10 +49,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -330,6 +332,33 @@ public class SimpleStatusTest {
         assertTrue(running.isRunning());
         assertTrue(status.getType().equals(StatusType.RUNNING));
         assertNotNull(status.toString());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressProperly() {
+        final long currentTime = 200;
+        final long buildStarted = 100;
+        final long estimatedLength = 200;
+        assertThat(50, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressForDurationLongerThanExpected() {
+        final long currentTime = 301;
+        final long buildStarted = 100;
+        final long estimatedLength = 200;
+        assertThat(99, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressForNotStartedBuild() {
+        final long currentTime = 50;
+        final long buildStarted = 100;
+        final long estimatedLength = 200;
+        assertThat(0, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
     }
 
     @Test

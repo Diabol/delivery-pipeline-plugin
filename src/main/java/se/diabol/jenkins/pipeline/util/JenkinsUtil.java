@@ -48,7 +48,4 @@ public final class JenkinsUtil {
     public static boolean isPluginInstalled(final String shortName) {
         return getInstance().getPlugin(shortName) != null;
     }
-
-
-
 }
