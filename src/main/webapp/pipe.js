@@ -191,9 +191,9 @@ function pipelineUtils() {
 
                                                html.push('</div><div class="task-details">');
 
-                                               if (timestamp != "") {
-                                                   html.push("<div id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</div>");
-                                               }
+                        if (timestamp != "") {
+                            html.push("<div id=\"" + id + ".timestamp\" class='timestamp'><a href=\"" + getConsoleLink(data, task.link) + "\">" + timestamp + "</a></div>");
+                        }
 
                                                if (task.status.duration >= 0) {
                                                    html.push("<div class='duration'>" + formatDuration(task.status.duration) + "</div>");
@@ -284,6 +284,10 @@ function pipelineUtils() {
                            }
                            plumb.repaintEverything();
                        }
+}
+
+function getConsoleLink(data, link) {
+    return getLink(data, link) + "console"
 }
 
 function getLink(data, link) {
