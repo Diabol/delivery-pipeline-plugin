@@ -195,9 +195,9 @@ function pipelineUtils() {
                             html.push("<div id=\"" + id + ".timestamp\" class='timestamp'><a href=\"" + getConsoleLink(data, task.link) + "\">" + timestamp + "</a></div>");
                         }
 
-                                               if (task.status.duration >= 0) {
-                                                   html.push("<div class='duration'>" + formatDuration(task.status.duration) + "</div>");
-                                               }
+                        if (task.status.duration >= 0) {
+                            html.push("<div class='duration'><a href=\"" + getConsoleLink(data, task.link) + "\">" + formatDuration(task.status.duration) + "</a></div>");
+                        }
 
                                                html.push("</div></div></div></div>");
 
