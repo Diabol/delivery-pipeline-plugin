@@ -21,6 +21,10 @@ function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, 
     });
 }
 
+function getConsoleLink(data, link) {
+    return getLink(data, link) + "console"
+}
+
 function getLink(data, link) {
     if (data.linkRelative) {
         return link;
@@ -195,7 +199,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                         html.push('</div><div class="task-details">');
 
                         if (timestamp != "") {
-                            html.push("<div id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</div>");
+                            html.push("<div id=\"" + id + ".timestamp\" class='timestamp'><a href=\"" + getConsoleLink(data, task.link) + "\">" + timestamp + "</a></div>");
                         }
 
                         if (task.status.duration >= 0) {
