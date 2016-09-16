@@ -329,29 +329,39 @@ function generateTestInfo(data, task) {
 function generateStaticAnalysisInfo(data, task) {
     if (data.showStaticAnalysisResults && task.staticAnalysisResults && task.staticAnalysisResults.length > 0) {
         var html = ["<div class='infoPanelOuter'>"];
-        Q.each(task.staticAnalysisResults, function(i, analysis) {
-            html.push("<div class='infoPanel'><div class='infoPanelInner'>");
-                html.push("<a href=" + getLink(data,analysis.url) + ">" + analysis.name + "</a>");
-                html.push("<table id='priority.summary' class='pane'>");
-                html.push("<tbody>");
-                    html.push("<tr>");
-                        html.push("<td class='pane-header'>High</td>");
-                        html.push("<td class='pane-header'>Normal</td>");
-                        html.push("<td class='pane-header'>Low</td>");
-                    html.push("</tr>");
-                html.push("</tbody>");
-                html.push("<tbody>");
-                    html.push("<tr>");
-                        html.push("<td class='pane'>" + analysis.high + "</td>");
-                        html.push("<td class='pane'>" + analysis.normal + "</td>");
-                        html.push("<td class='pane'>" + analysis.low + "</td>");
-                    html.push("</tr>");
-                html.push("</tbody>");
-                html.push("</table>");
-            html.push("</div></div>");
-        });
+        html.push("<div class='infoPanel'><div class='infoPanelInner'>");
+            html.push("<table id='priority.summary' class='pane'>");
+            html.push("<thead>");
+                html.push("<tr>");
+                    html.push("<td class='pane-header'>Warnings</td>");
+                    html.push("<td class='pane-header' style='font-size: smaller; vertical-align: bottom;'>High</td>");
+                    html.push("<td class='pane-header' style='font-size: smaller; vertical-align: bottom;'>Normal</td>");
+                    html.push("<td class='pane-header' style='font-size: smaller; vertical-align: bottom;'>Low</td>");
+                html.push("</tr>");
+            html.push("</thead>");
+            html.push("<tbody>");
+            Q.each(task.staticAnalysisResults, function(i, analysis) {
+                html.push("<tr>");
+                    html.push("<td class='pane'><a href=" + getLink(data,analysis.url) + ">" + trimWarningsFromString(analysis.name) + "</a></td>");
+                    html.push("<td class='pane' style='text-align: center;'>" + analysis.high + "</td>");
+                    html.push("<td class='pane' style='text-align: center;'>" + analysis.normal + "</td>");
+                    html.push("<td class='pane' style='text-align: center;'>" + analysis.low + "</td>");
+                html.push("</tr>");
+            });
+            html.push("</tbody>");
+            html.push("</table>");
+        html.push("</div></div>");
         html.push("</div>");
         return html.join("");
+    }
+}
+
+function trimWarningsFromString(label) {
+    var offset = label.indexOf("Warnings");
+    if (offset == -1) {
+        return label;
+    } else {
+        return label.substring(0, offset).trim()
     }
 }
 
