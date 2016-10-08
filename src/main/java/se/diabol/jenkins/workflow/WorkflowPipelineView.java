@@ -153,7 +153,7 @@ public class WorkflowPipelineView extends View {
                 List<Pipeline> pipelines = new ArrayList<Pipeline>();
 
                 Iterator<WorkflowRun> it = job.getBuilds().iterator();
-                for (int i = 0; i < 3 && it.hasNext(); i++) {
+                for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
                     WorkflowRun build = it.next();
                     Pipeline pipeline = resolvePipeline(job, build);
                     pipelines.add(pipeline);
@@ -226,7 +226,7 @@ public class WorkflowPipelineView extends View {
 
         public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();
-            for (int i = 0; i <= MAX_NO_OF_PIPELINES; i++) {
+            for (int i = 1; i <= MAX_NO_OF_PIPELINES; i++) {
                 String opt = String.valueOf(i);
                 options.add(opt, opt);
             }
