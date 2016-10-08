@@ -59,7 +59,9 @@ function pipelineUtils() {
                                    html.push("<section class='pipeline-component'>");
                                    html.push("<h1>" + htmlEncode(component.name));
                                    if (data.allowPipelineStart) {
-                                       if (component.firstJobParameterized) {
+                                       if (component.workflowComponent) {
+                                           html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\');">');
+                                       } else if (component.firstJobParameterized) {
                                            html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
                                        } else {
                                            html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');

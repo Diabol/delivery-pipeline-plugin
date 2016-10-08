@@ -20,6 +20,8 @@ package se.diabol.jenkins.workflow.model;
 import static com.google.common.base.Objects.toStringHelper;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
@@ -27,10 +29,27 @@ import se.diabol.jenkins.pipeline.domain.AbstractItem;
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
     private final List<Pipeline> pipelines;
+    private final WorkflowJob workflowJob;
 
-    public Component(String name, List<Pipeline> pipelines) {
+    public Component(String name, WorkflowJob job, List<Pipeline> pipelines) {
         super(name);
+        this.workflowJob = job;
         this.pipelines = ImmutableList.copyOf(pipelines);
+    }
+
+    @Exported
+    public boolean isWorkflowComponent() {
+        return true;
+    }
+
+    @Exported
+    public String getWorkflowUrl() {
+        return "job/" + workflowJob.getName() + "/";
+    }
+
+    @Exported
+    public WorkflowJob getWorkflowJob() {
+        return workflowJob;
     }
 
     @Exported

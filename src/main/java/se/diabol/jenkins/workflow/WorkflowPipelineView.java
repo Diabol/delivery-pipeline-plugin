@@ -25,6 +25,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.View;
 import hudson.model.ViewDescriptor;
 import hudson.model.ViewGroup;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
@@ -55,7 +57,11 @@ public class WorkflowPipelineView extends View {
 
     public static final int DEFAULT_INTERVAL = 2;
 
+    public static final int DEFAULT_NO_OF_PIPELINES = 3;
+    private static final int MAX_NO_OF_PIPELINES = 50;
+
     private int updateInterval = DEFAULT_INTERVAL;
+    private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
     private int noOfColumns = 1;
     private boolean allowPipelineStart = false;
     private boolean showChanges = false;
@@ -95,6 +101,15 @@ public class WorkflowPipelineView extends View {
         this.updateInterval = updateInterval;
     }
 
+    public int getNoOfPipelines() {
+        return noOfPipelines;
+    }
+
+    public void setNoOfPipelines(int noOfPipelines) {
+        this.noOfPipelines = noOfPipelines;
+    }
+
+    @Exported
     public boolean isAllowPipelineStart() {
         return allowPipelineStart;
     }
@@ -143,7 +158,7 @@ public class WorkflowPipelineView extends View {
                     Pipeline pipeline = resolvePipeline(job, build);
                     pipelines.add(pipeline);
                 }
-                Component component = new Component("Component", pipelines);
+                Component component = new Component(job.getName(), job, pipelines);
                 this.error = null;
                 return Collections.singletonList(component);
             } else {
@@ -197,9 +212,38 @@ public class WorkflowPipelineView extends View {
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
+        public ListBoxModel doFillNoOfColumnsItems(@AncestorInPath ItemGroup<?> context) {
+            ListBoxModel options = new ListBoxModel();
+            options.add("1", "1");
+            options.add("2", "2");
+            options.add("3", "3");
+            return options;
+        }
 
         public ListBoxModel doFillProjectItems(@AncestorInPath ItemGroup<?> context) {
             return ProjectUtil.fillAllProjects(context, WorkflowJob.class);
+        }
+
+        public ListBoxModel doFillNoOfPipelinesItems(@AncestorInPath ItemGroup<?> context) {
+            ListBoxModel options = new ListBoxModel();
+            for (int i = 0; i <= MAX_NO_OF_PIPELINES; i++) {
+                String opt = String.valueOf(i);
+                options.add(opt, opt);
+            }
+            return options;
+        }
+
+        public FormValidation doCheckUpdateInterval(@QueryParameter String value) {
+            int valueAsInt;
+            try {
+                valueAsInt = Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return FormValidation.error(e, "Value must be an integer");
+            }
+            if (valueAsInt <= 0) {
+                return FormValidation.error("Value must be greater that 0");
+            }
+            return FormValidation.ok();
         }
 
         @Override

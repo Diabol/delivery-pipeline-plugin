@@ -631,7 +631,7 @@ public class DeliveryPipelineView extends View {
             try {
                 valueAsInt = Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                return FormValidation.error(e, "Value must be a integer");
+                return FormValidation.error(e, "Value must be an integer");
             }
             if (valueAsInt <= 0) {
                 return FormValidation.error("Value must be greater that 0");
