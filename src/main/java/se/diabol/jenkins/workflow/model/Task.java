@@ -95,11 +95,6 @@ public class Task extends AbstractItem {
         return description;
     }
 
-    @Exported
-    public boolean isRebuildable() {
-        return false;
-    }
-
     public static List<Task> resolve(WorkflowRun build, FlowNode stageStartNode) {
         List<Task> result = new ArrayList<Task>();
 
