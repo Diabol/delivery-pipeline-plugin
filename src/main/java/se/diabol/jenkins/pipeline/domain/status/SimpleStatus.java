@@ -162,18 +162,30 @@ public class SimpleStatus implements Status {
 
         if (build.isBuilding()) {
             int progress = calculateBuildProgress(build);
-
-            return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis()
-                    - build.getTimestamp().getTimeInMillis());
+            return statusWithProgress(build, progress);
         }
         return getStatusFromResult(build);
+    }
+
+    public static Status resolveStatus(AbstractProject project, AbstractBuild build, AbstractBuild firstBuild,
+                                       long estimatedBuildDuration) {
+        if (build.isBuilding()) {
+            int progress = calculateBuildProgress(currentTimeMillis(), build.getTimestamp().getTimeInMillis(), estimatedBuildDuration);
+            return statusWithProgress(build, progress);
+        } else {
+            return resolveStatus(project, build, firstBuild);
+        }
+    }
+
+    private static Status statusWithProgress(AbstractBuild build, int progress) {
+        return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
     }
 
     private static int calculateBuildProgress(AbstractBuild build) {
         return calculateBuildProgress(currentTimeMillis(), build.getTimestamp().getTimeInMillis(), build.getEstimatedDuration());
     }
 
-    protected static int calculateBuildProgress
+    static int calculateBuildProgress
             (long currentTimeMillis, long timeBuildStarted, long estimatedBuildDuration) {
         int progress = (int) round(100.0d * (currentTimeMillis - timeBuildStarted) / estimatedBuildDuration);
         if (progress > 100) {
@@ -190,12 +202,10 @@ public class SimpleStatus implements Status {
             return StatusFactory.cancelled(build.getTimeInMillis(), build.getDuration());
         }
         if (Result.SUCCESS.equals(result)) {
-            return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build),
-                    getPromotionStatusList(build));
+            return StatusFactory.success(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build), getPromotionStatusList(build));
         }
         if (Result.FAILURE.equals(result)) {
-            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build),
-                    getPromotionStatusList(build));
+            return StatusFactory.failed(build.getTimeInMillis(), build.getDuration(), isBuildPromoted(build), getPromotionStatusList(build));
         }
         if (Result.UNSTABLE.equals(result)) {
             return StatusFactory.unstable(build.getTimeInMillis(), build.getDuration());
@@ -207,9 +217,8 @@ public class SimpleStatus implements Status {
     }
 
     private static boolean isBuildPromoted(AbstractBuild build) {
-        final List<AbstractPromotionStatusProvider> promotionStatusProviders =
-                SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
-        if (CollectionUtils.isNotEmpty(promotionStatusProviders)) {
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
+        if(CollectionUtils.isNotEmpty(promotionStatusProviders)) {
             final AbstractPromotionStatusProvider promotionStatusProvider = promotionStatusProviders.get(0);
             if (promotionStatusProvider != null) {
                 return promotionStatusProvider.isBuildPromoted(build);
@@ -221,8 +230,7 @@ public class SimpleStatus implements Status {
     private static List<PromotionStatus> getPromotionStatusList(AbstractBuild build) {
         final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
 
-        final List<AbstractPromotionStatusProvider> promotionStatusProviders =
-                SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();
         if (CollectionUtils.isNotEmpty(promotionStatusProviders)) {
             final AbstractPromotionStatusProvider promotionStatusProvider = promotionStatusProviders.get(0);
             if (promotionStatusProvider != null) {
