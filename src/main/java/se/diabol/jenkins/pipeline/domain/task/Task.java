@@ -31,7 +31,6 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
-import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.results.StaticAnalysisResult;
 import se.diabol.jenkins.pipeline.domain.results.TestResult;
 import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
@@ -39,7 +38,6 @@ import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.token.TokenUtils;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
-import se.diabol.jenkins.workflow.WorkflowApi;
 
 import java.util.ArrayList;
 import java.util.List;

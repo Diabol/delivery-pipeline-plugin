@@ -22,6 +22,7 @@ import hudson.model.Result;
 import java.util.ArrayList;
 import java.util.List;
 
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -31,6 +32,7 @@ import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.task.ManualStep;
+import se.diabol.jenkins.workflow.WorkflowApi;
 import se.diabol.jenkins.workflow.step.TaskAction;
 import se.diabol.jenkins.workflow.util.Util;
 
@@ -45,6 +47,7 @@ public class Task extends AbstractItem {
     private final ManualStep manual;
     private final String buildId;
     private final String description;
+    private final WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
 
     public Task(String id, String name, Status status, String link,
                 ManualStep manual, String description) {
@@ -122,7 +125,7 @@ public class Task extends AbstractItem {
         boolean allExecuted = isAllExecuted(taskNodes);
         boolean allIdle = isAllNotExecuted(taskNodes);
         if (Result.FAILURE.equals(build.getResult())) {
-            return StatusFactory.failed(0, 0, false, null);
+            return StatusFactory.failed(getStartTime(taskNodes), getDuration(taskNodes), false, null);
         }
         if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
             return runningStatus(build, taskNodes);
