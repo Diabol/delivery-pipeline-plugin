@@ -641,4 +641,3 @@ function equalheight(container) {
         }
     });
 }
-
