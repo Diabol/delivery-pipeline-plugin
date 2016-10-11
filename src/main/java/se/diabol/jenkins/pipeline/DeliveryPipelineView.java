@@ -634,7 +634,7 @@ public class DeliveryPipelineView extends View {
                 return FormValidation.error(e, "Value must be an integer");
             }
             if (valueAsInt <= 0) {
-                return FormValidation.error("Value must be greater that 0");
+                return FormValidation.error("Value must be greater than 0");
             }
             return FormValidation.ok();
         }
