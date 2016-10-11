@@ -149,15 +149,7 @@ public class WorkflowPipelineView extends View {
         try {
             if (project != null) {
                 WorkflowJob job = getWorkflowJob(project);
-
-                List<Pipeline> pipelines = new ArrayList<Pipeline>();
-
-                Iterator<WorkflowRun> it = job.getBuilds().iterator();
-                for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
-                    WorkflowRun build = it.next();
-                    Pipeline pipeline = resolvePipeline(job, build);
-                    pipelines.add(pipeline);
-                }
+                List<Pipeline> pipelines = resolvePipeliens(job);
                 Component component = new Component(job.getName(), job, pipelines);
                 this.error = null;
                 return Collections.singletonList(component);
@@ -168,6 +160,18 @@ public class WorkflowPipelineView extends View {
             error = e.getMessage();
             return Collections.emptyList();
         }
+    }
+
+    private List<Pipeline> resolvePipeliens(WorkflowJob job) throws PipelineException {
+        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+
+        Iterator<WorkflowRun> it = job.getBuilds().iterator();
+        for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
+            WorkflowRun build = it.next();
+            Pipeline pipeline = resolvePipeline(job, build);
+            pipelines.add(pipeline);
+        }
+        return pipelines;
     }
 
     private Pipeline resolvePipeline(WorkflowJob job, WorkflowRun build) throws PipelineException {
