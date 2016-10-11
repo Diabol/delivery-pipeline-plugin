@@ -167,16 +167,6 @@ public class SimpleStatus implements Status {
         return getStatusFromResult(build);
     }
 
-    public static Status resolveStatus(AbstractProject project, AbstractBuild build, AbstractBuild firstBuild,
-                                       long estimatedBuildDuration) {
-        if (build.isBuilding()) {
-            int progress = calculateBuildProgress(currentTimeMillis(), build.getTimestamp().getTimeInMillis(), estimatedBuildDuration);
-            return statusWithProgress(build, progress);
-        } else {
-            return resolveStatus(project, build, firstBuild);
-        }
-    }
-
     private static Status statusWithProgress(AbstractBuild build, int progress) {
         return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
     }

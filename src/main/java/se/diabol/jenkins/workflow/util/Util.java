@@ -20,6 +20,7 @@ package se.diabol.jenkins.workflow.util;
 import java.util.ArrayList;
 import java.util.List;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import se.diabol.jenkins.workflow.api.Run;
 import se.diabol.jenkins.workflow.step.TaskAction;
 
 public class Util {
@@ -58,6 +59,19 @@ public class Util {
         }
 
         return nodes;
+    }
+
+    public static Run getRunById(List<Run> runs, int buildNumber) {
+        if (runs == null || runs.isEmpty()) {
+            return null;
+        }
+        String id = "" + buildNumber;
+        for (Run run : runs) {
+            if (id.equals(run.id)) {
+                return run;
+            }
+        }
+        return null;
     }
 
     public static <T> T head(List<T> list) {

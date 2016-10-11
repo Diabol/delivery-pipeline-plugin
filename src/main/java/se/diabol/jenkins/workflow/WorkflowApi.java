@@ -49,17 +49,20 @@ public class WorkflowApi {
         this.jenkins = instance;
     }
 
-    public Run lastRunFor(String job) {
+    public List<Run> getRunsFor(String job) {
         try {
             HttpRequest request = requestFor(workflowApiUrl(job) + "runs");
             LOG.fine("Getting workflow runs for " + job + " from Workflow API: " + request.getUrl());
             String responseString = execute(request);
             LOG.fine("Received workflow runs for " + job + ": " + responseString);
-            List<Run> runs = asListOfRuns(responseString);
-            return returnFirstOrNull(runs);
+            return asListOfRuns(responseString);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public Run lastRunFor(String job) {
+        return returnFirstOrNull(getRunsFor(job));
     }
 
     protected String execute(HttpRequest request) throws IOException {
