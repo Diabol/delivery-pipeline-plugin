@@ -66,7 +66,6 @@ public class WorkflowPipelineView extends View {
     private boolean allowPipelineStart = false;
     private boolean showChanges = false;
     private String project;
-    private WorkflowApi workflowApi = new WorkflowApi(jenkins());
 
     private transient String error;
 
@@ -245,7 +244,7 @@ public class WorkflowPipelineView extends View {
                 return FormValidation.error(e, "Value must be an integer");
             }
             if (valueAsInt <= 0) {
-                return FormValidation.error("Value must be greater that 0");
+                return FormValidation.error("Value must be greater than 0");
             }
             return FormValidation.ok();
         }
