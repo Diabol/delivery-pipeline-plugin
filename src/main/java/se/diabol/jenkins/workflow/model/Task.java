@@ -33,11 +33,13 @@ import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.task.ManualStep;
 import se.diabol.jenkins.workflow.WorkflowApi;
+import se.diabol.jenkins.workflow.api.Run;
 import se.diabol.jenkins.workflow.step.TaskAction;
 import se.diabol.jenkins.workflow.util.Util;
 
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
+import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 public class Task extends AbstractItem {
 
@@ -47,7 +49,7 @@ public class Task extends AbstractItem {
     private final ManualStep manual;
     private final String buildId;
     private final String description;
-    private final WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
+    private final static WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
 
     public Task(String id, String name, Status status, String link,
                 ManualStep manual, String description) {
@@ -97,23 +99,34 @@ public class Task extends AbstractItem {
 
     public static List<Task> resolve(WorkflowRun build, FlowNode stageStartNode) {
         List<Task> result = new ArrayList<Task>();
-
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(stageStartNode);
-
         List<FlowNode> taskNodes = Util.getTaskNodes(stageNodes);
 
         if (!taskNodes.isEmpty()) {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
                 List<FlowNode> tasks = Util.getTaskNodes(stageNodes, flowNode);
-
                 result.add(new Task(flowNode.getId(), action.getTaskName(), resolveStatus(build, tasks), "", null, null));
             }
         } else {
-            result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(),
-                    resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode)), "", null, null));
+            Status stageStatus = resolveTaskStatus(build, stageStartNode);
+            result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus, "", null, null));
         }
         return result;
+    }
+
+    private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) {
+        List<Run> runs = workflowApi.getRunsFor(build.getParent().getName());
+        se.diabol.jenkins.workflow.api.Stage currentStage = getRunById(runs, build.getNumber()).getStageByName(stageStartNode.getDisplayName());
+        if (currentStage == null) {
+            return resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode));
+        } else {
+            Status stageStatus = WorkflowStatus.of(currentStage);
+            if (stageStatus.isRunning()) {
+                stageStatus = runningStatus(build);
+            }
+            return stageStatus;
+        }
     }
 
     private static Status resolveStatus(WorkflowRun build, List<FlowNode> taskNodes) {
@@ -123,11 +136,11 @@ public class Task extends AbstractItem {
             return StatusFactory.failed(getStartTime(taskNodes), getDuration(taskNodes), false, null);
         }
         if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
-            return runningStatus(build, taskNodes);
+            return runningStatus(build);
         }
         if (allExecuted) {
             if (failed(Util.head(taskNodes))) {
-                return StatusFactory.failed(0, 0, false, null);
+                return StatusFactory.failed(getStartTime(taskNodes), getDuration(taskNodes), false, null);
             } else {
                 return StatusFactory.success(getStartTime(taskNodes), getDuration(taskNodes), false, null);
             }
@@ -141,7 +154,7 @@ public class Task extends AbstractItem {
         return node != null && node.getError() != null;
     }
 
-    private static Status runningStatus(WorkflowRun build, List<FlowNode> taskNodes) {
+    private static Status runningStatus(WorkflowRun build) {
         long buildTimestamp = build.getTimeInMillis();
         int progress = (int) round(100.0d *
                 (currentTimeMillis() - buildTimestamp) / build.getEstimatedDuration());
