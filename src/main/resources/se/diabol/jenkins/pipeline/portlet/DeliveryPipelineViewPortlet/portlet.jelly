@@ -1,0 +1,20 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:dp="/hudson/plugins/view/dashboard"
+ xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <dp:decorate portlet="${it}">
+        <tr><td>
+            <div>
+                <st:include page="main.jelly" it="${it.deliveryPipelineView}" class="se.diabol.jenkins.pipeline.portlet.ReadOnlyDeliveryPipelineView"/>
+                <style type="text/css">
+                    div.pipeline-main {
+                        border:none !important;
+                    }
+                    div.pagination {
+                        height: 1px !important;
+                        line-height: 1px !important;
+                    }
+                </style>
+            </div>
+        </td></tr>
+    </dp:decorate>
+</j:jelly>
+
