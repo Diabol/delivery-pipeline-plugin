@@ -31,7 +31,8 @@ import java.util.Random;
 
 public class DeliveryPipelineViewPortlet extends DashboardPortlet {
 
-    private static Random generator = new Random();
+    private static final int BOUND = 32000;
+    private static final Random GENERATOR = new Random();
     private ReadOnlyDeliveryPipelineView deliveryPipelineView;
 
     private final String initialJob;
@@ -44,7 +45,7 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
         this.initialJob = initialJob;
         this.finalJob = finalJob;
         this.portletId = (portletId != null && !"".equals(portletId.trim())) ? portletId :
-                Integer.toString(generator.nextInt(32000));
+                Integer.toString(GENERATOR.nextInt(BOUND));
     }
 
     public String getPortletId() {

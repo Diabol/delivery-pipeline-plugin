@@ -28,19 +28,20 @@ import java.util.Random;
 
 public class ReadOnlyDeliveryPipelineView extends DeliveryPipelineView {
 
-    private static Random generator = new Random();
+    private static final int BOUND = 32000;
+    private static Random GENERATOR = new Random();
     private String id = null;
     private String viewUrl = null;
     private boolean isPortletView = false;
 
     public ReadOnlyDeliveryPipelineView(String name) {
         super(name);
-        this.id = Integer.toString(generator.nextInt(32000));
+        this.id = Integer.toString(GENERATOR.nextInt(BOUND));
     }
 
     public ReadOnlyDeliveryPipelineView(String name, ViewGroup itemGroup) {
         super(name, itemGroup);
-        this.id = Integer.toString(generator.nextInt(32000));
+        this.id = Integer.toString(GENERATOR.nextInt(BOUND));
     }
 
     public String getId() {
@@ -48,7 +49,7 @@ public class ReadOnlyDeliveryPipelineView extends DeliveryPipelineView {
     }
 
     String setIdValue() {
-        this.id = Integer.toString(generator.nextInt(32000));
+        this.id = Integer.toString(GENERATOR.nextInt(BOUND));
         return this.id;
     }
 
