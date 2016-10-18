@@ -19,6 +19,8 @@ package se.diabol.jenkins.workflow.model;
 
 import static com.google.common.base.Objects.toStringHelper;
 import com.google.common.collect.ImmutableList;
+
+import java.util.Collections;
 import java.util.List;
 
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -34,7 +36,11 @@ public class Component extends AbstractItem {
     public Component(String name, WorkflowJob job, List<Pipeline> pipelines) {
         super(name);
         this.workflowJob = job;
-        this.pipelines = ImmutableList.copyOf(pipelines);
+        if (pipelines != null) {
+            this.pipelines = ImmutableList.copyOf(pipelines);
+        } else {
+            this.pipelines = Collections.emptyList();
+        }
     }
 
     @Exported

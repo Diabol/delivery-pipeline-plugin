@@ -27,27 +27,27 @@ public class Json {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static <T> T deserialize(String jsonResponse, Class<T> type) {
+        return deserialize(jsonResponse.getBytes(), type);
+    }
+
+    private static <T> T deserialize(byte[] json, Class<T> type) {
         try {
-            return OBJECT_MAPPER.readValue(jsonResponse.getBytes(), type);
+            return objectMapper().readValue(json, type);
         } catch (IOException ioe) {
             throw new IllegalArgumentException(ioe);
         }
     }
 
-    public static <T> T deserialize(byte[] json, Class<T> type) {
+    public static String serialize(Object serializable) {
         try {
-            return OBJECT_MAPPER.readValue(json, type);
-        } catch (IOException ioe) {
-            throw new IllegalArgumentException(ioe);
-        }
-    }
-
-    public String serialize(Object serializable) {
-        try {
-            return OBJECT_MAPPER.writeValueAsString(serializable);
+            return objectMapper().writeValueAsString(serializable);
         } catch (JsonProcessingException jpe) {
             throw new IllegalArgumentException(jpe);
         }
+    }
+
+    static ObjectMapper objectMapper() {
+        return OBJECT_MAPPER;
     }
 
 }

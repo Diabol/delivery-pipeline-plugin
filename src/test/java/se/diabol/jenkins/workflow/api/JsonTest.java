@@ -36,7 +36,7 @@ public class JsonTest {
 
     @Test
     public void shouldDeserializeJsonResponse() {
-        Run[] arrayOfRuns = Json.deserialize(load("workflow/wfapi-last_run.json").getBytes(), Run[].class);
+        Run[] arrayOfRuns = Json.deserialize(load("workflow/wfapi-last_run.json"), Run[].class);
         List<Run> runs = Arrays.asList(arrayOfRuns);
         assertFalse(runs.isEmpty());
         assertThat(runs.size(), is(2));
