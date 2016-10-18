@@ -290,7 +290,7 @@
                     <propertyExpansion>basedir=${basedir}</propertyExpansion>
                     <consoleOutput>true</consoleOutput>
                     <failOnViolation>true</failOnViolation>
-                    <resourceIncludes>**/*.properties,**/*.jelly</resourceIncludes>
+                    <resourceIncludes>**/*.properties,**/*.jelly,**/*.html</resourceIncludes>
                 </configuration>
                 <executions>
                     <execution>
