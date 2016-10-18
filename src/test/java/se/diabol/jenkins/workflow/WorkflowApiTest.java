@@ -47,6 +47,7 @@ public class WorkflowApiTest {
     public void setup() throws IOException {
         when(workflowApi.jenkinsUrl()).thenReturn("http://localhost:8080/jenkins/");
         when(workflowApi.lastRunFor(anyString())).thenCallRealMethod();
+        when(workflowApi.getRunsFor(anyString())).thenCallRealMethod();
         when(workflowApi.execute(any(HttpRequest.class))).thenReturn(listOfRunsResponseJson);
     }
 
