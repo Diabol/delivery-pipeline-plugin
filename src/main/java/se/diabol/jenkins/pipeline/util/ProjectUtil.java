@@ -183,4 +183,28 @@ public final class ProjectUtil {
     }
 
 
+    public static List<AbstractProject> getStartUpstreams(AbstractProject project) {
+        List<AbstractProject> upstreams = project.getUpstreamProjects();
+        if (upstreams.isEmpty()) {
+            return new ArrayList<AbstractProject>(Collections.singleton(project));
+        } else {
+            return getStartUpstreams(project, new ArrayList<AbstractProject>());
+        }
+    }
+
+    private static List<AbstractProject> getStartUpstreams(AbstractProject project, List<AbstractProject> edges) {
+        List<AbstractProject> upstreams = project.getUpstreamProjects();
+        if (upstreams.isEmpty()) {
+            edges.add(project);
+            return edges;
+        } else {
+            List<AbstractProject> result = new ArrayList<AbstractProject>(edges);
+            for (AbstractProject upstream : upstreams) {
+                result = (getStartUpstreams(upstream, edges));
+            }
+            return result;
+        }
+    }
+
+
 }

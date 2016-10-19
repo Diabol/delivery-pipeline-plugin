@@ -28,6 +28,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -135,5 +136,19 @@ public class ProjectUtilTest {
     public void testGetAllDownstreamProjects() {
         Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(null, null);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetStartUpstreamsSimple() throws Exception {
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("C");
+        projectA.getPublishersList().add(new BuildTrigger(projectC.getName(), true));
+        projectB.getPublishersList().add(new BuildTrigger(projectC.getName(), true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        List<AbstractProject> upstrems = ProjectUtil.getStartUpstreams(projectC);
+        assertEquals(2, upstrems.size());
     }
 }
