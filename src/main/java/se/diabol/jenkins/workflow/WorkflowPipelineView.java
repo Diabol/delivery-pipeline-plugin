@@ -53,6 +53,8 @@ import se.diabol.jenkins.workflow.model.Pipeline;
 
 import javax.servlet.ServletException;
 
+import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
+
 public class WorkflowPipelineView extends View {
 
     public static final int DEFAULT_INTERVAL = 2;
@@ -65,6 +67,7 @@ public class WorkflowPipelineView extends View {
     private int noOfColumns = 1;
     private boolean allowPipelineStart = false;
     private boolean showChanges = false;
+    private String theme = DEFAULT_THEME;
     private String project;
 
     private transient String error;
@@ -131,6 +134,14 @@ public class WorkflowPipelineView extends View {
 
     public void setProject(String project) {
         this.project = project;
+    }
+
+    public String getTheme() {
+        return this.theme == null ? DEFAULT_THEME : this.theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
     @Exported

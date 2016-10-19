@@ -86,7 +86,7 @@ public class DeliveryPipelineView extends View {
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     private static final String NONE_SORTER = "none";
 
-    static final String DEFAULT_THEME = "default";
+    public static final String DEFAULT_THEME = "default";
 
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
@@ -583,7 +583,6 @@ public class DeliveryPipelineView extends View {
         req.bindJSON(this, req.getSubmittedForm());
         componentSpecs = req.bindJSONToList(ComponentSpec.class, req.getSubmittedForm().get("componentSpecs"));
         regexpFirstJobs = req.bindJSONToList(RegExpSpec.class, req.getSubmittedForm().get("regexpFirstJobs"));
-
     }
 
     @Override
@@ -594,7 +593,6 @@ public class DeliveryPipelineView extends View {
             return JenkinsUtil.getInstance().doCreateItem(req, rsp);
         }
     }
-
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
