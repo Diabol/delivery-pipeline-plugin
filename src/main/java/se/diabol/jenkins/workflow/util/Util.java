@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import se.diabol.jenkins.workflow.api.Run;
+import se.diabol.jenkins.workflow.api.Stage;
 import se.diabol.jenkins.workflow.step.TaskAction;
 
 public class Util {
@@ -72,6 +73,14 @@ public class Util {
             }
         }
         return null;
+    }
+
+    public static long sumDurationsOf(List<Stage> stages) {
+        long totalDuration = 0;
+        for (Stage stage : stages) {
+            totalDuration += stage.durationMillis;
+        }
+        return totalDuration;
     }
 
     public static <T> T head(List<T> list) {

@@ -34,7 +34,9 @@ import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.task.ManualStep;
 import se.diabol.jenkins.workflow.WorkflowApi;
 import se.diabol.jenkins.workflow.api.Run;
+import se.diabol.jenkins.workflow.api.Stage;
 import se.diabol.jenkins.workflow.step.TaskAction;
+import se.diabol.jenkins.workflow.util.Name;
 import se.diabol.jenkins.workflow.util.Util;
 
 import static java.lang.Math.round;
@@ -116,14 +118,14 @@ public class Task extends AbstractItem {
     }
 
     private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) {
-        List<Run> runs = workflowApi.getRunsFor(build.getParent().getName());
+        List<Run> runs = workflowApi.getRunsFor(Name.of(build));
         se.diabol.jenkins.workflow.api.Stage currentStage = getRunById(runs, build.getNumber()).getStageByName(stageStartNode.getDisplayName());
         if (currentStage == null) {
             return resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode));
         } else {
             Status stageStatus = WorkflowStatus.of(currentStage);
             if (stageStatus.isRunning()) {
-                stageStatus = runningStatus(build);
+                stageStatus = runningStatus(build, currentStage);
             }
             return stageStatus;
         }
@@ -158,10 +160,33 @@ public class Task extends AbstractItem {
         long buildTimestamp = build.getTimeInMillis();
         int progress = (int) round(100.0d *
                 (currentTimeMillis() - buildTimestamp) / build.getEstimatedDuration());
+        return runningStatus(buildTimestamp, progress);
+    }
+
+    private static Status runningStatus(WorkflowRun build, Stage stage) {
+        int progress = progressOfStage(build, stage);
+        return runningStatus(build.getTimeInMillis(), progress);
+    }
+
+    private static Status runningStatus(long buildTimestamp, int progress) {
         if (progress > 100) {
             progress = 99;
         }
         return StatusFactory.running(progress, buildTimestamp, currentTimeMillis() - buildTimestamp);
+    }
+
+    public static int progressOfStage(WorkflowRun build, Stage currentStage) {
+        Run run = workflowApi.lastFinishedRunFor(Name.of(build));
+        if (!run.hasStage(currentStage.name)) {
+            return 99;
+        }
+        se.diabol.jenkins.workflow.api.Stage stage = run.getStageByName(currentStage.name);
+        List<se.diabol.jenkins.workflow.api.Stage> stages = run.getStagesUntil(currentStage.name);
+        long projectedDurationUntilCurrentStage = Util.sumDurationsOf(stages);
+
+        return (int) round(100.0d
+                * (currentTimeMillis() - build.getTimeInMillis())
+                / (projectedDurationUntilCurrentStage));
     }
 
     private static boolean isAllExecuted(List<FlowNode> nodes) {
