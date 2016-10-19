@@ -87,7 +87,7 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         if (initialJob != null && !"".equals(initialJob.trim())) {
             DeliveryPipelineView.ComponentSpec componentSpec = new DeliveryPipelineView.ComponentSpec("Aggregated view",
-                    initialJob, finalJob);
+                    initialJob, finalJob, false);
             componentSpecs.add(componentSpec);
         }
         view.setComponentSpecs(componentSpecs);
