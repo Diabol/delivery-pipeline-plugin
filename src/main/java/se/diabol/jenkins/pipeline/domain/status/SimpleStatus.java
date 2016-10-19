@@ -143,7 +143,6 @@ public class SimpleStatus implements Status {
         return NOT_BUILT.equals(type);
     }
 
-
     @Override
     public boolean isDisabled() {
         return DISABLED.equals(type);

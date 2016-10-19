@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.api.client.util.DateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +56,8 @@ public class Run {
     }
 
     public boolean hasStage(final String name) {
-        for (int i = 0; i < stages.size(); i = i + 1) {
-            String stageName = stages.get(i).name;
+        for (Stage stage : stages) {
+            String stageName = stage.name;
             if (stageName != null && stageName.equals(name)) {
                 return true;
             }
@@ -65,13 +66,25 @@ public class Run {
     }
 
     public Stage getStageByName(final String name) {
-        for (int i = 0; i < stages.size(); i = i + 1) {
-            String stageName = stages.get(i).name;
+        for (Stage stage : stages) {
+            String stageName = stage.name;
             if (stageName != null && stageName.equals(name)) {
-                return stages.get(i);
+                return stage;
             }
         }
         return null;
+    }
+
+    public List<Stage> getStagesUntil(final String name) {
+        List<Stage> subList = new ArrayList<Stage>();
+        for (Stage stage : stages) {
+            subList.add(stage);
+            String stageName = stage.name;
+            if (stageName != null && stageName.equals(name)) {
+                return subList;
+            }
+        }
+        return subList;
     }
 
     @Override

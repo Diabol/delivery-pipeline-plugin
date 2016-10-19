@@ -65,6 +65,15 @@ public class WorkflowApi {
         return returnFirstOrNull(getRunsFor(job));
     }
 
+    public Run lastFinishedRunFor(String job) {
+        for (Run run : getRunsFor(job)) {
+            if (!"IN_PROGRESS".equals(run.status)) {
+                return run;
+            }
+        }
+        return null;
+    }
+
     protected String execute(HttpRequest request) throws IOException {
         HttpResponse response = request.execute();
         return response.parseAsString();
