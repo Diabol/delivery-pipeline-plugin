@@ -67,7 +67,7 @@ public class WorkflowApi {
 
     public Run lastFinishedRunFor(String job) {
         for (Run run : getRunsFor(job)) {
-            if (!"IN_PROGRESS".equals(run.status)) {
+            if (!"IN_PROGRESS".equals(run.status) && !"PAUSED_PENDING_INPUT".equals(run.status)) {
                 return run;
             }
         }
