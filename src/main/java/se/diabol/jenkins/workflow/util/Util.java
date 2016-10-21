@@ -78,7 +78,9 @@ public class Util {
     public static long sumDurationsOf(List<Stage> stages) {
         long totalDuration = 0;
         for (Stage stage : stages) {
-            totalDuration += stage.durationMillis;
+            if (stage.durationMillis != null) {
+                totalDuration += stage.durationMillis;
+            }
         }
         return totalDuration;
     }

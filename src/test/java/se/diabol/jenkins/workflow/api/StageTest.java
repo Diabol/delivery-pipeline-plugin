@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -35,6 +36,7 @@ public class StageTest {
 
         assertTrue(stage1.equals(stage2));
         assertTrue(stage2.equals(stage1));
+        assertEquals(stage1.toString(), stage2.toString());
     }
 
     @Test

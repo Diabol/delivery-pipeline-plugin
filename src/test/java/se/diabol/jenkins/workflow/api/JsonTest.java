@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,6 +55,27 @@ public class JsonTest {
         assertThat(lastOf(runs).startTimeMillis, is(new DateTime(1413459910289L)));
         assertThat(lastOf(runs).endTimeMillis, is(new DateTime(1413459937070L)));
         assertThat(lastOf(runs).durationMillis, is(26781L));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deserializeShouldThrowIllegalArgumentForIOException() {
+        Json.deserialize("{ \"invalid json", Run[].class);
+    }
+
+    @Test
+    public void shouldSerializeJson() {
+        Run run = new Run(Collections.<String, String>emptyMap(), "id", "name", "SUCCESS", null, null, 0L,
+                Collections.<Stage>emptyList());
+        String json = Json.serialize(run);
+        assertThat(json, is("{\"_links\":{},\"id\":\"id\",\"name\":\"name\",\"status\":\"SUCCESS\"," +
+                "\"startTimeMillis\":null,\"endTimeMillis\":null,\"durationMillis\":0,\"stages\":[]}"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void serializeShouldThrowIllegalArgumentForIOException() {
+        class NonSerializable {};
+        NonSerializable clazz = new NonSerializable();
+        Json.serialize(clazz);
     }
 
     private static <T> T firstOf(List<T> list) {
