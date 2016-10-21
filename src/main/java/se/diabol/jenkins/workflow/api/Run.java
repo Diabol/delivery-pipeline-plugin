@@ -75,6 +75,14 @@ public class Run {
         return null;
     }
 
+    /**
+     * Get a sub list of stages until and including the stage with the name
+     * corresponding to the specified name. If no stages match the specified
+     * name, all stages will be returned.
+     *
+     * @param name name of the stage that is the last stage of interest
+     * @return a sub list of stages for this run
+     */
     public List<Stage> getStagesUntil(final String name) {
         List<Stage> subList = new ArrayList<Stage>();
         for (Stage stage : stages) {

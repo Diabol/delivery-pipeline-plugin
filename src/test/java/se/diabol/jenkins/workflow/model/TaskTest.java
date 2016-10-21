@@ -15,16 +15,15 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.workflow.util;
+package se.diabol.jenkins.workflow.model;
 
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.junit.Test;
 
-public final class Name {
+import static java.lang.Math.round;
 
-    public static String of(WorkflowRun build) {
-        if (build == null) {
-            return null;
-        }
-        return build.getParent().getName();
+public class TaskTest {
+
+    @Test
+    public void shouldCalculateProgress() {
     }
 }

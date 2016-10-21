@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -65,6 +66,25 @@ public class RunTests {
         assertThat(run.getStageByName("Stage0"), is(nullValue()));
         assertThat(run.getStageByName("Stage6"), is(nullValue()));
         assertThat(run.getStageByName("ArbitraryNonExistingName"), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetStagesUntil() {
+        Stage stage3 = run.stages.get(3);
+        List<Stage> subList = run.getStagesUntil(stage3.name);
+        assertThat(subList.size(), is(4));
+        assertThat(subList.get(3), is(stage3));
+        for (int i = 0; i < subList.size(); i = i + 1) {
+            assertThat(subList.get(i), is(stages.get(i)));
+        }
+    }
+
+    @Test
+    public void getStagesUntilShouldReturnAllStagesIfNoMatch() {
+        List<Stage> subList = run.getStagesUntil(UUID.randomUUID().toString());
+        assertThat(subList.isEmpty(), is(false));
+        assertThat(subList.size(), is(stages.size()));
+        assertThat(subList, is(stages));
     }
 
     private static Run runFixture() {
