@@ -478,35 +478,55 @@ time.icon span {
     border-radius:0.6em;
 }
 
-.metric .icon strong {
+.metric > .icon > strong {
     position: absolute;
     top: 0;
-    padding: 0.4em 0;
+    padding: 8px 0;
     background-color: #eeeeee;
-    font-size:1.5em;
+    font-size:13px;
     text-align:center;
     display:block;
     width:100%;
 }
 
-.metric .icon em {
+.metric > .icon > em {
     position: absolute;
     bottom: 0.3em;
-    font-size:1.8em;
+    font-size:16px;
     border-top: 1px solid #c8c8c8;
     text-align:center;
     display:block;
     width:100%;
+    padding:8px 0;
 }
 
-.metric .icon span {
+.metric > .icon > span {
     width: 100%;
-    font-size: 2em;
+    font-size: 14px;
     letter-spacing: 0em;
-    padding-top: 2em;
+    padding-top: 40px;
+    padding-bottom:10px;
+    padding-left:0px;
+    padding-right:0px;
     text-align:center;
     display:block;
     width:100%;
+}
+
+.metric > .icon > div.description {
+    width: 100%;
+    font-size: 14px;
+    letter-spacing: 0em;
+    padding-top: 40px;
+    padding-bottom:10px;
+    padding-right:5px;
+    text-align:center;
+    display:block;
+    width:100%;
+}
+
+.metric > .icon > span.date {
+    font-size: 16px;
 }
 
 .metric .icon > table {
@@ -553,7 +573,7 @@ div.panel div.panel-header {
 div.panel div.panel-name {
     display: table-cell;
     padding: 10px 10px 10px 10px;
-    font-size:1.5em;
+    font-size:16px;
 }
 
 div.panel div.panel-body {
