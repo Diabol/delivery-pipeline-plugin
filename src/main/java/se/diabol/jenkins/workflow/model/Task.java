@@ -107,8 +107,8 @@ public class Task extends AbstractItem {
         if (!taskNodes.isEmpty()) {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
-                List<FlowNode> tasks = Util.getTaskNodes(stageNodes, flowNode);
-                result.add(new Task(flowNode.getId(), action.getTaskName(), resolveStatus(build, tasks), "", null, null));
+                //List<FlowNode> nodesInTask = Util.getTaskSteps(stageNodes, flowNode);
+                result.add(new Task(flowNode.getId(), action.getTaskName(), resolveTaskStatus(build, stageStartNode), "", null, null));
             }
         } else {
             Status stageStatus = resolveTaskStatus(build, stageStartNode);
@@ -226,6 +226,7 @@ public class Task extends AbstractItem {
     private static long getDuration(List<FlowNode> nodes) {
         long result = 0;
         for (FlowNode node : nodes) {
+            // TODO: Use something else than FlowNodeUtil since it's an internal class and a moving target
             result = result + FlowNodeUtil.getNodeExecDuration(node);
         }
         return result;

@@ -41,10 +41,16 @@ public class Util {
         return flowNode.getAction(TaskAction.class) != null;
     }
 
-    public static List<FlowNode> getTaskNodes(List<FlowNode> stageNodes, FlowNode node) {
+    /**
+     * Return the steps, e.g. scm, docker, echo, of the specified task
+     * @param stageNodes the stage nodes
+     * @param node the task node
+     * @return a list of steps within the specified task
+     */
+    public static List<FlowNode> getTaskSteps(List<FlowNode> stageNodes, FlowNode node) {
         List<FlowNode> nodes = new ArrayList<FlowNode>();
 
-        int taskStartNodeIndex =  stageNodes.indexOf(node);
+        int taskStartNodeIndex = stageNodes.indexOf(node);
 
         if (isTaskNode(node)) {
             // Starting at the node after the supplied node, add all sorted nodes up to the
