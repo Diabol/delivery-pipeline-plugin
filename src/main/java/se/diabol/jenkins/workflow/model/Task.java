@@ -119,9 +119,10 @@ public class Task extends AbstractItem {
 
     private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) {
         List<Run> runs = workflowApi.getRunsFor(Name.of(build));
-        se.diabol.jenkins.workflow.api.Stage currentStage = getRunById(runs, build.getNumber()).getStageByName(stageStartNode.getDisplayName());
+        Run run = getRunById(runs, build.getNumber());
+        se.diabol.jenkins.workflow.api.Stage currentStage = run.getStageByName(stageStartNode.getDisplayName());
         if (currentStage == null) {
-            return resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode));
+            return resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode), run.stages);
         } else {
             Status stageStatus = WorkflowStatus.of(currentStage);
             if (stageStatus.isRunning()) {
@@ -131,20 +132,20 @@ public class Task extends AbstractItem {
         }
     }
 
-    private static Status resolveStatus(WorkflowRun build, List<FlowNode> taskNodes) {
+    private static Status resolveStatus(WorkflowRun build, List<FlowNode> taskNodes, List<Stage> stages) {
         boolean allExecuted = isAllExecuted(taskNodes);
         boolean allIdle = isAllNotExecuted(taskNodes);
         if (Result.FAILURE.equals(build.getResult())) {
-            return StatusFactory.failed(getStartTime(taskNodes), getDuration(taskNodes), false, null);
+            return StatusFactory.failed(getStartTime(taskNodes), getDuration(stages), false, null);
         }
         if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
             return runningStatus(build);
         }
         if (allExecuted) {
             if (failed(Util.head(taskNodes))) {
-                return StatusFactory.failed(getStartTime(taskNodes), getDuration(taskNodes), false, null);
+                return StatusFactory.failed(getStartTime(taskNodes), getDuration(stages), false, null);
             } else {
-                return StatusFactory.success(getStartTime(taskNodes), getDuration(taskNodes), false, null);
+                return StatusFactory.success(getStartTime(taskNodes), getDuration(stages), false, null);
             }
         } else if (allIdle) {
             return StatusFactory.idle();
@@ -180,7 +181,6 @@ public class Task extends AbstractItem {
         if (!run.hasStage(currentStage.name)) {
             return 99;
         }
-        se.diabol.jenkins.workflow.api.Stage stage = run.getStageByName(currentStage.name);
         List<se.diabol.jenkins.workflow.api.Stage> stages = run.getStagesUntil(currentStage.name);
         long projectedDurationUntilCurrentStage = Util.sumDurationsOf(stages);
 
@@ -223,11 +223,10 @@ public class Task extends AbstractItem {
         return 0;
     }
 
-    private static long getDuration(List<FlowNode> nodes) {
+    private static long getDuration(List<Stage> stages) {
         long result = 0;
-        for (FlowNode node : nodes) {
-            // TODO: Use something else than FlowNodeUtil since it's an internal class and a moving target
-            result = result + FlowNodeUtil.getNodeExecDuration(node);
+        for (Stage stage : stages) {
+            result = result + stage.durationMillis;
         }
         return result;
     }
