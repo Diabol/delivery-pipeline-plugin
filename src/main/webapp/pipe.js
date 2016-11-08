@@ -1,3 +1,7 @@
+function setupRetry(timeout) {
+    Q.ajaxRetrySetup({retry: true, timeout: timeout, slot_time: timeout})
+}
+
 function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout) {
     Q.ajax({
         url: rootURL + "/" + view.viewUrl + 'api/json' + "?page=" + page + "&component=" + component + "&fullscreen=" + fullscreen,
@@ -5,6 +9,7 @@ function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, 
         async: true,
         cache: false,
         timeout: 20000,
+        retry: true,
         success: function (data) {
             refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern);
             setTimeout(function () {
@@ -14,9 +19,7 @@ function updatePipelines(divNames, errorDiv, view, fullscreen, page, component, 
         error: function (xhr, status, error) {
             Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
             plumb.repaintEverything();
-            setTimeout(function () {
-                updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout);
-            }, timeout);
+            updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout);
         }
     });
 }
