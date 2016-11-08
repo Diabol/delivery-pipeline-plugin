@@ -42,6 +42,7 @@
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/moment.min.js"/>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.jsPlumb-1.3.16-all-min.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.ajaxretry.js"/>
 
 
     <div class="pipeline-main">
@@ -78,6 +79,8 @@
         });
 
         view.viewUrl = '${it.getViewUrl()}';
+
+        setupRetry(${it.updateInterval * 1000})
 
         updatePipelines(pipelineContainers, "pipelineerror", view, ${fullscreen}, ${page}, ${component}, ${it.isShowChanges()},
 
