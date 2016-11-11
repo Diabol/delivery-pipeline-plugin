@@ -68,25 +68,6 @@ public class RunTests {
         assertThat(run.getStageByName("ArbitraryNonExistingName"), is(nullValue()));
     }
 
-    @Test
-    public void shouldGetStagesUntil() {
-        Stage stage3 = run.stages.get(3);
-        List<Stage> subList = run.getStagesUntil(stage3.name);
-        assertThat(subList.size(), is(4));
-        assertThat(subList.get(3), is(stage3));
-        for (int i = 0; i < subList.size(); i = i + 1) {
-            assertThat(subList.get(i), is(stages.get(i)));
-        }
-    }
-
-    @Test
-    public void getStagesUntilShouldReturnAllStagesIfNoMatch() {
-        List<Stage> subList = run.getStagesUntil(UUID.randomUUID().toString());
-        assertThat(subList.isEmpty(), is(false));
-        assertThat(subList.size(), is(stages.size()));
-        assertThat(subList, is(stages));
-    }
-
     private static Run runFixture() {
         return new Run(Collections.<String, Object>emptyMap(),
                        "2014-04-27_20-40-00",

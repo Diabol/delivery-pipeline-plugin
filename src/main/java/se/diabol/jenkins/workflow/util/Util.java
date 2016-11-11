@@ -81,16 +81,6 @@ public class Util {
         return null;
     }
 
-    public static long sumDurationsOf(List<Stage> stages) {
-        long totalDuration = 0;
-        for (Stage stage : stages) {
-            if (stage.durationMillis != null) {
-                totalDuration += stage.durationMillis;
-            }
-        }
-        return totalDuration;
-    }
-
     public static <T> T head(List<T> list) {
         if (list != null && !list.isEmpty()) {
             return list.get(0);

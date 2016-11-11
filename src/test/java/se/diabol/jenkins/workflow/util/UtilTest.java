@@ -44,26 +44,6 @@ public class UtilTest {
     }
 
     @Test
-    public void shouldSumDurationForListOfStages() {
-        long expectedDurationPerStage = 779L;
-        List<Stage> stages = stageFixture(expectedDurationPerStage);
-        assertThat(Util.sumDurationsOf(stages), is(expectedDurationPerStage * stages.size()));
-    }
-
-    @Test
-    public void sumDurationForListOfStagesShouldHandleNull() {
-        long expectedDurationPerStage = 5335L;
-        List<Stage> stagesWithDuration = stageFixture(expectedDurationPerStage);
-        List<Stage> stagesWithoutDuration = stageFixture(null);
-        List<Stage> stages = new LinkedList<Stage>();
-        stages.addAll(stagesWithDuration);
-        stages.addAll(stagesWithoutDuration);
-
-        assertThat(stages.size(), is(stagesWithDuration.size() + stagesWithoutDuration.size()));
-        assertThat(Util.sumDurationsOf(stages), is(expectedDurationPerStage * stagesWithDuration.size()));
-    }
-
-    @Test
     public void shouldReturnHeadOfList() {
         List<String> list = Arrays.asList("1", "2", "3");
         assertThat(Util.head(list), is("1"));
