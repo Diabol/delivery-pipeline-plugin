@@ -52,6 +52,12 @@ public class WorkflowStatusTest {
     }
 
     @Test
+    public void stageWithAbortedStatusShouldYieldCancelledStatusType() throws Exception {
+        Stage stageInProgress = getStageWithStatus("ABORTED");
+        assertThat(WorkflowStatus.statusType(stageInProgress), is(StatusType.CANCELLED));
+    }
+
+    @Test
     public void stageWithFailedStatusShouldYieldFailedStatusType() throws Exception {
         Stage failedStage = getStageWithStatus("FAILED");
         assertThat(WorkflowStatus.statusType(failedStage), is(StatusType.FAILED));
