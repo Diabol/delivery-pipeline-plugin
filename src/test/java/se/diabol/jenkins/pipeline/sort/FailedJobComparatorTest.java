@@ -71,7 +71,7 @@ public class FailedJobComparatorTest {
     }
 
     private Status status(StatusType statusType, DateTime lastRunAt) {
-        return new SimpleStatus(statusType, lastRunAt.getMillis(),10, false, Lists.<PromotionStatus>newArrayList());
+        return new SimpleStatus(statusType, lastRunAt.getMillis(), 10, false, Lists.<PromotionStatus>newArrayList());
     }
 
 }

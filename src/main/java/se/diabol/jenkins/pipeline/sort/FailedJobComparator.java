@@ -43,15 +43,14 @@ public class FailedJobComparator extends ComponentComparator implements Serializ
     }
 
     private boolean hasFailedJob(Pipeline pipeline) {
-        boolean hasFailedJob = false;
         for (Stage stage : pipeline.getStages()) {
             for (Task task : stage.getTasks()) {
                 if (task.getStatus().isFailed()) {
-                    hasFailedJob = true;
+                    return true;
                 }
             }
         }
-        return hasFailedJob;
+        return false;
     }
 
     @Extension
