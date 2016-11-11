@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import hudson.model.TopLevelItem;
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
@@ -320,7 +321,7 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.contains(sonar));
         assertTrue(view.contains(packaging));
 
-        Collection<TopLevelItem> items =  view.getItems();
+        Collection<TopLevelItem> items = view.getItems();
         assertEquals(3, items.size());
 
     }
@@ -348,7 +349,7 @@ public class DeliveryPipelineViewTest {
         MockFolder folder = jenkins.createFolder("folder");
         FreeStyleProject build = folder.createProject(FreeStyleProject.class, "build");
         FreeStyleProject sonar = folder.createProject(FreeStyleProject.class, "sonar");
-        FreeStyleProject packaging = folder.createProject(FreeStyleProject.class,"packaging");
+        FreeStyleProject packaging = folder.createProject(FreeStyleProject.class, "packaging");
 
 
         build.getPublishersList().add(new BuildTrigger("sonar", false));
@@ -367,7 +368,7 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.contains(sonar));
         assertTrue(view.contains(packaging));
 
-        Collection<TopLevelItem> items =  view.getItems();
+        Collection<TopLevelItem> items = view.getItems();
         assertEquals(3, items.size());
 
     }
@@ -414,8 +415,8 @@ public class DeliveryPipelineViewTest {
     public void allJobsAreReturnedWhenMaxNotSet() throws Exception {
         jenkins.createFreeStyleProject("build");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        for(int i = 0;i<100;i++) {
-            specs.add(new DeliveryPipelineView.ComponentSpec("Comp"+i, "build", NONE));
+        for (int i = 0; i < 100; i++) {
+            specs.add(new DeliveryPipelineView.ComponentSpec("Comp" + i, "build", NONE));
         }
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
@@ -531,10 +532,10 @@ public class DeliveryPipelineViewTest {
     @SuppressWarnings("all")
     public void testDoCheckName() {
         DeliveryPipelineView.ComponentSpec.DescriptorImpl d = new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
-        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(null).kind);
-        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName("").kind);
-        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(" ").kind);
-        assertEquals(FormValidation.Kind.OK,  d.doCheckName("Component").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckName(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckName("").kind);
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckName(" ").kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckName("Component").kind);
     }
 
     @Test
@@ -687,7 +688,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Delivery Pipeline");
         jenkins.getInstance().addView(view);
-        
+
         testDoCreateItem("testDoCreateItemAsTheDefaultViewFromTheViewUrl", "view/Delivery%20Pipeline/");
 
         jenkins.getInstance().setPrimaryView(view);
@@ -700,7 +701,7 @@ public class DeliveryPipelineViewTest {
         form.getInputByName("name").setValueAttribute(projectName);
         form.getRadioButtonsByName("mode").get(0).setChecked(true);
         jenkins.submit(form);
-        
+
         assertTrue(jenkins.jenkins.getJobNames().contains(projectName));
     }
 
