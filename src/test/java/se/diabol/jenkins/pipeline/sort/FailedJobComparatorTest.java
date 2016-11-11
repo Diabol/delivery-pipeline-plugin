@@ -45,9 +45,8 @@ public class FailedJobComparatorTest {
         Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
 
         List<Component> list = new ArrayList<Component>();
-        list.add(failedComponent);
         list.add(successfulComponent);
-        Collections.shuffle(list);
+        list.add(failedComponent);
         Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
         assertEquals(failedComponent, list.get(0));
         assertEquals(successfulComponent, list.get(1));
@@ -60,10 +59,9 @@ public class FailedJobComparatorTest {
         Component failedComponent = createComponent(status(FAILED, new DateTime().minusDays(1)));
         Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
         List<Component> list = new ArrayList<Component>();
-        list.add(failedComponent);
         list.add(successfulComponent);
+        list.add(failedComponent);
         list.add(failedComponentRunLongAgo);
-        Collections.shuffle(list);
         Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
         assertEquals(failedComponent, list.get(0));
         assertEquals(failedComponentRunLongAgo, list.get(1));
