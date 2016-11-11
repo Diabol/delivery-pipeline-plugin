@@ -176,16 +176,22 @@ public class Task extends AbstractItem {
     }
 
     public static int progressOfStage(WorkflowRun build, Stage currentStage) {
-        Run run = workflowApi.lastFinishedRunFor(Name.of(build));
-        if (!run.hasStage(currentStage.name)) {
+        Run previousRun = workflowApi.lastFinishedRunFor(Name.of(build));
+        if (!previousRun.hasStage(currentStage.name)) {
             return 99;
         }
-        List<se.diabol.jenkins.workflow.api.Stage> stages = run.getStagesUntil(currentStage.name);
-        long projectedDurationUntilCurrentStage = Util.sumDurationsOf(stages);
 
         return (int) round(100.0d
-                * (currentTimeMillis() - build.getTimeInMillis())
-                / (projectedDurationUntilCurrentStage));
+                * (currentTimeMillis() - currentStage.startTimeMillis.getValue())
+                / getDurationOfStageFromRun(previousRun, currentStage));
+    }
+
+    private static Long getDurationOfStageFromRun(Run previousRun, Stage currentStage) {
+        Stage previouslyRunStage = previousRun.getStageByName(currentStage.name);
+        if (previouslyRunStage == null) {
+            return -1L;
+        }
+        return previouslyRunStage.durationMillis;
     }
 
     private static boolean isAllExecuted(List<FlowNode> nodes) {
