@@ -174,13 +174,10 @@ public class SimpleStatus implements Status {
         return calculateBuildProgress(currentTimeMillis(), build.getTimestamp().getTimeInMillis(), build.getEstimatedDuration());
     }
 
-    static int calculateBuildProgress
-            (long currentTimeMillis, long timeBuildStarted, long estimatedBuildDuration) {
+    static int calculateBuildProgress(long currentTimeMillis, long timeBuildStarted, long estimatedBuildDuration) {
         int progress = (int) round(100.0d * (currentTimeMillis - timeBuildStarted) / estimatedBuildDuration);
-        if (progress > 100) {
+        if (progress > 100 || estimatedBuildDuration < 0) {
             progress = 99;
-        } else if (progress < 0) {
-            progress = 0;
         }
         return progress;
     }
