@@ -328,7 +328,7 @@ public class SimpleStatusTest {
         assertNotNull(status.getTimestamp());
         assertTrue(status instanceof Running);
         Running running = (Running) status;
-        assertFalse(running.getPercentage() == 0);
+        assertTrue(running.getPercentage() > 0);
         assertTrue(running.isRunning());
         assertTrue(status.getType().equals(StatusType.RUNNING));
         assertNotNull(status.toString());
@@ -359,6 +359,14 @@ public class SimpleStatusTest {
         final long buildStarted = 100;
         final long estimatedLength = 200;
         assertThat(0, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressWhenNoEstimationAvailable() {
+        int progress = SimpleStatus.calculateBuildProgress(1478897029931L, 1478897023907L, -1L);
+        assertTrue(progress > 0);
+        assertThat(progress, is(99));
     }
 
     @Test
