@@ -340,7 +340,7 @@ public class SimpleStatusTest {
         final long currentTime = 200;
         final long buildStarted = 100;
         final long estimatedLength = 200;
-        assertThat(50, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
+        assertThat(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength), is(50));
     }
 
     @Test
@@ -349,7 +349,7 @@ public class SimpleStatusTest {
         final long currentTime = 301;
         final long buildStarted = 100;
         final long estimatedLength = 200;
-        assertThat(99, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
+        assertThat(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength), is(99));
     }
 
     @Test
@@ -358,7 +358,7 @@ public class SimpleStatusTest {
         final long currentTime = 50;
         final long buildStarted = 100;
         final long estimatedLength = 200;
-        assertThat(0, is(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength)));
+        assertThat(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength), is(0));
     }
 
     @Test

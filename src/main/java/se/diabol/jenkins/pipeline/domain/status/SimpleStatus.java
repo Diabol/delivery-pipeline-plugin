@@ -178,6 +178,8 @@ public class SimpleStatus implements Status {
         int progress = (int) round(100.0d * (currentTimeMillis - timeBuildStarted) / estimatedBuildDuration);
         if (progress > 100 || estimatedBuildDuration < 0) {
             progress = 99;
+        } else if (progress < 0) {
+            return 0;
         }
         return progress;
     }
