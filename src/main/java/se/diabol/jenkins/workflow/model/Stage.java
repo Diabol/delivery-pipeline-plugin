@@ -19,6 +19,8 @@ package se.diabol.jenkins.workflow.model;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -29,6 +31,7 @@ import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import static java.util.Collections.singletonList;
+import static se.diabol.jenkins.workflow.util.Util.head;
 
 public class Stage extends AbstractItem {
 
@@ -37,33 +40,18 @@ public class Stage extends AbstractItem {
     private String version;
     private int row;
     private int column;
-    private Map<String, List<String>> taskConnections;
-    private List<String> downstreamStages;
+    private List<Stage> downstreamStages;
     private List<Long> downstreamStageIds;
     private long id;
 
     public Stage(String name, List<Task> tasks) {
         super(name);
-        this.tasks = ImmutableList.copyOf(tasks);
+        this.tasks = immutableListOf(tasks);
         this.id = PipelineUtils.getRandom();
     }
 
-    private Stage(Stage stage, List<Task> tasks, String version, long id) {
-        this(stage.getName(), tasks, stage.getDownstreamStages(), stage.getDownstreamStageIds(), stage.getTaskConnections(), version,
-                stage.getRow(), stage.getColumn(), id);
-    }
-
-    private Stage(String name, List<Task> tasks, List<String> downstreamStages, List<Long> downstreamStageIds, Map<String,
-            List<String>> taskConnections, String version, int row, int column, long id) {
-        super(name);
-        this.tasks = tasks;
-        this.version = version;
-        this.row = row;
-        this.column = column;
-        this.downstreamStages = downstreamStages;
-        this.taskConnections = taskConnections;
-        this.downstreamStageIds = downstreamStageIds;
-        this.id = id;
+    private List<Task> immutableListOf(List<Task> tasks) {
+        return tasks == null ? Collections.<Task>emptyList() : ImmutableList.copyOf(tasks);
     }
 
     @Exported
@@ -95,17 +83,30 @@ public class Stage extends AbstractItem {
     }
 
     @Exported
-    public List<String> getDownstreamStages() {
+    public List<Stage> getDownstreamStages() {
         return downstreamStages;
-    }
-
-    public void setDownstreamStages(List<String> downstreamStages) {
-        this.downstreamStages = downstreamStages;
     }
 
     @Exported
     public Map<String, List<String>> getTaskConnections() {
-        return taskConnections;
+        if (hasNoDownstreamStages()) {
+            return Collections.emptyMap();
+        }
+        Map<String, List<String>> taskIdToConnectionsMap = new HashMap<String, List<String>>();
+        taskIdToConnectionsMap.put("" + getId(), getFirstDownstreamIdAsList());
+        return taskIdToConnectionsMap;
+    }
+
+    protected List<String> getFirstDownstreamIdAsList() {
+        Stage first = head(getDownstreamStages());
+        if (first == null) {
+            return Collections.emptyList();
+        }
+        return singletonList(first.getId() + "");
+    }
+
+    protected boolean hasNoDownstreamStages() {
+        return getDownstreamStages() == null || getDownstreamStages().isEmpty();
     }
 
     @Exported
@@ -118,14 +119,6 @@ public class Stage extends AbstractItem {
         return downstreamStageIds;
     }
 
-    public void setDownstreamStageIds(List<Long> downstreamStageIds) {
-        this.downstreamStageIds = downstreamStageIds;
-    }
-
-    public void setTaskConnections(Map<String, List<String>> taskConnections) {
-        this.taskConnections = taskConnections;
-    }
-
     public static List<Stage> extractStages(WorkflowRun build, List<FlowNode> stageNodes) throws PipelineException {
         List<Stage> result = new ArrayList<Stage>();
         for (FlowNode stageNode : stageNodes) {
@@ -135,6 +128,7 @@ public class Stage extends AbstractItem {
         for (int i = 0; i < result.size(); i++) {
             Stage stage = result.get(i);
             if (i + 1 < result.size()) {
+                stage.downstreamStages = singletonList(result.get(i + 1));
                 stage.downstreamStageIds = singletonList(result.get(i + 1).getId());
             }
             stage.setColumn(i);
