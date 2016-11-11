@@ -44,6 +44,8 @@ public class WorkflowStatus extends SimpleStatus {
             return StatusType.NOT_BUILT;
         } else if (currentStage.status.equals("IN_PROGRESS")) {
             statusType = StatusType.RUNNING;
+        } else if (currentStage.status.equals("ABORTED")) {
+            statusType = StatusType.CANCELLED;
         } else {
             statusType = StatusType.valueOf(currentStage.status);
         }
