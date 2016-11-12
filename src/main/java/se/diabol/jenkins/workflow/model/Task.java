@@ -19,9 +19,6 @@ package se.diabol.jenkins.workflow.model;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
 import hudson.model.Result;
-import java.util.ArrayList;
-import java.util.List;
-
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -38,6 +35,9 @@ import se.diabol.jenkins.workflow.api.Stage;
 import se.diabol.jenkins.workflow.step.TaskAction;
 import se.diabol.jenkins.workflow.util.Name;
 import se.diabol.jenkins.workflow.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.round;
 import static java.lang.System.currentTimeMillis;
@@ -203,15 +203,6 @@ public class Task extends AbstractItem {
         return true;
     }
 
-    private static boolean isRunning(List<FlowNode> nodes) {
-        for (FlowNode node : nodes) {
-            if (node.isRunning()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private static boolean isAllNotExecuted(List<FlowNode> nodes) {
         for (FlowNode node : nodes) {
             if (NotExecutedNodeAction.isExecuted(node)) {
@@ -221,17 +212,30 @@ public class Task extends AbstractItem {
         return true;
     }
 
-    private static long getStartTime(List<FlowNode> nodes) {
-        if (!nodes.isEmpty()) {
+    static boolean isRunning(List<FlowNode> nodes) {
+        if (nodes != null) {
+            for (FlowNode node : nodes) {
+                if (node.isRunning()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    static long getStartTime(List<FlowNode> nodes) {
+        if (nodes != null && !nodes.isEmpty()) {
             return TimingAction.getStartTime(nodes.get(0));
         }
         return 0;
     }
 
-    private static long getDuration(List<Stage> stages) {
+    protected static long getDuration(List<Stage> stages) {
         long result = 0;
-        for (Stage stage : stages) {
-            result = result + stage.durationMillis;
+        if (stages != null) {
+            for (Stage stage : stages) {
+                result = result + stage.durationMillis;
+            }
         }
         return result;
     }
