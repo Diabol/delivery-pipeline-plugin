@@ -119,3 +119,12 @@ Here is an example of how to specify a custom CSS for the Delivery Pipeline Plug
 For Jenkins Job Builder job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
 
 For JobDSL job configuration examples, see: [demo.groovy](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.groovy)
+
+
+Downloading the most recent plugin version
+----
+The most recent version of the 4finance delivery-pipeline-plugin, can be downloaded from the jitpack repo:
+
+[https://jitpack.io/com/github/4finance/delivery-pipeline-plugin/master-SNAPSHOT/delivery-pipeline-plugin-master-SNAPSHOT.hpi]
+(https://jitpack.io/com/github/4finance/delivery-pipeline-plugin/master-SNAPSHOT/delivery-pipeline-plugin-master-SNAPSHOT.hpi)
+

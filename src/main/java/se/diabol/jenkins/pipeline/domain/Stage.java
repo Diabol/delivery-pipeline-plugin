@@ -54,19 +54,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import javax.annotation.CheckForNull;
+
 import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
+
+    private static final Pattern MATCH_NONE_PATTERN = Pattern.compile(".^");
+
     private final List<Task> tasks;
 
     private String version;
+
     private int row;
+
     private int column;
+
     private Map<String, List<String>> taskConnections;
+
     private List<String> downstreamStages;
+
     private List<Long> downstreamStageIds;
+
     private final long id;
+
     private Set<Change> changes = new HashSet<Change>();
 
     public Stage(String name, List<Task> tasks) {
@@ -166,12 +179,16 @@ public class Stage extends AbstractItem {
         return new Stage(name, tasks);
     }
 
-    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject)
+    public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject,
+                                            String excludeJobsRegex)
             throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
-        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject).values()) {
-            Task task = Task.getPrototypeTask(project, project.getFullName().equals(firstProject.getFullName()));
-            /* if current project is last we need clean downStreamTasks*/
+        Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject,
+                excludeJobsRegex).values()) {
+            boolean isInitialTask = project.getFullName().equals(firstProject.getFullName());
+            Task task = Task.getPrototypeTask(project, isInitialTask, excludeJobsPattern);
+                /* if current project is last we need clean downStreamTasks*/
             if (lastProject != null && project.getFullName().equals(lastProject.getFullName())) {
                 task.getDownstreamTasks().clear();
             }
@@ -195,7 +212,6 @@ public class Stage extends AbstractItem {
         return Stage.placeStages(firstProject, stagesResult);
     }
 
-
     public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
         List<Task> stageTasks = new ArrayList<Task>();
 
@@ -212,7 +228,6 @@ public class Stage extends AbstractItem {
         return new Stage(this, stageTasks, stageVersion, id);
     }
 
-
     public Stage createLatestStage(ItemGroup context, AbstractBuild firstBuild) {
         List<Task> stageTasks = new ArrayList<Task>();
         for (Task task : getTasks()) {
@@ -221,7 +236,6 @@ public class Stage extends AbstractItem {
         return new Stage(this, stageTasks, null, id);
 
     }
-
 
     public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages)
             throws PipelineException {
@@ -253,7 +267,6 @@ public class Stage extends AbstractItem {
             throw new PipelineException(message.toString());
         }
 
-
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(
                 Jenkins.getInstance()), stages), graph);
         Collections.sort(allPaths, new Comparator<List<Stage>>() {
@@ -261,16 +274,16 @@ public class Stage extends AbstractItem {
                 return stages2.size() - stages1.size();
             }
         });
-        
+
         //for keeping track of which row has an available column
-        final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
+        final Map<Integer, Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
-        
+
         for (int row = 0; row < allPaths.size(); row++) {
-            List<Stage> path = allPaths.get(row);            
+            List<Stage> path = allPaths.get(row);
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-                
+
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
                     stage.setColumn(Math.max(stage.getColumn(), column));
@@ -290,7 +303,7 @@ public class Stage extends AbstractItem {
                 }
             }
         }
-        
+
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);
@@ -319,20 +332,24 @@ public class Stage extends AbstractItem {
 
     private static List<List<Stage>> findAllRunnablePaths(Stage start, DirectedGraph<Stage, Edge> graph) {
         List<List<Stage>> paths = new LinkedList<List<Stage>>();
-        if (graph.outDegreeOf(start) == 0) {
-            List<Stage> path = new LinkedList<Stage>();
-            path.add(start);
-            paths.add(path);
+        if (start == null) {
+            throw new IllegalArgumentException("The pipeline graph lacks a start node.");
         } else {
-            for (Edge edge : graph.outgoingEdgesOf(start)) {
-                List<List<Stage>> allPathsFromTarget = findAllRunnablePaths(edge.getTarget(), graph);
-                for (List<Stage> path : allPathsFromTarget) {
-                    path.add(0, start);
+            if (graph.outDegreeOf(start) == 0) {
+                List<Stage> path = new LinkedList<Stage>();
+                path.add(start);
+                paths.add(path);
+            } else {
+                for (Edge edge : graph.outgoingEdgesOf(start)) {
+                    List<List<Stage>> allPathsFromTarget = findAllRunnablePaths(edge.getTarget(), graph);
+                    for (List<Stage> path : allPathsFromTarget) {
+                        path.add(0, start);
+                    }
+                    paths.addAll(allPathsFromTarget);
                 }
-                paths.addAll(allPathsFromTarget);
             }
+            return paths;
         }
-        return paths;
     }
 
     protected static void sortByRowsCols(List<Stage> stages) {
@@ -349,20 +366,47 @@ public class Stage extends AbstractItem {
         });
     }
 
-
     private static List<Stage> getDownstreamStagesForStage(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();
-        for (int i = 0; i < stage.getTasks().size(); i++) {
-            Task task = stage.getTasks().get(i);
-            for (int j = 0; j < task.getDownstreamTasks().size(); j++) {
-                String jobName = task.getDownstreamTasks().get(j);
-                Stage target = findStageForJob(jobName, stages);
-                if (target != null && !target.getName().equals(stage.getName())) {
-                    result.add(target);
+        for (Task task : stage.getTasks()) {
+            if (hasDirectDownstreamTasks(task)) {
+                for (String downstreamTaskJobName : task.getDownstreamTasks()) {
+                    addStages(stage, stages, result, downstreamTaskJobName);
+                }
+            } else {
+                for (AbstractProject job : getAllDownstreamJobs(task)) {
+                    String downstreamProjectJobName = job.getRelativeDisplayNameFrom(Jenkins.getInstance());
+                    addStages(stage, stages, result, downstreamProjectJobName);
                 }
             }
         }
         return result;
+    }
+
+    private static boolean hasDirectDownstreamTasks(Task task) {
+        return task.getDownstreamTasks().size() > 0;
+    }
+
+    private static void addStages(Stage stage, Collection<Stage> stages, List<Stage> result, String jobName) {
+        Stage target = findStageForJob(jobName, stages);
+        if (target != null && !target.getName().equals(stage.getName())) {
+            result.add(target);
+        }
+    }
+
+    private static List<AbstractProject> getAllDownstreamJobs(Task task) {
+        AbstractProject project = ProjectUtil.getProject(task.getId(), Jenkins.getInstance());
+        return addDownstreamJobs(project);
+    }
+
+    private static List<AbstractProject> addDownstreamJobs(AbstractProject baseProject) {
+        List<AbstractProject> downstreamProjects = Lists.newArrayList();
+        List<AbstractProject> directDownstreamProjects = ProjectUtil.getDownstreamProjects(baseProject);
+        for (AbstractProject downstreamProject : directDownstreamProjects) {
+            List<AbstractProject> secondaryDownstreamProjects = ProjectUtil.getDownstreamProjects(downstreamProject);
+            downstreamProjects.addAll(secondaryDownstreamProjects);
+        }
+        return downstreamProjects;
     }
 
     @CheckForNull

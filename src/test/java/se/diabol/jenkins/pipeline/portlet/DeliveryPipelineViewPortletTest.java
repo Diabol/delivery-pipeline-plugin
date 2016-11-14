@@ -38,10 +38,12 @@ public class DeliveryPipelineViewPortletTest {
     @Test
     @WithoutJenkins
     public void testDefaults() throws IOException {
-        DeliveryPipelineViewPortlet portlet = new DeliveryPipelineViewPortlet("PipelinePortlet","Build","Test");
+        DeliveryPipelineViewPortlet portlet = new DeliveryPipelineViewPortlet("PipelinePortlet","Build","Test",
+                "[a-z]*");
         assertNotNull(portlet.getPortletId());
         assertEquals("Build", portlet.getInitialJob());
         assertEquals("Test", portlet.getFinalJob());
         assertEquals("PipelinePortlet", portlet.getName());
+        assertEquals("[a-z]*", portlet.getExcludeJobsRegex());
     }
 }

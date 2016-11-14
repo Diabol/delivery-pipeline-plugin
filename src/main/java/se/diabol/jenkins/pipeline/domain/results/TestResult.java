@@ -21,6 +21,8 @@ import hudson.model.AbstractBuild;
 import hudson.tasks.test.AbstractTestResultAction;
 import org.kohsuke.stapler.export.Exported;
 
+import org.kohsuke.stapler.export.Exported;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

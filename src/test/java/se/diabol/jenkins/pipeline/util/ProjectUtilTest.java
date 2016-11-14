@@ -28,10 +28,12 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ProjectUtilTest {
@@ -135,5 +137,24 @@ public class ProjectUtilTest {
     public void testGetAllDownstreamProjects() {
         Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(null, null);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetAllDownstreamProjectsWithoutExcluded() throws IOException {
+        String excludeJobsRegex = "compile";
+        FreeStyleProject baseProject = jenkins.createFreeStyleProject("Base");
+        FreeStyleProject firstProject = jenkins.createFreeStyleProject("compile-Project1");
+        FreeStyleProject secondProject = jenkins.createFreeStyleProject("compile-Project2");
+        FreeStyleProject notMatchingProject = jenkins.createFreeStyleProject("compile");
+
+        baseProject.getPublishersList().add(new BuildTrigger(firstProject.getName(), true));
+        firstProject.getPublishersList().add(new BuildTrigger(secondProject.getName(), true));
+        secondProject.getPublishersList().add(new BuildTrigger(notMatchingProject.getName(), true));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Map<String, AbstractProject<?, ?>> result = ProjectUtil.getAllDownstreamProjects(baseProject, secondProject, excludeJobsRegex);
+        assertTrue(result.containsValue(firstProject));
+        assertTrue(result.containsValue(secondProject));
+        assertFalse(result.containsValue(notMatchingProject));
     }
 }

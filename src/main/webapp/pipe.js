@@ -1,3 +1,7 @@
+function setupRetry(timeout) {
+    Q.ajaxRetrySetup({retry: true, timeout: timeout, slot_time: timeout})
+}
+
 function pipelineUtils() {
      self = this;
      this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid) {
@@ -7,6 +11,7 @@ function pipelineUtils() {
             async: true,
             cache: false,
             timeout: 20000,
+            retry: true,
             success: function (data) {
                 self.refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, pipelineid);
                 setTimeout(function () {
@@ -16,9 +21,7 @@ function pipelineUtils() {
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
                 plumb.repaintEverything();
-                setTimeout(function () {
-                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid);
-                }, timeout);
+                self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid);
             }
         });
     }
@@ -191,13 +194,13 @@ function pipelineUtils() {
 
                                                html.push('</div><div class="task-details">');
 
-                                               if (timestamp != "") {
-                                                   html.push("<div id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</div>");
-                                               }
+                        if (timestamp != "") {
+                            html.push("<div id=\"" + id + ".timestamp\" class='timestamp'><a href=\"" + getConsoleLink(data, task.link) + "\">" + timestamp + "</a></div>");
+                        }
 
-                                               if (task.status.duration >= 0) {
-                                                   html.push("<div class='duration'>" + formatDuration(task.status.duration) + "</div>");
-                                               }
+                        if (task.status.duration >= 0) {
+                            html.push("<div class='duration'><a href=\"" + getConsoleLink(data, task.link) + "\">" + formatDuration(task.status.duration) + "</a></div>");
+                        }
 
                                                html.push("</div></div></div></div>");
 
@@ -284,6 +287,10 @@ function pipelineUtils() {
                            }
                            plumb.repaintEverything();
                        }
+}
+
+function getConsoleLink(data, link) {
+    return getLink(data, link) + "console"
 }
 
 function getLink(data, link) {

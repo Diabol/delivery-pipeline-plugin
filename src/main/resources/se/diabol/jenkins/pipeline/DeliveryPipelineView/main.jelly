@@ -47,6 +47,7 @@
         <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipe.js"/>
     </j:if>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.jsPlumb-1.3.16-all-min.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.ajaxretry.js"/>
 
     <div class="pane-frame">
         <div class="pipeline-main">
@@ -80,6 +81,8 @@
                 });
 
                 view.viewUrl = '${it.getViewUrl()}';
+
+                setupRetry(${it.updateInterval * 1000})
 
                 var pipelineutils = new pipelineUtils();
 

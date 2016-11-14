@@ -32,18 +32,26 @@ import java.util.Random;
 public class DeliveryPipelineViewPortlet extends DashboardPortlet {
 
     private static final int BOUND = 32000;
+
     private static final Random GENERATOR = new Random();
+
     private ReadOnlyDeliveryPipelineView deliveryPipelineView;
 
     private final String initialJob;
+
     private final String finalJob;
+
+    private final String excludeJobsRegex;
+
     private String portletId = null;
 
     @DataBoundConstructor
-    public DeliveryPipelineViewPortlet(String name, String initialJob, String finalJob) throws IOException {
+    public DeliveryPipelineViewPortlet(String name, String initialJob, String finalJob,
+                                       String excludeJobsRegex) throws IOException {
         super(name);
         this.initialJob = initialJob;
         this.finalJob = finalJob;
+        this.excludeJobsRegex = excludeJobsRegex;
         this.portletId = (portletId != null && !"".equals(portletId.trim())) ? portletId :
                 Integer.toString(GENERATOR.nextInt(BOUND));
     }
@@ -74,6 +82,10 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
         return finalJob;
     }
 
+    public String getExcludeJobsRegex() {
+        return excludeJobsRegex;
+    }
+
     void updateView(ReadOnlyDeliveryPipelineView view) {
         view.setViewUrl(this.getDashboard().getViewUrl() + "/" + this.getUrl());
         view.setIsPortletView(true);
@@ -87,7 +99,7 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         if (initialJob != null && !"".equals(initialJob.trim())) {
             DeliveryPipelineView.ComponentSpec componentSpec = new DeliveryPipelineView.ComponentSpec("Aggregated view",
-                    initialJob, finalJob);
+                    initialJob, finalJob, excludeJobsRegex);
             componentSpecs.add(componentSpec);
         }
         view.setComponentSpecs(componentSpecs);
@@ -95,6 +107,7 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
 
     @Extension
     public static class DescriptorImpl extends Descriptor<DashboardPortlet> {
+
         @Override
         public String getDisplayName() {
             return "Delivery Pipeline Portlet";

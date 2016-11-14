@@ -20,6 +20,8 @@ package se.diabol.jenkins.pipeline.domain;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
@@ -49,10 +51,13 @@ import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -551,7 +556,7 @@ public class PipelineTest {
 
     /**
      * A -> B -> D -> E
-     *        -> C     
+     *        -> C
      * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
@@ -841,5 +846,62 @@ public class PipelineTest {
         assertEquals("Job Util 1", pipeline.getStages().get(0).getTasks().get(1).getId());
         assertEquals("Job Util 2", pipeline.getStages().get(0).getTasks().get(2).getId());
         assertEquals("Job C", pipeline.getStages().get(0).getTasks().get(3).getId());
+    }
+
+    @Test
+    public void testExtractExcludeJobsRegex() throws Exception {
+        String firstJobName = "project-build";
+        List<String> expectedJobNames = newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
+        createLinkedProjects(expectedJobNames);
+        createLinkedProjects(newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
+        jenkins.getInstance().rebuildDependencyGraph();
+        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
+
+        Pipeline pipeline = Pipeline.extractPipeline("Pipeline", firstJob, null, "project-(?!build|country1).*");
+
+        assertEquals(expectedJobNames, getProjectNames(pipeline));
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExcludeStartNode() throws Exception {
+        String firstJobName = "project-build";
+        FreeStyleProject firstJob = getOrCreateProject(firstJobName);
+        FreeStyleProject firstDependantJob = getOrCreateProject("project-test1");
+        FreeStyleProject secondDependantJob = getOrCreateProject("project-test2");
+        firstJob.getPublishersList().add(new BuildTrigger(firstDependantJob.getName(), false));
+        firstJob.getPublishersList().add(new BuildTrigger(secondDependantJob.getName(), false));
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Pipeline.extractPipeline("Pipeline", firstJob, null, "project-build");
+    }
+
+    private void createLinkedProjects(List<String> projectNames) {
+        checkArgument(projectNames.size() > 0);
+        FreeStyleProject fromProject = getOrCreateProject(projectNames.get(0));
+        Iterable<String> subsequentProjectNames = Iterables.skip(projectNames, 1);
+        for (String toProjectName : subsequentProjectNames) {
+            fromProject.getPublishersList().add(new BuildTrigger(toProjectName, false));
+            fromProject = getOrCreateProject(toProjectName);
+        }
+    }
+
+    private FreeStyleProject getOrCreateProject(String projectName) {
+        FreeStyleProject existingProject = jenkins.getInstance().getItemByFullName(projectName, FreeStyleProject.class);
+        try {
+            return existingProject != null ? existingProject : jenkins.createFreeStyleProject(projectName);
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    private List<String> getProjectNames(Pipeline pipeline) {
+        List<String> projectNames = newArrayList();
+        for (Stage stage : pipeline.getStages()) {
+            for (Task task : stage.getTasks()) {
+                projectNames.add(task.getName());
+            }
+        }
+        return projectNames;
     }
 }
