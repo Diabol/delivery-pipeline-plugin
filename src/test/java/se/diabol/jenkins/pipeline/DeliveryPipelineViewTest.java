@@ -401,8 +401,8 @@ public class DeliveryPipelineViewTest {
     public void testGetPipelinesUsesMaxNumberOfJobs() throws Exception {
         jenkins.createFreeStyleProject("build");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE));
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "build", NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, NONE));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "build", NONE, NONE));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
         view.setMaxNumberOfVisiblePipelines(1);
@@ -417,7 +417,7 @@ public class DeliveryPipelineViewTest {
         jenkins.createFreeStyleProject("build");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         for (int i = 0; i < 100; i++) {
-            specs.add(new DeliveryPipelineView.ComponentSpec("Comp" + i, "build", NONE));
+            specs.add(new DeliveryPipelineView.ComponentSpec("Comp" + i, "build", NONE, NONE));
         }
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
@@ -921,7 +921,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView pipeline = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Spec", firstJob.getName(), NONE));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Spec", firstJob.getName(), NONE, NONE));
         pipeline.setComponentSpecs(componentSpecs);
         jenkins.getInstance().addView(pipeline);
 

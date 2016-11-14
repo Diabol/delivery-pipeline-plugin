@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
+
 import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
@@ -483,7 +485,8 @@ public class DeliveryPipelineView extends View {
                     if (firstJob != null) {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
-                        components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline,  (componentSpecs.indexOf(componentSpec) + 1))));
+                        components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline,
+                                (componentSpecs.indexOf(componentSpec) + 1)));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -519,9 +522,10 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob, String excludeJobsRegex,
-                                   boolean showAggregatedPipeline, int componentNumber) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
+    private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
+                                   String excludeJobsRegex, boolean showAggregatedPipeline,
+                                   int componentNumber) throws PipelineException {
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
                 noOfPipelines, pagingEnabled, componentNumber);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
@@ -552,8 +556,8 @@ public class DeliveryPipelineView extends View {
             return;
         }
         for (ComponentSpec spec : componentSpecs) {
-            AbstractProject first = ProjectUtil.getProject(spec.getFirstJob(), getOwnerItemGroup());
-            AbstractProject last = ProjectUtil.getProject(spec.getLastJob(), getOwnerItemGroup());
+            AbstractProject first = getProject(spec.getFirstJob(), getOwnerItemGroup());
+            AbstractProject last = getProject(spec.getLastJob(), getOwnerItemGroup());
             Collection<AbstractProject<?, ?>> downstreamProjects =
                     ProjectUtil.getAllDownstreamProjects(first, last).values();
             for (AbstractProject project : downstreamProjects) {
@@ -574,7 +578,7 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-	@Override
+    @Override
     public boolean contains(TopLevelItem item) {
         return getItems().contains(item);
     }

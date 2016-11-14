@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.CheckForNull;
 
-import javax.annotation.CheckForNull;
-
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class ManualStep {
     private final String upstreamProject;

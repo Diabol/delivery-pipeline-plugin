@@ -33,3 +33,8 @@ f.entry(field:"finalJob", title: "Final Job (optional)") {
     f.textbox()
 }
 
+f.entry(field:"excludeJobsRegex", title: "Regex for jobs to exclude (optional)") {
+    f.textbox()
+}
+
+
