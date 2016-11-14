@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.annotation.CheckForNull;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
@@ -63,7 +62,7 @@ public class Stage extends AbstractItem {
 
     private static final Pattern MATCH_NONE_PATTERN = Pattern.compile(".^");
 
-    private List<Task> tasks;
+    private final List<Task> tasks;
 
     private String version;
     private int row;
@@ -172,11 +171,12 @@ public class Stage extends AbstractItem {
     }
 
     public static List<Stage> extractStages(AbstractProject firstProject, AbstractProject lastProject,
-                                            String excludeJobsRegex) throws PipelineException {
+                                            String excludeJobsRegex)
+            throws PipelineException {
         Map<String, Stage> stages = newLinkedHashMap();
         Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
-        for (AbstractProject project :
-            ProjectUtil.getAllDownstreamProjects(firstProject, lastProject, excludeJobsRegex).values()) {
+        for (AbstractProject project : ProjectUtil.getAllDownstreamProjects(firstProject, lastProject,
+                excludeJobsRegex).values()) {
             boolean isInitialTask = project.getFullName().equals(firstProject.getFullName());
             Task task = Task.getPrototypeTask(project, isInitialTask, excludeJobsPattern);
                 /* if current project is last we need clean downStreamTasks*/
@@ -186,23 +186,22 @@ public class Stage extends AbstractItem {
 
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property == null && project.getParent() instanceof AbstractProject) {
-                property = (PipelineProperty) ((AbstractProject) project.getParent())
-                    .getProperty(PipelineProperty.class);
+                property = (PipelineProperty) ((AbstractProject)
+                        project.getParent()).getProperty(PipelineProperty.class);
             }
             String stageName = property != null && !isNullOrEmpty(property.getStageName())
-                ? property.getStageName() : project.getDisplayName();
+                    ? property.getStageName() : project.getDisplayName();
             Stage stage = stages.get(stageName);
             if (stage == null) {
                 stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
             }
             stages.put(stageName,
-                Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
+                    Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
         Collection<Stage> stagesResult = stages.values();
 
         return Stage.placeStages(firstProject, stagesResult);
     }
-
 
     public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
         List<Task> stageTasks = new ArrayList<Task>();
@@ -220,7 +219,6 @@ public class Stage extends AbstractItem {
         return new Stage(this, stageTasks, stageVersion, id);
     }
 
-
     public Stage createLatestStage(ItemGroup context, AbstractBuild firstBuild) {
         List<Task> stageTasks = new ArrayList<Task>();
         for (Task task : getTasks()) {
@@ -229,7 +227,6 @@ public class Stage extends AbstractItem {
         return new Stage(this, stageTasks, null, id);
 
     }
-
 
     public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages)
             throws PipelineException {
@@ -261,7 +258,6 @@ public class Stage extends AbstractItem {
             throw new PipelineException(message.toString());
         }
 
-
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(
                 Jenkins.getInstance()), stages), graph);
         Collections.sort(allPaths, new Comparator<List<Stage>>() {
@@ -269,16 +265,16 @@ public class Stage extends AbstractItem {
                 return stages2.size() - stages1.size();
             }
         });
-        
+
         //for keeping track of which row has an available column
-        final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
+        final Map<Integer, Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
-        
+
         for (int row = 0; row < allPaths.size(); row++) {
-            List<Stage> path = allPaths.get(row);            
+            List<Stage> path = allPaths.get(row);
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-                
+
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
                     stage.setColumn(Math.max(stage.getColumn(), column));
@@ -298,7 +294,7 @@ public class Stage extends AbstractItem {
                 }
             }
         }
-        
+
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);
@@ -360,7 +356,6 @@ public class Stage extends AbstractItem {
             }
         });
     }
-
 
     private static List<Stage> getDownstreamStagesForStage(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();

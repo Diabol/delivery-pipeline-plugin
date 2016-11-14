@@ -17,62 +17,31 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.sort;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
-
 import se.diabol.jenkins.pipeline.domain.Component;
-import se.diabol.jenkins.pipeline.domain.Pipeline;
-import se.diabol.jenkins.pipeline.domain.Stage;
-import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
-import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
-import se.diabol.jenkins.pipeline.domain.task.Task;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.SUCCESS;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponent;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.status;
 
 public class LatestActivityComparatorTest {
 
-    private final static boolean pagingEnabledFalse = false;
 
     @Test
-    public void testCompare() {
-        Task taskA = new Task(null, "task", "Build", StatusFactory.success(0, 20, false,
-                Collections.<PromotionStatus>emptyList()), null, null, null, true, "");
-
-        List<Task> tasksA = new ArrayList<Task>();
-        tasksA.add(taskA);
-        Stage stageA = new Stage("Build", tasksA);
-        List<Stage> stagesA = new ArrayList<Stage>();
-        stagesA.add(stageA);
-        Pipeline pipelineA = new Pipeline("Pipeline A", null, null, "1.0.0.1", null, null, null, stagesA, false);
-        List<Pipeline> pipelinesA = new ArrayList<Pipeline>();
-        pipelinesA.add(pipelineA);
-
-        Task taskB = new Task(null, "task", "Build", StatusFactory.success(10, 20, false,
-                Collections.<PromotionStatus>emptyList()), null, null, null, true, "");
-
-        List<Task> tasksB = new ArrayList<Task>();
-        tasksB.add(taskB);
-        Stage stageB = new Stage("Build", tasksB);
-        List<Stage> stagesB = new ArrayList<Stage>();
-        stagesB.add(stageB);
-        Pipeline pipelineB = new Pipeline("Pipeline B", null, null, "1.0.0.1", null, null, null, stagesB, false);
-        List<Pipeline> pipelinesB = new ArrayList<Pipeline>();
-        pipelinesB.add(pipelineB);
-
-
-        Component componentB = new Component("B", "B", "job/A", false, 3, pagingEnabledFalse,1);
-        Component componentA = new Component("A", "A", "job/B", false, 3, pagingEnabledFalse, 1);
-        componentB.setPipelines(pipelinesB);
-        componentA.setPipelines(pipelinesA);
+    public void shouldSortRecentlyRunnedPipelinesFirst() {
+        Component componentRunLongAgo = createComponent(status(SUCCESS, new DateTime().minusDays(2)));
+        Component componentRunRecently = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
         List<Component> list = new ArrayList<Component>();
-        list.add(componentB);
-        list.add(componentA);
+        list.add(componentRunRecently);
+        list.add(componentRunLongAgo);
         Collections.sort(list, new LatestActivityComparator.DescriptorImpl().createInstance());
-        assertEquals(componentB, list.get(0));
-        assertEquals(componentA, list.get(1));
+        assertEquals(componentRunRecently, list.get(0));
+        assertEquals(componentRunLongAgo, list.get(1));
     }
-
 }

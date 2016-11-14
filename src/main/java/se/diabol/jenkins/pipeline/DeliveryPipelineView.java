@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static se.diabol.jenkins.pipeline.util.ProjectUtil.getProject;
+
 import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
@@ -111,7 +113,7 @@ public class DeliveryPipelineView extends View {
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
     private String theme = DEFAULT_THEME;
-
+    private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
 
     private transient String error;
@@ -404,16 +406,24 @@ public class DeliveryPipelineView extends View {
         this.aggregatedChangesGroupingPattern = aggregatedChangesGroupingPattern;
     }
 
+    public int getMaxNumberOfVisiblePipelines() {
+        return maxNumberOfVisiblePipelines;
+    }
+
+    public void setMaxNumberOfVisiblePipelines(int maxNumberOfVisiblePipelines) {
+        this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId)
             throws TriggerException, AuthenticationException {
         try {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
-            AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+            AbstractProject project = getProject(projectName, Jenkins.getInstance());
             if (!project.hasPermission(Item.BUILD)) {
                 throw new BadCredentialsException("Not auth to build");
             }
-            AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
+            AbstractProject upstream = getProject(upstreamName, Jenkins.getInstance());
             ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
             if (trigger != null) {
                 trigger.triggerManual(project, upstream, buildId, getOwner().getItemGroup());
@@ -430,7 +440,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public void triggerRebuild(String projectName, String buildId) {
-        AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+        AbstractProject project = getProject(projectName, Jenkins.getInstance());
         if (!project.hasPermission(Item.BUILD)) {
             throw new BadCredentialsException("Not auth to build");
         }
@@ -470,13 +480,13 @@ public class DeliveryPipelineView extends View {
             List<Component> components = new ArrayList<Component>();
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
-                    AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
-                    AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup()) ;
+                    AbstractProject firstJob = getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
+                    AbstractProject lastJob = getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
                         String name = componentSpec.getName();
                         String excludeJobsRegex = componentSpec.getExcludeJobsRegex();
                         components.add(getComponent(name, firstJob, lastJob, excludeJobsRegex, showAggregatedPipeline,
-                            (componentSpecs.indexOf(componentSpec) + 1)));
+                                (componentSpecs.indexOf(componentSpec) + 1)));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -499,6 +509,10 @@ public class DeliveryPipelineView extends View {
                     Collections.sort(components, comparatorDescriptor.createInstance());
                 }
             }
+            if (maxNumberOfVisiblePipelines > 0) {
+                LOG.fine("Limiting number of jobs to: " + maxNumberOfVisiblePipelines);
+                components = components.subList(0, Math.min(components.size(), maxNumberOfVisiblePipelines));
+            }
             LOG.fine("Returning: " + components);
             error = null;
             return components;
@@ -509,9 +523,9 @@ public class DeliveryPipelineView extends View {
     }
 
     private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
-                                   String excludeJobRegex, boolean showAggregatedPipeline,
+                                   String excludeJobsRegex, boolean showAggregatedPipeline,
                                    int componentNumber) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobRegex);
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, excludeJobsRegex);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
                 noOfPipelines, pagingEnabled, componentNumber);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
@@ -537,6 +551,21 @@ public class DeliveryPipelineView extends View {
         return jobs;
     }
 
+    private void addJobsFromComponentSpecs(Set<TopLevelItem> jobs) {
+        if (componentSpecs == null) {
+            return;
+        }
+        for (ComponentSpec spec : componentSpecs) {
+            AbstractProject first = getProject(spec.getFirstJob(), getOwnerItemGroup());
+            AbstractProject last = getProject(spec.getLastJob(), getOwnerItemGroup());
+            Collection<AbstractProject<?, ?>> downstreamProjects =
+                    ProjectUtil.getAllDownstreamProjects(first, last).values();
+            for (AbstractProject project : downstreamProjects) {
+                jobs.add((TopLevelItem) project);
+            }
+        }
+    }
+
     private void addRegexpFirstJobs(Set<TopLevelItem> jobs) {
         if (regexpFirstJobs == null) {
             return;
@@ -544,21 +573,6 @@ public class DeliveryPipelineView extends View {
         for (RegExpSpec spec : regexpFirstJobs) {
             Map<String, AbstractProject> regexpJobs = ProjectUtil.getProjects(spec.getRegexp());
             for (AbstractProject project : regexpJobs.values()) {
-                jobs.add((TopLevelItem) project);
-            }
-        }
-    }
-
-    private void addJobsFromComponentSpecs(Set<TopLevelItem> jobs) {
-        if (componentSpecs == null) {
-            return;
-        }
-        for (ComponentSpec spec : componentSpecs) {
-            AbstractProject first = ProjectUtil.getProject(spec.getFirstJob(), getOwnerItemGroup());
-            AbstractProject last = ProjectUtil.getProject(spec.getLastJob(), getOwnerItemGroup());
-            Collection<AbstractProject<?, ?>> downstreamProjects =
-                    ProjectUtil.getAllDownstreamProjects(first, last, spec.getExcludeJobsRegex()).values();
-            for (AbstractProject project : downstreamProjects) {
                 jobs.add((TopLevelItem) project);
             }
         }

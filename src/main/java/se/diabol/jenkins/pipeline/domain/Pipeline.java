@@ -22,17 +22,12 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.newHashSet;
 
 import com.google.common.collect.ImmutableList;
-
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
-
 import hudson.model.Result;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
@@ -61,6 +56,8 @@ public class Pipeline extends AbstractItem {
     private String timestamp;
 
     private List<Change> changes;
+
+    private int commits;
 
     private long totalBuildTime;
 
@@ -140,9 +137,18 @@ public class Pipeline extends AbstractItem {
         return changes;
     }
 
+    public void setCommits(int commits) {
+        this.commits = commits;
+    }
+
     @Exported
     public long getTotalBuildTime() {
         return totalBuildTime;
+    }
+
+    @Exported
+    public int getCommits() {
+        return commits;
     }
 
     public void calculateTotalBuildTime() {
@@ -250,6 +256,7 @@ public class Pipeline extends AbstractItem {
             stage.setChanges(changes);
         }
     }
+
     /**
      * Populates and return pipelines for the supplied pipeline prototype with the current status.
      *
@@ -287,7 +294,7 @@ public class Pipeline extends AbstractItem {
         Iterator it = firstProject.getBuilds().listIterator(startIndex);
         for (int i = startIndex; i < (startIndex + retrieveSize) && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
-            List<Change> pipelineChanges = showChanges ? Change.getChanges(firstBuild) : null;
+            List<Change> pipelineChanges = Change.getChanges(firstBuild);
             Set<UserInfo> contributors = showChanges ? UserInfo.getContributors(pipelineChanges) : null;
 
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
@@ -298,7 +305,10 @@ public class Pipeline extends AbstractItem {
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
                     pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
                     contributors, pipelineStages, false);
-            pipelineLatest.setChanges(pipelineChanges);
+            if (showChanges) {
+                pipelineLatest.setChanges(pipelineChanges);
+            }
+            pipelineLatest.setCommits(pipelineChanges.size());
             pipelineLatest.calculateTotalBuildTime();
             result.add(pipelineLatest);
         }

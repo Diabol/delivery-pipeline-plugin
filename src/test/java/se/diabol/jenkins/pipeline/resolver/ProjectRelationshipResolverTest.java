@@ -20,18 +20,18 @@ package se.diabol.jenkins.pipeline.resolver;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
-
 import se.diabol.jenkins.pipeline.RelationshipResolver;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ProjectRelationshipResolverTest {
 

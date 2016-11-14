@@ -19,13 +19,12 @@ package se.diabol.jenkins.pipeline.sort;
 
 import org.junit.Test;
 import se.diabol.jenkins.pipeline.domain.Component;
-import se.diabol.jenkins.pipeline.domain.Pipeline;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class NameComparatorTest {
 

@@ -22,7 +22,6 @@ import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBu
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
 import hudson.model.FreeStyleProject;
@@ -39,34 +38,34 @@ import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
 import jenkins.model.Jenkins;
 import join.JoinTrigger;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
-
-import org.kohsuke.stapler.RequestImpl;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.WebApp;
 import org.mockito.Mockito;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PipelineTest {
 
@@ -557,7 +556,7 @@ public class PipelineTest {
 
     /**
      * A -> B -> D -> E
-     *        -> C     
+     *        -> C
      * <p/>
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
@@ -852,9 +851,9 @@ public class PipelineTest {
     @Test
     public void testExtractExcludeJobsRegex() throws Exception {
         String firstJobName = "project-build";
-        List<String> expectedJobNames = Lists.newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
+        List<String> expectedJobNames = newArrayList(firstJobName, "project-country1-test", "project-country1-deploy");
         createLinkedProjects(expectedJobNames);
-        createLinkedProjects(Lists.newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
+        createLinkedProjects(newArrayList(firstJobName, "project-country2-test", "project-country2-deploy"));
         jenkins.getInstance().rebuildDependencyGraph();
         FreeStyleProject firstJob = getOrCreateProject(firstJobName);
 
@@ -897,7 +896,7 @@ public class PipelineTest {
     }
 
     private List<String> getProjectNames(Pipeline pipeline) {
-        List<String> projectNames = Lists.newArrayList();
+        List<String> projectNames = newArrayList();
         for (Stage stage : pipeline.getStages()) {
             for (Task task : stage.getTasks()) {
                 projectNames.add(task.getName());

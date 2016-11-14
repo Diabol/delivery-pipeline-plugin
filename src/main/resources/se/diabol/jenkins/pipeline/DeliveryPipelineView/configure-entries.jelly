@@ -27,6 +27,10 @@
             <f:select/>
         </f:entry>
 
+        <f:entry title="Max number of pipelines" field="maxNumberOfVisiblePipelines" default="-1">
+            <f:textbox/>
+        </f:entry>
+
 
         <f:entry title="Update interval" field="updateInterval" default="2">
             <f:textbox/>
@@ -93,6 +97,7 @@
             <select name="theme" class="setting-input  select">
                 <option value="default" selected="${instance.getTheme().equals('default')? 'true':null}">Default</option>
                 <option value="contrast" selected="${instance.getTheme().equals('contrast')? 'true':null}">Contrast</option>
+                <option value="overview" selected="${instance.getTheme().equals('overview')? 'true':null}">Overview</option>
             </select>
         </f:entry>
 
@@ -100,10 +105,10 @@
 
     <f:section title="Pipelines">
         <f:entry title="Components">
-            <f:repeatableProperty minimum="0" field="componentSpecs"/>
+            <f:repeatableProperty minimum="0" field="componentSpecs" header="Component"/>
         </f:entry>
         <f:entry title="Regular Expression">
-            <f:repeatableProperty minimum="0" field="regexpFirstJobs"/>
+            <f:repeatableProperty minimum="0" field="regexpFirstJobs" header="RegEx"/>
         </f:entry>
     </f:section>
 

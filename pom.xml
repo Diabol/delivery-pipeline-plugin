@@ -4,7 +4,7 @@
 
     <groupId>se.diabol.jenkins.pipeline</groupId>
     <artifactId>delivery-pipeline-plugin</artifactId>
-    <version>0.9.12-SNAPSHOT</version>
+    <version>0.9.13-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>Delivery Pipeline Plugin</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Delivery+Pipeline+Plugin</url>
@@ -197,6 +197,7 @@
                     <jsTestSrcDir>src/test/javascript</jsTestSrcDir>
                     <sourceExcludes>
                         <exclude>jquery.*.js</exclude>
+                        <exclude>**/themes/**/pipe.js</exclude>
                     </sourceExcludes>
                 </configuration>
                 <executions>
@@ -289,7 +290,7 @@
                     <propertyExpansion>basedir=${basedir}</propertyExpansion>
                     <consoleOutput>true</consoleOutput>
                     <failOnViolation>true</failOnViolation>
-                    <resourceIncludes>**/*.properties,**/*.jelly</resourceIncludes>
+                    <resourceIncludes>**/*.properties,**/*.jelly,**/*.html</resourceIncludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -431,6 +432,13 @@
                     <artifactId>httpclient</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>dashboard-view</artifactId>
+            <version>2.9.2</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

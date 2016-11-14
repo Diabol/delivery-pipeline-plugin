@@ -35,7 +35,6 @@ import hudson.security.Permission;
 import hudson.tasks.BuildTrigger;
 import hudson.util.OneShotEvent;
 import jenkins.model.Jenkins;
-
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.junit.Rule;
@@ -45,7 +44,6 @@ import org.jvnet.hudson.test.FailureBuilder;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.UnstableBuilder;
-
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.pipeline.PipelineProperty;
 
@@ -53,7 +51,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TaskTest {
 

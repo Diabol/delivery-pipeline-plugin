@@ -1,6 +1,6 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
-        >
+>
 
     <st:bind var="view" value="${it}"/>
     <st:bind var="fullscreen" value='${request.getParameter("fullscreen")}'/>
@@ -28,68 +28,75 @@
             </j:if>
             <j:set var="views" value="${it.owner.views}"/>
             <j:set var="currentView" value="${it}"/>
-            <j:choose>
-                <j:when test="${it.owner.class.name=='hudson.model.MyViewsProperty'}">
-                    <st:include page="myViewTabs.jelly" it="${it.owner.myViewsTabBar}"/>
-                </j:when>
-                <j:otherwise>
-                    <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}"/>
-                </j:otherwise>
-            </j:choose>
+            <j:if test="${!it.isPortletView}">
+                <j:choose>
+                    <j:when test="${it.owner.class.name=='hudson.model.MyViewsProperty'}">
+                        <st:include page="myViewTabs.jelly" it="${it.owner.myViewsTabBar}"/>
+                    </j:when>
+                    <j:otherwise>
+                        <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}"/>
+                    </j:otherwise>
+                </j:choose>
+            </j:if>
         </j:default>
     </j:switch>
 
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/moment.min.js"/>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
+    <j:if test="${it.theme == 'overview'}">
+        <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipe.js"/>
+    </j:if>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.jsPlumb-1.3.16-all-min.js"/>
     <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.ajaxretry.js"/>
 
+    <div class="pane-frame">
+        <div class="pipeline-main">
 
-    <div class="pipeline-main">
+            <div class="pipeline-logo"/>
 
-    <div class="pipeline-logo"/>
+            <div id="taskDetails" class="popover">
+            </div>
 
-    <div id="taskDetails" class="popover">
-    </div>
+            <div id="pipelineerror-${it.id == null ? 0 : it.id}" class="pipelineerror"/>
+            <div id="pipeline-message-${it.id == null ? 0 : it.id}" class="pipeline-message"><div class="pipeline-loading-icon"></div></div>
 
+            <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+                <div id="pipelines-${i}-${it.id == null ? 0 : it.id}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
+            </j:forEach>
+            <div class="clear"></div>
 
-    <div id="pipelineerror" class="pipelineerror"/>
+            <script type="text/javascript">
+                function pipeline(pipelineid) {
+                // TODO: refactor pipe.js to support placing these
+                // variables into an anonymous function closure
+                // to avoid polluting the global namespace
+                var pipelineContainers = [];
 
-    <div id="pipeline-message" class="pipeline-message"><div class="pipeline-loading-icon"></div></div>
+                <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+                    pipelineContainers.push('pipelines-${i}-' + pipelineid);
+                </j:forEach>
 
-    <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
-        <div id="pipelines-${i}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
-    </j:forEach>
-    <div class="clear"></div>
+                Q(window).resize(function () {
+                jsPlumb.getInstance().repaintEverything();
+                });
 
-    <script type="text/javascript">
-        // TODO: refactor pipe.js to support placing these
-        // variables into an anonymous function closure
-        // to avoid polluting the global namespace
-        var plumb = jsPlumb.getInstance(),
-        lastResponse = null,
-        pipelineContainers = [];
+                view.viewUrl = '${it.getViewUrl()}';
 
-        <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
-            pipelineContainers.push('pipelines-${i}');
-        </j:forEach>
+                setupRetry(${it.updateInterval * 1000})
 
-        Q(window).resize(function () {
-        plumb.repaintEverything();
-        });
+                var pipelineutils = new pipelineUtils();
 
-        view.viewUrl = '${it.getViewUrl()}';
+                pipelineutils.updatePipelines(pipelineContainers, "pipelineerror-" + pipelineid, view, ${fullscreen}, ${page}, ${component}, ${it.isShowChanges()},
 
-        setupRetry(${it.updateInterval * 1000})
-
-        updatePipelines(pipelineContainers, "pipelineerror", view, ${fullscreen}, ${page}, ${component}, ${it.isShowChanges()},
-
-        <j:choose>
-            <j:when test="it.getAggregatedChangesGroupingPattern()">/${it.getAggregatedChangesGroupingPattern()}/g</j:when>
-            <j:otherwise>null</j:otherwise>
-        </j:choose>,
-        ${it.updateInterval * 1000});
-    </script>
+                <j:choose>
+                    <j:when test="it.getAggregatedChangesGroupingPattern()">/${it.getAggregatedChangesGroupingPattern()}/g</j:when>
+                    <j:otherwise>null</j:otherwise>
+                </j:choose>,
+                ${it.updateInterval * 1000}, ${it.id == null ? 0 : it.id});
+                }
+                var pipeline${it.id} = new pipeline('${it.id == null ? 0 : it.id}');
+            </script>
+        </div>
     </div>
     <!--<st:include page="legend.jelly"/>-->
 
