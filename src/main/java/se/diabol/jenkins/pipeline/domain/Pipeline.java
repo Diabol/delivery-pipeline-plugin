@@ -206,13 +206,15 @@ public class Pipeline extends AbstractItem {
      * Created a pipeline prototype for the supplied first project.
      */
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject,
-                                           AbstractProject<?, ?> lastProject) throws PipelineException {
-        return new Pipeline(name, firstProject, lastProject,
-                newArrayList(Stage.extractStages(firstProject, lastProject)));
+                                           AbstractProject<?, ?> lastProject,
+                                           String excludeJobsRegex) throws PipelineException {
+        List<Stage> stages = Stage.extractStages(firstProject, lastProject, excludeJobsRegex);
+        return new Pipeline(name, firstProject, lastProject, newArrayList(stages));
     }
 
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {
-        return new Pipeline(name, firstProject, null, newArrayList(Stage.extractStages(firstProject, null)));
+        List<Stage> stages = Stage.extractStages(firstProject, null, null);
+        return new Pipeline(name, firstProject, null, newArrayList(stages));
     }
 
     Pipeline createPipelineAggregatedWithoutChangesShown(ItemGroup context) {

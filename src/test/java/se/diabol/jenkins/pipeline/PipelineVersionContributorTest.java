@@ -224,7 +224,7 @@ public class PipelineVersionContributorTest {
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
         FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
         firstProject.getPublishersList().add(
-                new BuildPipelineTrigger("secondProject", Arrays.<AbstractBuildParameters>asList(new BooleanParameters(Arrays.asList(new BooleanParameterConfig("test", true))))));
+            new BuildPipelineTrigger("secondProject", Arrays.<AbstractBuildParameters>asList(new BooleanParameters(Arrays.asList(new BooleanParameterConfig("test", true))))));
         firstProject.save();
 
         firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));

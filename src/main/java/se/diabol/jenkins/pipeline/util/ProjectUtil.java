@@ -45,6 +45,8 @@ public final class ProjectUtil {
 
     private static final Logger LOG = Logger.getLogger(ProjectUtil.class.getName());
 
+    private static final Pattern MATCH_NONE_PATTERN = Pattern.compile(".^");
+
     private ProjectUtil() {
     }
 
@@ -56,14 +58,42 @@ public final class ProjectUtil {
         return options;
     }
 
-    /**
-     * @see ProjectUtil#getAllDownstreamProjects(hudson.model.AbstractProject, java.util.Map)
-     *
-     */
     public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
                                                                               AbstractProject last) {
         Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
-        return  getAllDownstreamProjects(first, last, projects);
+        return getAllDownstreamProjects(first, last, projects);
+    }
+
+    /**
+     * @see ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map)
+     * Version of the method that returns a map of projects without the ones that match given regex.
+     */
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
+                                                                              AbstractProject last,
+                                                                              String excludeJobsRegex) {
+        Map<String, AbstractProject<?, ?>> projects = newLinkedHashMap();
+        return getAllDownstreamProjects(first, last, projects, excludeJobsRegex);
+    }
+
+    /**
+     * @see ProjectUtil#getAllDownstreamProjects(AbstractProject, AbstractProject, Map,
+     * String)
+     * Version of the method that returns a map of projects without the ones that match given regex.
+     */
+    public static Map<String, AbstractProject<?, ?>> getAllDownstreamProjects(AbstractProject first,
+                                                                              AbstractProject last, Map<String,
+            AbstractProject<?, ?>> projects, String excludeJobsRegex) {
+
+        Map<String, AbstractProject<?, ?>> matchingProjects = newLinkedHashMap();
+        Pattern excludeJobsPattern = excludeJobsRegex == null ? MATCH_NONE_PATTERN : Pattern.compile(excludeJobsRegex);
+        for (Map.Entry<String, AbstractProject<?, ?>> entry :
+                getAllDownstreamProjects(first, last, projects).entrySet()) {
+            String projectName = entry.getValue().getName();
+            if (!excludeJobsPattern.matcher(projectName).matches()) {
+                matchingProjects.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return matchingProjects;
     }
 
     /**
