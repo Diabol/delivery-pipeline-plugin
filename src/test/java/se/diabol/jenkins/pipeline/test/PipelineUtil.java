@@ -49,6 +49,10 @@ public class PipelineUtil {
         return component;
     }
 
+    public static Component createComponentWithNoRuns() {
+        return new Component("C", "B", "job/A", false, 3, false, 1);
+    }
+
     public static Status status(StatusType statusType, DateTime lastRunedAt) {
         return new SimpleStatus(statusType, lastRunedAt.getMillis(), 10, false, Lists.<PromotionStatus>newArrayList());
     }
