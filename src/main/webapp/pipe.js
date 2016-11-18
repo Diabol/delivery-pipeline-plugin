@@ -15,7 +15,7 @@ function pipelineUtils() {
             },
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
-                plumb.repaintEverything();
+                window.jsPlumb.repaintEverything();
                 setTimeout(function () {
                     self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid);
                 }, timeout);
@@ -34,7 +34,6 @@ function pipelineUtils() {
                                trigger,
                                triggered,
                                contributors,
-                               plumb = jsPlumb.getInstance(),
                                tasks = [];
 
                            if (data.error) {
@@ -53,7 +52,7 @@ function pipelineUtils() {
                                    Q("#pipeline-message-" + pipelineid).html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
                                }
 
-                               plumb.reset();
+                               window.jsPlumb.reset();
                                for (var c = 0; c < data.pipelines.length; c++) {
                                    html = [];
                                    component = data.pipelines[c];
@@ -239,7 +238,7 @@ function pipelineUtils() {
                                                    source = getStageId(stage.id + "", index);
                                                    target = getStageId(value + "", index);
 
-                                                   plumb.connect({
+                                                   window.jsPlumb.connect({
                                                        source: source,
                                                        target: target,
                                                        anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
@@ -282,7 +281,7 @@ function pipelineUtils() {
                                    }
                                }
                            }
-                           plumb.repaintEverything();
+                        window.jsPlumb.repaintEverything();
                        }
 }
 
