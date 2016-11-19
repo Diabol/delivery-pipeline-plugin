@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.model;
 
 import com.google.api.client.util.DateTime;
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.junit.Test;
@@ -28,6 +29,9 @@ import java.util.List;
 
 import se.diabol.jenkins.workflow.api.Stage;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -45,6 +49,30 @@ public class TaskTest {
     @Test
     public void isRunningShouldHandleEmptyParameter() {
         assertThat(Task.isRunning(Collections.<FlowNode>emptyList()), is(false));
+    }
+
+    @Test
+    public void taskNodesDefinedInStageShouldReturnTrueWhenListPopulated() {
+        assertThat(Task.taskNodesDefinedInStage(Collections.singletonList(mock(FlowNode.class))), is(true));
+    }
+
+    @Test
+    public void taskNodesDefinedInStageShouldReturnFalseForEmptyList() {
+        assertThat(Task.taskNodesDefinedInStage(Collections.<FlowNode>emptyList()), is(false));
+    }
+    
+    @Test
+    public void failedShouldRecognizeFailedFlowNode() {
+        FlowNode failedNode = mock(FlowNode.class);
+        when(failedNode.getError()).thenReturn(new ErrorAction(new IllegalStateException("Test created exception")));
+        assertThat(Task.failed(failedNode), is(true));
+    }
+
+    @Test
+    public void failedShouldRecognizeNonFailedFlowNode() {
+        FlowNode successfulNode = mock(FlowNode.class);
+        when(successfulNode.getError()).thenReturn(null);
+        assertThat(Task.failed(successfulNode), is(false));
     }
 
     @Test
@@ -87,6 +115,24 @@ public class TaskTest {
     public void shouldGetDurationForEmptyParameter() {
         long duration = Task.getDuration(Collections.<Stage>emptyList());
         assertThat(duration, is(0L));
+    }
+
+    @Test
+    public void shouldCalculateProgressWhenHalfwayThroughEstimatedDuration() {
+        long buildTimestamp = System.currentTimeMillis() - 10000L;
+        long estimatedDuration = 20000L;
+        int progress = Task.calculateProgress(buildTimestamp, estimatedDuration);
+        assertThat(progress, greaterThanOrEqualTo(50));
+        assertThat(progress, lessThan(60));
+    }
+
+    @Test
+    public void shouldCalculateProgressWhenExceedingEstimatedDuration() {
+        long buildTimestamp = System.currentTimeMillis() - 11000L;
+        long estimatedDuration = 5000L;
+        int progress = Task.calculateProgress(buildTimestamp, estimatedDuration);
+        assertThat(progress, greaterThan(100));
+        assertThat(progress, greaterThanOrEqualTo(200));
     }
 
     private static List<Stage> stages() {

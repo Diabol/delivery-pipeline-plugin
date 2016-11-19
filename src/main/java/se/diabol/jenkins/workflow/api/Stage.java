@@ -48,6 +48,14 @@ public class Stage {
         this.durationMillis = durationMillis;
     }
 
+    public static long getDurationOfStageFromRun(Run previousRun, Stage currentStage) {
+        Stage previouslyRunStage = previousRun.getStageByName(currentStage.name);
+        if (previouslyRunStage == null || previouslyRunStage.durationMillis == null) {
+            return -1L;
+        }
+        return previouslyRunStage.durationMillis;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

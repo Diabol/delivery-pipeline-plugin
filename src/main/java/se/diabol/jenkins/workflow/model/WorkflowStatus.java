@@ -19,19 +19,12 @@ package se.diabol.jenkins.workflow.model;
 
 import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
 import se.diabol.jenkins.pipeline.domain.status.StatusType;
-import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
 import se.diabol.jenkins.workflow.api.Stage;
-
-import java.util.List;
 
 public class WorkflowStatus extends SimpleStatus {
 
     public WorkflowStatus(StatusType type, long lastActivity, long duration) {
         super(type, lastActivity, duration);
-    }
-
-    public WorkflowStatus(StatusType type, long lastActivity, long duration, boolean promoted, List<PromotionStatus> promotions) {
-        super(type, lastActivity, duration, promoted, promotions);
     }
 
     public static WorkflowStatus of(Stage stage) {

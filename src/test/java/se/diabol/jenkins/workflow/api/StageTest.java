@@ -23,9 +23,14 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class StageTest {
 
@@ -49,6 +54,33 @@ public class StageTest {
         assertFalse(stage2.equals(stage1));
         assertFalse(stage1.equals(null));
         assertFalse(stage2.equals(null));
+    }
+    
+    @Test
+    public void shouldGetDurationOfStageFromPreviousRun() {
+        long expectedDuration = 1000L;
+        Stage stageWithDuration = new Stage(null, "stageId", "stageName", "SUCCESS", null, expectedDuration);
+        Run previousRun = mock(Run.class);
+        when(previousRun.getStageByName(anyString())).thenReturn(stageWithDuration);
+
+        assertThat(Stage.getDurationOfStageFromRun(previousRun, getPopulatedStage()), is(expectedDuration));
+    }
+    
+    @Test
+    public void getDurationOfStageFromRunShouldReturnDefaultWhenPreviousRunDidNotContainStage() {
+        Stage stageWithUnknownDuration = new Stage(null, "stageId", "stageName", "SUCCESS", null, null);
+        Run previousRun = mock(Run.class);
+        when(previousRun.getStageByName(anyString())).thenReturn(stageWithUnknownDuration);
+
+        assertThat(Stage.getDurationOfStageFromRun(previousRun, getPopulatedStage()), is(-1L));
+    }
+
+    @Test
+    public void getDurationOfStageFromRunShouldReturnDefaultWhenDurationNotKnown() {
+        Run previousRun = mock(Run.class);
+        when(previousRun.getStageByName(anyString())).thenReturn(null);
+
+        assertThat(Stage.getDurationOfStageFromRun(previousRun, getPopulatedStage()), is(-1L));
     }
 
     private Stage getPopulatedStage() {

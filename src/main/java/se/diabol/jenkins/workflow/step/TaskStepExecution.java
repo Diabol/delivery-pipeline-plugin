@@ -41,7 +41,6 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
 
     @Override
     public void stop(Throwable throwable) throws Exception {
-
     }
 
     @Override

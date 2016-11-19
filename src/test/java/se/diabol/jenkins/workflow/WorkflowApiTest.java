@@ -25,14 +25,15 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.workflow.api.Run;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,17 +48,45 @@ public class WorkflowApiTest {
     public void setup() throws IOException {
         when(workflowApi.jenkinsUrl()).thenReturn("http://localhost:8080/jenkins/");
         when(workflowApi.lastRunFor(anyString())).thenCallRealMethod();
-        when(workflowApi.getRunsFor(anyString())).thenCallRealMethod();
+        when(workflowApi.lastFinishedRunFor(anyString())).thenCallRealMethod();
         when(workflowApi.execute(any(HttpRequest.class))).thenReturn(listOfRunsResponseJson);
     }
 
     @Test
     public void shouldGetInformationAboutLastRun() {
+        when(workflowApi.getRunsFor(anyString())).thenCallRealMethod();
+
         Run run = workflowApi.lastRunFor("Test Workflow");
         assertNotNull(run);
         assertThat(run.durationMillis, is(6070L));
         assertThat(run.startTimeMillis.getValue(), is(1465416676325L));
         assertThat(run.endTimeMillis.getValue(), is(1465416682442L));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void getRunsForShouldThrowIllegalStateExceptionForIOExceptions() throws IOException {
+        when(workflowApi.getRunsFor(anyString())).thenCallRealMethod();
+        when(workflowApi.execute(any(HttpRequest.class))).thenThrow(new IOException("Test thrown exception"));
+        workflowApi.lastRunFor("Test Workflow");
+    }
+
+    @Test
+    public void shouldGetLastFinishedRunForJob() {
+        when(workflowApi.getRunsFor(anyString())).thenCallRealMethod();
+
+        Run run = workflowApi.lastFinishedRunFor("Test Workflow");
+        assertThat(run.id, is("5"));
+        assertThat(run.name, is("#5"));
+        assertThat(run.status, is("SUCCESS"));
+    }
+
+    @Test
+    public void shouldNotGetLastFinishedRunForJobIfOnlyInProgressOrPausedJobsExist() {
+        Run inProgressRun = new Run(null, null, null, "IN_PROGRESS", null, null, null, null);
+        Run pausedRun = new Run(null, null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
+        when(workflowApi.getRunsFor(anyString())).thenReturn(Arrays.asList(inProgressRun, pausedRun));
+
+        assertThat(workflowApi.lastFinishedRunFor("Test Workflow"), nullValue());
     }
 
     @Test
