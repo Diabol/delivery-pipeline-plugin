@@ -38,15 +38,21 @@ public class FailedJobComparator extends ComponentComparator implements Serializ
         }
     }
 
-    private Pipeline firstPipeline(Component o1) {
-        return o1.getPipelines().get(0);
+    private Pipeline firstPipeline(Component component) {
+        if (component != null && component.getPipelines() != null && !component.getPipelines().isEmpty()) {
+            return component.getPipelines().get(0);
+        } else {
+            return null;
+        }
     }
 
     private boolean hasFailedJob(Pipeline pipeline) {
-        for (Stage stage : pipeline.getStages()) {
-            for (Task task : stage.getTasks()) {
-                if (task.getStatus().isFailed()) {
-                    return true;
+        if (pipeline != null) {
+            for (Stage stage : pipeline.getStages()) {
+                for (Task task : stage.getTasks()) {
+                    if (task.getStatus().isFailed()) {
+                        return true;
+                    }
                 }
             }
         }

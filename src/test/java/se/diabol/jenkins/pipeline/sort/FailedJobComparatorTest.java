@@ -30,10 +30,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static se.diabol.jenkins.pipeline.domain.status.StatusType.FAILED;
 import static se.diabol.jenkins.pipeline.domain.status.StatusType.SUCCESS;
 import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponent;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponentWithNoRuns;
 
 public class FailedJobComparatorTest {
 
@@ -48,6 +52,7 @@ public class FailedJobComparatorTest {
         list.add(successfulComponent);
         list.add(failedComponent);
         Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
+        assertThat(list.size(), is(2));
         assertEquals(failedComponent, list.get(0));
         assertEquals(successfulComponent, list.get(1));
     }
@@ -63,9 +68,39 @@ public class FailedJobComparatorTest {
         list.add(failedComponent);
         list.add(failedComponentRunLongAgo);
         Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
+        assertThat(list.size(), is(3));
         assertEquals(failedComponent, list.get(0));
         assertEquals(failedComponentRunLongAgo, list.get(1));
         assertEquals(successfulComponent, list.get(2));
+    }
+
+    @Test
+    public void shouldSortNotRunJobLast() {
+        Component notRunComponent = createComponentWithNoRuns();
+        Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
+        Component failedComponent = createComponent(status(FAILED, new DateTime().minusDays(1)));
+        List<Component> list = new ArrayList<Component>();
+        list.add(notRunComponent);
+        list.add(successfulComponent);
+        list.add(failedComponent);
+        Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
+        assertThat(list.size(), is(3));
+        assertEquals(failedComponent, list.get(0));
+        assertEquals(successfulComponent, list.get(1));
+        assertEquals(notRunComponent, list.get(2));
+    }
+
+    @Test
+    public void shouldHandleNullParameters() {
+        assertTrue(new FailedJobComparator().compare(null, null) == 0);
+    }
+
+    @Test
+    public void shouldBeAbleToCompareWithNull() {
+        FailedJobComparator comparator = new FailedJobComparator();
+        Component successfulComponent = createComponent(status(SUCCESS, new DateTime()));
+        assertTrue(comparator.compare(successfulComponent, null) < 0);
+        assertTrue(comparator.compare(null, successfulComponent) > 0);
     }
 
     private Status status(StatusType statusType, DateTime lastRunAt) {
