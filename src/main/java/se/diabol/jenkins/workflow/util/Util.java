@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import se.diabol.jenkins.workflow.api.Run;
-import se.diabol.jenkins.workflow.api.Stage;
 import se.diabol.jenkins.workflow.step.TaskAction;
 
-public class Util {
+public final class Util {
+
+    private Util () {
+    }
 
     public static List<FlowNode> getTaskNodes(List<FlowNode> stageNodes) {
         List<FlowNode> result = new ArrayList<FlowNode>();
@@ -39,33 +41,6 @@ public class Util {
 
     public static boolean isTaskNode(FlowNode flowNode) {
         return flowNode.getAction(TaskAction.class) != null;
-    }
-
-    /**
-     * Return the steps, e.g. scm, docker, echo, of the specified task
-     * @param stageNodes the stage nodes
-     * @param node the task node
-     * @return a list of steps within the specified task
-     */
-    public static List<FlowNode> getTaskSteps(List<FlowNode> stageNodes, FlowNode node) {
-        List<FlowNode> nodes = new ArrayList<FlowNode>();
-
-        int taskStartNodeIndex = stageNodes.indexOf(node);
-
-        if (isTaskNode(node)) {
-            // Starting at the node after the supplied node, add all sorted nodes up to the
-            // next stage (or the end of the workflow)...
-            taskStartNodeIndex++;
-            for (int i = taskStartNodeIndex; i < stageNodes.size(); i++) {
-                FlowNode sortedNode = stageNodes.get(i);
-                if (isTaskNode(sortedNode)) {
-                    break;
-                }
-                nodes.add(sortedNode);
-            }
-        }
-
-        return nodes;
     }
 
     public static Run getRunById(List<Run> runs, int buildNumber) {

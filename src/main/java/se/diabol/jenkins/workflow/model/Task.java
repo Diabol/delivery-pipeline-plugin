@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.round;
-import static java.lang.System.currentTimeMillis;
 import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 public class Task extends AbstractItem {
@@ -53,8 +52,7 @@ public class Task extends AbstractItem {
     private final String description;
     private final static WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
 
-    public Task(String id, String name, Status status, String link,
-                ManualStep manual, String description) {
+    public Task(String id, String name, Status status, String link, ManualStep manual, String description) {
         super(name);
         this.id = id;
         this.link = link;
@@ -104,7 +102,7 @@ public class Task extends AbstractItem {
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(stageStartNode);
         List<FlowNode> taskNodes = Util.getTaskNodes(stageNodes);
 
-        if (!taskNodes.isEmpty()) {
+        if (taskNodesDefinedInStage(taskNodes)) {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
                 result.add(new Task(flowNode.getId(), action.getTaskName(), resolveTaskStatus(build, stageStartNode), "", null, null));
@@ -114,6 +112,10 @@ public class Task extends AbstractItem {
             result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus, "", null, null));
         }
         return result;
+    }
+
+    static boolean taskNodesDefinedInStage(List<FlowNode> taskNodes) {
+        return !taskNodes.isEmpty();
     }
 
     private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) {
@@ -132,34 +134,30 @@ public class Task extends AbstractItem {
     }
 
     private static Status resolveStatus(WorkflowRun build, List<FlowNode> taskNodes, List<Stage> stages) {
-        boolean allExecuted = isAllExecuted(taskNodes);
-        boolean allIdle = isAllNotExecuted(taskNodes);
         if (Result.FAILURE.equals(build.getResult())) {
             return StatusFactory.failed(getStartTime(taskNodes), getDuration(stages), false, null);
         }
         if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
             return runningStatus(build);
         }
-        if (allExecuted) {
+        if (allExecuted(taskNodes)) {
             if (failed(Util.head(taskNodes))) {
                 return StatusFactory.failed(getStartTime(taskNodes), getDuration(stages), false, null);
             } else {
                 return StatusFactory.success(getStartTime(taskNodes), getDuration(stages), false, null);
             }
-        } else if (allIdle) {
+        } else {
             return StatusFactory.idle();
         }
-        return StatusFactory.idle();
     }
 
-    private static boolean failed(FlowNode node) {
+    protected static boolean failed(FlowNode node) {
         return node != null && node.getError() != null;
     }
 
     private static Status runningStatus(WorkflowRun build) {
         long buildTimestamp = build.getTimeInMillis();
-        int progress = (int) round(100.0d *
-                (currentTimeMillis() - buildTimestamp) / build.getEstimatedDuration());
+        int progress = calculateProgress(buildTimestamp, build.getEstimatedDuration());
         return runningStatus(buildTimestamp, progress);
     }
 
@@ -172,40 +170,29 @@ public class Task extends AbstractItem {
         if (progress > 100) {
             progress = 99;
         }
-        return StatusFactory.running(progress, buildTimestamp, currentTimeMillis() - buildTimestamp);
+        return StatusFactory.running(progress, buildTimestamp, System.currentTimeMillis() - buildTimestamp);
     }
 
-    public static int progressOfStage(WorkflowRun build, Stage currentStage) {
+    private static int progressOfStage(WorkflowRun build, Stage currentStage) {
         Run previousRun = workflowApi.lastFinishedRunFor(Name.of(build));
         if (!previousRun.hasStage(currentStage.name)) {
             return 99;
         }
 
+        long stageStartTime = currentStage.startTimeMillis.getValue();
+        long estimatedStageDuration = Stage.getDurationOfStageFromRun(previousRun, currentStage);
+        return calculateProgress(stageStartTime, estimatedStageDuration);
+    }
+
+    static int calculateProgress(long timestampFromBuild, long estimatedDuration) {
         return (int) round(100.0d
-                * (currentTimeMillis() - currentStage.startTimeMillis.getValue())
-                / getDurationOfStageFromRun(previousRun, currentStage));
+                * (System.currentTimeMillis() - timestampFromBuild)
+                / estimatedDuration);
     }
 
-    private static Long getDurationOfStageFromRun(Run previousRun, Stage currentStage) {
-        Stage previouslyRunStage = previousRun.getStageByName(currentStage.name);
-        if (previouslyRunStage == null) {
-            return -1L;
-        }
-        return previouslyRunStage.durationMillis;
-    }
-
-    private static boolean isAllExecuted(List<FlowNode> nodes) {
+    private static boolean allExecuted(List<FlowNode> nodes) {
         for (FlowNode node : nodes) {
             if (!NotExecutedNodeAction.isExecuted(node)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isAllNotExecuted(List<FlowNode> nodes) {
-        for (FlowNode node : nodes) {
-            if (NotExecutedNodeAction.isExecuted(node)) {
                 return false;
             }
         }

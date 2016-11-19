@@ -109,7 +109,6 @@ public class Pipeline extends AbstractItem {
         return triggeredBy;
     }
 
-
     public static Pipeline resolve(WorkflowJob project, WorkflowRun build) throws PipelineException {
         String pipeLineTimestamp = PipelineUtils.formatTimestamp(build.getTimeInMillis());
 

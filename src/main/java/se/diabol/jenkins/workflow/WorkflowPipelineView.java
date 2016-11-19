@@ -159,7 +159,7 @@ public class WorkflowPipelineView extends View {
         try {
             if (project != null) {
                 WorkflowJob job = getWorkflowJob(project);
-                List<Pipeline> pipelines = resolvePipeliens(job);
+                List<Pipeline> pipelines = resolvePipelines(job);
                 Component component = new Component(job.getName(), job, pipelines);
                 this.error = null;
                 return Collections.singletonList(component);
@@ -172,7 +172,7 @@ public class WorkflowPipelineView extends View {
         }
     }
 
-    private List<Pipeline> resolvePipeliens(WorkflowJob job) throws PipelineException {
+    private List<Pipeline> resolvePipelines(WorkflowJob job) throws PipelineException {
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
 
         Iterator<WorkflowRun> it = job.getBuilds().iterator();
