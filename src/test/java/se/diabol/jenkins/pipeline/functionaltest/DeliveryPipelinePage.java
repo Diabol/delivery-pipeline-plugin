@@ -18,6 +18,7 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.functionaltest;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 public class DeliveryPipelinePage {
@@ -60,5 +61,10 @@ public class DeliveryPipelinePage {
         /* this build requires parameter */
         webDriver.findElement(By.id("yui-gen1-button")).click();
    }
+
+    public String getJsPlumbUtilityVariable() {
+        JavascriptExecutor jSE = (JavascriptExecutor)webDriver;
+        return jSE.executeScript("return jsPlumbUtilityVariable.length").toString();
+    }
 
 }

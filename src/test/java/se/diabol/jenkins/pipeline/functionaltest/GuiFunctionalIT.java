@@ -23,6 +23,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.StringParameterDefinition;
 import hudson.model.View;
+import hudson.plugins.view.dashboard.Dashboard;
 import hudson.tasks.BuildTrigger;
 import org.junit.After;
 import org.junit.Before;
@@ -33,6 +34,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 
+import javax.xml.transform.stream.StreamSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -239,6 +241,62 @@ public class GuiFunctionalIT {
         jenkins.waitUntilNoActivity();
 
         assertNotNull(start.getLastBuild());
+    }
+
+    @Test
+    public void testMemoryLeakjsPlumbDeliveryPipelinePage() throws Exception {
+        FreeStyleProject start = jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+
+        start.getPublishersList().add(new BuildTrigger("B", true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE));
+        view.setComponentSpecs(specs);
+        view.setAllowPipelineStart(true);
+
+        jenkins.getInstance().addView(view);
+
+        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        page.open();
+        String result = page.getJsPlumbUtilityVariable();
+
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(result);
+        assertEquals("1", result);
+    }
+
+    @Test
+    public void testMemoryLeakjsPlumbDeliveryPipelineDashboardPortlet() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        jenkins.createFreeStyleProject("B");
+
+        a.getPublishersList().add(new BuildTrigger("B", true));
+
+        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        jenkins.createFreeStyleProject("D");
+
+        c.getPublishersList().add(new BuildTrigger("D", true));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        Dashboard view = new Dashboard("Dashboard");
+        jenkins.getInstance().addView(view);
+        view.updateByXml(new StreamSource(GuiFunctionalIT.class.getResourceAsStream("/se/diabol/jenkins/pipeline/functionaltest/GuiFunctionalIT/DashboardViewPage.xml")));
+        view.save();
+
+        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Dashboard");
+        page.open();
+        String result = page.getJsPlumbUtilityVariable();
+
+        jenkins.waitUntilNoActivity();
+
+        assertNotNull(result);
+        assertEquals("2", result);
     }
 
 }
