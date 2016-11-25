@@ -283,6 +283,7 @@
                         <exclude>**/*.css</exclude>
                         <exclude>**/*.js</exclude>
                         <exclude>**/*.jelly</exclude>
+                        <exclude>**/*.xml</exclude>
                     </excludes>
                 </configuration>
                 <executions>

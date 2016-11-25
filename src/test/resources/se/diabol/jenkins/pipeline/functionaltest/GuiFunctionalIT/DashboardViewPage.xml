@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hudson.plugins.view.dashboard.Dashboard plugin="dashboard-view@2.9.2">
+    <owner class="hudson" reference="../../.."/>
+    <name>Dashboard</name>
+    <filterExecutors>false</filterExecutors>
+    <filterQueue>false</filterQueue>
+    <properties class="hudson.model.View$PropertyList"/>
+    <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>A</string>
+        <string>B</string>
+        <string>C</string>
+        <string>D</string>
+    </jobNames>
+    <jobFilters/>
+    <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+    </columns>
+    <recurse>false</recurse>
+    <useCssStyle>false</useCssStyle>
+    <includeStdJobList>false</includeStdJobList>
+    <leftPortletWidth>50%</leftPortletWidth>
+    <rightPortletWidth>50%</rightPortletWidth>
+    <leftPortlets/>
+    <rightPortlets/>
+    <topPortlets>
+        <se.diabol.jenkins.pipeline.portlet.DeliveryPipelineViewPortlet plugin="delivery-pipeline-plugin@0.10.1-SNAPSHOT">
+            <id>dashboard_portlet_30762</id>
+            <name>ComponentA</name>
+            <initialJob>A</initialJob>
+            <finalJob></finalJob>
+            <portletId>15834</portletId>
+        </se.diabol.jenkins.pipeline.portlet.DeliveryPipelineViewPortlet>
+        <se.diabol.jenkins.pipeline.portlet.DeliveryPipelineViewPortlet plugin="delivery-pipeline-plugin@0.10.1-SNAPSHOT">
+            <id>dashboard_portlet_31401</id>
+            <name>ComponentC</name>
+            <initialJob>C</initialJob>
+            <finalJob></finalJob>
+            <portletId>12099</portletId>
+        </se.diabol.jenkins.pipeline.portlet.DeliveryPipelineViewPortlet>
+    </topPortlets>
+    <bottomPortlets/>
+</hudson.plugins.view.dashboard.Dashboard>
