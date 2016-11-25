@@ -243,8 +243,8 @@ public class GuiFunctionalIT {
         assertNotNull(start.getLastBuild());
     }
 
-    @Test
-    public void testMemoryLeakjsPlumbDeliveryPipelinePage() throws Exception {
+    @Test // JENKINS-39856
+    public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelinePage() throws Exception {
         FreeStyleProject start = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
 
@@ -270,8 +270,8 @@ public class GuiFunctionalIT {
         assertEquals("1", result);
     }
 
-    @Test
-    public void testMemoryLeakjsPlumbDeliveryPipelineDashboardPortlet() throws Exception {
+    @Test // JENKINS-39856
+    public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelineDashboardPortlet() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
 
