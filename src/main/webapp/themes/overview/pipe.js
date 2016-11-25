@@ -1,6 +1,6 @@
 function pipelineUtils() {
-     self = this;
-     this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid) {
+     var self = this;
+     this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb) {
         Q.ajax({
             url: rootURL + "/" + view.viewUrl + 'api/json' + "?page=" + page + "&component=" + component + "&fullscreen=" + fullscreen,
             dataType: 'json',
@@ -8,16 +8,16 @@ function pipelineUtils() {
             cache: false,
             timeout: 20000,
             success: function (data) {
-                self.refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, pipelineid);
+                self.refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb);
                 setTimeout(function () {
-                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid);
+                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb);
                 }, timeout);
             },
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
-                plumb.repaintEverything();
+                jsplumb.repaintEverything();
                 setTimeout(function () {
-                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid);
+                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb);
                 }, timeout);
             }
         });
@@ -25,7 +25,7 @@ function pipelineUtils() {
 
     var lastResponse = null;
 
-    this.refreshPipelines = function(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern, pipelineid) {
+    this.refreshPipelines = function(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb) {
        var lastUpdate = data.lastUpdated,
            cErrorDiv = Q("#" + errorDiv),
            pipeline,
@@ -34,7 +34,6 @@ function pipelineUtils() {
            trigger,
            triggered,
            contributors,
-           plumb = jsPlumb.getInstance(),
            tasks = [];
 
        if (data.error) {
@@ -53,7 +52,7 @@ function pipelineUtils() {
                Q("#pipeline-message-" + pipelineid).html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
            }
 
-           plumb.reset();
+           jsplumb.reset();
            for (var c = 0; c < data.pipelines.length; c++) {
                html = [];
                component = data.pipelines[c];
@@ -227,11 +226,11 @@ function pipelineUtils() {
                                "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
                                "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + getLink(data, task.link) + "\">" + htmlEncode(task.name) + "</a></div>");
                            if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
-                               html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\');">');
+                               html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\');">');
                                html.push("</div>");
                            } else {
                                if (!pipeline.aggregated && data.allowRebuild && task.rebuildable) {
-                                   html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
+                                   html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
                                    html.push("</div>");
                                }
                            }
@@ -290,7 +289,7 @@ function pipelineUtils() {
                                source = getStageId(stage.id + "", index);
                                target = getStageId(value + "", index);
 
-                               plumb.connect({
+                               jsplumb.connect({
                                    source: source,
                                    target: target,
                                    anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
@@ -333,7 +332,7 @@ function pipelineUtils() {
                }
            }
        }
-       plumb.repaintEverything();
+       jsplumb.repaintEverything();
    }
 }
 
@@ -602,7 +601,7 @@ function formatDuration(millis) {
     return "0 sec";
 }
 
-function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild) {
+function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild, viewUrl) {
     Q("#manual-" + taskId).hide();
     var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild},
         before;
@@ -616,7 +615,7 @@ function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild
     }
 
     Q.ajax({
-        url: rootURL + "/" + view.viewUrl + 'api/manualStep',
+        url: rootURL + "/" + viewUrl + 'api/manualStep',
         type: "POST",
         data: formData,
         beforeSend: before,
@@ -631,7 +630,7 @@ function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild
     });
 }
 
-function triggerRebuild(taskId, project, buildId) {
+function triggerRebuild(taskId, project, buildId, viewUrl) {
     Q("#rebuild-" + taskId).hide();
     var formData = {project: project, buildId: buildId};
 
@@ -645,7 +644,7 @@ function triggerRebuild(taskId, project, buildId) {
     }
 
     Q.ajax({
-        url: rootURL + "/" + view.viewUrl + 'api/rebuildStep',
+        url: rootURL + "/" + viewUrl + 'api/rebuildStep',
         type: "POST",
         data: formData,
         beforeSend: before,
