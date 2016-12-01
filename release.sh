@@ -14,7 +14,7 @@ if [[ -n "$tag" ]] && [[ $tag =~ ^release-.* ]]; then
   git checkout -qf $branch
   head=`git rev-parse HEAD`
   commit=`git rev-list -n 1 $tag`
-  if [[ $head -eq $commit ]]; then
+  if [[ "$head" == "$commit" ]]; then
     mvn --settings settings.xml --batch-mode -DdryRun=true -DreleaseVersion=$version -Darguments="-DskipTests=true" -DskipTests=true release:prepare release:perform
   else
     echo "Tag $tag does not point to $branch/head, cannot release"
