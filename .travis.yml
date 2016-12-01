@@ -17,4 +17,4 @@ script:
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
-  - "[[ -z $TRAVIS_TAG]] && { ./release.sh automatic-release $TRAVIS_TAG};"
+  - "[[ -z $TRAVIS_TAG]] && { ./release.sh automatic-release $TRAVIS_TAG };"
