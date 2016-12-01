@@ -32,7 +32,7 @@ if [[ -n "$tag" ]] && [[ $tag =~ ^release-.* ]]; then
     git checkout -qf $branch
 
     # do the release
-    mvn --settings settings.xml --batch-mode -DdryRun=true -DreleaseVersion=$version -Darguments="-DskipTests=true" -DskipTests=true release:prepare release:perform
+    mvn --settings settings.xml --batch-mode -DreleaseVersion=$version -Darguments="-DskipTests=true" -DskipTests=true release:prepare release:perform
   else
     echo "Tag $tag does not point to $branch/head, aborting release"
     exit 1
