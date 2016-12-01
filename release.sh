@@ -12,7 +12,6 @@ fi
 
 if [[ -n "$tag" ]] && [[ $tag =~ ^release-.* ]]; then
   version=`echo $tag | sed -n 's/release-\(.\)/\1/p'`
-  git checkout -qf $branch
   head=`git rev-parse HEAD`
   commit=`git rev-list -n 1 $tag`
   if [[ "$head" == "$commit" ]]; then
@@ -30,7 +29,7 @@ if [[ -n "$tag" ]] && [[ $tag =~ ^release-.* ]]; then
     git remote remove origin
     git remote add origin $remote
     git fetch
-    git checkout master
+    git checkout -qf $branch
 
     # do the release
     mvn --settings settings.xml --batch-mode -DdryRun=true -DreleaseVersion=$version -Darguments="-DskipTests=true" -DskipTests=true release:prepare release:perform
