@@ -13,8 +13,8 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=1024m'" > ~/.mavenrc
 script:
-  mvn install
+  - "if [[ -z $TRAVIS_TAG ]]; then mvn install; fi"
+  - "if [[ -n $TRAVIS_TAG ]]; then ./release.sh master $TRAVIS_TAG; fi"
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
-  - "[[ -z $TRAVIS_TAG]] && { ./release.sh automatic-release $TRAVIS_TAG };"
