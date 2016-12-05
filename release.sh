@@ -22,8 +22,8 @@ if [[ -n "$tag" ]] && [[ $tag =~ ^release-.* ]]; then
     ssh-add travis_deploy_key
 
     # prepare the repo
-    git config user.name "travisci"
-    git config user.email "travisci@diabol.se"
+    git config user.name "diabolbuilder"
+    git config user.email "info@diabol.se"
     git config --global push.default simple
     remote=`git config remote.origin.url | sed -n 's/https:\/\/github.com\/\(.*\)/git@github.com:\1/p'`
     git remote remove origin
