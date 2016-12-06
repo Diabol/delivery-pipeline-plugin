@@ -431,7 +431,9 @@ public class DeliveryPipelineViewTest {
         jenkins.createFreeStyleProject("compile-Project2");
         jenkins.createFreeStyleProject("compile-Project3");
 
-        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)", false);
+        boolean showUpstream = false;
+        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)", showUpstream);
+        assertFalse(showUpstream);
         List<DeliveryPipelineView.RegExpSpec> regExpSpecs = new ArrayList<DeliveryPipelineView.RegExpSpec>();
         regExpSpecs.add(regExpSpec);
 
@@ -621,7 +623,11 @@ public class DeliveryPipelineViewTest {
         jenkins.createFreeStyleProject("compile-Project3");
         jenkins.createFreeStyleProject("compile");
 
-        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)", false);
+        boolean showUpstream = false;
+        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)", showUpstream);
+        assertFalse(regExpSpec.isShowUpstream());
+        regExpSpec.setShowUpstream(true);
+        assertTrue(regExpSpec.isShowUpstream());
         List<DeliveryPipelineView.RegExpSpec> regExpSpecs = new ArrayList<DeliveryPipelineView.RegExpSpec>();
         regExpSpecs.add(regExpSpec);
 

@@ -29,6 +29,7 @@ import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.task.Task;
+import se.diabol.jenkins.pipeline.sort.BuildStartTimeComparator;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
@@ -319,21 +320,7 @@ public class Pipeline extends AbstractItem {
                                                         boolean showChanges,
                                                         Component component) throws PipelineException {
         List<AbstractProject> firstProjects = ProjectUtil.getStartUpstreams(firstProject);
-        List<AbstractBuild> builds = new ArrayList<AbstractBuild>();
-        for (AbstractProject firstProject : firstProjects) {
-            builds.addAll(firstProject.getBuilds());
-        }
-        Collections.sort(builds, new Comparator<AbstractBuild>() {
-            @Override
-            public int compare(AbstractBuild build1, AbstractBuild build2) {
-                return compare(build2.getStartTimeInMillis(), build1.getStartTimeInMillis());
-            }
-
-            private int compare(long nummberX, long numberY) {
-                return (nummberX < numberY) ? -1 : ((nummberX == numberY) ? 0 : 1);
-            }
-
-        });
+        List<AbstractBuild> builds = resolveBuilds(firstProjects);
 
         //TODO check if in queue
 
@@ -349,6 +336,15 @@ public class Pipeline extends AbstractItem {
 
         Iterator it = builds.listIterator(startIndex);
         return getPipelines(it, context, startIndex, retrieveSize, showChanges, true);
+    }
+
+    private List<AbstractBuild> resolveBuilds(List<AbstractProject> firstProjects) {
+        List<AbstractBuild> builds = new ArrayList<AbstractBuild>();
+        for (AbstractProject firstProject : firstProjects) {
+            builds.addAll(firstProject.getBuilds());
+        }
+        Collections.sort(builds, new BuildStartTimeComparator());
+        return builds;
     }
 
 
@@ -383,8 +379,6 @@ public class Pipeline extends AbstractItem {
         return result;
 
     }
-
-
 
     @Override
     public String toString() {
