@@ -28,7 +28,7 @@ public class BuildStartTimeComparator implements Comparator<AbstractBuild> {
         return compare(build2.getStartTimeInMillis(), build1.getStartTimeInMillis());
     }
 
-    private int compare(long x, long y) {
-        return (x < y) ? -1 : ((x == y) ? 0 : 1);
+    private int compare(long first, long second) {
+        return (first < second) ? -1 : ((first == second) ? 0 : 1);
     }
 }
