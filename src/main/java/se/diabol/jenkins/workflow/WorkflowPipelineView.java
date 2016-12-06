@@ -157,15 +157,14 @@ public class WorkflowPipelineView extends View {
     @Exported
     public List<Component> getPipelines() {
         try {
-            if (project != null) {
-                WorkflowJob job = getWorkflowJob(project);
-                List<Pipeline> pipelines = resolvePipelines(job);
-                Component component = new Component(job.getName(), job, pipelines);
-                this.error = null;
-                return Collections.singletonList(component);
-            } else {
+            if (project == null) {
                 return Collections.emptyList();
             }
+            WorkflowJob job = getWorkflowJob(project);
+            List<Pipeline> pipelines = resolvePipelines(job);
+            Component component = new Component(job.getName(), job, pipelines);
+            this.error = null;
+            return Collections.singletonList(component);
         } catch (PipelineException e) {
             error = e.getMessage();
             return Collections.emptyList();
