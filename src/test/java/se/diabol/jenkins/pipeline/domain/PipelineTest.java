@@ -405,10 +405,7 @@ public class PipelineTest {
         assertEquals(2, latest.getStages().size());
         assertEquals("SUCCESS", latest.getStages().get(0).getTasks().get(0).getStatus().toString());
         assertEquals("DISABLED", latest.getStages().get(1).getTasks().get(0).getStatus().toString());
-
-
     }
-
 
     @Test
     public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
@@ -427,7 +424,7 @@ public class PipelineTest {
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
         Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse,
-                showChanges, false, component);
+                showChanges, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -703,7 +700,7 @@ public class PipelineTest {
         Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3,
                 pagingEnabledFalse, 1);
         List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse,
-                showChanges, false, component);
+                showChanges, component);
         assertEquals(1, pipelines.size());
     }
 
@@ -711,8 +708,7 @@ public class PipelineTest {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3,
                 pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges,
-                false, component);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }

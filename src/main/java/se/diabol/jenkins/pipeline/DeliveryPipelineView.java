@@ -522,23 +522,21 @@ public class DeliveryPipelineView extends View {
     private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
                                    boolean showAggregatedPipeline, int componentNumber, boolean showUpstream)
             throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, showUpstream);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
                 noOfPipelines, pagingEnabled, componentNumber);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
-        if (isFullScreenView()) {
-            pipelines.addAll(pipeline
-                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges,
-                            showUpstream, component));
-        } else {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(),
-                    pagingEnabled, showChanges, showUpstream, component));
-        }
+        pipelines.addAll(pipeline
+                .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), showPaging(), showChanges, component));
         component.setPipelines(pipelines);
         return component;
+    }
+
+    protected boolean showPaging() {
+        return !isFullScreenView() && getPagingEnabled();
     }
 
     @Override

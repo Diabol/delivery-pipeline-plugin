@@ -359,25 +359,23 @@ public class SimpleStatusTest {
         jenkins.waitUntilNoActivity();
 
         Component component = new Component("Component","project1", null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse,
-                showChanges, false, component);
+        List<Pipeline> pipelines =
+                pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.IDLE, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("project1"), "0",
-                false, "");
+        BuildPipelineView view = new BuildPipelineView("", "",
+                new DownstreamProjectGridBuilder("project1"), "0", false, "");
         project1.setQuietPeriod(3);
         view.triggerManualBuild(1, "project2", "project1");
-        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges,
-                false, component);
+        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.QUEUED, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
         jenkins.waitUntilNoActivity();
-        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges,
-                false, component);
+        pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.SUCCESS, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());

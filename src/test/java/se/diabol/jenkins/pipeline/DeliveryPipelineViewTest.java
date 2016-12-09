@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -933,6 +934,46 @@ public class DeliveryPipelineViewTest {
         assertTrue(jobs.contains(firstJob));
         assertTrue(jobs.contains(secondJob));
         assertFalse(jobs.contains(thirdJob));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldNotShowPagingForFullScreenViewWhenPagingEnabled() {
+        DeliveryPipelineView view = mock(DeliveryPipelineView.class);
+        when(view.isFullScreenView()).thenReturn(true);
+        when(view.getPagingEnabled()).thenReturn(true);
+        when(view.showPaging()).thenCallRealMethod();
+        assertFalse(view.showPaging());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldNotShowPagingForFullScreenViewWhenPagingDisabled() {
+        DeliveryPipelineView view = mock(DeliveryPipelineView.class);
+        when(view.isFullScreenView()).thenReturn(true);
+        when(view.getPagingEnabled()).thenReturn(false);
+        when(view.showPaging()).thenCallRealMethod();
+        assertFalse(view.showPaging());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldShowPagingForNormalViewWhenPagingEnabled() {
+        DeliveryPipelineView view = mock(DeliveryPipelineView.class);
+        when(view.isFullScreenView()).thenReturn(false);
+        when(view.getPagingEnabled()).thenReturn(true);
+        when(view.showPaging()).thenCallRealMethod();
+        assertTrue(view.showPaging());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldNotShowPagingForNormalViewWhenPagingDisabled() {
+        DeliveryPipelineView view = mock(DeliveryPipelineView.class);
+        when(view.isFullScreenView()).thenReturn(false);
+        when(view.getPagingEnabled()).thenReturn(false);
+        when(view.showPaging()).thenCallRealMethod();
+        assertFalse(view.showPaging());
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {
