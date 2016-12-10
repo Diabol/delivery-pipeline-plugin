@@ -85,7 +85,8 @@ public class DeliveryPipelineViewTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-    private final static String NONE = null;
+    private static final String NONE = null;
+    private static final boolean DO_NOT_SHOW_UPSTREAM = false;
 
     @Test
     public void testOnJobRenamed() throws Exception {
@@ -93,8 +94,8 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", NONE, false));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2", NONE, false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", NONE, DO_NOT_SHOW_UPSTREAM));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2", NONE, DO_NOT_SHOW_UPSTREAM));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         view.setComponentSpecs(componentSpecs);
@@ -111,7 +112,7 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject p2 = jenkins.createFreeStyleProject("build2");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", "build2", false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", "build2", DO_NOT_SHOW_UPSTREAM));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         view.setComponentSpecs(componentSpecs);
@@ -142,8 +143,8 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", NONE, false));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2", NONE, false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", NONE, DO_NOT_SHOW_UPSTREAM));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp2", "build2", NONE, DO_NOT_SHOW_UPSTREAM));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         view.setComponentSpecs(componentSpecs);
@@ -299,7 +300,6 @@ public class DeliveryPipelineViewTest {
         assertEquals("se.diabol.jenkins.pipeline.sort.NameComparator", view.getSorting());
     }
 
-
     @Test
     public void testGetItemsAndContains() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
@@ -312,7 +312,7 @@ public class DeliveryPipelineViewTest {
 
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
         jenkins.getInstance().addView(view);
@@ -323,13 +323,12 @@ public class DeliveryPipelineViewTest {
 
         Collection<TopLevelItem> items =  view.getItems();
         assertEquals(3, items.size());
-
     }
 
     @Test
     public void testGetItemsGetPipelinesWhenNoProjectFound() throws Exception {
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
         jenkins.getInstance().addView(view);
@@ -359,7 +358,7 @@ public class DeliveryPipelineViewTest {
 
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         view.setComponentSpecs(specs);
         folder.addView(view);
@@ -387,7 +386,7 @@ public class DeliveryPipelineViewTest {
         jenkins.waitUntilNoActivity();
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", "test", false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", "test", DO_NOT_SHOW_UPSTREAM));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
         view.setSorting(NameComparator.class.getName());
@@ -400,8 +399,8 @@ public class DeliveryPipelineViewTest {
     public void testGetPipelinesUsesMaxNumberOfJobs() throws Exception {
         jenkins.createFreeStyleProject("build");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, false));
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "build", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "build", NONE, DO_NOT_SHOW_UPSTREAM));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
         view.setMaxNumberOfVisiblePipelines(1);
@@ -416,7 +415,7 @@ public class DeliveryPipelineViewTest {
         jenkins.createFreeStyleProject("build");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         for (int i = 0; i < 100; i++) {
-            specs.add(new DeliveryPipelineView.ComponentSpec("Comp" + i, "build", NONE, false));
+            specs.add(new DeliveryPipelineView.ComponentSpec("Comp" + i, "build", NONE, DO_NOT_SHOW_UPSTREAM));
         }
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
