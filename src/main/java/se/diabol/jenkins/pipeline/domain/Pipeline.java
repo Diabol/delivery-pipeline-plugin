@@ -328,7 +328,8 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : pipeline.getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
-            Pipeline pipelineLatest = pipelineOf(firstBuild, lastProject, pipeLineTimestamp, contributors, pipelineStages);
+            Pipeline pipelineLatest =
+                    pipelineOf(firstBuild, lastProject, pipeLineTimestamp, contributors, pipelineStages);
             if (showChanges) {
                 pipelineLatest.setChanges(pipelineChanges);
             }
@@ -339,7 +340,8 @@ public class Pipeline extends AbstractItem {
         return result;
     }
 
-    protected Pipeline pipelineOf(AbstractBuild firstBuild, AbstractProject lastProject, String pipeLineTimestamp, Set<UserInfo> contributors, List<Stage> pipelineStages) {
+    protected Pipeline pipelineOf(AbstractBuild firstBuild, AbstractProject lastProject, String pipeLineTimestamp,
+                                  Set<UserInfo> contributors, List<Stage> pipelineStages) {
         return new Pipeline(
                 getName(),
                 firstBuild.getProject(),

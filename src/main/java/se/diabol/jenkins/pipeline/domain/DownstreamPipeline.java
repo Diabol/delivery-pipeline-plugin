@@ -26,7 +26,10 @@ import java.util.List;
 
 public class DownstreamPipeline extends Pipeline {
 
-    public DownstreamPipeline(String name, AbstractProject firstProject, AbstractProject lastProject, List<Stage> stages) {
+    public DownstreamPipeline(String name,
+                              AbstractProject firstProject,
+                              AbstractProject lastProject,
+                              List<Stage> stages) {
         super(name, firstProject, lastProject, stages);
     }
 
