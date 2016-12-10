@@ -22,7 +22,6 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class DownstreamPipeline extends Pipeline {
@@ -44,16 +43,30 @@ public class DownstreamPipeline extends Pipeline {
 
         int totalNoOfPipelines = builds.size();
         component.setTotalNoOfPipelines(totalNoOfPipelines);
+        int startIndex = getStartIndex(component, pagingEnabled, noOfPipelines);
+        int retrieveSize = calculateRetreiveSize(component, pagingEnabled, noOfPipelines, totalNoOfPipelines);
+
+        return getPipelines(builds.listIterator(startIndex), context, startIndex, retrieveSize, showChanges);
+    }
+
+    protected static int getStartIndex(Component component, boolean pagingEnabled, int noOfPipelines) {
         int startIndex = 0;
-        int retrieveSize = noOfPipelines;
         if (pagingEnabled && !component.isFullScreenView()) {
             startIndex = (component.getCurrentPage() - 1) * noOfPipelines;
+        }
+        return startIndex;
+    }
+
+    protected static int calculateRetreiveSize(Component component,
+                                               boolean pagingEnabled,
+                                               int noOfPipelines,
+                                               int totalNoOfPipelines) {
+        int retrieveSize = noOfPipelines;
+        if (pagingEnabled && !component.isFullScreenView()) {
             retrieveSize = Math.min(totalNoOfPipelines - ((component.getCurrentPage() - 1) * noOfPipelines),
                     noOfPipelines);
         }
-
-        Iterator it = builds.listIterator(startIndex);
-        return getPipelines(it, context, startIndex, retrieveSize, showChanges);
+        return retrieveSize;
     }
 
     @Override
