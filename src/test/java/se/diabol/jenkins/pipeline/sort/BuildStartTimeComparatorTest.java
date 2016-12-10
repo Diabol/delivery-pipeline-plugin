@@ -17,18 +17,23 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.sort;
 
-import hudson.model.AbstractBuild;
+import org.junit.Test;
 
-import java.util.Comparator;
+import static org.junit.Assert.*;
 
-public final class BuildStartTimeComparator implements Comparator<AbstractBuild> {
+public class BuildStartTimeComparatorTest {
 
-    @Override
-    public int compare(AbstractBuild build1, AbstractBuild build2) {
-        return compare(build2.getStartTimeInMillis(), build1.getStartTimeInMillis());
+    @Test
+    public void shouldCompareBuildTimes() throws Exception {
+        long first = 10L;
+        long second = 20L;
+        assertTrue(new BuildStartTimeComparator().compare(first, second) < 0);
+
+        first = 30L;
+        assertTrue(new BuildStartTimeComparator().compare(first, second) > 0);
+
+        first = second;
+        assertTrue(new BuildStartTimeComparator().compare(first, second) == 0);
     }
 
-    protected int compare(long first, long second) {
-        return (first < second) ? -1 : ((first == second) ? 0 : 1);
-    }
 }
