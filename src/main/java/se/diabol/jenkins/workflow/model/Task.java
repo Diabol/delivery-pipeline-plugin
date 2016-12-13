@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
+import static java.lang.Math.round;
+import static se.diabol.jenkins.workflow.util.Util.getRunById;
+
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
 import hudson.model.Result;
 import jenkins.model.Jenkins;
@@ -39,10 +42,9 @@ import se.diabol.jenkins.workflow.util.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.round;
-import static se.diabol.jenkins.workflow.util.Util.getRunById;
-
 public class Task extends AbstractItem {
+
+    private static final WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
 
     private final String id;
     private final String link;
@@ -50,7 +52,6 @@ public class Task extends AbstractItem {
     private final ManualStep manual;
     private final String buildId;
     private final String description;
-    private final static WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
 
     public Task(String id, String name, Status status, String link, ManualStep manual, String description) {
         super(name);
@@ -105,7 +106,8 @@ public class Task extends AbstractItem {
         if (taskNodesDefinedInStage(taskNodes)) {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
-                result.add(new Task(flowNode.getId(), action.getTaskName(), resolveTaskStatus(build, stageStartNode), "", null, null));
+                result.add(new Task(flowNode.getId(), action.getTaskName(), resolveTaskStatus(build, stageStartNode),
+                        "", null, null));
             }
         } else {
             Status stageStatus = resolveTaskStatus(build, stageStartNode);

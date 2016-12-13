@@ -29,7 +29,8 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
     @StepContextParameter
     private transient FlowNode node;
 
-    @Inject(optional=true) private transient TaskStep step;
+    @Inject(optional = true)
+    private transient TaskStep step;
 
     @Override
     public boolean start() throws Exception {

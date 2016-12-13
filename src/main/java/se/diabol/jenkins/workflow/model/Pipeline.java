@@ -18,9 +18,6 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.model;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -32,6 +29,10 @@ import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.domain.UserInfo;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Pipeline extends AbstractItem {
 

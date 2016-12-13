@@ -77,10 +77,10 @@ public class Run {
 
     @Override
     public String toString() {
-        return "Run{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return "Run{"
+                + "id='" + id + '\''
+                + ", name='" + name + '\''
+                + ", status='" + status + '\''
+                + '}';
     }
 }

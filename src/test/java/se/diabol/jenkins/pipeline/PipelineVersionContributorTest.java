@@ -17,6 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
@@ -47,12 +53,6 @@ import org.jvnet.hudson.test.TestBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 public class PipelineVersionContributorTest {
 
     private static final String PIPELINE_VERSION = "PIPELINE_VERSION";
@@ -62,9 +62,8 @@ public class PipelineVersionContributorTest {
 
     @Test
     public void testVersionContributorNotConfigured() throws Exception {
-
-        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
-        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+        final FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+        final FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
         firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
         firstProject.save();
 

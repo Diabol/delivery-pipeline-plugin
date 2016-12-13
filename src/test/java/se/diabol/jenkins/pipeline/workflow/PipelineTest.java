@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.workflow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -49,7 +50,8 @@ public class PipelineTest {
     @Test
     public void simplePipelineTasks() throws Exception {
         WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, "Pipeline");
-        pipelineProject.setDefinition(new CpsFlowDefinition("node {stage 'Build'\n task 'Compile'\n stage 'CI' \n task 'Deploy'}"));
+        pipelineProject.setDefinition(
+                new CpsFlowDefinition("node {stage 'Build'\n task 'Compile'\n stage 'CI' \n task 'Deploy'}"));
         WorkflowRun build = pipelineProject.scheduleBuild2(0).get();
 
         Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
@@ -60,8 +62,6 @@ public class PipelineTest {
         assertEquals("Compile" , pipeline.getStages().get(0).getTasks().get(0).getName());
         assertEquals(1 , pipeline.getStages().get(1).getTasks().size());
         assertEquals("Deploy" , pipeline.getStages().get(1).getTasks().get(0).getName());
-
-
 
         //TODO task assert
     }

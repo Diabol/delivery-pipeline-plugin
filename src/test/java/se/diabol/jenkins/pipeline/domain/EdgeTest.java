@@ -17,16 +17,15 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import se.diabol.jenkins.pipeline.domain.task.Task;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-
 public class EdgeTest {
-
 
     @Test
     public void testGetSet() {

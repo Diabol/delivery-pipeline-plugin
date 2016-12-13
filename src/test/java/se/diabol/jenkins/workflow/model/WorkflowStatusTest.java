@@ -17,13 +17,13 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import com.google.api.client.util.DateTime;
 import org.junit.Test;
 import se.diabol.jenkins.pipeline.domain.status.StatusType;
 import se.diabol.jenkins.workflow.api.Stage;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class WorkflowStatusTest {
 

@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleProject;
 import org.junit.Rule;
@@ -25,14 +28,10 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 public class ManualTriggerFactoryTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-
 
     @Test
     @WithoutJenkins
@@ -40,21 +39,20 @@ public class ManualTriggerFactoryTest {
         TestUtil.assertUtilityClassWellDefined(ManualTriggerFactory.class);
     }
 
-
     @Test
     public void testNotFound() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        assertNull(ManualTriggerFactory.getManualTrigger(b, a));
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        assertNull(ManualTriggerFactory.getManualTrigger(projectB, projectA));
     }
 
     @Test
     public void testFound() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        projectA.getPublishersList().add(new BuildPipelineTrigger("b", null));
         jenkins.getInstance().rebuildDependencyGraph();
-        assertNotNull(ManualTriggerFactory.getManualTrigger(b, a));
+        assertNotNull(ManualTriggerFactory.getManualTrigger(projectB, projectA));
     }
 
 }

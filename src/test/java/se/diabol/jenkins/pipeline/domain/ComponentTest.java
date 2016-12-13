@@ -17,6 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
@@ -31,24 +37,17 @@ import se.diabol.jenkins.pipeline.PipelineProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-
 @RunWith(MockitoJUnitRunner.class)
 public class ComponentTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-    private final static boolean pagingEnabledFalse = false;
+    private static final boolean PAGING_ENABLED_FALSE = false;
 
     @Test
     @WithoutJenkins
     public void testSettersAndGetters() {
-        Component component = new Component("Component", "Build", null, false, 10, pagingEnabledFalse, 1);
+        Component component = new Component("Component", "Build", null, false, 10, PAGING_ENABLED_FALSE, 1);
         component.setTotalNoOfPipelines(10);
         component.setPipelines(new ArrayList<Pipeline>());
         assertEquals(1, component.getComponentNumber());
@@ -62,9 +61,9 @@ public class ComponentTest {
 
     @Test
     public void testComponentPaging() throws Exception {
-        FreeStyleProject compile = jenkins.createFreeStyleProject("comp");
-        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
-        FreeStyleProject test = jenkins.createFreeStyleProject("test");
+        final FreeStyleProject compile = jenkins.createFreeStyleProject("comp");
+        final FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+        final FreeStyleProject test = jenkins.createFreeStyleProject("test");
 
         compile.addProperty(new PipelineProperty("Compile", "Build", ""));
         compile.save();
@@ -81,7 +80,8 @@ public class ComponentTest {
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setPagingEnabled(true);
 
-        DeliveryPipelineView.ComponentSpec componentSpec = new DeliveryPipelineView.ComponentSpec("Pipeline","comp", null);
+        DeliveryPipelineView.ComponentSpec componentSpec =
+                new DeliveryPipelineView.ComponentSpec("Pipeline","comp", null);
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(componentSpec);
         view.setComponentSpecs(componentSpecs);
@@ -89,7 +89,7 @@ public class ComponentTest {
         jenkins.getInstance().addView(view);
 
         jenkins.setQuietPeriod(0);
-        for(int loopIndex=0; loopIndex < 5; loopIndex++) {
+        for (int loopIndex = 0; loopIndex < 5; loopIndex++) {
             jenkins.buildAndAssertSuccess(compile);
             jenkins.waitUntilNoActivity();
         }

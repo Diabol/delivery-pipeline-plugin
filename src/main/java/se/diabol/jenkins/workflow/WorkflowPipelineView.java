@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
+import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
+
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Item;
@@ -27,13 +29,6 @@ import hudson.model.ViewDescriptor;
 import hudson.model.ViewGroup;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -51,9 +46,14 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
 
-import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
+import javax.servlet.ServletException;
 
 public class WorkflowPipelineView extends View {
 

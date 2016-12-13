@@ -52,19 +52,19 @@ public class DeliveryPipelinePage {
         webDriver.findElement(By.id(id)).click();
     }
 
-    public void triggerNewPipelineBuild(String no){
+    public void triggerNewPipelineBuild(String no) {
         webDriver.findElement(By.id("startpipeline-" + no)).click();
-   }
+    }
 
-    public void triggerNewParameterizedPipelineBuild(String no){
+    public void triggerNewParameterizedPipelineBuild(String no) {
         webDriver.findElement(By.id("startpipeline-" + no)).click();
         /* this build requires parameter */
         webDriver.findElement(By.id("yui-gen1-button")).click();
-   }
+    }
 
     public String getJsPlumbUtilityVariable() {
-        JavascriptExecutor jSE = (JavascriptExecutor)webDriver;
-        return jSE.executeScript("return jsPlumbUtilityVariable.length").toString();
+        JavascriptExecutor jse = (JavascriptExecutor) webDriver;
+        return jse.executeScript("return jsPlumbUtilityVariable.length").toString();
     }
 
 }
