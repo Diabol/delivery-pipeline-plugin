@@ -296,7 +296,7 @@ public class Pipeline extends AbstractItem {
         }
 
         Iterator it = firstProject.getBuilds().listIterator(startIndex);
-        result.addAll(getPipelines(it, context, startIndex, retrieveSize, showChanges)); //TTYXYZ
+        result.addAll(getPipelines(it, context, startIndex, retrieveSize, showChanges));
         return result;
     }
 

@@ -66,8 +66,8 @@ public class PipelineTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-    private final static boolean pagingEnabledFalse = false;
-    private final static boolean showChanges = true;
+    private final static boolean PAGING_DISABLED = false;
+    private final static boolean SHOW_CHANGES = true;
 
     @Test
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
@@ -422,16 +422,16 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse,
-                showChanges, component);
+        Component component = new Component("Component", "build", null, false, 3, PAGING_DISABLED, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), PAGING_DISABLED,
+                SHOW_CHANGES, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
     }
 
     @Test
-    public void getPipelineLatestWithDifferntFolders() throws Exception {
+    public void getPipelineLatestWithDifferentFolders() throws Exception {
         MockFolder folder1 = jenkins.createFolder("folder1");
         MockFolder folder2 = jenkins.createFolder("folder2");
         FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
@@ -698,17 +698,17 @@ public class PipelineTest {
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
         Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3,
-                pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse,
-                showChanges, component);
+                PAGING_DISABLED, 1);
+        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), PAGING_DISABLED,
+                SHOW_CHANGES, component);
         assertEquals(1, pipelines.size());
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) throws PipelineException {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3,
-                pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
+                PAGING_DISABLED, 1);
+        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, PAGING_DISABLED, SHOW_CHANGES, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
