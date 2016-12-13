@@ -17,6 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.api;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+
 import com.google.api.client.util.DateTime;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -27,11 +32,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 public class JsonTest {
 
@@ -67,13 +67,14 @@ public class JsonTest {
         Run run = new Run(Collections.<String, String>emptyMap(), "id", "name", "SUCCESS", null, null, 0L,
                 Collections.<Stage>emptyList());
         String json = Json.serialize(run);
-        assertThat(json, is("{\"_links\":{},\"id\":\"id\",\"name\":\"name\",\"status\":\"SUCCESS\"," +
-                "\"startTimeMillis\":null,\"endTimeMillis\":null,\"durationMillis\":0,\"stages\":[]}"));
+        assertThat(json, is("{\"_links\":{},\"id\":\"id\",\"name\":\"name\",\"status\":\"SUCCESS\","
+                + "\"startTimeMillis\":null,\"endTimeMillis\":null,\"durationMillis\":0,\"stages\":[]}"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void serializeShouldThrowIllegalArgumentForIOException() {
-        class NonSerializable {};
+        class NonSerializable {}
+
         NonSerializable clazz = new NonSerializable();
         Json.serialize(clazz);
     }

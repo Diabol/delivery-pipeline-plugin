@@ -17,16 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
-import com.google.api.client.http.HttpRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-import se.diabol.jenkins.workflow.api.Run;
-
-import java.io.IOException;
-import java.util.Arrays;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.greaterThan;
@@ -36,6 +26,16 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.google.api.client.http.HttpRequest;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+import se.diabol.jenkins.workflow.api.Run;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkflowApiTest {

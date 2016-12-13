@@ -17,6 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import hudson.model.AutoCompletionCandidates;
 import hudson.model.FreeStyleProject;
 import hudson.util.FormValidation;
@@ -32,13 +38,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-
-
 @RunWith(MockitoJUnitRunner.class)
 public class PipelinePropertyTest {
 
@@ -48,116 +47,114 @@ public class PipelinePropertyTest {
     @Test
     @WithoutJenkins
     public void testDoCheckStageName() {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
-        assertEquals(FormValidation.Kind.OK, d.doCheckStageName("").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckStageName(" ").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckStageName("Stage").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckStageName(null).kind);
+        PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckStageName("").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckStageName(" ").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckStageName("Stage").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckStageName(null).kind);
     }
 
     @Test
     @WithoutJenkins
     public void testDoCheckTaskName() {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
-        assertEquals(FormValidation.Kind.OK, d.doCheckTaskName("").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckTaskName(" ").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckTaskName("Task").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckTaskName(null).kind);
+        PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckTaskName("").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckTaskName(" ").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckTaskName("Task").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckTaskName(null).kind);
     }
 
     @Test
     @WithoutJenkins
     public void testIsApplicable() {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
-        assertTrue(d.isApplicable(FreeStyleProject.class));
-
+        PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
+        assertTrue(descriptor.isApplicable(FreeStyleProject.class));
     }
 
     @Test
     @WithoutJenkins
     public void testNewInstanceEmpty() throws Exception {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        final PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn("");
         when(request.getParameter("stageName")).thenReturn("");
         when(request.getParameter("descriptionTemplate")).thenReturn("");
         when(request.getParameter("enabled")).thenReturn("on");
-        assertNull(d.newInstance(request, null));
+        assertNull(descriptor.newInstance(request, null));
     }
 
     @Test
     @WithoutJenkins
     public void testNewInstanceNull() throws Exception {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        final PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn(null);
         when(request.getParameter("stageName")).thenReturn(null);
         when(request.getParameter("enabled")).thenReturn("on");
-        assertNull(d.newInstance(request, null));
+        assertNull(descriptor.newInstance(request, null));
     }
 
     @Test
     @WithoutJenkins
     public void testNewInstanceTaskNull() throws Exception {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn(null);
         when(request.getParameter("stageName")).thenReturn("Stage");
         when(request.getParameter("enabled")).thenReturn("on");
-        PipelineProperty p = d.newInstance(request, null);
-        assertNotNull(p);
-        assertNull(p.getTaskName());
-        assertEquals("Stage", p.getStageName());
+        PipelineProperty property = descriptor.newInstance(request, null);
+        assertNotNull(property);
+        assertNull(property.getTaskName());
+        assertEquals("Stage", property.getStageName());
     }
 
     @Test
     @WithoutJenkins
     public void testNewInstanceTaskNullDisabled() throws Exception {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("enabled")).thenReturn(null);
-        assertNull(d.newInstance(request, null));
+        assertNull(descriptor.newInstance(request, null));
     }
 
     @Test
     @WithoutJenkins
     public void testNewInstanceBothSet() throws Exception {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         when(request.getParameter("taskName")).thenReturn("Task");
         when(request.getParameter("stageName")).thenReturn("Stage");
         when(request.getParameter("enabled")).thenReturn("on");
-        PipelineProperty p = d.newInstance(request, null);
-        assertNotNull(p);
-        assertEquals("Task", p.getTaskName());
-        assertEquals("Stage", p.getStageName());
+        PipelineProperty property = descriptor.newInstance(request, null);
+        assertNotNull(property);
+        assertEquals("Task", property.getTaskName());
+        assertEquals("Stage", property.getStageName());
     }
 
     @Test
     public void testDoAutoCompleteStageName() throws Exception {
-        PipelineProperty.DescriptorImpl d = new PipelineProperty.DescriptorImpl();
+        final PipelineProperty.DescriptorImpl descriptor = new PipelineProperty.DescriptorImpl();
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
         jenkins.createFreeStyleProject("build3");
         build2.addProperty(new PipelineProperty());
         build.addProperty(new PipelineProperty("Build", "Build", ""));
 
-
-        AutoCompletionCandidates c1 = d.doAutoCompleteStageName("B");
+        AutoCompletionCandidates c1 = descriptor.doAutoCompleteStageName("B");
         assertEquals(c1.getValues().size(), 1);
 
-        AutoCompletionCandidates c2 = d.doAutoCompleteStageName("A");
+        AutoCompletionCandidates c2 = descriptor.doAutoCompleteStageName("A");
         assertEquals(c2.getValues().size(), 0);
 
-        AutoCompletionCandidates c3 = d.doAutoCompleteStageName(null);
+        AutoCompletionCandidates c3 = descriptor.doAutoCompleteStageName(null);
         assertEquals(c3.getValues().size(), 0);
     }
 
     @Test
     public void testGetStageNames() throws Exception {
         MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject build1 = folder.createProject(FreeStyleProject.class, "build1");
-        FreeStyleProject build2 = folder.createProject(FreeStyleProject.class, "build2");
+        final FreeStyleProject build1 = folder.createProject(FreeStyleProject.class, "build1");
+        final FreeStyleProject build2 = folder.createProject(FreeStyleProject.class, "build2");
 
         Set<String> stageNames = PipelineProperty.getStageNames();
         assertNotNull(stageNames);

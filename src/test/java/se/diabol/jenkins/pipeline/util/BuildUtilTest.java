@@ -17,6 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import hudson.model.AbstractBuild;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
@@ -32,11 +40,6 @@ import se.diabol.jenkins.pipeline.test.TestUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class BuildUtilTest {
 
     @Rule
@@ -51,9 +54,9 @@ public class BuildUtilTest {
 
     @Test
     public void testFirstUpstreamBuildFirstProjectHasUpstreamJob() throws Exception {
-        FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
-        FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        FreeStyleProject pack = jenkins.createFreeStyleProject("package");
+        final FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        final FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        final FreeStyleProject pack = jenkins.createFreeStyleProject("package");
         upstream.getPublishersList().add(new BuildTrigger("build", false));
         build.getPublishersList().add(new BuildTrigger("package", false));
         jenkins.getInstance().rebuildDependencyGraph();
@@ -66,7 +69,6 @@ public class BuildUtilTest {
         assertNotNull(pack.getLastBuild());
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(pack.getLastBuild(), build));
-
     }
 
     @Test
@@ -85,7 +87,6 @@ public class BuildUtilTest {
         when(build.getActions(CauseAction.class)).thenReturn(causeActions);
 
         assertNull(BuildUtil.getUpstreamBuild(build));
-
     }
 
     @Test
@@ -101,12 +102,5 @@ public class BuildUtilTest {
         AbstractBuild build3 = jenkins.buildAndAssertSuccess(job1);
         assertFalse(BuildUtil.equals(build1, build3));
         assertFalse(BuildUtil.equals(null, null));
-
-
     }
-
-
-
-
-
 }

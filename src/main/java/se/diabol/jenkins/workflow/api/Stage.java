@@ -57,20 +57,20 @@ public class Stage {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (other == null || getClass() != other.getClass()) {
             return false;
         }
-        Stage stage = (Stage) o;
-        return Objects.equal(_links, stage._links) &&
-                Objects.equal(id, stage.id) &&
-                Objects.equal(name, stage.name) &&
-                Objects.equal(status, stage.status) &&
-                Objects.equal(startTimeMillis, stage.startTimeMillis) &&
-                Objects.equal(durationMillis, stage.durationMillis);
+        Stage stage = (Stage) other;
+        return Objects.equal(_links, stage._links)
+                && Objects.equal(id, stage.id)
+                && Objects.equal(name, stage.name)
+                && Objects.equal(status, stage.status)
+                && Objects.equal(startTimeMillis, stage.startTimeMillis)
+                && Objects.equal(durationMillis, stage.durationMillis);
     }
 
     @Override
@@ -80,10 +80,10 @@ public class Stage {
 
     @Override
     public String toString() {
-        return "Stage{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return "Stage{"
+                + "id='" + id + '\''
+                + ", name='" + name + '\''
+                + ", status='" + status + '\''
+                + '}';
     }
 }

@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
@@ -25,10 +29,6 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 public class BPPManualTriggerResolverTest {
 
     @Rule
@@ -36,51 +36,50 @@ public class BPPManualTriggerResolverTest {
 
     @Test
     public void testGetTriggerNoRelation() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        assertNull(new BPPManualTriggerResolver().getManualTrigger(a, b));
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        assertNull(new BPPManualTriggerResolver().getManualTrigger(projectA, projectB));
     }
 
     @Test
     public void testGetTriggerBPPManualTrigger() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        FreeStyleProject c = jenkins.createFreeStyleProject("c");
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        final FreeStyleProject projectC = jenkins.createFreeStyleProject("c");
         jenkins.createFreeStyleProject("d");
 
-
-        a.getPublishersList().add(new BuildPipelineTrigger("b", null));
-        c.getPublishersList().add(new BuildPipelineTrigger("d", null));
+        projectA.getPublishersList().add(new BuildPipelineTrigger("b", null));
+        projectC.getPublishersList().add(new BuildPipelineTrigger("d", null));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));
-        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));
-        assertNull(new BPPManualTriggerResolver().getManualTrigger(b, c));
+        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(projectB, projectA));
+        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(projectB, projectA));
+        assertNull(new BPPManualTriggerResolver().getManualTrigger(projectB, projectC));
     }
 
     @Test
     public void testGetTriggerBPPManualTriggerFolders() throws Exception {
         MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "a");
-        FreeStyleProject b = folder.createProject(FreeStyleProject.class, "b");
-        a.getPublishersList().add(new BuildPipelineTrigger("folder/b", null));
+        FreeStyleProject projectA = folder.createProject(FreeStyleProject.class, "a");
+        FreeStyleProject projectB = folder.createProject(FreeStyleProject.class, "b");
+        projectA.getPublishersList().add(new BuildPipelineTrigger("folder/b", null));
         jenkins.getInstance().rebuildDependencyGraph();
 
-        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));
+        assertNotNull(new BPPManualTriggerResolver().getManualTrigger(projectB, projectA));
     }
 
     @Test
     public void testIsManualTriggerMultipleUpstreams() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        FreeStyleProject c = jenkins.createFreeStyleProject("c");
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        final FreeStyleProject projectC = jenkins.createFreeStyleProject("c");
 
-        a.getPublishersList().add(new BuildTrigger("c", true));
-        b.getPublishersList().add(new BuildPipelineTrigger("c", null));
+        projectA.getPublishersList().add(new BuildTrigger("c", true));
+        projectB.getPublishersList().add(new BuildPipelineTrigger("c", null));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
-        assertTrue(new BPPManualTriggerResolver().isManualTrigger(c));
+        assertTrue(new BPPManualTriggerResolver().isManualTrigger(projectC));
     }
 }

@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersAction;
@@ -30,9 +33,6 @@ import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 public class EnvVersionTokenMacroTest {
 
     @Rule
@@ -41,42 +41,43 @@ public class EnvVersionTokenMacroTest {
     @Test
     public void testNoParseVersionExists() throws Exception {
         EnvVersionTokenMacro macro = new EnvVersionTokenMacro();
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
         jenkins.setQuietPeriod(0);
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectA);
 
-        String o = macro.evaluate(build, new StreamTaskListener(System.err, Charset.defaultCharset()), "ENV_VERSION");
-        assertEquals("", o);
+        String string =
+                macro.evaluate(build, new StreamTaskListener(System.err, Charset.defaultCharset()), "ENV_VERSION");
+        assertEquals("", string);
     }
 
     @Test
     public void testParseVersionExists() throws Exception {
         EnvVersionTokenMacro macro = new EnvVersionTokenMacro();
         TaskListener listener = new StreamTaskListener(System.err, Charset.defaultCharset());
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
         jenkins.setQuietPeriod(0);
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectA);
 
         ParametersAction action = new ParametersAction(new StringParameterValue("ENV_VERSION", "1.0-SNAPSHOT"));
         build.addAction(action);
-        String o = macro.evaluate(build, listener, "ENV_VERSION");
-        assertEquals("1.0-SNAPSHOT", o);
+        String string = macro.evaluate(build, listener, "ENV_VERSION");
+        assertEquals("1.0-SNAPSHOT", string);
     }
 
     @Test
     public void testParseWithStripedVersionExists() throws Exception {
         EnvVersionTokenMacro macro = new EnvVersionTokenMacro();
-        TaskListener listener = new StreamTaskListener(System.err, Charset.defaultCharset());
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        final TaskListener listener = new StreamTaskListener(System.err, Charset.defaultCharset());
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
         jenkins.setQuietPeriod(0);
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectA);
 
         ParametersAction action = new ParametersAction(new StringParameterValue("ENV_VERSION", "1.0-SNAPSHOT"));
         build.addAction(action);
 
         macro.stripSnapshot = true;
-        String o = macro.evaluate(build, listener, "ENV_VERSION");
-        assertEquals("1.0", o);
+        String string = macro.evaluate(build, listener, "ENV_VERSION");
+        assertEquals("1.0", string);
     }
 
     @Test

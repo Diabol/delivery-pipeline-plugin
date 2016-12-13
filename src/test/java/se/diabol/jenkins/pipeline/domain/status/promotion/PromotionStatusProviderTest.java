@@ -17,6 +17,15 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status.promotion;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import hudson.model.AbstractBuild;
 import hudson.model.BooleanParameterValue;
 import hudson.model.BuildBadgeAction;
@@ -35,15 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Status.class)
 public class PromotionStatusProviderTest {
@@ -54,7 +54,8 @@ public class PromotionStatusProviderTest {
         final AbstractBuild<?, ?> mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
 
-        final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper = mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
+        final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper =
+                mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
         when(mockPromotedBuildActionWrapper.getPromotions(mockBuild)).thenReturn(Collections.<Status>emptyList());
 
         final PromotionStatusProvider promotionStatusProvider = new PromotionStatusProvider();
@@ -74,7 +75,8 @@ public class PromotionStatusProviderTest {
         PowerMockito.mockStatic(Status.class);
         mockPromotionList.add(mock(Status.class));
 
-        final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper = mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
+        final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper =
+                mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
         when(mockPromotedBuildActionWrapper.getPromotions(anyObject())).thenReturn(mockPromotionList);
 
         final PromotionStatusProvider promotionStatusProvider = new PromotionStatusProvider();
@@ -135,19 +137,22 @@ public class PromotionStatusProviderTest {
         mockStatusList.add(mockStatusObject2);
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject1)).thenReturn(promotion1Name);
-        when(mockPromotionStatusWrapper.getIcon(mockStatusObject1, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
+        when(mockPromotionStatusWrapper
+                .getIcon(mockStatusObject1, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
         when(mockPromotionStatusWrapper.getStartTime(mockStatusObject1)).thenReturn(promotionStartTime);
         when(mockPromotionStatusWrapper.getDuration(mockStatusObject1)).thenReturn(promotionDuration);
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject2)).thenReturn(promotion2Name);
-        when(mockPromotionStatusWrapper.getIcon(mockStatusObject2, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
+        when(mockPromotionStatusWrapper
+                .getIcon(mockStatusObject2, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
         when(mockPromotionStatusWrapper.getStartTime(mockStatusObject2)).thenReturn(promotionStartTime);
         when(mockPromotionStatusWrapper.getDuration(mockStatusObject2)).thenReturn(promotionDuration);
 
         final AbstractBuild<?, ?> mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
 
-        final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper = mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
+        final PromotionStatusProvider.PromotedBuildActionWrapper mockPromotedBuildActionWrapper =
+                mock(PromotionStatusProvider.PromotedBuildActionWrapper.class);
         when(mockPromotedBuildActionWrapper.getPromotions(anyObject())).thenReturn(mockStatusList);
 
         final PromotionStatusProvider promotionStatusProvider = new PromotionStatusProvider();

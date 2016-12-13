@@ -18,15 +18,15 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.model;
 
 import static com.google.common.base.Objects.toStringHelper;
+
 import com.google.common.collect.ImmutableList;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
+
+import java.util.Collections;
+import java.util.List;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Component extends AbstractItem {
