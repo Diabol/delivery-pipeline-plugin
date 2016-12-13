@@ -43,6 +43,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class GuiFunctionalIT {
 
+    private static final boolean DO_NOT_SHOW_UPSTREAM = false;
     private WebDriver webDriver;
 
     @Rule
@@ -71,7 +72,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
 
@@ -98,7 +99,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
         view.setAllowRebuild(true);
@@ -131,7 +132,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
         view.setAllowRebuild(true);
@@ -172,7 +173,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
@@ -199,7 +200,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
@@ -228,7 +229,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
@@ -254,7 +255,7 @@ public class GuiFunctionalIT {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
 
