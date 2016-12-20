@@ -27,8 +27,15 @@ import org.jvnet.hudson.test.WithoutJenkins;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.pipeline.PipelineProperty;
-import java.util.*;
-import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(MockitoJUnitRunner.class)

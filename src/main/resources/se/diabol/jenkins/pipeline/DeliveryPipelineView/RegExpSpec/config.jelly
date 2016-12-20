@@ -5,9 +5,10 @@
         <f:entry title="Regular Expression" field="regexp">
             <f:textbox/>
         </f:entry>
-        <div align="right">
-            <f:repeatableDeleteButton/>
-        </div>
-
+        <f:entry>
+            <div align="right">
+                <f:repeatableDeleteButton/>
+            </div>
+        </f:entry>
     </div>
 </j:jelly>

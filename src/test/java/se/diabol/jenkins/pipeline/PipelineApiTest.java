@@ -28,7 +28,9 @@ import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PipelineApiTest {

@@ -4,7 +4,7 @@
 
     <groupId>se.diabol.jenkins.pipeline</groupId>
     <artifactId>delivery-pipeline-plugin</artifactId>
-    <version>0.9.12-SNAPSHOT</version>
+    <version>0.10.2-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>Delivery Pipeline Plugin</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Delivery+Pipeline+Plugin</url>
@@ -26,6 +26,18 @@
         <artifactId>plugin</artifactId>
         <version>1.565</version>
     </parent>
+
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>maven.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>maven.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <properties>
         <selenium.version>2.53.0</selenium.version>
@@ -197,6 +209,7 @@
                     <jsTestSrcDir>src/test/javascript</jsTestSrcDir>
                     <sourceExcludes>
                         <exclude>jquery.*.js</exclude>
+                        <exclude>**/themes/**/pipe.js</exclude>
                     </sourceExcludes>
                 </configuration>
                 <executions>
@@ -210,7 +223,7 @@
 
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.4.1</version>
+                <version>2.5.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.scm</groupId>
@@ -232,7 +245,8 @@
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
-                    <argLine>-Xmx1024m</argLine>
+                    <argLine>-Xmx2048m</argLine>
+                    <forkCount>0</forkCount>
                 </configuration>
                 <executions>
                     <execution>
@@ -269,6 +283,7 @@
                         <exclude>**/*.css</exclude>
                         <exclude>**/*.js</exclude>
                         <exclude>**/*.jelly</exclude>
+                        <exclude>**/*.xml</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -289,7 +304,7 @@
                     <propertyExpansion>basedir=${basedir}</propertyExpansion>
                     <consoleOutput>true</consoleOutput>
                     <failOnViolation>true</failOnViolation>
-                    <resourceIncludes>**/*.properties,**/*.jelly</resourceIncludes>
+                    <resourceIncludes>**/*.properties,**/*.jelly,**/*.html</resourceIncludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -431,6 +446,13 @@
                     <artifactId>httpclient</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>dashboard-view</artifactId>
+            <version>2.9.2</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

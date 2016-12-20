@@ -17,19 +17,19 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.results;
 
+import hudson.model.AbstractBuild;
+import hudson.model.FreeStyleBuild;
+import hudson.tasks.junit.TestResultAction;
+import hudson.tasks.test.AbstractTestResultAction;
+import hudson.tasks.test.AggregatedTestResultAction;
+import org.junit.Test;
+
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import hudson.model.FreeStyleBuild;
-import hudson.model.AbstractBuild;
-import hudson.tasks.junit.TestResultAction;
-import hudson.tasks.test.AbstractTestResultAction;
-import hudson.tasks.test.AggregatedTestResultAction;
-
-import java.util.List;
-
-import org.junit.Test;
 
 public class TestResultTest {
 

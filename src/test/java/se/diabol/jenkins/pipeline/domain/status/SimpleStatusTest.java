@@ -17,45 +17,44 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status;
 
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.Result;
 import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject;
+import hudson.model.Result;
 import hudson.util.OneShotEvent;
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.FailureBuilder;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockBuilder;
+import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.UnstableBuilder;
+import org.jvnet.hudson.test.WithoutJenkins;
+import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.pipeline.domain.Pipeline;
+import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
+import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.TestBuilder;
-import org.jvnet.hudson.test.WithoutJenkins;
-import org.jvnet.hudson.test.FailureBuilder;
-import org.jvnet.hudson.test.MockBuilder;
-import org.jvnet.hudson.test.UnstableBuilder;
-import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import se.diabol.jenkins.pipeline.domain.Component;
-import se.diabol.jenkins.pipeline.domain.Pipeline;
-import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
-import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
-import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
-import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleStatusTest {

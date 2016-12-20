@@ -17,23 +17,22 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import hudson.EnvVars;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import hudson.util.ListBoxModel;
-
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
-
 import se.diabol.jenkins.pipeline.test.TestUtil;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ProjectUtilTest {
 

@@ -17,6 +17,24 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status.promotion;
 
+import hudson.model.AbstractBuild;
+import hudson.model.BooleanParameterValue;
+import hudson.model.BuildBadgeAction;
+import hudson.model.FileParameterValue;
+import hudson.model.ParameterValue;
+import hudson.model.StringParameterValue;
+import hudson.plugins.promoted_builds.Promotion;
+import hudson.plugins.promoted_builds.Status;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -25,24 +43,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import hudson.model.BuildBadgeAction;
-import hudson.model.ParameterValue;
-import hudson.model.AbstractBuild;
-import hudson.model.BooleanParameterValue;
-import hudson.model.FileParameterValue;
-import hudson.model.StringParameterValue;
-import hudson.plugins.promoted_builds.Status;
-import hudson.plugins.promoted_builds.Promotion;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Status.class)

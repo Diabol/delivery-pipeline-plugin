@@ -47,7 +47,11 @@ import org.jvnet.hudson.test.TestBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class PipelineVersionContributorTest {
 
@@ -220,7 +224,7 @@ public class PipelineVersionContributorTest {
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
         FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
         firstProject.getPublishersList().add(
-            new BuildPipelineTrigger("secondProject", Arrays.<AbstractBuildParameters>asList(new BooleanParameters(Arrays.asList(new BooleanParameterConfig("test", true))))));
+                new BuildPipelineTrigger("secondProject", Arrays.<AbstractBuildParameters>asList(new BooleanParameters(Arrays.asList(new BooleanParameterConfig("test", true))))));
         firstProject.save();
 
         firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));

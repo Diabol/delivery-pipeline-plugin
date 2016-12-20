@@ -19,8 +19,6 @@ package se.diabol.jenkins.pipeline.domain.results;
 
 import hudson.model.AbstractBuild;
 import hudson.tasks.test.AbstractTestResultAction;
-import hudson.tasks.test.AggregatedTestResultAction;
-
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.ArrayList;

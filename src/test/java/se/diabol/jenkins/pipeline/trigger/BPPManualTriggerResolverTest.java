@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.trigger;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleProject;
+import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -26,6 +27,7 @@ import org.jvnet.hudson.test.MockFolder;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class BPPManualTriggerResolverTest {
 
@@ -68,4 +70,17 @@ public class BPPManualTriggerResolverTest {
         assertNotNull(new BPPManualTriggerResolver().getManualTrigger(b, a));
     }
 
+    @Test
+    public void testIsManualTriggerMultipleUpstreams() throws Exception {
+        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        FreeStyleProject c = jenkins.createFreeStyleProject("c");
+
+        a.getPublishersList().add(new BuildTrigger("c", true));
+        b.getPublishersList().add(new BuildPipelineTrigger("c", null));
+
+        jenkins.getInstance().rebuildDependencyGraph();
+
+        assertTrue(new BPPManualTriggerResolver().isManualTrigger(c));
+    }
 }

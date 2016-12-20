@@ -27,22 +27,17 @@ import static java.util.Collections.singleton;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
 import hudson.util.RunList;
-
 import jenkins.model.Jenkins;
-
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.SimpleDirectedGraph;
-
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-
 import se.diabol.jenkins.pipeline.PipelineProperty;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
@@ -239,8 +234,8 @@ public class Stage extends AbstractItem {
     }
 
 
-    public static List<Stage> placeStages(AbstractProject firstProject,
-                                          Collection<Stage> stages) throws PipelineException {
+    public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages)
+            throws PipelineException {
         DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(new StageEdgeFactory());
         for (Stage stage : stages) {
             stage.setTaskConnections(getStageConnections(stage, stages));
@@ -277,16 +272,16 @@ public class Stage extends AbstractItem {
                 return stages2.size() - stages1.size();
             }
         });
-
+        
         //for keeping track of which row has an available column
         final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
-
+        
         for (int row = 0; row < allPaths.size(); row++) {
-            List<Stage> path = allPaths.get(row);
+            List<Stage> path = allPaths.get(row);            
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-
+                
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
                     stage.setColumn(Math.max(stage.getColumn(), column));
@@ -306,7 +301,7 @@ public class Stage extends AbstractItem {
                 }
             }
         }
-
+        
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);

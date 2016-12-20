@@ -46,10 +46,12 @@ public class LatestActivityComparator extends ComponentComparator implements Ser
 
     private long getLastActivity(Component component) {
         long result = 0;
-        for (Pipeline pipeline : component.getPipelines()) {
-            long lastActivity = getLastActivity(pipeline);
-            if (lastActivity > result) {
-                result = lastActivity;
+        if (component != null && component.getPipelines() != null) {
+            for (Pipeline pipeline : component.getPipelines()) {
+                long lastActivity = getLastActivity(pipeline);
+                if (lastActivity > result) {
+                    result = lastActivity;
+                }
             }
         }
         return result;
