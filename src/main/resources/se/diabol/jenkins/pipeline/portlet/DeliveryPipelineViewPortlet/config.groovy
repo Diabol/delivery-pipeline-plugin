@@ -33,3 +33,7 @@ f.entry(field:"finalJob", title: "Final Job (optional)") {
     f.textbox()
 }
 
+f.entry(field:"finalJob", title: "Final Job (optional)") {
+    f.textbox()
+}
+
