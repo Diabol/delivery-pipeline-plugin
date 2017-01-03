@@ -48,7 +48,8 @@ public final class TokenUtils {
                 return template.replaceAll("\\$\\{.*?\\}", "...");
             }
         } catch (MacroEvaluationException e) {
-            LOG.log(Level.WARNING, e.getMessage());
+            LOG.log(Level.WARNING, "Failed to evaluate token using token-macro plugin", e);
+            return template;
         } catch (Exception e) {
             LOG.log(Level.WARNING, TokenUtils.MESSAGE + e.getMessage());
         }

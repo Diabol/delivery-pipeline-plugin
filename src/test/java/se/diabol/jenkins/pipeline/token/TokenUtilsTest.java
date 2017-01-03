@@ -56,7 +56,7 @@ public class TokenUtilsTest {
         jenkins.setQuietPeriod(0);
 
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
-        assertEquals("", TokenUtils.decodedTemplate(build, "${TEST_NESTEDX}"));
+        assertEquals("${TEST_NESTEDX}", TokenUtils.decodedTemplate(build, "${TEST_NESTEDX}"));
     }
 
     @Test
