@@ -67,9 +67,4 @@ public class DeliveryPipelinePage {
         return jse.executeScript("return jsPlumbUtilityVariable.length").toString();
     }
 
-    public String getJsPlumbUtilityVariable() {
-        JavascriptExecutor jSE = (JavascriptExecutor)webDriver;
-        return jSE.executeScript("return jsPlumbUtilityVariable.length").toString();
-    }
-
 }
