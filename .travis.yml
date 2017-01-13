@@ -1,4 +1,8 @@
 language: java
+env:
+  global:
+    - JENKINSCI_USERNAME=diabol_jenkins
+    - secure: "R3Wz/PgUYQqelwxXu+mMkHHzpLaFTxWmj6m+fOxnlJ85njJXOf/4jrMwMMLlvUM3DgZ+dJp8nANNxUPkOBIBLfbSNWGZTsLEJkGu+hEtBKCZhHLLXfIYhVc8tVFgEvfQo4QP+LXk63COfaIlE45cD8NIqFzebbMeN9K/MCOAIuw="
 jdk:
 - oraclejdk7
 notifications:
@@ -9,7 +13,8 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=1024m'" > ~/.mavenrc
 script:
-  mvn install
+  - "if [[ -z $TRAVIS_TAG ]]; then mvn install; fi"
+  - "if [[ -n $TRAVIS_TAG ]]; then ./release.sh master $TRAVIS_TAG; fi"
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)

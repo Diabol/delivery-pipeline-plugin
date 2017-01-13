@@ -247,7 +247,8 @@ public class GuiFunctionalIT {
         assertNotNull(start.getLastBuild());
     }
 
-    @Test // JENKINS-39856
+    @Test
+    @Bug(39856)
     public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelinePage() throws Exception {
         FreeStyleProject start = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
