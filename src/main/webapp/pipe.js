@@ -156,7 +156,7 @@ function pipelineUtils() {
                                                html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div></div>');
                                            }
 
-                                           var task, id, timestamp, progress, progressClass;
+                                           var task, id, timestamp, progress, progressClass, consoleLogLink = "";
 
                                            for (var k = 0; k < stage.tasks.length; k++) {
                                                task = stage.tasks[k];
@@ -173,11 +173,18 @@ function pipelineUtils() {
                                                if (task.status.percentage) {
                                                    progress = task.status.percentage;
                                                    progressClass = "task-progress-running";
+                                               } else if (data.linkToConsoleLog) {
+                                                  if (task.status.success ||
+                                                      task.status.failed ||
+                                                      task.status.unstable ||
+                                                      task.status.cancelled) {
+                                                      consoleLogLink = "console";
+                                                  }
                                                }
 
                                                html.push("<div id=\"" + id + "\" class=\"status stage-task " + task.status.type +
                                                    "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
-                                                   "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + getLink(data, task.link) + "\">" + htmlEncode(task.name) + "</a></div>");
+                                                   "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + getLink(data, task.link) + consoleLogLink + "\">" + htmlEncode(task.name) + "</a></div>");
                                                if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                                                    html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\');">');
                                                    html.push("</div>");
