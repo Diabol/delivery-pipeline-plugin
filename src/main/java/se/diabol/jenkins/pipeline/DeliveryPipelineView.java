@@ -113,6 +113,7 @@ public class DeliveryPipelineView extends View {
     private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
+    private boolean linkToConsoleLog = false;
 
     private transient String error;
 
@@ -412,6 +413,15 @@ public class DeliveryPipelineView extends View {
         this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
     }
 
+    @Exported
+    public boolean isLinkToConsoleLog() {
+        return linkToConsoleLog;
+    }
+
+    public void setLinkToConsoleLog(boolean linkToConsoleLog) {
+        this.linkToConsoleLog = linkToConsoleLog;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId)
             throws TriggerException, AuthenticationException {
@@ -583,7 +593,6 @@ public class DeliveryPipelineView extends View {
         req.bindJSON(this, req.getSubmittedForm());
         componentSpecs = req.bindJSONToList(ComponentSpec.class, req.getSubmittedForm().get("componentSpecs"));
         regexpFirstJobs = req.bindJSONToList(RegExpSpec.class, req.getSubmittedForm().get("regexpFirstJobs"));
-
     }
 
     @Override
@@ -594,7 +603,6 @@ public class DeliveryPipelineView extends View {
             return JenkinsUtil.getInstance().doCreateItem(req, rsp);
         }
     }
-
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
