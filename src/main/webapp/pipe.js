@@ -1,6 +1,6 @@
 function pipelineUtils() {
      var self = this;
-     this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb) {
+     this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsPlumb) {
         Q.ajax({
             url: rootURL + "/" + view.viewUrl + 'api/json' + "?page=" + page + "&component=" + component + "&fullscreen=" + fullscreen,
             dataType: 'json',
@@ -8,16 +8,16 @@ function pipelineUtils() {
             cache: false,
             timeout: 20000,
             success: function (data) {
-                self.refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb);
+                self.refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsPlumb);
                 setTimeout(function () {
-                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb);
+                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsPlumb);
                 }, timeout);
             },
             error: function (xhr, status, error) {
                 Q("#" + errorDiv).html('Error communicating to server! ' + htmlEncode(error)).show();
-                jsplumb.repaintEverything();
+                jsPlumb.repaintEverything();
                 setTimeout(function () {
-                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb);
+                    self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsPlumb);
                 }, timeout);
             }
         });
@@ -52,7 +52,7 @@ function pipelineUtils() {
                                    Q("#pipeline-message-" + pipelineid).html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
                                }
 
-                               jsplumb.reset();
+                               jsPlumb.reset();
                                for (var c = 0; c < data.pipelines.length; c++) {
                                    html = [];
                                    component = data.pipelines[c];
@@ -240,7 +240,7 @@ function pipelineUtils() {
                                                    source = getStageId(stage.id + "", index);
                                                    target = getStageId(value + "", index);
 
-                                                   jsplumb.connect({
+                                                   jsPlumb.connect({
                                                        source: source,
                                                        target: target,
                                                        anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
@@ -283,7 +283,7 @@ function pipelineUtils() {
                                    }
                                }
                            }
-                        jsplumb.repaintEverything();
+                        jsPlumb.repaintEverything();
                        }
 }
 
