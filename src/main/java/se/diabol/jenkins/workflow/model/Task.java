@@ -111,9 +111,14 @@ public class Task extends AbstractItem {
             }
         } else {
             Status stageStatus = resolveTaskStatus(build, stageStartNode);
-            result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus, taskLinkFor(build), null, null));
+            result.add(createStageTask(build, stageStartNode, stageStatus));
         }
         return result;
+    }
+
+    private static Task createStageTask(WorkflowRun build, FlowNode stageStartNode, Status stageStatus) {
+        return new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus,
+                taskLinkFor(build), null, null);
     }
 
     private static String taskLinkFor(WorkflowRun build) {
