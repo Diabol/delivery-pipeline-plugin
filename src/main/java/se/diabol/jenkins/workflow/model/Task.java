@@ -107,13 +107,17 @@ public class Task extends AbstractItem {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
                 result.add(new Task(flowNode.getId(), action.getTaskName(), resolveTaskStatus(build, stageStartNode),
-                        "", null, null));
+                                    taskLinkFor(build), null, null));
             }
         } else {
             Status stageStatus = resolveTaskStatus(build, stageStartNode);
-            result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus, "", null, null));
+            result.add(new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus, taskLinkFor(build), null, null));
         }
         return result;
+    }
+
+    private static String taskLinkFor(WorkflowRun build) {
+        return "job/" + Name.of(build);
     }
 
     static boolean taskNodesDefinedInStage(List<FlowNode> taskNodes) {
