@@ -17,15 +17,18 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
+import com.cloudbees.hudson.plugins.folder.Folder;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class NameTest {
 
@@ -38,6 +41,16 @@ public class NameTest {
         WorkflowJob workflowJob = jenkins.jenkins.createProject(WorkflowJob.class, expectedName);
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
         assertThat(Name.of(workflowRun), is(expectedName));
+    }
+
+    @Test
+    public void shouldIncludeFolderNameOfWorkflowRunLocatedInFolder() throws IOException {
+        String jobName = "expectedJobName";
+        String folderName = "myfolder";
+        Folder folder = jenkins.jenkins.createProject(Folder.class, folderName);
+        WorkflowJob workflowJob = folder.createProject(WorkflowJob.class, jobName);
+        WorkflowRun workflowRun = new WorkflowRun(workflowJob);
+        assertThat(Name.of(workflowRun), is(folderName + "/job/" + jobName));
     }
 
     @Test

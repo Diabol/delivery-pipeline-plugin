@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.util;
 
+import com.cloudbees.hudson.plugins.folder.Folder;
+import hudson.model.AbstractItem;
+import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 public final class Name {
@@ -25,6 +28,21 @@ public final class Name {
         if (build == null) {
             return null;
         }
-        return build.getParent().getName();
+        if (parentIsFolder(build)) {
+            return ((Folder) build.getParent().getParent()).getName() + "/job/" + build.getParent().getName();
+        } else if (parentIsMultiBranch(build)) {
+            return ((AbstractItem) ((MultiBranchProject)
+                    build.getParent().getParent())).getName() + "/job/" + build.getParent().getName();
+        } else {
+            return build.getParent().getName();
+        }
+    }
+
+    private static boolean parentIsMultiBranch(WorkflowRun build) {
+        return build.getParent().getParent() instanceof MultiBranchProject;
+    }
+
+    private static boolean parentIsFolder(WorkflowRun build) {
+        return build.getParent().getParent() instanceof Folder;
     }
 }
