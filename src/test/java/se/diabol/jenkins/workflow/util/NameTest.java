@@ -18,8 +18,10 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.util;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -51,6 +53,16 @@ public class NameTest {
         WorkflowJob workflowJob = folder.createProject(WorkflowJob.class, jobName);
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
         assertThat(Name.of(workflowRun), is(folderName + "/job/" + jobName));
+    }
+
+    @Test
+    public void shouldIncludeParentNameOfWorkflowRunWhenParentIsMultiBranch() throws Exception {
+        Folder folder = jenkins.jenkins.createProject(Folder.class, "folder");
+        MultiBranchProject multiBranch = new WorkflowMultiBranchProject(folder, "mb");
+        WorkflowJob workflowJob = new WorkflowJob(multiBranch, "wf");
+        WorkflowRun workflowRun = new WorkflowRun(workflowJob);
+
+        assertThat(Name.of(workflowRun), is("mb/job/wf"));
     }
 
     @Test
