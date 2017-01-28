@@ -247,6 +247,7 @@
                     </excludes>
                     <argLine>-Xmx2048m</argLine>
                     <forkCount>0</forkCount>
+                    <reuseForks>false</reuseForks>
                 </configuration>
                 <executions>
                     <execution>
