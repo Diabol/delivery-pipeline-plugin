@@ -83,6 +83,7 @@ public class TokenUtilsTest {
     }
 
     @Test(expected = IllegalAccessException.class)
+    @WithoutJenkins
     public void testConstructorPrivate() throws Exception {
         TokenUtils.class.newInstance();
         fail("Utility class constructor should be private");

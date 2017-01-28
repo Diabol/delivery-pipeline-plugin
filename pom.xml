@@ -246,7 +246,7 @@
                         <exclude>**/*IT.java</exclude>
                     </excludes>
                     <argLine>-Xmx2048m</argLine>
-                    <forkCount>2</forkCount>
+                    <forkCount>0</forkCount>
                 </configuration>
                 <executions>
                     <execution>
