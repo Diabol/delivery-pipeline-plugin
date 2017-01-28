@@ -40,7 +40,7 @@
     </distributionManagement>
 
     <properties>
-        <selenium.version>2.45.0</selenium.version>
+        <selenium.version>2.53.1</selenium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -470,7 +470,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
-            <version>1.10</version>
+            <version>1.19</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
