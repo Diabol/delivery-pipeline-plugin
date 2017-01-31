@@ -86,7 +86,7 @@ public class DeliveryPipelineView extends View {
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     private static final String NONE_SORTER = "none";
 
-    static final String DEFAULT_THEME = "default";
+    public static final String DEFAULT_THEME = "default";
 
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
@@ -639,10 +639,10 @@ public class DeliveryPipelineView extends View {
             try {
                 valueAsInt = Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                return FormValidation.error(e, "Value must be a integer");
+                return FormValidation.error(e, "Value must be an integer");
             }
             if (valueAsInt <= 0) {
-                return FormValidation.error("Value must be greater that 0");
+                return FormValidation.error("Value must be greater than 0");
             }
             return FormValidation.ok();
         }
@@ -735,13 +735,13 @@ public class DeliveryPipelineView extends View {
             }
 
             public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
-                return ProjectUtil.fillAllProjects(context);
+                return ProjectUtil.fillAllProjects(context, AbstractProject.class);
             }
 
             public ListBoxModel doFillLastJobItems(@AncestorInPath ItemGroup<?> context) {
                 ListBoxModel options = new ListBoxModel();
                 options.add("");
-                options.addAll(ProjectUtil.fillAllProjects(context));
+                options.addAll(ProjectUtil.fillAllProjects(context, AbstractProject.class));
                 return options;
             }
 

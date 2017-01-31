@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.acegisecurity.BadCredentialsException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,10 +31,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
 import javax.servlet.http.HttpServletResponse;
-
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PipelineApiTest {
@@ -98,8 +98,5 @@ public class PipelineApiTest {
 
         api.doRebuildStep(request, response, "secretproject", "1");
         verify(response, times(1)).setStatus(HttpServletResponse.SC_FORBIDDEN);
-
     }
-
-
 }

@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.portlet;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,14 +29,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewPortletTest {
+
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-    private final static String NONE = null;
 
     @Test
     @WithoutJenkins

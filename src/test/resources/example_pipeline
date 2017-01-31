@@ -1,0 +1,16 @@
+node {
+  stage name: 'Commit'
+  task name: 'Build task'
+  sleep 2
+
+  stage name: 'Test'
+  task name: 'Unit test'
+  sleep 2
+
+  task name: 'Integeration test'
+  sleep 3
+
+  stage name: 'Deploy'
+  task name: 'Deploy to staging'
+  sleep 2
+}

@@ -20,6 +20,9 @@ package se.diabol.jenkins.pipeline.domain;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Cause;
+import hudson.model.Job;
+import hudson.model.Project;
+import hudson.model.Run;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.CauseResolver;
@@ -58,7 +61,7 @@ public class TriggerCause {
         return description;
     }
 
-    public static List<TriggerCause> getTriggeredBy(AbstractProject project, AbstractBuild<?, ?> build) {
+    public static List<TriggerCause> getTriggeredBy(Job project, Run<?, ?> build) {
         Set<TriggerCause> result = new HashSet<TriggerCause>();
         List<Cause> causes;
         if (build == null && project.isInQueue()) {

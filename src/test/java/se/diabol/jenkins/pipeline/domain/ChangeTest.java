@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import hudson.MarkupText;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
@@ -41,10 +45,6 @@ import java.util.logging.Handler;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 public class ChangeTest {
 
     @Rule
@@ -57,15 +57,15 @@ public class ChangeTest {
 
     @Before
     public void attachLogCapturer() {
-      logCapturingStream = new ByteArrayOutputStream();
-      Handler[] handlers = log.getParent().getHandlers();
-      customLogHandler = new StreamHandler(logCapturingStream, handlers[0].getFormatter());
-      log.addHandler(customLogHandler);
+        logCapturingStream = new ByteArrayOutputStream();
+        Handler[] handlers = log.getParent().getHandlers();
+        customLogHandler = new StreamHandler(logCapturingStream, handlers[0].getFormatter());
+        log.addHandler(customLogHandler);
     }
 
     public String getTestCapturedLog() throws IOException {
-      customLogHandler.flush();
-      return logCapturingStream.toString();
+        customLogHandler.flush();
+        return logCapturingStream.toString();
     }
 
     @Test

@@ -17,6 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.token;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.TaskListener;
@@ -27,11 +32,6 @@ import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class TokenUtilsTest {
 
     @Rule
@@ -39,23 +39,23 @@ public class TokenUtilsTest {
 
     @Test
     public void testDecodedTemplate() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject project = jenkins.createFreeStyleProject("a");
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         assertEquals("1.0.0.1", TokenUtils.decodedTemplate(build, "1.0.0.1"));
     }
 
     @Test
     public void testDecodedTemplateWithMacroEvaluationException() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject project = jenkins.createFreeStyleProject("a");
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         assertEquals("${TEST_NESTEDX}", TokenUtils.decodedTemplate(build, "${TEST_NESTEDX}"));
     }
 
@@ -82,7 +82,7 @@ public class TokenUtilsTest {
         assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(null));
     }
 
-    @Test(expected=IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
     public void testConstructorPrivate() throws Exception {
         TokenUtils.class.newInstance();
         fail("Utility class constructor should be private");

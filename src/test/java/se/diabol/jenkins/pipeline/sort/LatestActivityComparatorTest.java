@@ -17,6 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.sort;
 
+import static org.junit.Assert.assertEquals;
+import static se.diabol.jenkins.pipeline.domain.status.StatusType.SUCCESS;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponent;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.status;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 import se.diabol.jenkins.pipeline.domain.Component;
@@ -24,11 +29,6 @@ import se.diabol.jenkins.pipeline.domain.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static se.diabol.jenkins.pipeline.domain.status.StatusType.SUCCESS;
-import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponent;
-import static se.diabol.jenkins.pipeline.test.PipelineUtil.status;
 
 public class LatestActivityComparatorTest {
 

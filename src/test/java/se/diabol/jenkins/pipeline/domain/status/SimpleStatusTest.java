@@ -49,10 +49,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -326,10 +328,45 @@ public class SimpleStatusTest {
         assertNotNull(status.getTimestamp());
         assertTrue(status instanceof Running);
         Running running = (Running) status;
-        assertFalse(running.getPercentage() == 0);
+        assertTrue(running.getPercentage() > 0);
         assertTrue(running.isRunning());
         assertTrue(status.getType().equals(StatusType.RUNNING));
         assertNotNull(status.toString());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressProperly() {
+        final long currentTime = 200;
+        final long buildStarted = 100;
+        final long estimatedLength = 200;
+        assertThat(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength), is(50));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressForDurationLongerThanExpected() {
+        final long currentTime = 301;
+        final long buildStarted = 100;
+        final long estimatedLength = 200;
+        assertThat(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength), is(99));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressForNotStartedBuild() {
+        final long currentTime = 50;
+        final long buildStarted = 100;
+        final long estimatedLength = 200;
+        assertThat(SimpleStatus.calculateBuildProgress(currentTime, buildStarted, estimatedLength), is(0));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldCalculateBuildProgressWhenNoEstimationAvailable() {
+        int progress = SimpleStatus.calculateBuildProgress(1478897029931L, 1478897023907L, -1L);
+        assertTrue(progress > 0);
+        assertThat(progress, is(99));
     }
 
     @Test

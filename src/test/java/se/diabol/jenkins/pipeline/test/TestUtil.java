@@ -44,8 +44,8 @@ public final class TestUtil {
         Assert.assertEquals("There must be only one constructor", 1,
                 clazz.getDeclaredConstructors().length);
         final Constructor<?> constructor = clazz.getDeclaredConstructor();
-        if (constructor.isAccessible() ||
-                    !Modifier.isPrivate(constructor.getModifiers())) {
+        if (constructor.isAccessible()
+                || !Modifier.isPrivate(constructor.getModifiers())) {
             Assert.fail("constructor is not private");
         }
         constructor.setAccessible(true);
