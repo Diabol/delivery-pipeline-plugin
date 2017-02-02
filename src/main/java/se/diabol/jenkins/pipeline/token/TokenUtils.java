@@ -22,6 +22,7 @@ import hudson.model.TaskListener;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,26 +42,30 @@ public final class TokenUtils {
      */
     public static String decodedTemplate(AbstractBuild<?, ?> build, String template) {
         try {
-            if (build != null) {
-                return TokenMacro.expandAll(build, TaskListener.NULL, template);
-            } else {
-                /* if we don't have build we should hide variable ex. ${VAR} */
-                return template.replaceAll("\\$\\{.*?\\}", "...");
-            }
+            return decode(build, template);
         } catch (MacroEvaluationException e) {
-            LOG.log(Level.WARNING, "Failed to evaluate token using token-macro plugin", e);
+            LOG.log(Level.FINE, "Failed to evaluate token using token-macro plugin", e);
             return template;
         } catch (Exception e) {
             LOG.log(Level.WARNING, TokenUtils.MESSAGE + e.getMessage());
+            return "";
         }
-        return "";
+    }
+
+    private static String decode(AbstractBuild<?, ?> build, String template)
+            throws MacroEvaluationException, IOException, InterruptedException {
+        if (build == null) {
+            return hideVariable(template);
+        } else {
+            return TokenMacro.expandAll(build, TaskListener.NULL, template);
+        }
+    }
+
+    private static String hideVariable(String template) {
+        return template.replaceAll("\\$\\{.*?\\}", "...");
     }
 
     public static boolean stringIsNotEmpty(String string) {
-        if (string == null || "".equals(string)) {
-            return Boolean.FALSE;
-        } else {
-            return Boolean.TRUE;
-        }
+        return string != null && !"".equals(string);
     }
 }
