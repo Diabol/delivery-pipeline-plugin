@@ -358,7 +358,7 @@ public class SimpleStatusTest {
         jenkins.buildAndAssertSuccess(project1);
         jenkins.waitUntilNoActivity();
 
-        Component component = new Component("Component","project1", null, false, 3, pagingEnabledFalse, 1);
+        Component component = new Component("Component","project1", null, false, 3, pagingEnabledFalse, 1, false);
         List<Pipeline> pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());

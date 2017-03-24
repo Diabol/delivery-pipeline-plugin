@@ -209,6 +209,7 @@
                     <jsTestSrcDir>src/test/javascript</jsTestSrcDir>
                     <sourceExcludes>
                         <exclude>jquery.*.js</exclude>
+                        <exclude>datepicker.*.js</exclude>
                         <exclude>**/themes/**/pipe.js</exclude>
                     </sourceExcludes>
                 </configuration>

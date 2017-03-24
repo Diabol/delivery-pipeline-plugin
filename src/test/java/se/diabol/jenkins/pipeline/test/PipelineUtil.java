@@ -44,13 +44,13 @@ public class PipelineUtil {
         Pipeline pipeline = new Pipeline("Pipeline B", null, null, "1.0.0.1", null, null, null, stages, false);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         pipelines.add(pipeline);
-        Component component = new Component("B", "B", "job/A", false, 3, false, 1);
+        Component component = new Component("B", "B", "job/A", false, 3, false, 1, false);
         component.setPipelines(pipelines);
         return component;
     }
 
     public static Component createComponentWithNoRuns() {
-        return new Component("C", "B", "job/A", false, 3, false, 1);
+        return new Component("C", "B", "job/A", false, 3, false, 1, false);
     }
 
     public static Status status(StatusType statusType, DateTime lastRunedAt) {

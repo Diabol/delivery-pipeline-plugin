@@ -48,7 +48,7 @@ public class ComponentTest {
     @Test
     @WithoutJenkins
     public void testSettersAndGetters() {
-        Component component = new Component("Component", "Build", null, false, 10, pagingEnabledFalse, 1);
+        Component component = new Component("Component", "Build", null, false, 10, pagingEnabledFalse, 1, true);
         component.setTotalNoOfPipelines(10);
         component.setPipelines(new ArrayList<Pipeline>());
         assertEquals(1, component.getComponentNumber());
@@ -58,6 +58,7 @@ public class ComponentTest {
         assertNull(component.getFirstJobUrl());
         assertEquals(0, component.getPipelines().size());
         assertNotNull(component.getPipelines());
+        assertTrue(component.isShowFilter());
     }
 
     @Test

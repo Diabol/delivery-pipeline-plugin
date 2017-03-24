@@ -579,3 +579,21 @@ div.panel div.panel-name {
 div.panel div.panel-body {
     padding:10px;
 }
+
+.filter {
+    margin-bottom: 6px;
+}
+
+.filter .heading {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.filter .subheading {
+    font-size: 14px;
+}
+
+.filter input {
+    font-size: 14px;
+    height: 32px;
+}

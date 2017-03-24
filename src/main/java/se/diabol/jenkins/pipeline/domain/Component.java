@@ -40,9 +40,10 @@ public class Component extends AbstractItem {
     private int componentNumber = 0;
     private boolean pagingEnabled = false;
     private int totalNoOfPipelines = 0;
+    private boolean showFilter = false;
 
     public Component(String name, String firstJob, String firstJobUrl, boolean firstJobParameterized,
-                     int noOfPipelines, boolean pagingEnabled, int componentNumber) {
+                     int noOfPipelines, boolean pagingEnabled, int componentNumber, boolean showFilter) {
         super(name);
         this.firstJob = firstJob;
         this.firstJobUrl = firstJobUrl;
@@ -50,6 +51,7 @@ public class Component extends AbstractItem {
         this.noOfPipelines = noOfPipelines;
         this.pagingEnabled = pagingEnabled;
         this.componentNumber = componentNumber;
+        this.showFilter = showFilter;
     }
 
     @Exported
@@ -97,7 +99,9 @@ public class Component extends AbstractItem {
         if (pagingEnabled) {
             return new PipelinePagination(this.getCurrentPage(), totalNoOfPipelines, noOfPipelines, "?"
                     + (this.isFullScreenView() == true ? "fullscreen=true&" : "fullscreen=false&")
-                    + "component=" + componentNumber + "&page=");
+                    + "component=" + componentNumber
+                    + (showFilter == true ? "&startDate=" + getStartDate() + "&endDate="
+                    + getEndDate() + "&page=" : "&page="));
         }
         return null;
     }
@@ -119,6 +123,26 @@ public class Component extends AbstractItem {
         StaplerRequest req = Stapler.getCurrentRequest();
         return req == null ? false : req.getParameter("fullscreen") == null ? false :
                 Boolean.parseBoolean(req.getParameter("fullscreen"));
+    }
+
+    public String getStartDate() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        if (req == null) {
+            return null;
+        }
+        return req.getParameter("startDate");
+    }
+
+    public String getEndDate() {
+        StaplerRequest req = Stapler.getCurrentRequest();
+        if (req == null) {
+            return null;
+        }
+        return req.getParameter("endDate");
+    }
+
+    public boolean isShowFilter() {
+        return showFilter;
     }
 
     @Exported

@@ -61,6 +61,7 @@ import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -114,6 +115,7 @@ public class DeliveryPipelineView extends View {
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
     private boolean linkToConsoleLog = false;
+    private boolean showFilter = false;
 
     private transient String error;
 
@@ -283,6 +285,14 @@ public class DeliveryPipelineView extends View {
             return false;
         }
         return req.getParameter("fullscreen") != null && Boolean.parseBoolean(req.getParameter("fullscreen"));
+    }
+
+    public boolean isShowFilter() {
+        return showFilter;
+    }
+
+    public void setShowFilter(boolean showFilter) {
+        this.showFilter = showFilter;
     }
 
     public void onProjectRenamed(Item item, String oldName, String newName) {
@@ -464,7 +474,7 @@ public class DeliveryPipelineView extends View {
         }
         newCauses.add(new Cause.UserIdCause());
         CauseAction causeAction = new CauseAction(newCauses);
-        project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
+        project.scheduleBuild2(project.getQuietPeriod(), null, causeAction, build.getAction(ParametersAction.class));
     }
 
     protected static String triggerExceptionMessage(final String projectName, final String upstreamName,
@@ -482,7 +492,7 @@ public class DeliveryPipelineView extends View {
     }
 
     @Exported
-    public List<Component> getPipelines() {
+    public List<Component> getPipelines() throws ParseException {
         try {
             LOG.fine("Getting pipelines!");
             List<Component> components = new ArrayList<Component>();
@@ -529,10 +539,11 @@ public class DeliveryPipelineView extends View {
     }
 
     private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
-                                   boolean showAggregatedPipeline, int componentNumber) throws PipelineException {
+                                   boolean showAggregatedPipeline, int componentNumber)
+                                    throws PipelineException, ParseException {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
-                noOfPipelines, pagingEnabled, componentNumber);
+                noOfPipelines, pagingEnabled, componentNumber, showFilter);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));

@@ -410,3 +410,21 @@ div.aggregatedChangesPanelInner > ul {
 	color:#D7D7D7;
 	cursor:default;
 }
+
+.filter {
+    margin-bottom: 6px;
+}
+
+.filter .heading {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.filter .subheading {
+    font-size: 14px;
+}
+
+.filter input {
+    font-size: 14px;
+    height: 32px;
+}
