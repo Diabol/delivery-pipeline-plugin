@@ -49,6 +49,7 @@ import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -425,7 +426,7 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
+        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1, false);
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
@@ -699,14 +700,14 @@ public class PipelineTest {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
         a.scheduleBuild(2, new Cause.UserIdCause());
-        Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1, false);
         List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(1, pipelines.size());
     }
 
-    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
+    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) throws ParseException {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
-        Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
+        Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1, false);
         List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);

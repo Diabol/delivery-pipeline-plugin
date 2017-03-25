@@ -26,12 +26,16 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
+import hudson.util.RunList;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -179,7 +183,7 @@ public class Pipeline extends AbstractItem {
 
     void calculatePipelineRoutes(Task task, final Route route, List<Route> allRoutes) {
         if (task.getDownstreamTasks() != null && task.getDownstreamTasks().size() > 0) {
-            for (String downstreamTaskName: task.getDownstreamTasks()) {
+            for (String downstreamTaskName : task.getDownstreamTasks()) {
                 // assume each task only appears once in the pipeline
                 Route currentRoute = createRouteAndCopyTasks(route, task);
                 calculatePipelineRoutes(getTaskFromName(downstreamTaskName), currentRoute, allRoutes);
@@ -264,7 +268,7 @@ public class Pipeline extends AbstractItem {
                                                ItemGroup context,
                                                boolean pagingEnabled,
                                                boolean showChanges,
-                                               Component component) {
+                                               Component component) throws ParseException {
         List<Pipeline> result = new ArrayList<Pipeline>();
         int no = noOfPipelines;
         if (firstProject.isInQueue()) {
@@ -279,7 +283,18 @@ public class Pipeline extends AbstractItem {
             result.add(pipelineLatest);
             no--;
         }
-        int totalNoOfPipelines = firstProject.getBuilds().size();
+        RunList filteredBuilds = firstProject.getBuilds();
+        if (component.isShowFilter()) {
+            if (!component.getStartDate().isEmpty() && !component.getEndDate().isEmpty()) {
+                Date startDate = new SimpleDateFormat("MM/dd/yyyy").parse(component.getStartDate());
+                long start = startDate.getTime();
+                Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(component.getEndDate());
+                endDate.setDate(endDate.getDate() + 1);
+                long end = endDate.getTime();
+                filteredBuilds = firstProject.getBuilds().byTimestamp(start, end);
+            }
+        }
+        int totalNoOfPipelines = filteredBuilds.size();
         component.setTotalNoOfPipelines(totalNoOfPipelines);
         int startIndex = 0;
         int retrieveSize = noOfPipelines;
@@ -289,7 +304,7 @@ public class Pipeline extends AbstractItem {
                     noOfPipelines);
         }
 
-        Iterator it = firstProject.getBuilds().listIterator(startIndex);
+        Iterator it = filteredBuilds.listIterator(startIndex);
         for (int i = startIndex; i < (startIndex + retrieveSize) && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
