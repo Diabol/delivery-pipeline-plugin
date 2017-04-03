@@ -30,6 +30,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson.JacksonFactory;
 import jenkins.model.Jenkins;
+import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.workflow.api.Json;
 import se.diabol.jenkins.workflow.api.Run;
 
@@ -124,6 +125,13 @@ public class WorkflowApi {
     }
 
     protected String jenkinsUrl() {
-        return jenkins.getRootUrl();
+        return jenkins().getRootUrl();
+    }
+
+    private Jenkins jenkins() {
+        if (jenkins == null) {
+            jenkins = JenkinsUtil.getInstance();
+        }
+        return jenkins;
     }
 }
