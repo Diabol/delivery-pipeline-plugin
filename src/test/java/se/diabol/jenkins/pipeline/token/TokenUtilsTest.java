@@ -17,7 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.token;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,9 +79,9 @@ public class TokenUtilsTest {
     @Test
     @WithoutJenkins
     public void testStringIsNotEmpy() {
-        assertEquals(Boolean.TRUE, TokenUtils.stringIsNotEmpty("string"));
-        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(""));
-        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(null));
+        assertThat(TokenUtils.stringIsNotEmpty("string"), is(true));
+        assertThat(TokenUtils.stringIsNotEmpty(""), is(false));
+        assertThat(TokenUtils.stringIsNotEmpty(null), is(false));
     }
 
     @Test(expected = IllegalAccessException.class)

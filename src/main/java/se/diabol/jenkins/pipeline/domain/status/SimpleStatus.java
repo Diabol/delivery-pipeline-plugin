@@ -119,21 +119,25 @@ public class SimpleStatus implements Status {
     }
 
     @Override
+    @Exported
     public boolean isSuccess() {
         return SUCCESS.equals(type);
     }
 
     @Override
+    @Exported
     public boolean isFailed() {
         return FAILED.equals(type);
     }
 
     @Override
+    @Exported
     public boolean isUnstable() {
         return UNSTABLE.equals(type);
     }
 
     @Override
+    @Exported
     public boolean isCancelled() {
         return CANCELLED.equals(type);
     }

@@ -207,6 +207,7 @@ public class DeliveryPipelineViewTest {
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertFalse(view.isShowAggregatedChanges());
         assertNull(view.getAggregatedChangesGroupingPattern());
+        assertFalse(view.isLinkToConsoleLog());
     }
 
     @Test
@@ -254,6 +255,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowAggregatedChanges());
         view.setAggregatedChangesGroupingPattern("TestRegex");
         assertEquals("TestRegex", view.getAggregatedChangesGroupingPattern());
+        view.setLinkToConsoleLog(true);
+        assertTrue(view.isLinkToConsoleLog());
     }
 
     @Test

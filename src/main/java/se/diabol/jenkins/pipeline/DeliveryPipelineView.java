@@ -113,6 +113,7 @@ public class DeliveryPipelineView extends View {
     private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
+    private boolean linkToConsoleLog = false;
 
     private transient String error;
 
@@ -410,6 +411,15 @@ public class DeliveryPipelineView extends View {
 
     public void setMaxNumberOfVisiblePipelines(int maxNumberOfVisiblePipelines) {
         this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
+    }
+
+    @Exported
+    public boolean isLinkToConsoleLog() {
+        return linkToConsoleLog;
+    }
+
+    public void setLinkToConsoleLog(boolean linkToConsoleLog) {
+        this.linkToConsoleLog = linkToConsoleLog;
     }
 
     @JavaScriptMethod
