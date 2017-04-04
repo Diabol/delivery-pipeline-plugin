@@ -30,6 +30,7 @@ import hudson.plugins.view.dashboard.Dashboard;
 import hudson.tasks.BuildTrigger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Bug;
@@ -64,6 +65,7 @@ public class GuiFunctionalIT {
     }
 
     @Test
+    @Ignore
     public void triggerManualBuild() throws Exception {
         final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
@@ -91,6 +93,7 @@ public class GuiFunctionalIT {
     }
 
     @Test
+    @Ignore
     public void triggerManualRebuild() throws Exception {
         final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
@@ -125,6 +128,7 @@ public class GuiFunctionalIT {
     }
 
     @Test
+    @Ignore
     public void defaultView() throws Exception {
         FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
