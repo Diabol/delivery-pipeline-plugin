@@ -1,4 +1,5 @@
 <?jelly escape-by-default='true'?>
 <div>
-    Shows one or more delivery pipeline instances. Based on Jenkins pipeline plugin configurations (formerly known as workflow plugin).
+    Continuous Delivery pipelines, perfect for visualization on information radiators.
+    Shows one or more delivery pipeline instances, based on Jenkins pipelines (created using the Pipeline or Workflow plugin).
 </div>
