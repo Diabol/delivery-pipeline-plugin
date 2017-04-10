@@ -449,6 +449,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>scm-api</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
           <groupId>org.jenkins-ci.plugins</groupId>
           <artifactId>credentials</artifactId>
           <version>1.22</version>
@@ -492,14 +498,12 @@
             <artifactId>google-http-client-jackson</artifactId>
             <version>1.21.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>dashboard-view</artifactId>
             <version>2.9.2</version>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
