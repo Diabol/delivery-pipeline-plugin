@@ -50,7 +50,7 @@ public class ProjectUtilTest {
     public void testFillAllProjects() throws Exception {
         FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
         FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
-        ListBoxModel list = ProjectUtil.fillAllProjects(jenkins.getInstance());
+        ListBoxModel list = ProjectUtil.fillAllProjects(jenkins.getInstance(), AbstractProject.class);
         assertEquals(2, list.size());
         ListBoxModel.Option option1 = list.get(0);
         assertEquals(build1.getDisplayName(), option1.name);

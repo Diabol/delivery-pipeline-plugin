@@ -17,15 +17,15 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain.status.promotion;
 
-import hudson.ExtensionList;
-import jenkins.model.Jenkins;
-
-import org.junit.Test;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import hudson.ExtensionList;
+import jenkins.model.Jenkins;
+
+import org.junit.Test;
 
 public class AbstractPromotionStatusProviderTest {
 
@@ -37,7 +37,8 @@ public class AbstractPromotionStatusProviderTest {
         final ExtensionList<AbstractPromotionStatusProvider> mockExtensionList = mock(ExtensionList.class);
         when(mockJenkins.getExtensionList(AbstractPromotionStatusProvider.class)).thenReturn(mockExtensionList);
 
-        final AbstractPromotionStatusProvider.JenkinsInstanceProvider mockJenkinsInstanceProvider = mock(AbstractPromotionStatusProvider.JenkinsInstanceProvider.class);
+        final AbstractPromotionStatusProvider.JenkinsInstanceProvider mockJenkinsInstanceProvider =
+                mock(AbstractPromotionStatusProvider.JenkinsInstanceProvider.class);
         when(mockJenkinsInstanceProvider.getJenkinsInstance()).thenReturn(mockJenkins);
 
         AbstractPromotionStatusProvider.setJenkinsInstanceProvider(mockJenkinsInstanceProvider);

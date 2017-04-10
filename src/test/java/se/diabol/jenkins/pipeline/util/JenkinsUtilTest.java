@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import static org.junit.Assert.fail;
+
 import jenkins.model.Jenkins;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +26,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import se.diabol.jenkins.pipeline.test.TestUtil;
-
-import static org.junit.Assert.fail;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Jenkins.class)
@@ -43,7 +43,7 @@ public class JenkinsUtilTest {
         JenkinsUtil.getInstance();
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testIsPluginInstalledNoJenkins() {
         JenkinsUtil.isPluginInstalled("analysis-core");
         fail("Should throw exception");

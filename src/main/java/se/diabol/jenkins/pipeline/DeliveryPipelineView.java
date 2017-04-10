@@ -86,7 +86,7 @@ public class DeliveryPipelineView extends View {
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     private static final String NONE_SORTER = "none";
 
-    static final String DEFAULT_THEME = "default";
+    public static final String DEFAULT_THEME = "default";
 
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
@@ -113,6 +113,7 @@ public class DeliveryPipelineView extends View {
     private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
+    private boolean linkToConsoleLog = false;
 
     private transient String error;
 
@@ -412,6 +413,15 @@ public class DeliveryPipelineView extends View {
         this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
     }
 
+    @Exported
+    public boolean isLinkToConsoleLog() {
+        return linkToConsoleLog;
+    }
+
+    public void setLinkToConsoleLog(boolean linkToConsoleLog) {
+        this.linkToConsoleLog = linkToConsoleLog;
+    }
+
     @JavaScriptMethod
     public void triggerManual(String projectName, String upstreamName, String buildId)
             throws TriggerException, AuthenticationException {
@@ -584,7 +594,6 @@ public class DeliveryPipelineView extends View {
         req.bindJSON(this, req.getSubmittedForm());
         componentSpecs = req.bindJSONToList(ComponentSpec.class, req.getSubmittedForm().get("componentSpecs"));
         regexpFirstJobs = req.bindJSONToList(RegExpSpec.class, req.getSubmittedForm().get("regexpFirstJobs"));
-
     }
 
     @Override
@@ -595,7 +604,6 @@ public class DeliveryPipelineView extends View {
             return JenkinsUtil.getInstance().doCreateItem(req, rsp);
         }
     }
-
 
     @Extension
     public static class DescriptorImpl extends ViewDescriptor {
@@ -632,10 +640,10 @@ public class DeliveryPipelineView extends View {
             try {
                 valueAsInt = Integer.parseInt(value);
             } catch (NumberFormatException e) {
-                return FormValidation.error(e, "Value must be a integer");
+                return FormValidation.error(e, "Value must be an integer");
             }
             if (valueAsInt <= 0) {
-                return FormValidation.error("Value must be greater that 0");
+                return FormValidation.error("Value must be greater than 0");
             }
             return FormValidation.ok();
         }
@@ -749,13 +757,13 @@ public class DeliveryPipelineView extends View {
             }
 
             public ListBoxModel doFillFirstJobItems(@AncestorInPath ItemGroup<?> context) {
-                return ProjectUtil.fillAllProjects(context);
+                return ProjectUtil.fillAllProjects(context, AbstractProject.class);
             }
 
             public ListBoxModel doFillLastJobItems(@AncestorInPath ItemGroup<?> context) {
                 ListBoxModel options = new ListBoxModel();
                 options.add("");
-                options.addAll(ProjectUtil.fillAllProjects(context));
+                options.addAll(ProjectUtil.fillAllProjects(context, AbstractProject.class));
                 return options;
             }
 

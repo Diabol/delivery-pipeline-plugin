@@ -87,22 +87,21 @@ div.task-progress {
 }
 
 .FAILED {
-    border-left: 6px solid red;
+    border-left: 6px solid #c20000;
+    color: white;
+    background-color: red;
+}
+
+.UNSTABLE {
+    border-left: 6px solid #ec8b04;
     font-weight: bold;
-    color: red;
-    background-color: inherit;
+    color: black;
+    background-color: #fcae3f;
 }
 
 .SUCCESS {
     border-left: 6px solid #228b22;
-    background-color: inherit;
-}
-
-.UNSTABLE {
-    border-left: 6px solid #fcae3f;
-    font-weight: bold;
-    color: #fcae3f;
-    background-color: inherit;
+    background-color: rgba(68, 239, 11, 0.8);
 }
 
 .CANCELLED {

@@ -22,6 +22,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Descriptor;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.NullSCM;
@@ -46,16 +47,17 @@ public class ParentAwareSCM extends NullSCM {
     private List<FakeChangeLogSCM.EntryImpl> entries = new ArrayList();
 
     public FakeChangeLogSCM.EntryImpl addChange() {
-        FakeChangeLogSCM.EntryImpl e = new Entry();
-        this.entries.add(e);
-        return e;
+        FakeChangeLogSCM.EntryImpl entry = new Entry();
+        this.entries.add(entry);
+        return entry;
     }
 
     @Override
     public ChangeLogParser createChangeLogParser() {
         return new FakeChangeLogSCM.FakeChangeLogParser() {
             @Override
-            public FakeChangeLogSCM.FakeChangeLogSet parse(AbstractBuild build, File changelogFile) throws IOException, SAXException {
+            public FakeChangeLogSCM.FakeChangeLogSet parse(AbstractBuild build, File changelogFile)
+                    throws IOException, SAXException {
                 FakeChangeLogSCM.FakeChangeLogSet changeLogSet = super.parse(build, changelogFile);
 
                 // Call "setParent" on each entry
@@ -69,7 +71,8 @@ public class ParentAwareSCM extends NullSCM {
     }
 
     @Override
-    public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener, File changeLogFile) throws IOException, InterruptedException {
+    public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener,
+                            File changeLogFile) throws IOException, InterruptedException {
         (new FilePath(changeLogFile)).touch(0L);
         build.addAction(new FakeChangeLogSCM.ChangelogAction(this.entries));
         this.entries = new ArrayList();
@@ -93,8 +96,10 @@ public class ParentAwareSCM extends NullSCM {
         }
 
         @Override
-        public SCM newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+        public SCM newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException {
             return new ParentAwareSCM();
         }
     }
+
+
 }

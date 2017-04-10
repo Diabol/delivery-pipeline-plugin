@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
@@ -28,9 +31,6 @@ import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 public class BPPManualTriggerTest {
 
     @Rule
@@ -38,61 +38,59 @@ public class BPPManualTriggerTest {
 
     @Test
     public void triggerManualWithFolders() throws Exception {
-        BPPManualTrigger trigger = new BPPManualTrigger();
+        final BPPManualTrigger trigger = new BPPManualTrigger();
         MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "a");
-        FreeStyleProject b = folder.createProject(FreeStyleProject.class, "b");
+        final FreeStyleProject projectA = folder.createProject(FreeStyleProject.class, "a");
+        final FreeStyleProject projectB = folder.createProject(FreeStyleProject.class, "b");
 
-        a.getPublishersList().add(new BuildPipelineTrigger("folder/b", null));
+        projectA.getPublishersList().add(new BuildPipelineTrigger("folder/b", null));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        jenkins.buildAndAssertSuccess(a);
-        assertNotNull(a.getLastBuild());
+        jenkins.buildAndAssertSuccess(projectA);
+        assertNotNull(projectA.getLastBuild());
 
-        trigger.triggerManual(b, a, "1", folder);
+        trigger.triggerManual(projectB, projectA, "1", folder);
 
         jenkins.waitUntilNoActivity();
-        assertNotNull(b.getLastBuild());
-
+        assertNotNull(projectB.getLastBuild());
     }
 
     @Test
     @Bug(24392)
     public void triggerManualWithFoldersViewInRoot() throws Exception {
-        BPPManualTrigger trigger = new BPPManualTrigger();
+        final BPPManualTrigger trigger = new BPPManualTrigger();
         MockFolder folder = jenkins.createFolder("SubFolder");
-        FreeStyleProject a = folder.createProject(FreeStyleProject.class, "JobA");
-        FreeStyleProject b = folder.createProject(FreeStyleProject.class, "JobB");
-        a.getPublishersList().add(new BuildPipelineTrigger("SubFolder/JobB", null));
+        final FreeStyleProject projectA = folder.createProject(FreeStyleProject.class, "JobA");
+        final FreeStyleProject projectB = folder.createProject(FreeStyleProject.class, "JobB");
+        projectA.getPublishersList().add(new BuildPipelineTrigger("SubFolder/JobB", null));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        jenkins.buildAndAssertSuccess(a);
-        assertNotNull(a.getLastBuild());
-        trigger.triggerManual(b, a, "1", jenkins.getInstance());
+        jenkins.buildAndAssertSuccess(projectA);
+        assertNotNull(projectA.getLastBuild());
+        trigger.triggerManual(projectB, projectA, "1", jenkins.getInstance());
 
         jenkins.waitUntilNoActivity();
-        assertNotNull(b.getLastBuild());
-
+        assertNotNull(projectB.getLastBuild());
     }
 
-    @Test(expected=TriggerException.class)
+    @Test(expected = TriggerException.class)
     public void triggerManualWhenProjectNull() throws Exception {
         BPPManualTrigger trigger = new BPPManualTrigger();
-        FreeStyleProject b = jenkins.createFreeStyleProject( "b");
-        trigger.triggerManual(b, null, "1", Jenkins.getInstance());
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        trigger.triggerManual(projectB, null, "1", Jenkins.getInstance());
         fail("Should throw exception");
     }
 
-    @Test(expected=TriggerException.class)
+    @Test(expected = TriggerException.class)
     public void triggerInvalidBuild() throws Exception {
         BPPManualTrigger trigger = new BPPManualTrigger();
-        FreeStyleProject a = jenkins.createFreeStyleProject( "a");
-        FreeStyleProject b = jenkins.createFreeStyleProject( "b");
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projecB = jenkins.createFreeStyleProject("b");
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectA);
 
-        trigger.triggerManual(b,a , build.getId(), Jenkins.getInstance());
+        trigger.triggerManual(projecB,projectA , build.getId(), Jenkins.getInstance());
         fail("Should throw exception");
     }
 

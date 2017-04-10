@@ -27,30 +27,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import hudson.model.TopLevelItem;
+
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.StringParameterDefinition;
+import hudson.model.TopLevelItem;
 import hudson.model.User;
 import hudson.plugins.parameterizedtrigger.AbstractBuildParameterFactory;
 import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.PredefinedBuildParameters;
 import hudson.plugins.parameterizedtrigger.ResultCondition;
 import hudson.security.ACL;
-import hudson.security.Permission;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.Permission;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import net.sf.json.JSONObject;
 
@@ -75,10 +73,12 @@ import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
@@ -90,8 +90,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testOnJobRenamed() throws Exception {
-
-        FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
+        final FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", NONE, DO_NOT_SHOW_UPSTREAM));
@@ -108,8 +107,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testOnLastJobRenamed() throws Exception {
-
-        FreeStyleProject p2 = jenkins.createFreeStyleProject("build2");
+        final FreeStyleProject p2 = jenkins.createFreeStyleProject("build2");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", "build2", DO_NOT_SHOW_UPSTREAM));
@@ -139,8 +137,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testOnJobRenamedDelete() throws Exception {
-
-        FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
+        final FreeStyleProject p1 = jenkins.createFreeStyleProject("build1");
 
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         componentSpecs.add(new DeliveryPipelineView.ComponentSpec("comp1", "build1", NONE, DO_NOT_SHOW_UPSTREAM));
@@ -175,13 +172,13 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     @SuppressWarnings("all")
     public void testDoCheckUpdateInterval() {
-        DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval(null).kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckUpdateInterval("3").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("3a").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckUpdateInterval("0").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckUpdateInterval("1").kind);
+        DeliveryPipelineView.DescriptorImpl descriptor = new DeliveryPipelineView.DescriptorImpl();
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval(null).kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("3").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("3a").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("0").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("1").kind);
     }
 
     @Test
@@ -212,6 +209,7 @@ public class DeliveryPipelineViewTest {
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertFalse(view.isShowAggregatedChanges());
         assertNull(view.getAggregatedChangesGroupingPattern());
+        assertFalse(view.isLinkToConsoleLog());
     }
 
     @Test
@@ -259,6 +257,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowAggregatedChanges());
         view.setAggregatedChangesGroupingPattern("TestRegex");
         assertEquals("TestRegex", view.getAggregatedChangesGroupingPattern());
+        view.setLinkToConsoleLog(true);
+        assertTrue(view.isLinkToConsoleLog());
     }
 
     @Test
@@ -302,14 +302,13 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testGetItemsAndContains() throws Exception {
-        FreeStyleProject build = jenkins.createFreeStyleProject("build");
-        FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
-        FreeStyleProject packaging = jenkins.createFreeStyleProject("packaging");
+        final FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        final FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar");
+        final FreeStyleProject packaging = jenkins.createFreeStyleProject("packaging");
         build.getPublishersList().add(new BuildTrigger("sonar", false));
         build.getPublishersList().add(new BuildTrigger("packaging", false));
 
         jenkins.getInstance().rebuildDependencyGraph();
-
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
@@ -346,16 +345,14 @@ public class DeliveryPipelineViewTest {
     @Test
     public void testGetItemsAndContainsWithFolders() throws Exception {
         MockFolder folder = jenkins.createFolder("folder");
-        FreeStyleProject build = folder.createProject(FreeStyleProject.class, "build");
-        FreeStyleProject sonar = folder.createProject(FreeStyleProject.class, "sonar");
-        FreeStyleProject packaging = folder.createProject(FreeStyleProject.class, "packaging");
-
+        final FreeStyleProject build = folder.createProject(FreeStyleProject.class, "build");
+        final FreeStyleProject sonar = folder.createProject(FreeStyleProject.class, "sonar");
+        final FreeStyleProject packaging = folder.createProject(FreeStyleProject.class, "packaging");
 
         build.getPublishersList().add(new BuildTrigger("sonar", false));
         build.getPublishersList().add(new BuildTrigger("packaging", false));
 
         jenkins.getInstance().rebuildDependencyGraph();
-
 
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
@@ -455,7 +452,7 @@ public class DeliveryPipelineViewTest {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
         build.addProperty(new PipelineProperty("Build", "BuildStage", ""));
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, false));
+        specs.add(new DeliveryPipelineView.ComponentSpec("Comp", "build", NONE, DO_NOT_SHOW_UPSTREAM));
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         view.setComponentSpecs(specs);
         view.setSorting(NameComparator.class.getName());
@@ -532,23 +529,25 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     @SuppressWarnings("all")
     public void testDoCheckName() {
-        DeliveryPipelineView.ComponentSpec.DescriptorImpl d = new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
-        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(null).kind);
-        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName("").kind);
-        assertEquals(FormValidation.Kind.ERROR,  d.doCheckName(" ").kind);
-        assertEquals(FormValidation.Kind.OK,  d.doCheckName("Component").kind);
+        DeliveryPipelineView.ComponentSpec.DescriptorImpl descriptor =
+                new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckName(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckName("").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckName(" ").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckName("Component").kind);
     }
 
     @Test
     @WithoutJenkins
     @SuppressWarnings("all")
     public void testDoCheckRegexpFirstJob() {
-        DeliveryPipelineView.RegExpSpec.DescriptorImpl d = new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
-        assertEquals(FormValidation.Kind.OK, d.doCheckRegexp(null).kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("*").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-.+?-project").kind);
-        assertEquals(FormValidation.Kind.OK, d.doCheckRegexp("^build-(.+?)-project").kind);
-        assertEquals(FormValidation.Kind.ERROR, d.doCheckRegexp("^build-(.+?)-(project)").kind);
+        DeliveryPipelineView.RegExpSpec.DescriptorImpl descriptor =
+                new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckRegexp(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("*").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("^build-.+?-project").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckRegexp("^build-(.+?)-project").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("^build-(.+?)-(project)").kind);
     }
 
     @Test
@@ -606,13 +605,15 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testDoFillFirstJobItems() {
-        ListBoxModel model = new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance());
+        ListBoxModel model =
+                new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance());
         assertNotNull(model);
     }
 
     @Test
     public void testDoFillLastJobItems() {
-        ListBoxModel model = new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillLastJobItems(jenkins.getInstance());
+        ListBoxModel model =
+                new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillLastJobItems(jenkins.getInstance());
         assertNotNull(model);
     }
 
@@ -674,7 +675,8 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     public void withoutFolderPrefixShouldReturnProjectNameIfNoFolderPrefixIsPresent() {
         final String projectNameWithoutFolderPrefix = "Job2";
-        assertEquals(projectNameWithoutFolderPrefix, DeliveryPipelineView.withoutFolderPrefix(projectNameWithoutFolderPrefix));
+        assertEquals(projectNameWithoutFolderPrefix,
+                DeliveryPipelineView.withoutFolderPrefix(projectNameWithoutFolderPrefix));
     }
 
     @Test // JENKINS-23532
@@ -682,7 +684,8 @@ public class DeliveryPipelineViewTest {
     public void triggerExceptionMessageShouldSuggestRemovingFolderPrefixIfPresent() {
         final String projectName = "Job3";
         final String projectNameWithFolderPrefix = "Folder2/" + projectName;
-        final String exceptionMessage = DeliveryPipelineView.triggerExceptionMessage(projectNameWithFolderPrefix, "upstream", "1");
+        final String exceptionMessage =
+                DeliveryPipelineView.triggerExceptionMessage(projectNameWithFolderPrefix, "upstream", "1");
         assertTrue(exceptionMessage.contains(projectNameWithFolderPrefix));
         assertTrue(exceptionMessage.contains("Did you mean to specify " + projectName + "?"));
     }
@@ -693,7 +696,7 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Delivery Pipeline");
         jenkins.getInstance().addView(view);
-        
+
         testDoCreateItem("testDoCreateItemAsTheDefaultViewFromTheViewUrl", "view/Delivery%20Pipeline/");
 
         jenkins.getInstance().setPrimaryView(view);
@@ -706,7 +709,7 @@ public class DeliveryPipelineViewTest {
         form.getInputByName("name").setValueAttribute(projectName);
         form.getRadioButtonsByName("mode").get(0).setChecked(true);
         jenkins.submit(form);
-        
+
         assertTrue(jenkins.jenkins.getJobNames().contains(projectName));
     }
 
@@ -727,9 +730,9 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testTriggerManualNoBuildFound() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
-        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         jenkins.getInstance().rebuildDependencyGraph();
         DeliveryPipelineView view = new DeliveryPipelineView("View");
@@ -744,12 +747,11 @@ public class DeliveryPipelineViewTest {
         }
     }
 
-
     @Test
     public void testTriggerManualNotAuthorized() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
-        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         jenkins.getInstance().rebuildDependencyGraph();
         DeliveryPipelineView view = new DeliveryPipelineView("View");
@@ -775,25 +777,27 @@ public class DeliveryPipelineViewTest {
     @Test
     @Bug(22658)
     public void testRecursiveStages() throws Exception {
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        projectA.addProperty(new PipelineProperty("A", "A", ""));
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        projectB.addProperty(new PipelineProperty("B", "B", ""));
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("C");
+        projectC.addProperty(new PipelineProperty("C", "C", ""));
+        FreeStyleProject projectD = jenkins.createFreeStyleProject("D");
+        projectD.addProperty(new PipelineProperty("D", "B", ""));
 
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        a.addProperty(new PipelineProperty("A", "A", ""));
-        FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        b.addProperty(new PipelineProperty("B", "B", ""));
-        FreeStyleProject c = jenkins.createFreeStyleProject("C");
-        c.addProperty(new PipelineProperty("C", "C", ""));
-        FreeStyleProject d = jenkins.createFreeStyleProject("D");
-        d.addProperty(new PipelineProperty("D", "B", ""));
-
-        a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
-        b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
-        c.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        projectA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        projectB.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        projectC.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp", "A", NONE, false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(componentSpecs);
 
         jenkins.getInstance().addView(view);
@@ -814,8 +818,8 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A", NONE, false));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B", NONE, false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A", NONE, DO_NOT_SHOW_UPSTREAM));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(componentSpecs);
         view.setShowAggregatedPipeline(true);
         view.setSorting("this will not be found");
@@ -841,8 +845,8 @@ public class DeliveryPipelineViewTest {
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A", NONE, false));
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B", NONE, false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp2", "A", NONE, DO_NOT_SHOW_UPSTREAM));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Comp1", "B", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(componentSpecs);
         view.setShowAggregatedPipeline(true);
         view.setSorting("none");
@@ -859,35 +863,40 @@ public class DeliveryPipelineViewTest {
 
     @Test
     public void testRebuild() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        b.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
-        a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("b", ResultCondition.SUCCESS, new PredefinedBuildParameters("VERSION=$BUILD_NUMBER"))));
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        projectB.addProperty(new ParametersDefinitionProperty(
+                new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
+        projectA.getPublishersList().add(
+                new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                        new BuildTriggerConfig("b", ResultCondition.SUCCESS,
+                                new PredefinedBuildParameters("VERSION=$BUILD_NUMBER"))));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         jenkins.getInstance().addView(view);
 
-        jenkins.buildAndAssertSuccess(a);
+        jenkins.buildAndAssertSuccess(projectA);
         jenkins.waitUntilNoActivity();
 
-        assertNotNull(a.getLastBuild());
-        assertNotNull(b.getLastBuild());
+        assertNotNull(projectA.getLastBuild());
+        assertNotNull(projectB.getLastBuild());
 
-        AbstractBuild<?, ?> b1 = b.getLastBuild();
+        final AbstractBuild<?, ?> b1 = projectB.getLastBuild();
 
         view.triggerRebuild("B", "1");
         jenkins.waitUntilNoActivity();
-        assertEquals(2, b.getLastBuild().getNumber());
-        assertEqualsList(b1.getActions(ParametersAction.class), b.getLastBuild().getActions(ParametersAction.class));
+        assertEquals(2, projectB.getLastBuild().getNumber());
+        assertEqualsList(b1.getActions(ParametersAction.class),
+                projectB.getLastBuild().getActions(ParametersAction.class));
     }
 
     @Test
     public void testRebuildNotAuthorized() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
-        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         jenkins.getInstance().rebuildDependencyGraph();
         DeliveryPipelineView view = new DeliveryPipelineView("View");
@@ -911,21 +920,22 @@ public class DeliveryPipelineViewTest {
     @Test
     public void testComponentSpecDescriptorImpldoFillFirstJobItems() throws Exception {
         jenkins.createFreeStyleProject("a");
-        assertEquals(1, new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(jenkins.getInstance()).size());
+        assertEquals(1, new DeliveryPipelineView.ComponentSpec.DescriptorImpl().doFillFirstJobItems(
+                jenkins.getInstance()).size());
     }
 
     @Test
     public void testGetItems() throws IOException {
-        FreeStyleProject firstJob = jenkins.createFreeStyleProject("Project1");
-        FreeStyleProject secondJob = jenkins.createFreeStyleProject("Project2");
-        FreeStyleProject thirdJob = jenkins.createFreeStyleProject("Project3");
+        final FreeStyleProject firstJob = jenkins.createFreeStyleProject("Project1");
+        final FreeStyleProject secondJob = jenkins.createFreeStyleProject("Project2");
+        final FreeStyleProject thirdJob = jenkins.createFreeStyleProject("Project3");
 
         firstJob.getPublishersList().add((new BuildTrigger(secondJob.getName(), true)));
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView pipeline = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
-        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Spec", firstJob.getName(), NONE, false));
+        componentSpecs.add(new DeliveryPipelineView.ComponentSpec("Spec", firstJob.getName(), NONE, DO_NOT_SHOW_UPSTREAM));
         pipeline.setComponentSpecs(componentSpecs);
         jenkins.getInstance().addView(pipeline);
 

@@ -12,7 +12,7 @@ pom.xml.releaseBackup
 release.properties
 
 # Jenkins workplace files
-work*
+work/*
 
 # Gradle
 .gradle

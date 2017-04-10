@@ -17,6 +17,13 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.token;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.TaskListener;
@@ -27,11 +34,6 @@ import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class TokenUtilsTest {
 
     @Rule
@@ -39,24 +41,24 @@ public class TokenUtilsTest {
 
     @Test
     public void testDecodedTemplate() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject project = jenkins.createFreeStyleProject("a");
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
         assertEquals("1.0.0.1", TokenUtils.decodedTemplate(build, "1.0.0.1"));
     }
 
     @Test
     public void testDecodedTemplateWithMacroEvaluationException() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject project = jenkins.createFreeStyleProject("a");
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        FreeStyleBuild build = jenkins.buildAndAssertSuccess(a);
-        assertEquals("", TokenUtils.decodedTemplate(build, "${TEST_NESTEDX}"));
+        FreeStyleBuild build = jenkins.buildAndAssertSuccess(project);
+        assertEquals("${TEST_NESTEDX}", TokenUtils.decodedTemplate(build, "${TEST_NESTEDX}"));
     }
 
     @Test
@@ -77,12 +79,13 @@ public class TokenUtilsTest {
     @Test
     @WithoutJenkins
     public void testStringIsNotEmpy() {
-        assertEquals(Boolean.TRUE, TokenUtils.stringIsNotEmpty("string"));
-        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(""));
-        assertEquals(Boolean.FALSE, TokenUtils.stringIsNotEmpty(null));
+        assertThat(TokenUtils.stringIsNotEmpty("string"), is(true));
+        assertThat(TokenUtils.stringIsNotEmpty(""), is(false));
+        assertThat(TokenUtils.stringIsNotEmpty(null), is(false));
     }
 
-    @Test(expected=IllegalAccessException.class)
+    @Test(expected = IllegalAccessException.class)
+    @WithoutJenkins
     public void testConstructorPrivate() throws Exception {
         TokenUtils.class.newInstance();
         fail("Utility class constructor should be private");
