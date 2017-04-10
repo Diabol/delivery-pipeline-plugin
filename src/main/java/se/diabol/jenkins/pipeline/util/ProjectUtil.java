@@ -139,28 +139,25 @@ public final class ProjectUtil {
     }
 
     public static boolean isQueued(AbstractProject project, AbstractBuild firstBuild) {
-        if (project.isInQueue()) {
-            if (firstBuild == null) {
-                return true;
-            } else {
-                List<Cause.UpstreamCause> causes = Util.filter(project.getQueueItem().getCauses(),
-                        Cause.UpstreamCause.class);
-                @SuppressWarnings("unchecked")
-                List<AbstractProject<?,?>> upstreamProjects = project.getUpstreamProjects();
-                for (AbstractProject<?, ?> upstreamProject : upstreamProjects) {
-                    AbstractBuild upstreamBuild = BuildUtil.match(upstreamProject.getBuilds(), firstBuild);
-                    if (upstreamBuild != null) {
-                        for (Cause.UpstreamCause upstreamCause : causes) {
-                            if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild()
-                                    && upstreamProject.getRelativeNameFrom(JenkinsUtil.getInstance()).equals(
-                                    upstreamCause.getUpstreamProject())) {
-                                return true;
-                            }
-
-                        }
+        if (!project.isInQueue()) {
+            return false;
+        } else if (firstBuild == null) {
+            return true;
+        }
+        List<Cause.UpstreamCause> causes = Util.filter(project.getQueueItem().getCauses(),
+                Cause.UpstreamCause.class);
+        @SuppressWarnings("unchecked")
+        List<AbstractProject<?,?>> upstreamProjects = project.getUpstreamProjects();
+        for (AbstractProject<?, ?> upstreamProject : upstreamProjects) {
+            AbstractBuild upstreamBuild = BuildUtil.match(upstreamProject.getBuilds(), firstBuild);
+            if (upstreamBuild != null) {
+                for (Cause.UpstreamCause upstreamCause : causes) {
+                    if (upstreamBuild.getNumber() == upstreamCause.getUpstreamBuild()
+                            && upstreamProject.getRelativeNameFrom(JenkinsUtil.getInstance()).equals(
+                            upstreamCause.getUpstreamProject())) {
+                        return true;
                     }
                 }
-                return false;
             }
         }
         return false;
@@ -182,4 +179,30 @@ public final class ProjectUtil {
         projectList.addAll(Items.fromNameList(context, projectNames.toString(), AbstractProject.class));
         return projectList;
     }
+
+
+    public static List<AbstractProject> getStartUpstreams(AbstractProject project) {
+        List<AbstractProject> upstreams = project.getUpstreamProjects();
+        if (upstreams.isEmpty()) {
+            return new ArrayList<AbstractProject>(Collections.singleton(project));
+        } else {
+            return getStartUpstreams(project, new ArrayList<AbstractProject>());
+        }
+    }
+
+    private static List<AbstractProject> getStartUpstreams(AbstractProject project, List<AbstractProject> edges) {
+        List<AbstractProject> upstreams = project.getUpstreamProjects();
+        if (upstreams.isEmpty()) {
+            edges.add(project);
+            return edges;
+        } else {
+            List<AbstractProject> result = new ArrayList<AbstractProject>(edges);
+            for (AbstractProject upstream : upstreams) {
+                result = (getStartUpstreams(upstream, edges));
+            }
+            return result;
+        }
+    }
+
+
 }

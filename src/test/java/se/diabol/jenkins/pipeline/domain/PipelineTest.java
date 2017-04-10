@@ -408,8 +408,6 @@ public class PipelineTest {
         assertEquals(2, latest.getStages().size());
         assertEquals("SUCCESS", latest.getStages().get(0).getTasks().get(0).getStatus().toString());
         assertEquals("DISABLED", latest.getStages().get(1).getTasks().get(0).getStatus().toString());
-
-
     }
 
     @Test
@@ -436,7 +434,7 @@ public class PipelineTest {
     }
 
     @Test
-    public void getPipelineLatestWithDifferntFolders() throws Exception {
+    public void getPipelineLatestWithDifferentFolders() throws Exception {
         MockFolder folder1 = jenkins.createFolder("folder1");
         MockFolder folder2 = jenkins.createFolder("folder2");
         final FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
@@ -718,7 +716,7 @@ public class PipelineTest {
         assertEquals(1, pipelines.size());
     }
 
-    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
+    private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) throws PipelineException {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
         Component component = new Component(
                 "Component", pipeline.getFirstProject().getFullName(), null, false, 3, PAGING_DISABLED, 1);

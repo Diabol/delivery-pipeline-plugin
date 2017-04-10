@@ -492,7 +492,8 @@ public class DeliveryPipelineView extends View {
                     AbstractProject lastJob = ProjectUtil.getProject(componentSpec.getLastJob(), getOwnerItemGroup());
                     if (firstJob != null) {
                         components.add(getComponent(componentSpec.getName(), firstJob,
-                                lastJob, showAggregatedPipeline, (componentSpecs.indexOf(componentSpec) + 1)));
+                                lastJob, showAggregatedPipeline, (componentSpecs.indexOf(componentSpec) + 1),
+                                componentSpec.isShowUpstream()));
                     } else {
                         throw new PipelineException("Could not find project: " + componentSpec.getFirstJob());
                     }
@@ -504,7 +505,7 @@ public class DeliveryPipelineView extends View {
                     int index = 1;
                     for (Map.Entry<String, AbstractProject> entry : matches.entrySet()) {
                         components.add(getComponent(entry.getKey(), entry.getValue(), null,
-                                showAggregatedPipeline, index));
+                                showAggregatedPipeline, index, regexp.isShowUpstream()));
                         index++;
                     }
                 }
@@ -529,23 +530,23 @@ public class DeliveryPipelineView extends View {
     }
 
     private Component getComponent(String name, AbstractProject firstJob, AbstractProject lastJob,
-                                   boolean showAggregatedPipeline, int componentNumber) throws PipelineException {
-        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob);
+                                   boolean showAggregatedPipeline, int componentNumber, boolean showUpstream)
+            throws PipelineException {
+        Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, showUpstream);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
                 noOfPipelines, pagingEnabled, componentNumber);
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }
-        if (isFullScreenView()) {
-            pipelines.addAll(pipeline
-                    .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), false, showChanges, component));
-        } else {
-            pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup(),
-                    pagingEnabled, showChanges, component));
-        }
+        pipelines.addAll(pipeline
+                .createPipelineLatest(noOfPipelines, getOwnerItemGroup(), showPaging(), showChanges, component));
         component.setPipelines(pipelines);
         return component;
+    }
+
+    protected boolean showPaging() {
+        return !isFullScreenView() && getPagingEnabled();
     }
 
     @Override
@@ -656,15 +657,26 @@ public class DeliveryPipelineView extends View {
     public static class RegExpSpec extends AbstractDescribableImpl<RegExpSpec> {
 
         private String regexp;
+        private boolean showUpstream;
 
         @DataBoundConstructor
-        public RegExpSpec(String regexp) {
+        public RegExpSpec(String regexp, boolean showUpstream) {
             this.regexp = regexp;
+            this.showUpstream = showUpstream;
         }
 
         public String getRegexp() {
             return regexp;
         }
+
+        public boolean isShowUpstream() {
+            return showUpstream;
+        }
+
+        public void setShowUpstream(boolean showUpstream) {
+            this.showUpstream = showUpstream;
+        }
+
 
         @Extension
         public static class DescriptorImpl extends Descriptor<RegExpSpec> {
@@ -698,12 +710,14 @@ public class DeliveryPipelineView extends View {
         private String name;
         private String firstJob;
         private String lastJob;
+        private boolean showUpstream;
 
         @DataBoundConstructor
-        public ComponentSpec(String name, String firstJob, String lastJob) {
+        public ComponentSpec(String name, String firstJob, String lastJob, boolean showUpstream) {
             this.name = name;
             this.firstJob = firstJob;
             this.lastJob = lastJob;
+            this.showUpstream = showUpstream;
         }
 
         public String getName() {
@@ -724,6 +738,14 @@ public class DeliveryPipelineView extends View {
 
         public void setLastJob(String lastJob) {
             this.lastJob = lastJob;
+        }
+
+        public boolean isShowUpstream() {
+            return showUpstream;
+        }
+
+        public void setShowUpstream(boolean showUpstream) {
+            this.showUpstream = showUpstream;
         }
 
         @Extension

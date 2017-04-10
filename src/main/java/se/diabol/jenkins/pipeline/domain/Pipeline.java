@@ -29,9 +29,11 @@ import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.pipeline.domain.task.Task;
+import se.diabol.jenkins.pipeline.sort.BuildStartTimeComparator;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -205,14 +207,20 @@ public class Pipeline extends AbstractItem {
     /**
      * Created a pipeline prototype for the supplied first project.
      */
-    public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject,
-                                           AbstractProject<?, ?> lastProject) throws PipelineException {
-        return new Pipeline(name, firstProject, lastProject,
-                newArrayList(Stage.extractStages(firstProject, lastProject)));
+    public static Pipeline extractPipeline(String name,
+                                           AbstractProject<?, ?> firstProject,
+                                           AbstractProject<?, ?> lastProject,
+                                           boolean withUpstream) throws PipelineException {
+        ArrayList<Stage> stages = newArrayList(Stage.extractStages(firstProject, lastProject));
+        if (withUpstream) {
+            return new DownstreamPipeline(name, firstProject, lastProject, stages);
+        } else {
+            return new Pipeline(name, firstProject, lastProject, stages);
+        }
     }
 
     public static Pipeline extractPipeline(String name, AbstractProject<?, ?> firstProject) throws PipelineException {
-        return new Pipeline(name, firstProject, null, newArrayList(Stage.extractStages(firstProject, null)));
+        return extractPipeline(name, firstProject, null, false);
     }
 
     Pipeline createPipelineAggregatedWithoutChangesShown(ItemGroup context) {
@@ -264,9 +272,8 @@ public class Pipeline extends AbstractItem {
                                                ItemGroup context,
                                                boolean pagingEnabled,
                                                boolean showChanges,
-                                               Component component) {
+                                               Component component) throws PipelineException {
         List<Pipeline> result = new ArrayList<Pipeline>();
-        int no = noOfPipelines;
         if (firstProject.isInQueue()) {
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
             List<Stage> pipelineStages = new ArrayList<Stage>();
@@ -277,7 +284,6 @@ public class Pipeline extends AbstractItem {
                     + firstProject.getNextBuildNumber(), pipeLineTimestamp,
                     TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false);
             result.add(pipelineLatest);
-            no--;
         }
         int totalNoOfPipelines = firstProject.getBuilds().size();
         component.setTotalNoOfPipelines(totalNoOfPipelines);
@@ -290,6 +296,23 @@ public class Pipeline extends AbstractItem {
         }
 
         Iterator it = firstProject.getBuilds().listIterator(startIndex);
+        result.addAll(getPipelines(it, context, startIndex, retrieveSize, showChanges));
+        return result;
+    }
+
+    protected List<AbstractBuild> resolveBuilds(List<AbstractProject> firstProjects) {
+        List<AbstractBuild> builds = new ArrayList<AbstractBuild>();
+        for (AbstractProject firstProject : firstProjects) {
+            builds.addAll(firstProject.getBuilds());
+        }
+        Collections.sort(builds, new BuildStartTimeComparator());
+        return builds;
+    }
+
+
+    protected List<Pipeline> getPipelines(Iterator it, ItemGroup context, int startIndex, int retrieveSize,
+                                        boolean showChanges) throws PipelineException {
+        List<Pipeline> result = new ArrayList<Pipeline>();
         for (int i = startIndex; i < (startIndex + retrieveSize) && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
@@ -297,12 +320,16 @@ public class Pipeline extends AbstractItem {
 
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
             List<Stage> pipelineStages = new ArrayList<Stage>();
-            for (Stage stage : getStages()) {
+            Pipeline pipeline = this;
+            if (showUpstream()) {
+                pipeline = Pipeline.extractPipeline(getName(), firstBuild.getProject(), lastProject, showUpstream());
+            }
+
+            for (Stage stage : pipeline.getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
-            Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
-                    pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
-                    contributors, pipelineStages, false);
+            Pipeline pipelineLatest =
+                    pipelineOf(firstBuild, lastProject, pipeLineTimestamp, contributors, pipelineStages);
             if (showChanges) {
                 pipelineLatest.setChanges(pipelineChanges);
             }
@@ -311,6 +338,24 @@ public class Pipeline extends AbstractItem {
             result.add(pipelineLatest);
         }
         return result;
+    }
+
+    protected Pipeline pipelineOf(AbstractBuild firstBuild, AbstractProject lastProject, String pipeLineTimestamp,
+                                  Set<UserInfo> contributors, List<Stage> pipelineStages) {
+        return new Pipeline(
+                getName(),
+                firstBuild.getProject(),
+                lastProject,
+                firstBuild.getDisplayName(),
+                pipeLineTimestamp,
+                TriggerCause.getTriggeredBy(firstBuild.getProject(), firstBuild),
+                contributors,
+                pipelineStages,
+                false);
+    }
+
+    public boolean showUpstream() {
+        return false;
     }
 
     @Override
