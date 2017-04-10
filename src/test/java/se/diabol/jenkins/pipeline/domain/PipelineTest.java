@@ -17,6 +17,15 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
@@ -53,21 +62,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public class PipelineTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-    private final static boolean pagingEnabledFalse = false;
-    private final static boolean showChanges = true;
+    private static final boolean PAGING_DISABLED = false;
+    private static final boolean SHOW_CHANGES = true;
 
     @Test
     public void testExtractPipelineEmptyPropertyAndNullProperty() throws Exception {
@@ -89,9 +89,9 @@ public class PipelineTest {
 
     @Test
     public void testExtractPipeline() throws Exception {
-        FreeStyleProject compile = jenkins.createFreeStyleProject("comp");
-        FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
-        FreeStyleProject test = jenkins.createFreeStyleProject("test");
+        final FreeStyleProject compile = jenkins.createFreeStyleProject("comp");
+        final FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
+        final FreeStyleProject test = jenkins.createFreeStyleProject("test");
 
         compile.addProperty(new PipelineProperty("Compile", "Build", ""));
         compile.save();
@@ -168,8 +168,10 @@ public class PipelineTest {
         FreeStyleProject deploy = jenkins.createFreeStyleProject("deploy");
         deploy.addProperty(new PipelineProperty("Deploy", "QA", ""));
 
-
-        build.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("sonar", new BlockingBehaviour("never", "never", "never"), null)));
+        build.getBuildersList().add(
+                new TriggerBuilder(
+                        new BlockableBuildTriggerConfig("sonar",
+                                new BlockingBehaviour("never", "never", "never"), null)));
         build.getPublishersList().add(new BuildTrigger("deploy", false));
 
         jenkins.getInstance().rebuildDependencyGraph();
@@ -183,10 +185,10 @@ public class PipelineTest {
 
     @Test
     public void testCreatePipelineAggregatedSharedTask() throws Exception {
-        FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
-        FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
-        FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar1");
-        FreeStyleProject test = jenkins.createFreeStyleProject("test");
+        final FreeStyleProject build1 = jenkins.createFreeStyleProject("build1");
+        final FreeStyleProject build2 = jenkins.createFreeStyleProject("build2");
+        final FreeStyleProject sonar = jenkins.createFreeStyleProject("sonar1");
+        final FreeStyleProject test = jenkins.createFreeStyleProject("test");
         jenkins.createFreeStyleProject("prod");
         build1.getPublishersList().add(new BuildTrigger("sonar1,test", true));
         build2.getPublishersList().add(new BuildTrigger("sonar1", true));
@@ -271,8 +273,8 @@ public class PipelineTest {
         assertEquals("#2", aggregated1.getStages().get(1).getVersion());
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
-
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
+        BuildPipelineView view =
+                new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
         view.triggerManualBuild(1, "prod", "test");
         jenkins.waitUntilNoActivity();
         aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
@@ -299,7 +301,8 @@ public class PipelineTest {
 
         assertNotNull(build.getLastBuild());
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build"), "1", false, null);
+        BuildPipelineView view =
+                new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build"), "1", false, null);
         view.triggerManualBuild(1, "ci1", "build");
 
         jenkins.waitUntilNoActivity();
@@ -409,12 +412,11 @@ public class PipelineTest {
 
     }
 
-
     @Test
     public void testFirstUpstreamBuildFirstProjectHasJustOneUpstreamJob() throws Exception {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
-        FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
-        FreeStyleProject build = jenkins.createFreeStyleProject("build");
+        final FreeStyleProject upstream = jenkins.createFreeStyleProject("upstream");
+        final FreeStyleProject build = jenkins.createFreeStyleProject("build");
         upstream.getPublishersList().add(new BuildTrigger("build", false));
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.buildAndAssertSuccess(upstream);
@@ -425,8 +427,9 @@ public class PipelineTest {
 
         assertEquals(build.getLastBuild(), BuildUtil.getFirstUpstreamBuild(build.getLastBuild(), build));
         Pipeline pipeline = Pipeline.extractPipeline("Pipeline", build);
-        Component component = new Component("Component", "build", null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
+        Component component = new Component("Component", "build", null, false, 3, PAGING_DISABLED, 1);
+        List<Pipeline> pipelines =
+                pipeline.createPipelineLatest(1, Jenkins.getInstance(), PAGING_DISABLED, SHOW_CHANGES, component);
         assertEquals(1, pipelines.size());
         assertEquals(1, pipelines.get(0).getTriggeredBy().size());
         assertEquals(TriggerCause.TYPE_UPSTREAM, pipelines.get(0).getTriggeredBy().get(0).getType());
@@ -436,8 +439,8 @@ public class PipelineTest {
     public void getPipelineLatestWithDifferntFolders() throws Exception {
         MockFolder folder1 = jenkins.createFolder("folder1");
         MockFolder folder2 = jenkins.createFolder("folder2");
-        FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
-        FreeStyleProject job2 = folder2.createProject(FreeStyleProject.class, "job2");
+        final FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
+        final FreeStyleProject job2 = folder2.createProject(FreeStyleProject.class, "job2");
 
         job1.getPublishersList().add(new BuildTrigger("folder2/job2", false));
         jenkins.getInstance().rebuildDependencyGraph();
@@ -464,16 +467,17 @@ public class PipelineTest {
 
     @Test
     public void testForkJoin() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        FreeStyleProject c = jenkins.createFreeStyleProject("C");
-        FreeStyleProject d = jenkins.createFreeStyleProject("D");
-        a.getPublishersList().add(new BuildTrigger("B,C", false));
-        b.getPublishersList().add(new BuildTrigger("D", false));
-        c.getPublishersList().add(new BuildTrigger("D", false));
-        d.getPublishersList().add(new JoinTrigger(new DescribableList<Publisher, Descriptor<Publisher>>(Saveable.NOOP), "", false));
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("C");
+        FreeStyleProject projectD = jenkins.createFreeStyleProject("D");
+        projectA.getPublishersList().add(new BuildTrigger("B,C", false));
+        projectB.getPublishersList().add(new BuildTrigger("D", false));
+        projectC.getPublishersList().add(new BuildTrigger("D", false));
+        projectD.getPublishersList().add(
+                new JoinTrigger(new DescribableList<Publisher, Descriptor<Publisher>>(Saveable.NOOP), "", false));
         jenkins.getInstance().rebuildDependencyGraph();
-        Pipeline prototype = Pipeline.extractPipeline("ForkJoin", a);
+        Pipeline prototype = Pipeline.extractPipeline("ForkJoin", projectA);
         assertNotNull(prototype);
         assertEquals(4, prototype.getStages().size());
 
@@ -490,8 +494,8 @@ public class PipelineTest {
     @Test
     public void getPipelineLatestWithSameFolders() throws Exception {
         MockFolder folder1 = jenkins.createFolder("folder1");
-        FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
-        FreeStyleProject job2 = folder1.createProject(FreeStyleProject.class, "job2");
+        final FreeStyleProject job1 = folder1.createProject(FreeStyleProject.class, "job1");
+        final FreeStyleProject job2 = folder1.createProject(FreeStyleProject.class, "job2");
 
         job1.getPublishersList().add(new BuildTrigger("folder1/job2", false));
         jenkins.getInstance().rebuildDependencyGraph();
@@ -522,8 +526,8 @@ public class PipelineTest {
         MockFolder folder1 = jenkins.createFolder("folder1");
         MockFolder folder2 = folder1.createProject(MockFolder.class, "subfolder");
 
-        FreeStyleProject job1 = folder2.createProject(FreeStyleProject.class, "job1");
-        FreeStyleProject job2 = folder1.createProject(FreeStyleProject.class, "job2");
+        final FreeStyleProject job1 = folder2.createProject(FreeStyleProject.class, "job1");
+        final FreeStyleProject job2 = folder1.createProject(FreeStyleProject.class, "job2");
 
         job1.getPublishersList().add(new BuildTrigger("folder1/job2", false));
         jenkins.getInstance().rebuildDependencyGraph();
@@ -559,20 +563,23 @@ public class PipelineTest {
     @Bug(22211)
     @Test
     public void testGetPipelinesWhereRowsWillBeGambled() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
         jenkins.createFreeStyleProject("c");
-        FreeStyleProject d = jenkins.createFreeStyleProject("d");
+        final FreeStyleProject projectD = jenkins.createFreeStyleProject("d");
         jenkins.createFreeStyleProject("e");
 
-        a.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("b", new BlockingBehaviour("never", "never", "never"), null)));
-        b.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("c,d", new BlockingBehaviour("never", "never", "never"), null)));
-        d.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("e", new BlockingBehaviour("never", "never", "never"), null)));
+        projectA.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("b", new BlockingBehaviour("never", "never", "never"), null)));
+        projectB.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("c,d", new BlockingBehaviour("never", "never", "never"), null)));
+        projectD.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("e", new BlockingBehaviour("never", "never", "never"), null)));
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+        Pipeline pipeline = Pipeline.extractPipeline("test", projectA);
 
         assertEquals("a", pipeline.getStages().get(0).getName());
         assertEquals(0, pipeline.getStages().get(0).getRow());
@@ -607,24 +614,28 @@ public class PipelineTest {
      */
     @Test
     public void testGetPipelinesWhereEachRowHasMultipleStages() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
         jenkins.createFreeStyleProject("c");
-        FreeStyleProject d = jenkins.createFreeStyleProject("d");
-        FreeStyleProject e =jenkins.createFreeStyleProject("e");
+        final FreeStyleProject projectD = jenkins.createFreeStyleProject("d");
+        final FreeStyleProject projectE = jenkins.createFreeStyleProject("e");
         jenkins.createFreeStyleProject("f");
         jenkins.createFreeStyleProject("g");
         jenkins.createFreeStyleProject("h");
 
-        a.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("b", new BlockingBehaviour("never", "never", "never"), null)));
-        b.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("c,d", new BlockingBehaviour("never", "never", "never"), null)));
-        d.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("e", new BlockingBehaviour("never", "never", "never"), null)));
-        e.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("f,g,h", new BlockingBehaviour("never", "never", "never"), null)));
+        projectA.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("b", new BlockingBehaviour("never", "never", "never"), null)));
+        projectB.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("c,d", new BlockingBehaviour("never", "never", "never"), null)));
+        projectD.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("e", new BlockingBehaviour("never", "never", "never"), null)));
+        projectE.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("f,g,h", new BlockingBehaviour("never", "never", "never"), null)));
 
         jenkins.getInstance().rebuildDependencyGraph();
         jenkins.setQuietPeriod(0);
 
-        Pipeline pipeline = Pipeline.extractPipeline("test", a);
+        Pipeline pipeline = Pipeline.extractPipeline("test", projectA);
 
         assertEquals("a", pipeline.getStages().get(0).getName());
         assertEquals(0, pipeline.getStages().get(0).getRow());
@@ -659,32 +670,33 @@ public class PipelineTest {
         assertEquals(4, pipeline.getStages().get(7).getColumn());
     }
 
-    /**
+    /*
      * A --> B --> C --> D
-     *
-     * @throws Exception
      */
     @Test
     @Bug(22658)
     public void testRecursiveStages() throws Exception {
 
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        a.addProperty(new PipelineProperty("A", "A", ""));
-        FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        b.addProperty(new PipelineProperty("B", "B", ""));
-        FreeStyleProject c = jenkins.createFreeStyleProject("C");
-        c.addProperty(new PipelineProperty("C", "C", ""));
-        FreeStyleProject d = jenkins.createFreeStyleProject("D");
-        d.addProperty(new PipelineProperty("D", "B", ""));
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        projectA.addProperty(new PipelineProperty("A", "A", ""));
+        FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        projectB.addProperty(new PipelineProperty("B", "B", ""));
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("C");
+        projectC.addProperty(new PipelineProperty("C", "C", ""));
+        FreeStyleProject projectD = jenkins.createFreeStyleProject("D");
+        projectD.addProperty(new PipelineProperty("D", "B", ""));
 
-        a.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
-        b.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
-        c.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        projectA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        projectB.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        projectC.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
         try {
-            Pipeline.extractPipeline("Test", a);
+            Pipeline.extractPipeline("Test", projectA);
             fail();
         } catch (StackOverflowError e) {
             fail("Should not throw StackOverflowError");
@@ -696,18 +708,22 @@ public class PipelineTest {
     @Test
     public void testShouldShowPipelineInstanceInQueue() throws Exception {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        Pipeline prototype = Pipeline.extractPipeline("Pipe", a);
-        a.scheduleBuild(2, new Cause.UserIdCause());
-        Component component = new Component("Component",prototype.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = prototype.createPipelineLatest(5, Jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        Pipeline prototype = Pipeline.extractPipeline("Pipe", projectA);
+        projectA.scheduleBuild(2, new Cause.UserIdCause());
+        Component component = new Component(
+                "Component",prototype.getFirstProject().getFullName(), null, false, 3, PAGING_DISABLED, 1);
+        List<Pipeline> pipelines = prototype
+                .createPipelineLatest(5, Jenkins.getInstance(), PAGING_DISABLED, SHOW_CHANGES, component);
         assertEquals(1, pipelines.size());
     }
 
     private Pipeline createPipelineLatest(Pipeline pipeline, ItemGroup itemGroup) {
         StaplerRequest request = Mockito.mock(StaplerRequest.class);
-        Component component = new Component("Component", pipeline.getFirstProject().getFullName(), null, false, 3, pagingEnabledFalse, 1);
-        List<Pipeline> pipelines = pipeline.createPipelineLatest(1, itemGroup, pagingEnabledFalse, showChanges, component);
+        Component component = new Component(
+                "Component", pipeline.getFirstProject().getFullName(), null, false, 3, PAGING_DISABLED, 1);
+        List<Pipeline> pipelines = pipeline
+                .createPipelineLatest(1, itemGroup, PAGING_DISABLED, SHOW_CHANGES, component);
         assertFalse(pipelines.isEmpty());
         return pipelines.get(0);
     }
@@ -798,8 +814,10 @@ public class PipelineTest {
         when(stage3.getTasks()).thenReturn(Arrays.asList(task4, task5));
         when(stage4.getTasks()).thenReturn(Arrays.asList(task6, task7));
 
-        FreeStyleProject project = jenkins.createFreeStyleProject("A");
-        Pipeline pipeline = new Pipeline("TotalBuildTime", project, null, Arrays.asList(stage1, stage2, stage3, stage4));
+        FreeStyleProject project = jenkins
+                .createFreeStyleProject("A");
+        Pipeline pipeline =
+                new Pipeline("TotalBuildTime", project, null, Arrays.asList(stage1, stage2, stage3, stage4));
         /*
         task1 -> task3: 100 + 300 = 400L
         task1 -> task2 -> task5: 100 + 200 + 500 = 800L
@@ -829,9 +847,13 @@ public class PipelineTest {
         FreeStyleProject jobC = jenkins.createFreeStyleProject("Job C");
         jobC.addProperty(new PipelineProperty(null, "Stage", null));
 
-        jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 1", new BlockingBehaviour("never", "never", "never"), null)));
-        jobA.getBuildersList().add(new TriggerBuilder(new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
-        jobA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(new BuildTriggerConfig("Job C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+        jobA.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("Job Util 1", new BlockingBehaviour("never", "never", "never"), null)));
+        jobA.getBuildersList().add(new TriggerBuilder(
+                new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
+        jobA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
+                new BuildTriggerConfig("Job C", ResultCondition.SUCCESS,
+                        new ArrayList<AbstractBuildParameterFactory>())));
 
         jenkins.getInstance().rebuildDependencyGraph();
 

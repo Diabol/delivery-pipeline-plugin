@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import hudson.cli.BuildCommand;
 import hudson.model.Cause;
 import org.junit.Rule;

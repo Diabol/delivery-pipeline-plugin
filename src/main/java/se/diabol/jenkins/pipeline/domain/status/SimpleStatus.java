@@ -164,16 +164,30 @@ public class SimpleStatus implements Status {
         }
 
         if (build.isBuilding()) {
-            int progress = (int) round(100.0d * (currentTimeMillis() - build.getTimestamp().getTimeInMillis())
-                                / build.getEstimatedDuration());
-            if (progress > 100) {
-                progress = 99;
-            }
-
-            return StatusFactory.running(progress, build.getTimeInMillis(), currentTimeMillis()
-                    - build.getTimestamp().getTimeInMillis());
+            int progress = calculateBuildProgress(build);
+            return statusWithProgress(build, progress);
         }
         return getStatusFromResult(build);
+    }
+
+    private static Status statusWithProgress(AbstractBuild build, int progress) {
+        return StatusFactory.running(
+                progress, build.getTimeInMillis(), currentTimeMillis() - build.getTimestamp().getTimeInMillis());
+    }
+
+    private static int calculateBuildProgress(AbstractBuild build) {
+        return calculateBuildProgress(
+                currentTimeMillis(), build.getTimestamp().getTimeInMillis(), build.getEstimatedDuration());
+    }
+
+    static int calculateBuildProgress(long currentTimeMillis, long timeBuildStarted, long estimatedBuildDuration) {
+        int progress = (int) round(100.0d * (currentTimeMillis - timeBuildStarted) / estimatedBuildDuration);
+        if (progress > 100 || estimatedBuildDuration < 0) {
+            progress = 99;
+        } else if (progress < 0) {
+            return 0;
+        }
+        return progress;
     }
 
     private static Status getStatusFromResult(AbstractBuild build) {

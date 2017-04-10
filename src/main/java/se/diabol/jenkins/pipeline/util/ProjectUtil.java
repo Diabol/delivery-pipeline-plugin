@@ -26,6 +26,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Cause;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
+import hudson.model.Job;
 import hudson.util.ListBoxModel;
 import se.diabol.jenkins.pipeline.RelationshipResolver;
 
@@ -48,9 +49,9 @@ public final class ProjectUtil {
     private ProjectUtil() {
     }
 
-    public static ListBoxModel fillAllProjects(ItemGroup<?> context) {
+    public static ListBoxModel fillAllProjects(ItemGroup<?> context, Class<? extends Job> type) {
         ListBoxModel options = new ListBoxModel();
-        for (AbstractProject<?, ?> p : JenkinsUtil.getInstance().getAllItems(AbstractProject.class)) {
+        for (Job p : JenkinsUtil.getInstance().getAllItems(type)) {
             options.add(p.getFullDisplayName(), p.getRelativeNameFrom(context));
         }
         return options;
@@ -181,6 +182,4 @@ public final class ProjectUtil {
         projectList.addAll(Items.fromNameList(context, projectNames.toString(), AbstractProject.class));
         return projectList;
     }
-
-
 }

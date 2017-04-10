@@ -375,6 +375,16 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.jenkins-ci.plugins.pipeline-stage-view</groupId>
+            <artifactId>pipeline-stage-view</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.pipeline-stage-view</groupId>
+            <artifactId>pipeline-rest-api</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>promoted-builds</artifactId>
             <version>2.17</version>
@@ -431,6 +441,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
             <version>5.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>scm-api</artifactId>
+            <version>1.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -457,11 +472,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
             <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-aggregator</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -470,12 +489,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client</artifactId>
+            <version>1.21.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson</artifactId>
+            <version>1.21.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>dashboard-view</artifactId>
             <version>2.9.2</version>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
@@ -506,7 +534,6 @@
             <version>${selenium.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

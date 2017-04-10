@@ -17,6 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.resolver;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
@@ -29,10 +33,6 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class ProjectRelationshipResolverTest {
 
     @Rule
@@ -40,22 +40,22 @@ public class ProjectRelationshipResolverTest {
 
     @Test
     public void testNoDownstream() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
         RelationshipResolver resolver = new ProjectRelationshipResolver();
-        List<AbstractProject> downStreams = resolver.getDownstreamProjects(a);
+        List<AbstractProject> downStreams = resolver.getDownstreamProjects(projectA);
         assertTrue(downStreams.isEmpty());
     }
 
     @Test
     public void testHasDownstream() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
-        a.getPublishersList().add(new BuildTrigger("b", false));
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("b");
+        projectA.getPublishersList().add(new BuildTrigger("b", false));
         jenkins.getInstance().rebuildDependencyGraph();
         RelationshipResolver resolver = new ProjectRelationshipResolver();
-        List<AbstractProject> downStreams = resolver.getDownstreamProjects(a);
+        List<AbstractProject> downStreams = resolver.getDownstreamProjects(projectA);
         assertFalse(downStreams.isEmpty());
-        assertEquals(b, downStreams.get(0));
+        assertEquals(projectB, downStreams.get(0));
     }
 
     @SuppressWarnings("deprecation")

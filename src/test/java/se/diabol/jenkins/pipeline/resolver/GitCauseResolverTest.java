@@ -17,14 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.resolver;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import hudson.model.Cause;
 import hudson.plugins.git.GitStatus;
 import org.junit.Test;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class GitCauseResolverTest {
 

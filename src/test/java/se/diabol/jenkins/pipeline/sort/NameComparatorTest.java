@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.sort;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import se.diabol.jenkins.pipeline.domain.Component;
 
@@ -24,16 +26,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-
 public class NameComparatorTest {
 
-    private final static boolean pagingEnabledFalse = false;
+    private static final boolean PAGING_DISABLED = false;
 
     @Test
     public void testCompare() {
-        Component componentB = new Component("B", "B", "job/A", false, 3, pagingEnabledFalse, 1);
-        Component componentA = new Component("A", "A", "job/B", false, 3, pagingEnabledFalse, 2);
+        Component componentB = new Component("B", "B", "job/A", false, 3, PAGING_DISABLED, 1);
+        Component componentA = new Component("A", "A", "job/B", false, 3, PAGING_DISABLED, 2);
         List<Component> list = new ArrayList<Component>();
         list.add(componentB);
         list.add(componentA);

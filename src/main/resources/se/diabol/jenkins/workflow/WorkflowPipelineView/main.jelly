@@ -1,0 +1,111 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+
+    <st:bind var="view" value="${it}"/>
+    <st:bind var="fullscreen" value='${request.getParameter("fullscreen")}'/>
+
+    <j:set var="fullscreen" value='${request.getParameter("fullscreen") == null ? "false" : request.getParameter("fullscreen")}'/>
+
+    <st:bind var="page" value='${request.getParameter("page")}'/>
+    <j:set var="page" value='${request.getParameter("page") == null ? 1 : request.getParameter("page")}'/>
+
+    <st:bind var="component" value='${request.getParameter("component")}'/>
+    <j:set var="component" value='${request.getParameter("component") == null ? 1 : request.getParameter("component")}'/>
+
+    <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipeline-common.css"/>
+    <j:switch on="${fullscreen}">
+        <j:case value="true">
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipeline-fullscreen.css"/>
+            <j:if test="${it.fullScreenCss != null}">
+                <link rel="stylesheet" href="${it.fullScreenCss}"/>
+            </j:if>
+        </j:case>
+        <j:default>
+            <link rel="stylesheet" href="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipeline.css"/>
+            <j:if test="${it.embeddedCss != null}">
+                <link rel="stylesheet" href="${it.embeddedCss}"/>
+            </j:if>
+            <j:set var="views" value="${it.owner.views}"/>
+            <j:set var="currentView" value="${it}"/>
+            <j:if test="${!it.isPortletView}">
+                <j:choose>
+                    <j:when test="${it.owner.class.name=='hudson.model.MyViewsProperty'}">
+                        <st:include page="myViewTabs.jelly" it="${it.owner.myViewsTabBar}"/>
+                    </j:when>
+                    <j:otherwise>
+                        <st:include page="viewTabs.jelly" it="${it.owner.viewsTabBar}"/>
+                    </j:otherwise>
+                </j:choose>
+            </j:if>
+        </j:default>
+    </j:switch>
+
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/moment.min.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/jquery.jsPlumb-1.3.16-all-min.js"/>
+    <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/pipe.js"/>
+    <j:if test="${it.theme == 'overview'}">
+        <script type="text/javascript" src="${resURL}/plugin/delivery-pipeline-plugin/themes/${it.theme}/pipe.js"/>
+    </j:if>
+
+
+    <div class="pane-frame">
+        <div class="pipeline-main">
+
+            <div class="pipeline-logo"/>
+
+            <div id="taskDetails" class="popover">
+            </div>
+
+            <div id="pipelineerror-${it.id == null ? 0 : it.id}" class="pipelineerror"/>
+            <div id="pipeline-message-${it.id == null ? 0 : it.id}" class="pipeline-message">
+                <div class="pipeline-loading-icon"></div>
+            </div>
+
+            <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+                <div id="pipelines-${i}-${it.id == null ? 0 : it.id}" class="left" style="width: ${100/it.noOfColumns}%;"></div>
+            </j:forEach>
+            <div class="clear"></div>
+
+            <script type="text/javascript">
+                function pipeline${it.id == null ? 0 : it.id}(pipelineid, viewUrl) {
+
+                var pipelineContainers = [];
+                var jsplumb = jsPlumb.getInstance();
+                jsPlumbUtilityVariable.push(jsplumb);
+
+                <j:forEach begin="1" end="${it.noOfColumns}" indexVar="i">
+                    pipelineContainers.push('pipelines-${i}-' + pipelineid);
+                </j:forEach>
+
+                var view = { "viewUrl" : viewUrl };
+
+                var pipelineutils = new pipelineUtils();
+
+                pipelineutils.updatePipelines(pipelineContainers, "pipelineerror-" + pipelineid, view, ${fullscreen}, ${page}, ${component}, ${it.isShowChanges()},
+
+                <j:choose>
+                    <j:when test="it.getAggregatedChangesGroupingPattern()">
+                        /${it.getAggregatedChangesGroupingPattern()}/g
+                    </j:when>
+                    <j:otherwise>null</j:otherwise>
+                </j:choose>,
+                ${it.updateInterval * 1000}, ${it.id == null ? 0 : it.id}, jsplumb);
+
+                Q(window).resize(function () {
+                    jsplumb.repaintEverything();
+                });
+                }
+                var jsPlumbUtilityVariable;
+                Q(document).ready(function() {
+                    if ( undefined === jsPlumbUtilityVariable ) {
+                        jsPlumbUtilityVariable = [];
+                    }
+                    var itpipeline${it.id == null ? 0 : it.id} = new
+                    pipeline${it.id == null ? 0 : it.id}('${it.id == null ? 0 : it.id}', '${it.getViewUrl()}');
+                });
+            </script>
+        </div>
+    </div>
+    <!--<st:include page="legend.jelly"/>-->
+
+</j:jelly>

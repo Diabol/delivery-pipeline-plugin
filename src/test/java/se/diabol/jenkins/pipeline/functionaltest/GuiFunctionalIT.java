@@ -17,6 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.functionaltest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import com.cloudbees.hudson.plugins.folder.Folder;
 import hudson.model.FreeStyleProject;
@@ -30,17 +33,15 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 
-import javax.xml.transform.stream.StreamSource;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import javax.xml.transform.stream.StreamSource;
 
 public class GuiFunctionalIT {
 
@@ -48,7 +49,7 @@ public class GuiFunctionalIT {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-    private final static String NONE = null;
+    private static final String NONE = null;
 
     @Before
     public void before() {
@@ -66,10 +67,9 @@ public class GuiFunctionalIT {
     @Test
     @Ignore
     public void triggerManualBuild() throws Exception {
-
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
@@ -81,23 +81,23 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().addView(view);
 
-        jenkins.buildAndAssertSuccess(a);
+        jenkins.buildAndAssertSuccess(projectA);
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
 
         page.triggerManual("B0");
         jenkins.waitUntilNoActivity();
-        assertNotNull(b.getLastBuild());
+        assertNotNull(projectB.getLastBuild());
     }
 
     @Test
     @Ignore
     public void triggerManualRebuild() throws Exception {
-
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
-        FreeStyleProject b = jenkins.createFreeStyleProject("B");
-        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
+        final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
+        projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
@@ -110,28 +110,29 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().addView(view);
 
-        a.scheduleBuild(0, null);
+        projectA.scheduleBuild(0, null);
         jenkins.waitUntilNoActivity();
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
 
         page.triggerManual("B0");
         jenkins.waitUntilNoActivity();
-        assertNotNull(b.getLastBuild());
+        assertNotNull(projectB.getLastBuild());
         page.open();
         page.triggerRebuild("B0");
         jenkins.waitUntilNoActivity();
 
-        assertEquals(2, b.getLastBuild().getNumber());
+        assertEquals(2, projectB.getLastBuild().getNumber());
     }
 
     @Test
     @Ignore
     public void defaultView() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
-        a.getPublishersList().add(new BuildPipelineTrigger("B", null));
+        projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
         List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
@@ -149,7 +150,7 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().deleteView(all);
 
-        a.scheduleBuild(0, null);
+        projectA.scheduleBuild(0, null);
         jenkins.waitUntilNoActivity();
 
         NewJobPage newJobPage = new NewJobPage(webDriver, jenkins.getURL() + "view/Pipeline");
@@ -182,7 +183,8 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().addView(view);
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
         page.triggerNewParameterizedPipelineBuild("0");
 
@@ -209,7 +211,8 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().addView(view);
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
         page.triggerNewPipelineBuild("0");
 
@@ -238,7 +241,8 @@ public class GuiFunctionalIT {
 
         folder.addView(view);
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "job/Folder/view/Pipeline");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "job/Folder/view/Pipeline");
         page.open();
         page.triggerNewPipelineBuild("0");
 
@@ -247,7 +251,8 @@ public class GuiFunctionalIT {
         assertNotNull(start.getLastBuild());
     }
 
-    @Test // JENKINS-39856
+    @Test
+    @Bug(39856)
     public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelinePage() throws Exception {
         FreeStyleProject start = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
@@ -264,7 +269,8 @@ public class GuiFunctionalIT {
 
         jenkins.getInstance().addView(view);
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Pipeline");
         page.open();
         String result = page.getJsPlumbUtilityVariable();
 
@@ -274,26 +280,29 @@ public class GuiFunctionalIT {
         assertEquals("1", result);
     }
 
-    @Test // JENKINS-39856
+    @Test
+    @Bug(39856)
     public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelineDashboardPortlet() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("A");
+        FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
 
-        a.getPublishersList().add(new BuildTrigger("B", true));
+        projectA.getPublishersList().add(new BuildTrigger("B", true));
 
-        FreeStyleProject c = jenkins.createFreeStyleProject("C");
+        FreeStyleProject projectC = jenkins.createFreeStyleProject("C");
         jenkins.createFreeStyleProject("D");
 
-        c.getPublishersList().add(new BuildTrigger("D", true));
+        projectC.getPublishersList().add(new BuildTrigger("D", true));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
         Dashboard view = new Dashboard("Dashboard");
         jenkins.getInstance().addView(view);
-        view.updateByXml(new StreamSource(GuiFunctionalIT.class.getResourceAsStream("/se/diabol/jenkins/pipeline/functionaltest/GuiFunctionalIT/DashboardViewPage.xml")));
+        view.updateByXml(new StreamSource(GuiFunctionalIT.class.getResourceAsStream(
+                "/se/diabol/jenkins/pipeline/functionaltest/GuiFunctionalIT/DashboardViewPage.xml")));
         view.save();
 
-        DeliveryPipelinePage page = new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Dashboard");
+        DeliveryPipelinePage page =
+                new DeliveryPipelinePage(webDriver, jenkins.getURL().toExternalForm(), "view/Dashboard");
         page.open();
         String result = page.getJsPlumbUtilityVariable();
 

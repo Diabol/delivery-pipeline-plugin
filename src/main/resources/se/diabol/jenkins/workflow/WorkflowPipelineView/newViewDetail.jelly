@@ -1,0 +1,5 @@
+<?jelly escape-by-default='true'?>
+<div>
+    Continuous Delivery pipelines, perfect for visualization on information radiators.
+    Shows one or more delivery pipeline instances, based on Jenkins pipelines (created using the Pipeline or Workflow plugin).
+</div>

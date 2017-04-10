@@ -1,4 +1,6 @@
 <?jelly escape-by-default='true'?>
 <div>
-    Shows one or more delivery pipeline instances.
+    Continuous Delivery pipelines, perfect for visualization on information radiators.
+    Shows one or more delivery pipeline instances, based on traditional Jenkins jobs
+    with upstream/downstream dependencies.
 </div>
