@@ -69,9 +69,11 @@ function pipelineUtils() {
                }
                html.push("</h1>");
                if (!showAvatars) {
-                   html.push("<div class='pagination'>");
-                   html.push(component.pagingData);
-                   html.push("</div>");
+                   if (component.pagingData != '') {
+                      html.push("<div class='pagination'>");
+                      html.push(component.pagingData);
+                      html.push("</div>");
+                   }
                }
                if (component.pipelines.length === 0) {
                    html.push("No builds done yet.");
