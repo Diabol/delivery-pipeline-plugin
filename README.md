@@ -31,6 +31,7 @@ It basically comes down to the following guidelines:
 Requirements
 ---
 Delivery Pipeline plugin 1.0.0 and later requires Java 7 and Jenkins core 1.642.3 or later.
+
 Delivery Pipeline plugin 0.10.3 requires Java 6 and Jenkins core 1.565 or later.
 
 Build
