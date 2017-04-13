@@ -48,7 +48,7 @@ import join.JoinTrigger;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.kohsuke.stapler.StaplerRequest;
@@ -84,7 +84,6 @@ public class PipelineTest {
         assertEquals(1, pipeline.getStages().size());
         assertEquals("job", pipeline.getStages().get(0).getName());
         assertEquals("job", pipeline.getStages().get(0).getTasks().get(0).getName());
-
     }
 
     @Test
@@ -130,7 +129,6 @@ public class PipelineTest {
         assertEquals(1, deployStage.getTasks().size());
         assertEquals("Deploy", deployStage.getTasks().get(0).getName());
         assertEquals("deploy", deployStage.getTasks().get(0).getId());
-
     }
 
     @Test
@@ -157,7 +155,6 @@ public class PipelineTest {
         assertEquals("deploy3", pipeline.getStages().get(2).getTasks().get(0).getName());
     }
 
-
     @Test
     public void testExtractPipelineWithSubProjects() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
@@ -181,7 +178,6 @@ public class PipelineTest {
         assertEquals(2, pipeline.getStages().get(0).getTasks().size());
         assertEquals(1, pipeline.getStages().get(1).getTasks().size());
     }
-
 
     @Test
     public void testCreatePipelineAggregatedSharedTask() throws Exception {
@@ -280,8 +276,6 @@ public class PipelineTest {
         aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());
         assertEquals("#1", aggregated1.getStages().get(2).getVersion());
-
-
     }
 
     @Test
@@ -335,7 +329,6 @@ public class PipelineTest {
         assertEquals("IDLE", aggregated.getStages().get(1).getTasks().get(0).getStatus().toString());
         assertEquals("SUCCESS", aggregated.getStages().get(1).getTasks().get(1).getStatus().toString());
         assertEquals("#2", aggregated.getStages().get(1).getVersion());
-
     }
 
     @Test
@@ -389,9 +382,7 @@ public class PipelineTest {
         assertEquals("job/build/1/", latest.getStages().get(0).getTasks().get(0).getLink());
         assertEquals(0, latest.getStages().get(0).getColumn());
         assertEquals(1, latest.getStages().get(1).getColumn());
-
     }
-
 
     @Test
     public void testPipelineLatestDownstreamIsDisabled() throws Exception {
@@ -558,7 +549,7 @@ public class PipelineTest {
      * Javascript in view needs to have a sorted list of stages based
      * on row and column the stage has been placed in.
      */
-    @Bug(22211)
+    @Issue("JENKINS-22211")
     @Test
     public void testGetPipelinesWhereRowsWillBeGambled() throws Exception {
         final FreeStyleProject projectA = jenkins.createFreeStyleProject("a");
@@ -598,9 +589,7 @@ public class PipelineTest {
         assertEquals("c", pipeline.getStages().get(4).getName());
         assertEquals(1, pipeline.getStages().get(4).getRow());
         assertEquals(2, pipeline.getStages().get(4).getColumn());
-
     }
-
 
     /**
      * A -> B -> D -> E -> F
@@ -672,7 +661,7 @@ public class PipelineTest {
      * A --> B --> C --> D
      */
     @Test
-    @Bug(22658)
+    @Issue("JENKINS-22658")
     public void testRecursiveStages() throws Exception {
 
         FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
@@ -834,7 +823,7 @@ public class PipelineTest {
     }
 
     @Test
-    @Bug(30043)
+    @Issue("JENKINS-30043")
     public void testSubProjectsFirst() throws Exception {
         FreeStyleProject jobA = jenkins.createFreeStyleProject("Job A");
         jobA.addProperty(new PipelineProperty(null, "Stage", null));

@@ -27,7 +27,7 @@ import jenkins.model.Jenkins;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
@@ -57,7 +57,7 @@ public class BPPManualTriggerTest {
     }
 
     @Test
-    @Bug(24392)
+    @Issue("JENKINS-24392")
     public void triggerManualWithFoldersViewInRoot() throws Exception {
         final BPPManualTrigger trigger = new BPPManualTrigger();
         MockFolder folder = jenkins.createFolder("SubFolder");
@@ -93,5 +93,4 @@ public class BPPManualTriggerTest {
         trigger.triggerManual(projecB,projectA , build.getId(), Jenkins.getInstance());
         fail("Should throw exception");
     }
-
 }

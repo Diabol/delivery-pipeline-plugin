@@ -46,7 +46,7 @@ import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.buildnamesetter.BuildNameSetter;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
@@ -161,7 +161,7 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
-    @Bug(21070)
+    @Issue("JENKINS-21070")
     public void testVersionContributorErrorInPattern() throws Exception {
 
         FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
@@ -178,7 +178,7 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
-    @Bug(34805)
+    @Issue("JENKINS-34805")
     public void shouldGetPipelineVersionFromBuildAction() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
         FreeStyleBuild build = project.scheduleBuild2(0, new BuildCommand.CLICause(),
@@ -195,7 +195,7 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
-    @Bug(28848)
+    @Issue("JENKINS-28848")
     public void testWithBuildNameSetterPluginAndAdditionalParameters() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("a");
         FreeStyleProject b = jenkins.createFreeStyleProject("b");

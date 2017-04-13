@@ -26,8 +26,8 @@ import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.FakeRepositoryBrowserSCM;
@@ -123,7 +123,7 @@ public class TriggerCauseTest {
 
 
     @Test
-    @Bug(22611)
+    @Issue("JENKINS-22611")
     public void testGetTriggeredByMultipleSCMChange() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
@@ -249,8 +249,6 @@ public class TriggerCauseTest {
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
         List<TriggerCause> triggeredBy = TriggerCause.getTriggeredBy(project, null);
         assertTrue(triggeredBy.isEmpty());
-
-
     }
 
     @Test
@@ -269,5 +267,4 @@ public class TriggerCauseTest {
         assertNotEquals(trigger3, "");
         assertNotEquals(trigger1.hashCode(), trigger3.hashCode());
     }
-
 }

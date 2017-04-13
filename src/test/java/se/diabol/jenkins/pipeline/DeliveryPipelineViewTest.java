@@ -17,10 +17,12 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -59,7 +61,7 @@ import org.junit.ComparisonFailure;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
@@ -125,7 +127,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
-    @Bug(23373)
+    @Issue("JENKINS-23373")
     public void testOnJobRenamedNoComponentSpecs() {
         DeliveryPipelineView view = new DeliveryPipelineView("Test");
         //Rename
@@ -133,7 +135,6 @@ public class DeliveryPipelineViewTest {
         //Delete
         view.onProjectRenamed(null, "build1", null);
     }
-
 
     @Test
     public void testOnJobRenamedDelete() throws Exception {
@@ -167,10 +168,9 @@ public class DeliveryPipelineViewTest {
         verify(request, times(1)).bindJSONToList(DeliveryPipelineView.RegExpSpec.class, null);
     }
 
-
     @Test
     @WithoutJenkins
-    @SuppressWarnings("all")
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public void testDoCheckUpdateInterval() {
         DeliveryPipelineView.DescriptorImpl descriptor = new DeliveryPipelineView.DescriptorImpl();
         assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("").kind);
@@ -339,7 +339,6 @@ public class DeliveryPipelineViewTest {
         assertNotNull(components);
         assertTrue(components.isEmpty());
         assertNotNull(view.getError());
-
     }
 
     @Test
@@ -366,7 +365,6 @@ public class DeliveryPipelineViewTest {
 
         Collection<TopLevelItem> items = view.getItems();
         assertEquals(3, items.size());
-
     }
 
     @Test
@@ -527,7 +525,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
-    @SuppressWarnings("all")
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public void testDoCheckName() {
         DeliveryPipelineView.ComponentSpec.DescriptorImpl descriptor =
                 new DeliveryPipelineView.ComponentSpec.DescriptorImpl();
@@ -539,7 +537,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
-    @SuppressWarnings("all")
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public void testDoCheckRegexpFirstJob() {
         DeliveryPipelineView.RegExpSpec.DescriptorImpl descriptor =
                 new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
@@ -624,11 +622,12 @@ public class DeliveryPipelineViewTest {
         jenkins.createFreeStyleProject("compile-Project3");
         jenkins.createFreeStyleProject("compile");
 
-        boolean showUpstream = false;
-        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)", showUpstream);
-        assertFalse(regExpSpec.isShowUpstream());
-        regExpSpec.setShowUpstream(true);
-        assertTrue(regExpSpec.isShowUpstream());
+        final boolean showUpstream = true;
+        final boolean doNotShowUpstream = false;
+        DeliveryPipelineView.RegExpSpec regExpSpec = new DeliveryPipelineView.RegExpSpec("^compile-(.*)", doNotShowUpstream);
+        assertThat(regExpSpec.isShowUpstream(), is(doNotShowUpstream));
+        regExpSpec.setShowUpstream(showUpstream);
+        assertThat(regExpSpec.isShowUpstream(), is(showUpstream));
         List<DeliveryPipelineView.RegExpSpec> regExpSpecs = new ArrayList<DeliveryPipelineView.RegExpSpec>();
         regExpSpecs.add(regExpSpec);
 
@@ -679,7 +678,8 @@ public class DeliveryPipelineViewTest {
                 DeliveryPipelineView.withoutFolderPrefix(projectNameWithoutFolderPrefix));
     }
 
-    @Test // JENKINS-23532
+    @Test
+    @Issue("JENKINS-23532")
     @WithoutJenkins
     public void triggerExceptionMessageShouldSuggestRemovingFolderPrefixIfPresent() {
         final String projectName = "Job3";
@@ -775,7 +775,7 @@ public class DeliveryPipelineViewTest {
     }
 
     @Test
-    @Bug(22658)
+    @Issue("JENKINS-22658")
     public void testRecursiveStages() throws Exception {
         FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         projectA.addProperty(new PipelineProperty("A", "A", ""));
@@ -808,7 +808,6 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.getError().startsWith("Circular dependencies between stages: "));
         assertTrue(view.getError().contains("B"));
         assertTrue(view.getError().contains("C"));
-
     }
 
     @Test
@@ -859,7 +858,6 @@ public class DeliveryPipelineViewTest {
         assertEquals("A", components.get(0).getFirstJob());
         assertEquals("B", components.get(1).getFirstJob());
     }
-
 
     @Test
     public void testRebuild() throws Exception {
@@ -996,5 +994,4 @@ public class DeliveryPipelineViewTest {
 
         }
     }
-
 }

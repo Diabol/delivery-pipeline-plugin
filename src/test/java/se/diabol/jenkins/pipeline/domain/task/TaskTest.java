@@ -39,8 +39,8 @@ import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.UnstableBuilder;
@@ -81,8 +81,6 @@ public class TaskTest {
         aggregatedTask = task.getAggregatedTask(build, Jenkins.getInstance());
         assertNotNull(aggregatedTask);
         assertEquals("job/test/1/", aggregatedTask.getLink());
-
-
     }
 
     @Test
@@ -94,7 +92,6 @@ public class TaskTest {
 
         Task task = Task.getPrototypeTask(b, false);
         assertTrue(task.isManual());
-
     }
 
     @Test
@@ -129,12 +126,10 @@ public class TaskTest {
         assertTrue(aggregated.getStatus().isRunning());
         buildBuilding.signal();
         jenkins.waitUntilNoActivity();
-
     }
 
-
     @Test
-    @Bug(22654)
+    @Issue("JENKINS-22654")
     public void testTaskNameForMultiConfiguration() throws Exception {
         MatrixProject project = jenkins.createMatrixProject("Multi");
         project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));
@@ -170,7 +165,6 @@ public class TaskTest {
         view.triggerManual("b", "a", "1");
 
         assertTrue(task.getLatestTask(jenkins.getInstance(), build).getStatus().isQueued());
-
     }
 
     @Test
@@ -194,7 +188,7 @@ public class TaskTest {
     }
 
     @Test
-    @Bug(28845)
+    @Issue("JENKINS-28845")
     public void testIsRebuildableNoPermission() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("A");
         FreeStyleProject b = jenkins.createFreeStyleProject("B");
@@ -220,11 +214,10 @@ public class TaskTest {
         assertFalse(task.isRebuildable());
 
         SecurityContextHolder.setContext(oldContext);
-
     }
 
     @Test
-    @Bug(30170)
+    @Issue("JENKINS-30170")
     public void testTaskName() throws Exception {
         testSimplePipelineTaskNames("Build", "Deploy", "Build", "Deploy", "Build", "Deploy");
     }

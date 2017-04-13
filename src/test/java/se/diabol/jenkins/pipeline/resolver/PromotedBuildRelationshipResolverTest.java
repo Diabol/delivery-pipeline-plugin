@@ -30,7 +30,7 @@ import hudson.plugins.promoted_builds.conditions.DownstreamPassCondition;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.util.List;
@@ -41,7 +41,6 @@ public class PromotedBuildRelationshipResolverTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
-
 
     @Test
     public void testResolveWithSimpleTrigger() throws Exception {
@@ -62,7 +61,6 @@ public class PromotedBuildRelationshipResolverTest {
         assertEquals(1, projects.size());
     }
 
-
     @Test
     public void testResolveWithParamTrigger() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("a");
@@ -82,9 +80,8 @@ public class PromotedBuildRelationshipResolverTest {
         assertEquals(1, projects.size());
     }
 
-
     @Test
-    @Bug(28347)
+    @Issue("JENKINS-28347")
     public void testResolveWithBuildTrigger() throws Exception {
         FreeStyleProject a = jenkins.createFreeStyleProject("a");
         jenkins.createFreeStyleProject("b");
@@ -102,8 +99,4 @@ public class PromotedBuildRelationshipResolverTest {
         List<AbstractProject> projects = resolver.getDownstreamProjects(a);
         assertEquals(1, projects.size());
     }
-
-
-
-
 }

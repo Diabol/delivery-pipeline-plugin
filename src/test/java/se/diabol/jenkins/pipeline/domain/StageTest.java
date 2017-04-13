@@ -24,7 +24,7 @@ import hudson.matrix.MatrixConfiguration;
 import hudson.matrix.MatrixProject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.PipelineProperty;
@@ -45,7 +45,7 @@ public class StageTest {
     public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    @Bug(22211)
+    @Issue("JENKINS-22211")
     @WithoutJenkins
     public void testSortByRowsCols() {
         List<Stage> stages = new ArrayList<Stage>();
@@ -78,8 +78,6 @@ public class StageTest {
         assertEquals("4", stages.get(2).getName());
         assertEquals("1", stages.get(3).getName());
         assertEquals("2", stages.get(4).getName());
-
-
     }
 
     /**
@@ -172,10 +170,7 @@ public class StageTest {
         assertEquals("M", stages.get(11).getName());
         assertEquals("N", stages.get(12).getName());
         assertEquals("K", stages.get(13).getName());
-
-
     }
-
 
     @Test
     @WithoutJenkins
@@ -187,7 +182,7 @@ public class StageTest {
     }
 
     @Test
-    @Bug(22654)
+    @Issue("JENKINS-22654")
     public void testStageNameForMultiConfiguration() throws Exception {
         MatrixProject project = jenkins.createMatrixProject("Multi");
         project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));

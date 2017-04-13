@@ -33,7 +33,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -253,7 +253,7 @@ public class GuiFunctionalIT {
     }
 
     @Test
-    @Bug(39856)
+    @Issue("JENKINS-39856")
     public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelinePage() throws Exception {
         FreeStyleProject start = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
@@ -282,7 +282,7 @@ public class GuiFunctionalIT {
     }
 
     @Test
-    @Bug(39856)
+    @Issue("JENKINS-39856")
     public void jsPlumbShouldNotLeakMemoryOnDeliveryPipelineDashboardPortlet() throws Exception {
         FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");

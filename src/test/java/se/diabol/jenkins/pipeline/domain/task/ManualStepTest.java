@@ -29,8 +29,8 @@ import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildTrigger;
 import org.junit.Rule;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.FailureBuilder;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
@@ -67,8 +67,6 @@ public class ManualStepTest {
         assertTrue(step.isPermission());
         assertNull(step.getPossibleVersions());
         assertEquals("downstreamManual", step.getUpstreamProject());
-
-
     }
 
     @Test
@@ -108,8 +106,6 @@ public class ManualStepTest {
         assertTrue(step.isEnabled());
         assertTrue(step.isPermission());
         assertNull(step.getPossibleVersions());
-
-
     }
 
     @Test
@@ -186,7 +182,6 @@ public class ManualStepTest {
         assertTrue(step.isEnabled());
         assertTrue(step.isPermission());
         assertEquals(2, step.getPossibleVersions().size());
-
     }
 
     @Test
@@ -226,7 +221,7 @@ public class ManualStepTest {
     }
 
     @Test
-    @Bug(27584)
+    @Issue("JENKINS-27584")
     public void getManualStepLatestUpstreamDeleted() throws Exception {
         FreeStyleProject projectA =  jenkins.createFreeStyleProject("A");
         FreeStyleProject projectB =  jenkins.createFreeStyleProject("B");
@@ -255,7 +250,7 @@ public class ManualStepTest {
     }
 
     @Test
-    @Bug(28937)
+    @Issue("JENKINS-28937")
     public void testFailure() throws Exception {
         final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
@@ -276,7 +271,6 @@ public class ManualStepTest {
         ManualStep step = ManualStep.getManualStepLatest(projectC, null, firstBuild);
         assertNotNull(step);
         assertFalse(step.isEnabled());
-
     }
 
 }
