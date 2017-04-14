@@ -17,7 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import static com.google.common.base.Objects.toStringHelper;
+import static com.google.common.base.MoreObjects.toStringHelper;
 
 import com.google.common.collect.ImmutableList;
 
@@ -27,6 +27,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import se.diabol.jenkins.pipeline.PipelinePagination;
+import se.diabol.jenkins.pipeline.util.FullScreen;
 
 import java.util.List;
 
@@ -96,7 +97,7 @@ public class Component extends AbstractItem {
     public PipelinePagination getPagination() {
         if (pagingEnabled) {
             return new PipelinePagination(this.getCurrentPage(), totalNoOfPipelines, noOfPipelines, "?"
-                    + (this.isFullScreenView() == true ? "fullscreen=true&" : "fullscreen=false&")
+                    + (this.isFullScreenView() ? "fullscreen=true&" : "fullscreen=false&")
                     + "component=" + componentNumber + "&page=");
         }
         return null;
@@ -105,10 +106,10 @@ public class Component extends AbstractItem {
     public int getCurrentPage() {
         StaplerRequest req = Stapler.getCurrentRequest();
         int page = req == null ? 1 : req.getParameter("page") == null ? 1 :
-                Integer.parseInt(req.getParameter("page").toString());
+                Integer.parseInt(req.getParameter("page"));
         page = Math.max(page, 1);
         int component = req == null ? 1 : req.getParameter("component") == null ? 1 :
-                Integer.parseInt(req.getParameter("component").toString());
+                Integer.parseInt(req.getParameter("component"));
         if (component != componentNumber) {
             page = 1;
         }
@@ -116,9 +117,7 @@ public class Component extends AbstractItem {
     }
 
     public boolean isFullScreenView() {
-        StaplerRequest req = Stapler.getCurrentRequest();
-        return req == null ? false : req.getParameter("fullscreen") == null ? false :
-                Boolean.parseBoolean(req.getParameter("fullscreen"));
+        return FullScreen.isFullScreenRequest(Stapler.getCurrentRequest());
     }
 
     @Exported

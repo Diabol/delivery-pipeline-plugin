@@ -56,6 +56,7 @@ import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.trigger.ManualTrigger;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
+import se.diabol.jenkins.pipeline.util.FullScreen;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
@@ -72,6 +73,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
 public class DeliveryPipelineView extends View {
@@ -278,11 +280,7 @@ public class DeliveryPipelineView extends View {
     }
 
     public boolean isFullScreenView() {
-        StaplerRequest req = Stapler.getCurrentRequest();
-        if (req == null) {
-            return false;
-        }
-        return req.getParameter("fullscreen") != null && Boolean.parseBoolean(req.getParameter("fullscreen"));
+        return FullScreen.isFullScreenRequest(Stapler.getCurrentRequest());
     }
 
     public void onProjectRenamed(Item item, String oldName, String newName) {
@@ -429,7 +427,7 @@ public class DeliveryPipelineView extends View {
             LOG.fine("Trigger manual build " + projectName + " " + upstreamName + " " + buildId);
             AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
             if (!project.hasPermission(Item.BUILD)) {
-                throw new BadCredentialsException("Not auth to build");
+                throw new BadCredentialsException("Not authorized to trigger build");
             }
             AbstractProject upstream = ProjectUtil.getProject(upstreamName, Jenkins.getInstance());
             ManualTrigger trigger = ManualTriggerFactory.getManualTrigger(project, upstream);
@@ -450,7 +448,7 @@ public class DeliveryPipelineView extends View {
     public void triggerRebuild(String projectName, String buildId) {
         AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
         if (!project.hasPermission(Item.BUILD)) {
-            throw new BadCredentialsException("Not auth to build");
+            throw new BadCredentialsException("Not authorized to trigger build");
         }
         AbstractBuild build = project.getBuildByNumber(Integer.parseInt(buildId));
 
@@ -525,7 +523,7 @@ public class DeliveryPipelineView extends View {
             return components;
         } catch (PipelineException e) {
             error = e.getMessage();
-            return new ArrayList<Component>();
+            return new ArrayList<>();
         }
     }
 
@@ -677,10 +675,10 @@ public class DeliveryPipelineView extends View {
             this.showUpstream = showUpstream;
         }
 
-
         @Extension
         public static class DescriptorImpl extends Descriptor<RegExpSpec> {
 
+            @Nonnull
             @Override
             public String getDisplayName() {
                 return "RegExp";
@@ -751,6 +749,7 @@ public class DeliveryPipelineView extends View {
         @Extension
         public static class DescriptorImpl extends Descriptor<ComponentSpec> {
 
+            @Nonnull
             @Override
             public String getDisplayName() {
                 return "";
@@ -771,7 +770,7 @@ public class DeliveryPipelineView extends View {
                 if (value != null && !"".equals(value.trim())) {
                     return FormValidation.ok();
                 } else {
-                    return FormValidation.error("Please supply a title!");
+                    return FormValidation.error("Please supply a title");
                 }
             }
 
@@ -790,7 +789,6 @@ public class DeliveryPipelineView extends View {
         public void onDeleted(Item item) {
             notifyView(item, item.getFullName(), null);
         }
-
 
         private void notifyView(Item item, String oldName, String newName) {
             Collection<View> views = JenkinsUtil.getInstance().getViews();

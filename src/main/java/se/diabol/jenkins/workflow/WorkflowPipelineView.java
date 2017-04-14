@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
 public class WorkflowPipelineView extends View {
@@ -259,6 +260,7 @@ public class WorkflowPipelineView extends View {
             return FormValidation.ok();
         }
 
+        @Nonnull
         @Override
         public String getDisplayName() {
             return "Delivery Pipeline View for Jenkins Pipelines";
