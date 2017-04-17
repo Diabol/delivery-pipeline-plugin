@@ -183,6 +183,16 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
+    public void testDoCheckShowAggregatedPipeline() {
+        DeliveryPipelineView.DescriptorImpl d = new DeliveryPipelineView.DescriptorImpl();
+        assertEquals(FormValidation.Kind.ERROR, d.doCheckShowAggregatedPipeline(false, 0).kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckShowAggregatedPipeline(false, 1).kind);
+        assertEquals(FormValidation.Kind.OK, d.doCheckShowAggregatedPipeline(true, 0).kind);
+    }
+
+
+    @Test
+    @WithoutJenkins
     public void testDefaults() {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         assertEquals(3, view.getNoOfPipelines());
