@@ -192,8 +192,12 @@ public class WorkflowPipelineView extends View {
         return pipeline;
     }
 
-    private WorkflowJob getWorkflowJob(final String projectName) {
-        return jenkins().getItem(projectName, jenkins(), WorkflowJob.class);
+    private WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
+        WorkflowJob job = jenkins().getItem(projectName, jenkins(), WorkflowJob.class);
+        if (job == null) {
+            throw new PipelineException("Could not find project: " + projectName);
+        }
+        return job;
     }
 
     private List<Change> getChangelog(WorkflowRun build) {
