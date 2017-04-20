@@ -1,6 +1,8 @@
 Delivery Pipeline Plugin
 ========================
 
+![alt tag](https://raw.githubusercontent.com/Diabol/delivery-pipeline-plugin/master/docs/dpp_logo.png)
+
 [![Build Status](https://travis-ci.org/Diabol/delivery-pipeline-plugin.png)](https://travis-ci.org/Diabol/delivery-pipeline-plugin)
 [![Coverage Status](https://coveralls.io/repos/Diabol/delivery-pipeline-plugin/badge.png?branch=master)](https://coveralls.io/r/Diabol/delivery-pipeline-plugin?branch=master)
 
