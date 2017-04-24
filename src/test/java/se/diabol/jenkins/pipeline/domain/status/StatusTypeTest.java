@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class StatusTypeTest {
 
-
     @Test
     public void testValueOf() {
         assertEquals(StatusType.CANCELLED, StatusType.valueOf("CANCELLED"));
@@ -36,13 +35,14 @@ public class StatusTypeTest {
         assertEquals(StatusType.SUCCESS, StatusType.valueOf("SUCCESS"));
         assertEquals(StatusType.UNSTABLE, StatusType.valueOf("UNSTABLE"));
         assertEquals(StatusType.NOT_BUILT, StatusType.valueOf("NOT_BUILT"));
+        assertEquals(StatusType.PAUSED_PENDING_INPUT, StatusType.valueOf("PAUSED_PENDING_INPUT"));
     }
 
     @Test
     public void testValue() {
         StatusType[] values = StatusType.values();
         assertNotNull(values);
-        assertEquals(9, values.length);
+        assertEquals(10, values.length);
     }
 
 }

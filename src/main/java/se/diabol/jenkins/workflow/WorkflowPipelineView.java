@@ -17,9 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
-import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
-
 import hudson.Extension;
+import hudson.model.Api;
 import hudson.model.Descriptor;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
@@ -29,34 +28,45 @@ import hudson.model.ViewDescriptor;
 import hudson.model.ViewGroup;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.RunList;
 import jenkins.model.Jenkins;
+import org.acegisecurity.AuthenticationException;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.pipeline.PipelineApi;
+import se.diabol.jenkins.pipeline.PipelineView;
 import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
+import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
 
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
+import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
 
-public class WorkflowPipelineView extends View {
+public class WorkflowPipelineView extends View implements PipelineView {
+
+    private static final Logger LOG = Logger.getLogger(WorkflowPipelineView.class.getName());
 
     public static final int DEFAULT_INTERVAL = 2;
 
@@ -172,6 +182,69 @@ public class WorkflowPipelineView extends View {
         }
     }
 
+    @Override
+    @Exported
+    public String getViewUrl() {
+        return super.getViewUrl();
+    }
+
+    @Override
+    public Api getApi() {
+        return new PipelineApi(this);
+    }
+
+    @Override
+    public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+        if (!isDefault()) {
+            return getOwner().getPrimaryView().doCreateItem(req, rsp);
+        } else {
+            return jenkins().doCreateItem(req, rsp);
+        }
+    }
+
+    @Override
+    public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
+        LOG.info("Manual/Input step called for project: " + projectName + " and build id: " + buildId);
+
+        WorkflowJob workflowJob;
+        try {
+            workflowJob = ProjectUtil.getWorkflowJob(projectName);
+            RunList<WorkflowRun> builds = workflowJob.getBuilds();
+            for (WorkflowRun run : builds) {
+                if (Integer.toString(run.getNumber()).equals(buildId)) {
+                    InputAction inputAction = run.getAction(InputAction.class);
+                    if (inputAction != null && !inputAction.getExecutions().isEmpty()) {
+                        inputAction.getExecutions().get(0).doProceedEmpty();
+                    }
+                }
+            }
+            throw new PipelineException("Failed to resolve manual/input step for build with id: "
+                    + buildId + " for project: " + projectName);
+        } catch (IOException | PipelineException e) {
+            LOG.warning("Failed to resolve project to trigger manual/input step for: " + e);
+        }
+    }
+
+    @Override
+    public void triggerRebuild(String projectName, String buildId) {
+        LOG.log(Level.SEVERE, "Rebuild not implemented for workflow/pipeline projects");
+    }
+
+    @Override
+    public Collection<TopLevelItem> getItems() {
+        return (Collection) getOwnerItemGroup().getItems();
+    }
+
+    @Override
+    public boolean contains(TopLevelItem item) {
+        return getItems().contains(item);
+    }
+
+    @Override
+    protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
+        req.bindJSON(this, req.getSubmittedForm());
+    }
+
     private List<Pipeline> resolvePipelines(WorkflowJob job) throws PipelineException {
         List<Pipeline> pipelines = new ArrayList<Pipeline>();
 
@@ -193,39 +266,11 @@ public class WorkflowPipelineView extends View {
     }
 
     private WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
-        WorkflowJob job = jenkins().getItem(projectName, jenkins(), WorkflowJob.class);
-        if (job == null) {
-            throw new PipelineException("Could not find project: " + projectName);
-        }
-        return job;
+        return ProjectUtil.getWorkflowJob(projectName);
     }
 
     private List<Change> getChangelog(WorkflowRun build) {
         return Change.getChanges(build.getChangeSets());
-    }
-
-    @Override
-    public Collection<TopLevelItem> getItems() {
-        return (Collection) getOwnerItemGroup().getItems();
-    }
-
-    @Override
-    public boolean contains(TopLevelItem item) {
-        return getItems().contains(item);
-    }
-
-    @Override
-    protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
-        req.bindJSON(this, req.getSubmittedForm());
-    }
-
-    @Override
-    public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-        if (!isDefault()) {
-            return getOwner().getPrimaryView().doCreateItem(req, rsp);
-        } else {
-            return jenkins().doCreateItem(req, rsp);
-        }
     }
 
     @Extension

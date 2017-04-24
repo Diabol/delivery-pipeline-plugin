@@ -76,7 +76,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
-public class DeliveryPipelineView extends View {
+public class DeliveryPipelineView extends View implements PipelineView {
 
     private static final Logger LOG = Logger.getLogger(DeliveryPipelineView.class.getName());
 
@@ -306,8 +306,8 @@ public class DeliveryPipelineView extends View {
         }
     }
 
-    @Override
     @Exported
+    @Override
     public String getViewUrl() {
         return super.getViewUrl();
     }
@@ -421,6 +421,7 @@ public class DeliveryPipelineView extends View {
     }
 
     @JavaScriptMethod
+    @Override
     public void triggerManual(String projectName, String upstreamName, String buildId)
             throws TriggerException, AuthenticationException {
         try {
@@ -445,6 +446,7 @@ public class DeliveryPipelineView extends View {
         }
     }
 
+    @Override
     public void triggerRebuild(String projectName, String buildId) {
         AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
         if (!project.hasPermission(Item.BUILD)) {

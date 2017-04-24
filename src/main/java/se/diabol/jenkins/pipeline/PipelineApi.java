@@ -18,62 +18,73 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline;
 
 import hudson.model.Api;
-
 import org.acegisecurity.AuthenticationException;
-
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
-
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
-import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 public class PipelineApi extends Api {
 
-    private final DeliveryPipelineView view;
+    private final PipelineView view;
 
-    public PipelineApi(DeliveryPipelineView view) {
+    public PipelineApi(PipelineView view) {
         super(view);
         this.view = view;
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void doManualStep(StaplerRequest req, StaplerResponse rsp,
-                      @QueryParameter String project,
-                      @QueryParameter String upstream,
-                      @QueryParameter String buildId) throws IOException, ServletException {
+    public void doManualStep(StaplerRequest request,
+                             StaplerResponse response,
+                             @QueryParameter String project,
+                             @QueryParameter String upstream,
+                             @QueryParameter String buildId) throws IOException, ServletException {
         if (project != null && upstream != null && buildId != null) {
             try {
                 view.triggerManual(project, upstream, buildId);
-                rsp.setStatus(HttpServletResponse.SC_OK);
+                response.setStatus(SC_OK);
             } catch (TriggerException e) {
-                rsp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setStatus(SC_INTERNAL_SERVER_ERROR);
             } catch (AuthenticationException e) {
-                rsp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setStatus(SC_FORBIDDEN);
             }
         } else {
-            rsp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.setStatus(SC_NOT_ACCEPTABLE);
         }
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void doRebuildStep(StaplerRequest req, StaplerResponse rsp,
-                      @QueryParameter String project,
-                      @QueryParameter String buildId) throws IOException, ServletException {
+    public void doRebuildStep(StaplerRequest request,
+                              StaplerResponse response,
+                              @QueryParameter String project,
+                              @QueryParameter String buildId) throws IOException, ServletException {
         if (project != null && buildId != null) {
             try {
                 view.triggerRebuild(project, buildId);
-                rsp.setStatus(HttpServletResponse.SC_OK);
+                response.setStatus(SC_OK);
             } catch (AuthenticationException e) {
-                rsp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setStatus(SC_FORBIDDEN);
             }
         } else {
-            rsp.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+            response.setStatus(SC_NOT_ACCEPTABLE);
         }
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public void doInputStep(StaplerRequest request,
+                             StaplerResponse response,
+                             @QueryParameter String project,
+                             @QueryParameter String upstream,
+                             @QueryParameter String buildId) throws IOException, ServletException {
+        doManualStep(request, response, project, upstream, buildId);
+    }
 
 }

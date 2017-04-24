@@ -31,6 +31,7 @@ import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
+import se.diabol.jenkins.pipeline.domain.status.StatusType;
 import se.diabol.jenkins.pipeline.domain.task.ManualStep;
 import se.diabol.jenkins.workflow.WorkflowApi;
 import se.diabol.jenkins.workflow.api.Run;
@@ -47,40 +48,32 @@ public class Task extends AbstractItem {
     private static final WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
 
     private final String id;
+    private final int buildId;
     private final String link;
     private final Status status;
     private final ManualStep manual;
-    private final String buildId;
     private final String description;
+    private final boolean requiringInput;
 
-    public Task(String id, String name, Status status, String link, ManualStep manual, String description) {
+    public Task(String id, String name, int buildId, Status status, String link, ManualStep manual, String description, boolean requiringInput) {
         super(name);
         this.id = id;
-        this.link = link;
+        this.buildId = buildId;
         this.status = status;
+        this.link = link;
         this.manual = manual;
-        this.buildId = null;
         this.description = description;
-    }
-
-    @Exported
-    public ManualStep getManualStep() {
-        return manual;
-    }
-
-    @Exported
-    public boolean isManual() {
-        return manual != null;
-    }
-
-    @Exported
-    public String getBuildId() {
-        return buildId;
+        this.requiringInput = requiringInput;
     }
 
     @Exported
     public String getId() {
         return id;
+    }
+
+    @Exported
+    public Integer getBuildId() {
+        return buildId;
     }
 
     @Exported
@@ -94,8 +87,23 @@ public class Task extends AbstractItem {
     }
 
     @Exported
+    public ManualStep getManualStep() {
+        return manual;
+    }
+
+    @Exported
+    public boolean isManual() {
+        return manual != null;
+    }
+
+    @Exported
     public String getDescription() {
         return description;
+    }
+
+    @Exported
+    public boolean isRequiringInput() {
+        return requiringInput;
     }
 
     public static List<Task> resolve(WorkflowRun build, FlowNode stageStartNode) {
@@ -106,8 +114,9 @@ public class Task extends AbstractItem {
         if (taskNodesDefinedInStage(taskNodes)) {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
-                result.add(new Task(flowNode.getId(), action.getTaskName(), resolveTaskStatus(build, stageStartNode),
-                                    taskLinkFor(build), null, null));
+                Status status = resolveTaskStatus(build, stageStartNode);
+                result.add(new Task(flowNode.getId(), action.getTaskName(), build.getNumber(), status,
+                                    taskLinkFor(build), null, null, StatusType.PAUSED_PENDING_INPUT.equals(status.getType())));
             }
         } else {
             Status stageStatus = resolveTaskStatus(build, stageStartNode);
@@ -117,8 +126,8 @@ public class Task extends AbstractItem {
     }
 
     private static Task createStageTask(WorkflowRun build, FlowNode stageStartNode, Status stageStatus) {
-        return new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), stageStatus,
-                taskLinkFor(build), null, null);
+        return new Task(stageStartNode.getId(), stageStartNode.getDisplayName(), build.getNumber(), stageStatus,
+                taskLinkFor(build), null, null, StatusType.PAUSED_PENDING_INPUT.equals(stageStatus.getType()));
     }
 
     private static String taskLinkFor(WorkflowRun build) {
