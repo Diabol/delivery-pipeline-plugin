@@ -116,6 +116,7 @@ public class DeliveryPipelineView extends View {
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
     private boolean linkToConsoleLog = false;
+    private String description = null;
 
     private transient String error;
 
@@ -418,6 +419,20 @@ public class DeliveryPipelineView extends View {
 
     public void setLinkToConsoleLog(boolean linkToConsoleLog) {
         this.linkToConsoleLog = linkToConsoleLog;
+    }
+
+    @Override
+    @Exported
+    public String getDescription() {
+        if (super.description == null) {
+            setDescription(this.description);
+        }
+        return super.description;
+    }
+
+    public void setDescription(String description) {
+        super.description = description;
+        this.description = description;
     }
 
     @JavaScriptMethod
