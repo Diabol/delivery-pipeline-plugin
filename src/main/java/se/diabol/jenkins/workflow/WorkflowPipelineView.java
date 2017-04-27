@@ -70,6 +70,7 @@ public class WorkflowPipelineView extends View {
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
     private String project;
+    private String description = null;
 
     private transient String error;
 
@@ -129,14 +130,6 @@ public class WorkflowPipelineView extends View {
         this.showChanges = showChanges;
     }
 
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
-
     public String getTheme() {
         return this.theme == null ? DEFAULT_THEME : this.theme;
     }
@@ -145,9 +138,31 @@ public class WorkflowPipelineView extends View {
         this.theme = theme;
     }
 
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
     @Exported
     public String getLastUpdated() {
         return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+    }
+
+    @Override
+    @Exported
+    public String getDescription() {
+        if (super.description == null) {
+            setDescription(this.description);
+        }
+        return super.description;
+    }
+
+    public void setDescription(String description) {
+        super.description = description;
+        this.description = description;
     }
 
     @Exported
