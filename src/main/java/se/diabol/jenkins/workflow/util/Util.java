@@ -40,10 +40,6 @@ public final class Util {
         return result;
     }
 
-    public static boolean isTaskNode(FlowNode flowNode) {
-        return flowNode.getAction(TaskAction.class) != null;
-    }
-
     public static Run getRunById(List<Run> runs, int buildNumber) {
         if (runs == null || runs.isEmpty()) {
             return null;
@@ -63,6 +59,10 @@ public final class Util {
         } else {
             return null;
         }
+    }
+
+    private static boolean isTaskNode(FlowNode flowNode) {
+        return flowNode.getAction(TaskAction.class) != null;
     }
 
 }
