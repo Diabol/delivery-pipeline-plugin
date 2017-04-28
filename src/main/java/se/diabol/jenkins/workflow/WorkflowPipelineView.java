@@ -188,7 +188,10 @@ public class WorkflowPipelineView extends View {
     }
 
     private List<Pipeline> resolvePipelines(WorkflowJob job) throws PipelineException {
-        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        List<Pipeline> pipelines = new ArrayList<>();
+        if (job.getBuilds() == null) {
+            return pipelines;
+        }
 
         Iterator<WorkflowRun> it = job.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
@@ -207,8 +210,12 @@ public class WorkflowPipelineView extends View {
         return pipeline;
     }
 
-    private WorkflowJob getWorkflowJob(final String projectName) {
-        return jenkins().getItem(projectName, jenkins(), WorkflowJob.class);
+    private WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
+        WorkflowJob job = jenkins().getItem(projectName, jenkins(), WorkflowJob.class);
+        if (job == null) {
+            throw new PipelineException("Failed to resolve job with name: " + projectName);
+        }
+        return job;
     }
 
     private List<Change> getChangelog(WorkflowRun build) {
