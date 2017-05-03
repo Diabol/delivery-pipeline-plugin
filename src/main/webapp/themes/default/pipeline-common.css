@@ -219,6 +219,30 @@ div.task-progress-running {
     }
 }
 
+@keyframes grayPulse {
+    0% {
+        background-color: #e2e0e0;
+    }
+    50% {
+        background-color: #79c2f7;
+    }
+    100% {
+        background-color: #e2e0e0;
+    }
+}
+
+@-webkit-keyframes grayPulse {
+    from {
+        background-color: #e2e0e0;
+    }
+    50% {
+        background-color: #79c2f7;
+    }
+    to {
+        background-color: #e2e0e0;
+    }
+}
+
 .IDLE {
     border-left: 6px solid #d3d3d3;
 }
@@ -261,6 +285,17 @@ div.task-progress-running {
 
 .RUNNING {
     border-left: 6px solid #0092ef;
+}
+
+.PAUSED_PENDING_INPUT {
+    animation-duration: 1s;
+    animation-name: grayPulse;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: grayPulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    border-left: 6px solid lightskyblue;
 }
 
 div.left {
@@ -361,7 +396,7 @@ div.aggregatedChangesPanelInner > ul {
 .pagination {
 	display:block;
 	text-align:left;
-	clear:both;	
+	clear:both;
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:14px;
 	font-weight:normal;
@@ -383,7 +418,7 @@ div.aggregatedChangesPanelInner > ul {
 .pagination a:hover {
 	background-color:#DDEEFF;
 	border:1px solid #BBDDFF;
-	color:#0072BC;	
+	color:#0072BC;
 }
 
 .pagination .active_link a {

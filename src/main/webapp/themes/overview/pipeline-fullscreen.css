@@ -126,6 +126,17 @@ div.task-progress {
     border-left: 6px solid #0092ef;
 }
 
+.PAUSED_PENDING_INPUT {
+    animation-duration: 1s;
+    animation-name: grayPulse;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: grayPulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    border-left: 6px solid lightskyblue;
+}
+
 svg.relation path {
     stroke: #fefefe;
     stroke-width: 3;
