@@ -674,7 +674,7 @@ public class DeliveryPipelineView extends View {
 
         @DataBoundConstructor
         public RegExpSpec(String regexp, boolean showUpstream) {
-            this.regexp = regexp;
+            this.regexp = regexp != null ? regexp.trim() : null;
             this.showUpstream = showUpstream;
         }
 
@@ -701,6 +701,9 @@ public class DeliveryPipelineView extends View {
 
             public FormValidation doCheckRegexp(@QueryParameter String value) {
                 if (value != null) {
+                    if (value.trim().equals("")) {
+                        return FormValidation.error("Regular expression cannot be blank");
+                    }
                     try {
                         Pattern pattern = Pattern.compile(value);
                         if (pattern.matcher("").groupCount() == 1) {
@@ -711,7 +714,7 @@ public class DeliveryPipelineView extends View {
                             return FormValidation.error("Too many capture groups defined");
                         }
                     } catch (PatternSyntaxException e) {
-                        return FormValidation.error(e, "Syntax error in regular-expression pattern");
+                        return FormValidation.error(e, "Syntax error in regular expression pattern");
                     }
                 }
                 return FormValidation.ok();
