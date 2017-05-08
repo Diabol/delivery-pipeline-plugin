@@ -58,8 +58,6 @@ public class ProjectUtilTest {
 
         ListBoxModel.Option option2 = list.get(1);
         assertEquals(build2.getDisplayName(), option2.name);
-
-
     }
 
     @Test
@@ -113,7 +111,6 @@ public class ProjectUtilTest {
 
         projects = ProjectUtil.getProjectList(",,", jenkins.getInstance(), new EnvVars());
         assertEquals(0, projects.size());
-
     }
 
     @Test
@@ -150,5 +147,14 @@ public class ProjectUtilTest {
 
         List<AbstractProject> upstrems = ProjectUtil.getStartUpstreams(projectC);
         assertEquals(2, upstrems.size());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void getProjectsShouldReturnEmptyMapForEmptyRegExp() {
+        assertTrue(ProjectUtil.getProjects(" ").isEmpty());
+        assertTrue(ProjectUtil.getProjects("   ").isEmpty());
+        assertTrue(ProjectUtil.getProjects("\r\n").isEmpty());
+        assertTrue(ProjectUtil.getProjects(" \t\r\n ").isEmpty());
     }
 }

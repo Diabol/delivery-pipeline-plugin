@@ -543,6 +543,8 @@ public class DeliveryPipelineViewTest {
         DeliveryPipelineView.RegExpSpec.DescriptorImpl descriptor =
                 new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
         assertEquals(FormValidation.Kind.OK, descriptor.doCheckRegexp(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp(" ").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp(" \t\r\n ").kind);
         assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("*").kind);
         assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("^build-.+?-project").kind);
         assertEquals(FormValidation.Kind.OK, descriptor.doCheckRegexp("^build-(.+?)-project").kind);
