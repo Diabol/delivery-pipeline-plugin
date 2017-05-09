@@ -70,13 +70,9 @@ function pipelineUtils() {
                                        html.push("</a>");
                                    }
                                    html.push("</h1>");
-                                   if (!showAvatars) {
-                                       if (component.pagingData != '') {
-                                           html.push("<div class='pagination'>");
-                                           html.push(component.pagingData);
-                                           html.push("</div>");
-                                       }
-                                   }
+
+                                   html.push(getPagination(showAvatars, component));
+
                                    if (component.pipelines.length === 0) {
                                        html.push("No builds done yet.");
                                    }
@@ -230,7 +226,7 @@ function pipelineUtils() {
                                        html.push("</section>");
 
                                    }
-
+                                   html.push(getPagination(showAvatars, component));
                                    html.push("</section>");
                                    Q("#" + divNames[c % divNames.length]).append(html.join(""));
                                    Q("#pipeline-message-" + pipelineid).html('');
@@ -294,6 +290,18 @@ function pipelineUtils() {
                            }
                         jsplumb.repaintEverything();
                        }
+}
+
+function getPagination(showAvatars, component) {
+    var html = [];
+    if (!showAvatars) {
+       if (component.pagingData != '') {
+           html.push("<div class='pagination'>");
+           html.push(component.pagingData);
+           html.push("</div>");
+       }
+    }
+    return html.join("");
 }
 
 function getLink(data, link) {
