@@ -22,7 +22,8 @@ import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
 public interface PipelineView {
 
-    void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException;
+    void triggerManual(String projectName, String upstreamName, String buildId)
+            throws TriggerException, AuthenticationException;
 
     void triggerRebuild(String projectName, String buildId);
 }

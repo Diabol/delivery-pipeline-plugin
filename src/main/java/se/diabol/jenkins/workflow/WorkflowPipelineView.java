@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
+import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
+
 import hudson.Extension;
 import hudson.model.Api;
 import hudson.model.Descriptor;
@@ -51,8 +53,6 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
 
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,8 +61,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 
 public class WorkflowPipelineView extends View implements PipelineView {
 
@@ -203,8 +203,9 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Override
-    public void triggerManual(String projectName, String upstreamName, String buildId) throws TriggerException, AuthenticationException {
-        LOG.info("Manual/Input step called for project: " + projectName + " and build id: " + buildId);
+    public void triggerManual(String projectName, String upstreamName, String buildId)
+            throws TriggerException, AuthenticationException {
+        LOG.fine("Manual/Input step called for project: " + projectName + " and build id: " + buildId);
 
         WorkflowJob workflowJob;
         try {

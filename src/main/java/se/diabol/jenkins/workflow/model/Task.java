@@ -55,7 +55,14 @@ public class Task extends AbstractItem {
     private final String description;
     private final boolean requiringInput;
 
-    public Task(String id, String name, int buildId, Status status, String link, ManualStep manual, String description, boolean requiringInput) {
+    public Task(String id,
+                String name,
+                int buildId,
+                Status status,
+                String link,
+                ManualStep manual,
+                String description,
+                boolean requiringInput) {
         super(name);
         this.id = id;
         this.buildId = buildId;
@@ -116,7 +123,8 @@ public class Task extends AbstractItem {
                 TaskAction action = flowNode.getAction(TaskAction.class);
                 Status status = resolveTaskStatus(build, stageStartNode);
                 result.add(new Task(flowNode.getId(), action.getTaskName(), build.getNumber(), status,
-                                    taskLinkFor(build), null, null, StatusType.PAUSED_PENDING_INPUT.equals(status.getType())));
+                                    taskLinkFor(build), null, null,
+                                    StatusType.PAUSED_PENDING_INPUT.equals(status.getType())));
             }
         } else {
             Status stageStatus = resolveTaskStatus(build, stageStartNode);
