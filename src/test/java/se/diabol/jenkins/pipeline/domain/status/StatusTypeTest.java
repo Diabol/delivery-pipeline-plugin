@@ -44,5 +44,4 @@ public class StatusTypeTest {
         assertNotNull(values);
         assertEquals(10, values.length);
     }
-
 }

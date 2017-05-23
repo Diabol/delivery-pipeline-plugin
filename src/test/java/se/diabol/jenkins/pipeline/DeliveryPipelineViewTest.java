@@ -25,6 +25,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,7 +68,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import se.diabol.jenkins.pipeline.domain.Component;
@@ -160,7 +161,7 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     public void testSubmit() throws Exception {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
-        StaplerRequest request = Mockito.mock(StaplerRequest.class);
+        StaplerRequest request = mock(StaplerRequest.class);
         when(request.getSubmittedForm()).thenReturn(new JSONObject());
         view.submit(request);
         verify(request, times(1)).bindJSON(view, new JSONObject());
@@ -542,6 +543,8 @@ public class DeliveryPipelineViewTest {
         DeliveryPipelineView.RegExpSpec.DescriptorImpl descriptor =
                 new DeliveryPipelineView.RegExpSpec.DescriptorImpl();
         assertEquals(FormValidation.Kind.OK, descriptor.doCheckRegexp(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp(" ").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp(" \t\r\n ").kind);
         assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("*").kind);
         assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckRegexp("^build-.+?-project").kind);
         assertEquals(FormValidation.Kind.OK, descriptor.doCheckRegexp("^build-(.+?)-project").kind);
@@ -981,6 +984,27 @@ public class DeliveryPipelineViewTest {
         when(view.getPagingEnabled()).thenReturn(false);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
+    }
+
+    @Test
+    @WithoutJenkins
+    public void getDescriptionShouldSetSuperDescriptionIfNotSet() {
+        DeliveryPipelineView view = mock(DeliveryPipelineView.class);
+        doCallRealMethod().when(view).getDescription();
+        doCallRealMethod().when(view).setDescription(anyString());
+
+        String description = view.getDescription();
+        verify(view, times(1)).setDescription(anyString());
+        assertNull(description);
+
+        String expectedDescription = "some description";
+        view.setDescription(expectedDescription);
+        assertNotNull(view.getDescription());
+        assertThat(view.getDescription(), is(expectedDescription));
+        verify(view, times(2)).setDescription(anyString());
+
+        view.getDescription();
+        verify(view, times(2)).setDescription(anyString());
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {

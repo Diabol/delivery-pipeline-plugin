@@ -116,6 +116,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
     private boolean linkToConsoleLog = false;
+    private String description = null;
 
     private transient String error;
 
@@ -420,6 +421,20 @@ public class DeliveryPipelineView extends View implements PipelineView {
         this.linkToConsoleLog = linkToConsoleLog;
     }
 
+    @Override
+    @Exported
+    public String getDescription() {
+        if (super.description == null) {
+            setDescription(this.description);
+        }
+        return super.description;
+    }
+
+    public void setDescription(String description) {
+        super.description = description;
+        this.description = description;
+    }
+
     @JavaScriptMethod
     @Override
     public void triggerManual(String projectName, String upstreamName, String buildId)
@@ -661,7 +676,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
 
         @DataBoundConstructor
         public RegExpSpec(String regexp, boolean showUpstream) {
-            this.regexp = regexp;
+            this.regexp = regexp != null ? regexp.trim() : null;
             this.showUpstream = showUpstream;
         }
 
@@ -688,6 +703,9 @@ public class DeliveryPipelineView extends View implements PipelineView {
 
             public FormValidation doCheckRegexp(@QueryParameter String value) {
                 if (value != null) {
+                    if (value.trim().equals("")) {
+                        return FormValidation.error("Regular expression cannot be blank");
+                    }
                     try {
                         Pattern pattern = Pattern.compile(value);
                         if (pattern.matcher("").groupCount() == 1) {
@@ -698,7 +716,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
                             return FormValidation.error("Too many capture groups defined");
                         }
                     } catch (PatternSyntaxException e) {
-                        return FormValidation.error(e, "Syntax error in regular-expression pattern");
+                        return FormValidation.error(e, "Syntax error in regular expression pattern");
                     }
                 }
                 return FormValidation.ok();

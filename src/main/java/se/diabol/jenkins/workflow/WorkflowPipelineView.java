@@ -80,6 +80,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
     private String project;
+    private String description = null;
 
     private transient String error;
 
@@ -139,14 +140,6 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.showChanges = showChanges;
     }
 
-    public String getProject() {
-        return project;
-    }
-
-    public void setProject(String project) {
-        this.project = project;
-    }
-
     public String getTheme() {
         return this.theme == null ? DEFAULT_THEME : this.theme;
     }
@@ -155,9 +148,31 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.theme = theme;
     }
 
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
     @Exported
     public String getLastUpdated() {
         return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+    }
+
+    @Override
+    @Exported
+    public String getDescription() {
+        if (super.description == null) {
+            setDescription(this.description);
+        }
+        return super.description;
+    }
+
+    public void setDescription(String description) {
+        super.description = description;
+        this.description = description;
     }
 
     @Exported
@@ -247,7 +262,10 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     private List<Pipeline> resolvePipelines(WorkflowJob job) throws PipelineException {
-        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        List<Pipeline> pipelines = new ArrayList<>();
+        if (job.getBuilds() == null) {
+            return pipelines;
+        }
 
         Iterator<WorkflowRun> it = job.getBuilds().iterator();
         for (int i = 0; i < noOfPipelines && it.hasNext(); i++) {
@@ -267,7 +285,11 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     private WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
-        return ProjectUtil.getWorkflowJob(projectName);
+        WorkflowJob job = ProjectUtil.getWorkflowJob(projectName);
+        if (job == null) {
+            throw new PipelineException("Failed to resolve job with name: " + projectName);
+        }
+        return job;
     }
 
     private List<Change> getChangelog(WorkflowRun build) {

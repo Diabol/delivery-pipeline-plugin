@@ -129,6 +129,9 @@ public final class ProjectUtil {
     }
 
     public static Map<String, AbstractProject> getProjects(String regExp) {
+        if (regExp != null && regExp.trim().equals("")) {
+            return Collections.emptyMap();
+        }
         try {
             Pattern pattern = Pattern.compile(regExp);
             Map<String, AbstractProject> result = new HashMap<String, AbstractProject>();

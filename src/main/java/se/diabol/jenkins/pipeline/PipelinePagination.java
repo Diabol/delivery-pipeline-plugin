@@ -37,12 +37,14 @@ public class PipelinePagination {
     public String getTag() {
         setPagination();
         StringBuilder sb = new StringBuilder();
-        if (prevPage + 1 > 10) {
-            setPrePage(sb);
-        }
-        setIndex(sb);
-        if (totalPage > (prevPage + 10)) {
-            setNextPage(sb);
+        if (totalCount > pageSize) {
+            if (prevPage + 1 > 10) {
+                setPrePage(sb);
+            }
+            setIndex(sb);
+            if (totalPage > (prevPage + 10)) {
+                setNextPage(sb);
+            }
         }
         return sb.toString();
     }
