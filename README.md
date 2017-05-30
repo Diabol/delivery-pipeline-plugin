@@ -17,7 +17,7 @@ How to contribute
 Read GitHub's general contribution guidelines: https://guides.github.com/activities/contributing-to-open-source/#contributing
 
 It basically comes down to the following guidelines:
- 1. If applicable, create a [Jira issue](https://issues.jenkins-ci.org/browse/JENKINS/component/18134)
+ 1. If applicable, create a [Jira issue](https://issues.jenkins-ci.org/issues/?jql=project+%3D+JENKINS+AND+component+%3D+delivery-pipeline-plugin)
     + Make sure a similar issue doesn't already exist
  2. Fork the repo
  3. Contribute and have fun!
