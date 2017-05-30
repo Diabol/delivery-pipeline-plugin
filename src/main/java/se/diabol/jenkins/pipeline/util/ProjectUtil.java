@@ -27,6 +27,7 @@ import hudson.model.Cause;
 import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.model.Job;
+import hudson.model.TopLevelItem;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -119,9 +120,11 @@ public final class ProjectUtil {
         return JenkinsUtil.getInstance().getItem(name, context, AbstractProject.class);
     }
 
-    public static WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
+    public static WorkflowJob getWorkflowJob(String projectName,
+                                             ItemGroup<? extends TopLevelItem> ownerItemGroup)
+            throws PipelineException {
         Jenkins jenkins = JenkinsUtil.getInstance();
-        WorkflowJob job = jenkins.getItem(projectName, jenkins, WorkflowJob.class);
+        WorkflowJob job = jenkins.getItem(projectName, ownerItemGroup, WorkflowJob.class);
         if (job == null) {
             throw new PipelineException("Could not find project: " + projectName);
         }

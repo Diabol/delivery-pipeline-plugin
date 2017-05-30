@@ -224,7 +224,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
         WorkflowJob workflowJob;
         try {
-            workflowJob = ProjectUtil.getWorkflowJob(projectName);
+            workflowJob = ProjectUtil.getWorkflowJob(projectName, getOwnerItemGroup());
             RunList<WorkflowRun> builds = workflowJob.getBuilds();
             for (WorkflowRun run : builds) {
                 if (Integer.toString(run.getNumber()).equals(buildId)) {
@@ -285,7 +285,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     private WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
-        WorkflowJob job = ProjectUtil.getWorkflowJob(projectName);
+        WorkflowJob job = ProjectUtil.getWorkflowJob(projectName, getOwnerItemGroup());
         if (job == null) {
             throw new PipelineException("Failed to resolve job with name: " + projectName);
         }
