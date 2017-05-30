@@ -28,7 +28,10 @@ import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.model.Job;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import se.diabol.jenkins.pipeline.RelationshipResolver;
+import se.diabol.jenkins.pipeline.domain.PipelineException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,6 +117,15 @@ public final class ProjectUtil {
 
     public static AbstractProject<?, ?> getProject(String name, ItemGroup context) {
         return JenkinsUtil.getInstance().getItem(name, context, AbstractProject.class);
+    }
+
+    public static WorkflowJob getWorkflowJob(final String projectName) throws PipelineException {
+        Jenkins jenkins = JenkinsUtil.getInstance();
+        WorkflowJob job = jenkins.getItem(projectName, jenkins, WorkflowJob.class);
+        if (job == null) {
+            throw new PipelineException("Could not find project: " + projectName);
+        }
+        return job;
     }
 
     public static Map<String, AbstractProject> getProjects(String regExp) {

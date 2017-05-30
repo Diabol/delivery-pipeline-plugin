@@ -59,7 +59,9 @@ function pipelineUtils() {
                html.push("<section class='pipeline-component'>");
                html.push("<h1>" + htmlEncode(component.name));
                if (data.allowPipelineStart) {
-                   if (component.firstJobParameterized) {
+                   if (component.workflowComponent) {
+                       html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\');">');
+                   } else if (component.firstJobParameterized) {
                        html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
                    } else {
                        html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
@@ -234,9 +236,15 @@ function pipelineUtils() {
                                html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\');">');
                                html.push("</div>");
                            } else {
-                               if (!pipeline.aggregated && data.allowRebuild && task.rebuildable) {
-                                   html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
-                                   html.push("</div>");
+                               if (!pipeline.aggregated) {
+                                  if (data.allowRebuild && task.rebuildable) {
+                                      html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
+                                      html.push("</div>");
+                                  }
+                                  if (task.requiringInput) {
+                                      html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
+                                      html.push("</div>");
+                                  }
                                }
                            }
 
@@ -493,7 +501,6 @@ function generateChangeLog(changes) {
     return html.join("");
 }
 
-
 function generateAggregatedChangelog(stageChanges, aggregatedChangesGroupingPattern) {
     var html = [];
     html.push("<div class='aggregatedChangesPanelOuter'>");
@@ -671,6 +678,34 @@ function triggerRebuild(taskId, project, buildId, viewUrl) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             window.alert("Could not trigger rebuild! error: " + errorThrown + " status: " + textStatus)
+        }
+    });
+}
+
+function specifyInput(taskId, project, buildId, viewUrl) {
+    Q("#input-" + taskId).hide();
+    var formData = {project: project, upstream: 'N/A', buildId: buildId}, before;
+
+    var before;
+    if (crumb.value !== null && crumb.value !== "") {
+        console.info("Crumb found and will be added to request header");
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info("Crumb not needed");
+        before = function(xhr){}
+    }
+
+    Q.ajax({
+        url: rootURL + "/" + viewUrl + 'api/inputStep',
+        type: "POST",
+        data: formData,
+        beforeSend: before,
+        timeout: 20000,
+        success: function (data, textStatus, jqXHR) {
+            console.info("Successfully triggered input step of " + project + "!")
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            window.alert("Could not trigger input step! error: " + errorThrown + " status: " + textStatus)
         }
     });
 }

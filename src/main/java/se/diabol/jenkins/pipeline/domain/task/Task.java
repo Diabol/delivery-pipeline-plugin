@@ -152,6 +152,11 @@ public class Task extends AbstractItem {
         }
     }
 
+    @Exported
+    public boolean isRequiringInput() {
+        return false;
+    }
+
     public boolean isInitial() {
         return initial;
     }

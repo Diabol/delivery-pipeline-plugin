@@ -17,8 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.workflow;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -35,15 +38,27 @@ public class PipelineTest {
 
     @Test
     public void simplePipeline() throws Exception {
-        WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, "Pipeline");
+        final String pipelineName = "Pipeline";
+        WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, pipelineName);
         pipelineProject.setDefinition(new CpsFlowDefinition("node {stage 'Build' \n stage 'CI' }"));
         //pipelineProject.onCreatedFromScratch();
         WorkflowRun build = pipelineProject.scheduleBuild2(0).get();
 
         Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
         assertNotNull(pipeline);
-        assertEquals(2, pipeline.getStages().size());
-        assertEquals("Build", pipeline.getStages().get(0).getName());
+        assertThat(pipeline.getName(), is(pipelineName));
+        assertThat(pipeline.getStages().size(), is(2));
+        assertThat(pipeline.getStages().get(0).getName(), is("Build"));
+        assertThat(pipeline.getStages().get(1).getName(), is("CI"));
+        assertThat(pipeline.isAggregated(), is(false));
+        assertNotNull(pipeline.getTimestamp());
+        assertNotNull(pipeline.getTotalBuildTime());
+        assertNull(pipeline.getContributors());
+        assertNotNull(pipeline.getTriggeredBy());
+        assertThat(pipeline.getTriggeredBy().size(), is(0));
+        assertNotNull(pipeline.getChanges());
+        assertThat(pipeline.getChanges().size(), is(0));
+
         //TODO task assert
     }
 
@@ -56,12 +71,12 @@ public class PipelineTest {
 
         Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
         assertNotNull(pipeline);
-        assertEquals(2, pipeline.getStages().size());
-        assertEquals("Build", pipeline.getStages().get(0).getName());
-        assertEquals(1 , pipeline.getStages().get(0).getTasks().size());
-        assertEquals("Compile" , pipeline.getStages().get(0).getTasks().get(0).getName());
-        assertEquals(1 , pipeline.getStages().get(1).getTasks().size());
-        assertEquals("Deploy" , pipeline.getStages().get(1).getTasks().get(0).getName());
+        assertThat(pipeline.getStages().size(), is(2));
+        assertThat(pipeline.getStages().get(0).getName(), is("Build"));
+        assertThat(pipeline.getStages().get(0).getTasks().size(), is(1));
+        assertThat(pipeline.getStages().get(0).getTasks().get(0).getName(), is("Compile"));
+        assertThat(pipeline.getStages().get(1).getTasks().size(), is(1));
+        assertThat(pipeline.getStages().get(1).getTasks().get(0).getName(), is("Deploy"));
 
         //TODO task assert
     }
