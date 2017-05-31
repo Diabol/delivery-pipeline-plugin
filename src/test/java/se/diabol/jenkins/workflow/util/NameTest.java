@@ -57,12 +57,27 @@ public class NameTest {
 
     @Test
     public void shouldIncludeParentNameOfWorkflowRunWhenParentIsMultiBranch() throws Exception {
-        Folder folder = jenkins.jenkins.createProject(Folder.class, "folder");
+        String folderName = "folder";
+        Folder folder = jenkins.jenkins.createProject(Folder.class, folderName);
         MultiBranchProject multiBranch = new WorkflowMultiBranchProject(folder, "mb");
         WorkflowJob workflowJob = new WorkflowJob(multiBranch, "wf");
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
 
         assertThat(Name.of(workflowRun), is("mb/job/wf"));
+    }
+    
+    @Test
+    public void shouldIncludeParentNameOfWorkflowRunLocatedInFolderLocatedInFolder()
+            throws IOException {
+        String jobName = "expectedJobName";
+        String rootFolderName = "myroot";
+        String leafFolderName = "myleaf";
+        Folder rootFolder = jenkins.jenkins.createProject(Folder.class, rootFolderName);
+        Folder leafFolder = jenkins.jenkins.createProject(Folder.class, leafFolderName);
+        rootFolder.createProject(Folder.class, leafFolderName);
+        WorkflowJob workflowJob = leafFolder.createProject(WorkflowJob.class, jobName);
+        WorkflowRun workflowRun = new WorkflowRun(workflowJob);
+        assertThat(Name.of(workflowRun), is(leafFolderName + "/job/" + jobName));
     }
 
     @Test

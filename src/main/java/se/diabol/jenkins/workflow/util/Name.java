@@ -29,13 +29,17 @@ public final class Name {
             return null;
         }
         if (parentIsFolder(build)) {
-            return ((Folder) build.getParent().getParent()).getName() + "/job/" + build.getParent().getName();
+            return qualifiedNameOf(build);
         } else if (parentIsMultiBranch(build)) {
             return ((AbstractItem) ((MultiBranchProject)
                     build.getParent().getParent())).getName() + "/job/" + build.getParent().getName();
         } else {
             return build.getParent().getName();
         }
+    }
+
+    protected static String qualifiedNameOf(WorkflowRun build) {
+        return build.getUrl().substring(4, build.getUrl().length() - 3);
     }
 
     private static boolean parentIsMultiBranch(WorkflowRun build) {
