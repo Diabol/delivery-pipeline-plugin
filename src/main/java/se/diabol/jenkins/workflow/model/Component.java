@@ -50,7 +50,7 @@ public class Component extends AbstractItem {
 
     @Exported
     public String getWorkflowUrl() {
-        return "job/" + workflowJob.getName() + "/";
+        return workflowJob.getUrl();
     }
 
     @Exported
