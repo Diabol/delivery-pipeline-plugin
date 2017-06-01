@@ -203,7 +203,7 @@ public class Task extends AbstractItem {
 
     private static int progressOfStage(WorkflowRun build, Stage currentStage) {
         Run previousRun = workflowApi.lastFinishedRunFor(Name.of(build));
-        if (!previousRun.hasStage(currentStage.name)) {
+        if (previousRun == null || !previousRun.hasStage(currentStage.name)) {
             return 99;
         }
 
