@@ -22,7 +22,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.export.Exported;
 
 import java.lang.annotation.Annotation;
@@ -32,7 +35,11 @@ import java.util.List;
 
 public class ComponentTest {
 
+    @Rule
+    public JenkinsRule jenkins = new JenkinsRule();
+
     @Test
+    @WithoutJenkins
     public void shouldBeConsideredWorkflowComponent() {
         assertTrue(new Component(null, null, null).isWorkflowComponent());
     }
@@ -40,12 +47,13 @@ public class ComponentTest {
     @Test
     public void shouldProperlyFormatExpectedWorkflowUrl() {
         final String expectedName = "JobName";
-        WorkflowJob workflowJob = new WorkflowJob(null, expectedName);
+        WorkflowJob workflowJob = new WorkflowJob(jenkins.jenkins, expectedName);
         Component component = new Component("Workflow component", workflowJob, null);
         assertThat(component.getWorkflowUrl(), is("job/" + expectedName + "/"));
     }
 
     @Test
+    @WithoutJenkins
     public void shouldExposeWorkflowJob() {
         final WorkflowJob workflowJob = new WorkflowJob(null, "Name");
         Component component = new Component("Component", workflowJob, null);
@@ -53,6 +61,7 @@ public class ComponentTest {
     }
 
     @Test
+    @WithoutJenkins
     public void shouldExposePipelines() {
         final List<Pipeline> pipelines = new ArrayList<Pipeline>();
         Component component = new Component("Component", null, pipelines);
@@ -60,6 +69,7 @@ public class ComponentTest {
     }
 
     @Test
+    @WithoutJenkins
     public void shouldHaveProperToString() {
         final String componentName = "Component Name";
         Component component = new Component(componentName, null, Collections.<Pipeline>emptyList());
@@ -69,6 +79,7 @@ public class ComponentTest {
     }
 
     @Test
+    @WithoutJenkins
     public void shouldHaveExportedProperties() throws NoSuchMethodException {
         assertTrue(methodHasExportedAnnoation("isWorkflowComponent"));
         assertTrue(methodHasExportedAnnoation("getWorkflowUrl"));
