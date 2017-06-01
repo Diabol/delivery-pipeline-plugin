@@ -257,6 +257,14 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Override
+    public ItemGroup<? extends TopLevelItem> getOwnerItemGroup() {
+        if (getOwner() == null) {
+            return null;
+        }
+        return super.getOwnerItemGroup();
+    }
+
+    @Override
     protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
         req.bindJSON(this, req.getSubmittedForm());
     }
