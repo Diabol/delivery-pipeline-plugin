@@ -12,24 +12,6 @@ For info see the [Delivery Pipeline Plugin - Wiki](https://wiki.jenkins-ci.org/d
 
 Contributed by [Diabol AB](http://www.diabol.se)
 
-How to contribute
----
-Read GitHub's general contribution guidelines: https://guides.github.com/activities/contributing-to-open-source/#contributing
-
-It basically comes down to the following guidelines:
- 1. If applicable, create a [Jira issue](https://issues.jenkins-ci.org/issues/?jql=project+%3D+JENKINS+AND+component+%3D+delivery-pipeline-plugin)
-    + Make sure a similar issue doesn't already exist
- 2. Fork the repo
- 3. Contribute and have fun!
- 4. Add as much unit testing as possible to any new code changes
-    + This will make the code much more easy to maintain and to understand its intent
- 5. Make sure your code is well formatted and aligns with the projects code style conventions
- 6. Make sure to prefix the commit message with the associated Jira issue number together with a descriptive commit message
- 7. If you have multiple commits, please make sure to squash them before creating a pull request
-    + It's hard to follow contributions when they are scattered across several commits
- 8. Create a pull request to get feedback from the maintainers
-    + Add a link to the pull request to the associated Jira issue
-    
 Requirements
 ---
 Delivery Pipeline plugin 1.0.0 and later requires Java 7 and Jenkins core 1.642.3 or later.
@@ -74,7 +56,7 @@ If you're creating your jobs with JobDSL, use the following syntax in the publis
 
 In your pipeline configuration, make sure to enable manual triggers. The manual triggers (a play button) will not be shown in the UI for aggregate pipelines, only for pipeline instances. If you want to access manual triggers from the UI, make sure to show at least one pipeline instance.
 
-Here is an example of a corresponding JobDSL pipeline view configuration: 
+Here is an example of a corresponding JobDSL pipeline view configuration:
 
     deliveryPipelineView("my-pipeline") {
         name("my-pipeline")
@@ -115,6 +97,27 @@ Here is an example of how to specify a custom CSS for the Delivery Pipeline Plug
         }
     }
 
+Examples
+----
+
 For Jenkins Job Builder job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
 
 For JobDSL job configuration examples, see: [demo.groovy](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.groovy)
+
+How to contribute
+---
+Read GitHub's general contribution guidelines: https://guides.github.com/activities/contributing-to-open-source/#contributing
+
+It basically comes down to the following guidelines:
+ 1. If applicable, create a [Jira issue](https://issues.jenkins-ci.org/issues/?jql=project+%3D+JENKINS+AND+component+%3D+delivery-pipeline-plugin)
+    + Make sure a similar issue doesn't already exist
+ 2. Fork the repo
+ 3. Contribute and have fun!
+ 4. Add as much unit testing as possible to any new code changes
+    + This will make the code much more easy to maintain and to understand its intent
+ 5. Make sure your code is well formatted and aligns with the projects code style conventions
+ 6. Make sure to prefix the commit message with the associated Jira issue number together with a descriptive commit message
+ 7. If you have multiple commits, please make sure to squash them before creating a pull request
+    + It's hard to follow contributions when they are scattered across several commits
+ 8. Create a pull request to get feedback from the maintainers
+    + Add a link to the pull request to the associated Jira issue
