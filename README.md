@@ -26,7 +26,7 @@ Build
 ---
     mvn clean install
 
-Requires Java 7, Apache Maven 3.3.x or later
+Requires Java 7, Apache Maven 3.3.x or later.
 
 Run locally
 ---
@@ -35,6 +35,12 @@ Run locally
 Run function tests
 ---
     mvn integration-test
+
+Create Jenkins plugin artifact
+---
+    mvn hpi:hpi
+
+This can be used to manually upload a new plugin through the Jenkins plugin management console (under the Advanced tab).
 
 Build and run the Delivery Pipeline plugin in a Docker container
 ----
