@@ -24,8 +24,9 @@ Delivery Pipeline plugin 0.10.3 requires Java 6 and Jenkins core 1.565 or later.
 
 Build
 ---
-Requires Java 7, Apache Maven 3.3.x or later
     mvn clean install
+
+Requires Java 7, Apache Maven 3.3.x or later
 
 Run locally
 ---
