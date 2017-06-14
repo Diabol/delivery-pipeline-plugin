@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class ParentAwareSCM extends NullSCM {
 
-    private List<FakeChangeLogSCM.EntryImpl> entries = new ArrayList();
+    private List<FakeChangeLogSCM.EntryImpl> entries = new ArrayList<>();
 
     public FakeChangeLogSCM.EntryImpl addChange() {
         FakeChangeLogSCM.EntryImpl entry = new Entry();
@@ -58,14 +58,14 @@ public class ParentAwareSCM extends NullSCM {
             @Override
             public FakeChangeLogSCM.FakeChangeLogSet parse(AbstractBuild build, File changelogFile)
                     throws IOException, SAXException {
-                FakeChangeLogSCM.FakeChangeLogSet changeLogSet = super.parse(build, changelogFile);
+                ChangeLogSet changeLogSet = super.parse(build, changelogFile);
 
                 // Call "setParent" on each entry
-                for (FakeChangeLogSCM.EntryImpl entry : changeLogSet) {
+                for (Object entry : changeLogSet) {
                     ((Entry) entry).setParent(changeLogSet);
                 }
 
-                return changeLogSet;
+                return (FakeChangeLogSCM.FakeChangeLogSet) changeLogSet;
             }
         };
     }
@@ -74,8 +74,8 @@ public class ParentAwareSCM extends NullSCM {
     public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener,
                             File changeLogFile) throws IOException, InterruptedException {
         (new FilePath(changeLogFile)).touch(0L);
-        build.addAction(new FakeChangeLogSCM.ChangelogAction(this.entries));
-        this.entries = new ArrayList();
+        build.addAction(new FakeChangeLogSCM.ChangelogAction(this.entries, ""));
+        this.entries = new ArrayList<>();
         return true;
     }
 
