@@ -74,8 +74,8 @@ public class ParentAwareSCM extends NullSCM {
     public boolean checkout(AbstractBuild<?, ?> build, Launcher launcher, FilePath remoteDir, BuildListener listener,
                             File changeLogFile) throws IOException, InterruptedException {
         (new FilePath(changeLogFile)).touch(0L);
-        build.addAction(new FakeChangeLogSCM.ChangelogAction(this.entries, ""));
-        this.entries = new ArrayList<>();
+        build.addAction(new FakeChangeLogSCM.ChangelogAction(this.entries, changeLogFile.getName()));
+        this.entries = new ArrayList();
         return true;
     }
 
