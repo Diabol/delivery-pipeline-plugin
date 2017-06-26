@@ -15,6 +15,9 @@ before_install:
 script:
   - "if [[ -z $TRAVIS_TAG ]]; then mvn install; fi"
   - "if [[ -n $TRAVIS_TAG ]]; then ./release.sh master $TRAVIS_TAG; fi"
+cache:
+  directories:
+  - $HOME/.m2
 after_success:
   - mvn jacoco:report coveralls:report
   - bash <(curl -s https://codecov.io/bash)
