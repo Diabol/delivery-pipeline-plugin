@@ -24,13 +24,30 @@ Delivery Pipeline plugin 0.10.3 requires Java 6 and Jenkins core 1.565 or later.
 
 Build
 ---
+Requires Java 7, Apache Maven 3.3.x or later.
+
     mvn clean install
 
-Requires Java 7, Apache Maven 3.3.x or later.
+The project contains a rigorous test suite which takes some time to run. If you just want to build the project for the first time, you can shortcut it by running:
+
+    mvn clean install -DskipTests
 
 Run locally
 ---
     mvn hpi:run
+
+This will start a local Jenkins with the Delivery Pipeline plugin installed. It will by default be available at http://localhost:8080/jenkins.
+
+Bootstrap your local Jenkins with jobs
+---
+To bootstrap your local Jenkins instance with jobs, you can use the provided [examples](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/).
+
+You would need to have Jenkins Job Builder (JJB) or JobDSL available in order to use them. To use the JJB .yaml job configurations without the need to install JJB explicitly, you could run it in a Docker container.
+Provide the [example jenkins.ini](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/jenkins.ini) to JJB. When running inside a container, you might need to add your host ip address in the jenkins.ini instead of localhost to allow JJB to connect to your Jenkins instance.
+Mount the examples directory to the Docker container, and then invoke JJB ising the _jenkins-jobs_ command, such as:
+
+    docker run -it --rm --net=host -v PATH_TO/delivery-pipeline-plugin/examples/jenkins.ini:/etc/jenkins_jobs/jenkins_jobs.ini -v PATH_TO/delivery-pipeline-plugin/examples:/root/jenkins-job-builder tynja/jenkins-job-builder jenkins-jobs update demo.yaml
+
 
 Run function tests
 ---
@@ -38,12 +55,15 @@ Run function tests
 
 Create Jenkins plugin artifact
 ---
-    mvn hpi:hpi
-
 This can be used to manually upload a new plugin through the Jenkins plugin management console (under the Advanced tab).
 
-Build and run the Delivery Pipeline plugin in a Docker container
+    mvn hpi:hpi
+
+
+Build and run in a Docker container
 ----
+To build and run the Delivery Pipeline plugin in a container, you first need to build the project before building the Docker image: 
+
     mvn clean install
     docker build -t dpp .
     docker run -p 8080:8080 dpp
@@ -111,6 +131,7 @@ Here is an example of how to specify a custom CSS for the Delivery Pipeline Plug
 
 Examples
 ----
+Example configurations can be found in the [examples subdirectory](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/).
 
 For Jenkins Job Builder job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
 
@@ -133,3 +154,10 @@ It basically comes down to the following guidelines:
     + It's hard to follow contributions when they are scattered across several commits
  8. Create a pull request to get feedback from the maintainers
     + Add a link to the pull request to the associated Jira issue
+
+Contact
+----
+If you have any questions, feel free to reach out to one of the maintainers:
+* [Tommy Tynj&auml;](https://github.com/tommysdk)
+* [Patrik Bostr&ouml;m](https://github.com/patbos)
+* [Andreas Rehn](https://github.com/mrfatstrat)
