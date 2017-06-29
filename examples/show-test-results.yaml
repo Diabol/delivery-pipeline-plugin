@@ -1,0 +1,50 @@
+- job:
+    name: 'example-str-build'
+    properties:
+      - delivery-pipeline:
+          stage: 'Commit stage'
+          task: 'Build and unit test'
+    wrappers:
+        - delivery-pipeline:
+            version-template: 1.0.0-${BUILD_NUMBER}
+            set-display-name: true
+    builders:
+        - shell: |
+            #!/bin/bash
+            echo "Compile"
+
+            # Mimic test results
+            mkdir -p target/test-reports
+            echo "<testsuite tests=\"3\">
+                <testcase classname=\"Class1\" name=\"SuccessfulTest\"/>
+                <testcase classname=\"Class2\" name=\"SuccessfulTest2\"/>
+                <testcase classname=\"Class3\" name=\"FailingTestCase\">
+                    <failure type=\"AssertionError\">Details about the test failure</failure>
+                </testcase>
+            </testsuite>" > target/test-reports/junit.xml
+
+            sleep 1
+    publishers:
+      - trigger-parameterized-builds:
+          - project: "example-str-test"
+            fail-on-missing: false
+            predefined-parameters: foo=bar
+
+- job:
+    name: 'example-str-test'
+    properties:
+      - delivery-pipeline:
+          stage: 'Test'
+          task: 'Run integration tests'
+    publishers:
+      - trigger-parameterized-builds:
+          - project: 'example-str-deploy'
+            fail-on-missing: false
+            predefined-parameters: foo=bar
+
+- job:
+    name: 'example-str-deploy'
+    properties:
+      - delivery-pipeline:
+          stage: 'Deploy'
+          task: 'Deploy to production'
