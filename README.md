@@ -42,7 +42,7 @@ Bootstrap your local Jenkins with jobs
 ---
 To bootstrap your local Jenkins instance with jobs, you can use the provided [examples](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/).
 
-You would need to have Jenkins Job Builder (JJB) or JobDSL available in order to use them. To use the JJB .yaml job configurations without the need to install JJB explicitly, you could run it in a Docker container.
+You would need to have [Jenkins Job Builder](https://docs.openstack.org/infra/jenkins-job-builder/) (JJB) or [JobDSL](https://github.com/jenkinsci/job-dsl-plugin) available in order to use them. To use the JJB .yaml job configurations without the need to install JJB explicitly, you could run it in a Docker container.
 Provide the [example jenkins.ini](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/jenkins.ini) to JJB. When running inside a container, you might need to add your host ip address in the jenkins.ini instead of localhost to allow JJB to connect to your Jenkins instance.
 Mount the examples directory to the Docker container, and then invoke JJB ising the _jenkins-jobs_ command, such as:
 
@@ -70,7 +70,7 @@ To build and run the Delivery Pipeline plugin in a container, you first need to 
 
 Configuring manually triggered jobs
 ----
-**Note:** This requires the Build Pipeline plugin to be installed.
+**Note:** This requires the [Build Pipeline plugin](https://github.com/jenkinsci/build-pipeline-plugin) to be installed.
 
 To be able to configure a certain job in the pipeline as a manual step, you have to configure the upstream job that triggers the job which is to be performed manually to be marked as a manual step.
 
@@ -133,9 +133,9 @@ Examples
 ----
 Example configurations can be found in the [examples subdirectory](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/).
 
-For Jenkins Job Builder job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
+For [Jenkins Job Builder](https://docs.openstack.org/infra/jenkins-job-builder/) job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
 
-For JobDSL job configuration examples, see: [demo.groovy](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.groovy)
+For [JobDSL](https://github.com/jenkinsci/job-dsl-plugin) job configuration examples, see: [demo.groovy](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.groovy)
 
 How to contribute
 ---
