@@ -97,79 +97,35 @@ function pipelineUtils() {
                    } else {
                        html.push('<div class="panel">');
                        html.push('<div class="panel-header">');
-                       html.push('<div class="panel-name"><span style="margin-left:5px;">'+ pipeline.version +'</span></div>');
+                       html.push('<div class="panel-name">');
+                       html.push('<b>' + pipeline.version + '</b>');
+                       html.push('</div>');
+                       html.push('<div class="date">' + getFormatFullDate(pipeline.timestamp) + ' (' + formatDate(pipeline.timestamp, lastUpdate) + ')</div>');
                        html.push('</div>');
                        html.push('<div class="panel-body">');
-                       html.push('<table cellspacing="0" cellpadding="0">');
-                       html.push('<tr>');
-                       html.push('<td valign="top">');
+                       html.push('<div class="metrics">');
                        html.push('<div class="metric">');
-                       html.push('<time class="icon">');
-                       html.push('<em>'+ getFormatTime(pipeline.timestamp) +'</em>');
-                       html.push('<strong>'+ getFormatMonthYear(pipeline.timestamp) +'</strong>');
-                       html.push('<span class="date">'+ getFormatDay(pipeline.timestamp) +'</span>');
-                       html.push('</time>');
+                       html.push('<b>Commits</b>');
+                       html.push('<span class="details">' + pipeline.commits + '</span>');
                        html.push('</div>');
-                       html.push('</td>');
-                       html.push('<td valign="top">');
-                       html.push('<table  cellspacing="0" cellpadding="0">');
-                       html.push('<tr>');
-                       html.push('<td>');
                        html.push('<div class="metric">');
-                       html.push('<span class="icon">');
-                       html.push('<strong>Started</strong>');
-                       html.push('<span>'+ formatDate(pipeline.timestamp, lastUpdate) +'</span>');
-                       html.push('</span>');
+                       html.push('<b>Trigger Details</b>');
+                       html.push('<span class="details">' + triggered + '</span>');
                        html.push('</div>');
-                       html.push('</td>');
-                       html.push('<td>');
                        html.push('<div class="metric">');
-                       html.push('<span class="icon">');
-                       html.push('<strong>Commits</strong>');
-                       html.push('<span>'+ pipeline.commits +'</span>');
-                       html.push('</span>');
+                       html.push('<b>Total Duration</b>');
+                       html.push('<span class="details">' + formatDuration(pipeline.totalBuildTime) + '</span>');
                        html.push('</div>');
-                       html.push('</td>');
-                       html.push('<td>');
-                       html.push('<div class="metric">');
-                       html.push('<span class="icon">');
-                       html.push('<strong>Trigger Details</strong><div class="description">');
-                       html.push(triggered);
-                       html.push('</div></span>');
-                       html.push('</div>');
-                       html.push('</td>');
-                       html.push('<td>');
-                       html.push('<div class="metric">');
-                       html.push('<span class="icon">');
-                       html.push('<strong>Total Duration</strong>');
-                       html.push('<span>'+ formatDuration(pipeline.totalBuildTime) +'</span>');
-                       html.push('</span>');
-                       html.push('</div>');
-                       html.push('</td>');
-                       html.push('</tr>');
                        if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
-                           html.push('<tr>');
-                           html.push('<td colspan="4">');
-                           html.push('<div class="metric">');
-                           html.push('<span class="icon">');
-                           html.push('<strong>Changes</strong>');
-                           html.push('<table width="100%"  cellspacing="0" cellpadding="0">');
+                           html.push('<div class="commit-changes">');
+                           html.push('<b>Changes</b>');
                            html.push(generateChangeLog(pipeline.changes));
-                           html.push('</table>');
-                           html.push('</span>');
                            html.push('</div>');
-                           html.push('</td>');
-                           html.push('</tr>');
                        }
-                       html.push('</table>');
-                       html.push('</td>');
-                       html.push('</tr>');
-                       html.push('<tr>');
-                       html.push('<td>&nbsp;</td>');
-                       html.push('<td>');
                    }
 
-                   html.push('<section class="pipeline">');
+                   html.push('</div>');
+                   html.push('<section class="pipeline' + (pipeline.aggregated ? ' aggregated' : '') + '">');
 
                    var row = 0, column = 0, stage;
 
@@ -193,14 +149,15 @@ function pipelineUtils() {
                        html.push('<div class="pipeline-cell">');
                        html.push('<div id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">');
                        html.push('<div class="stage-header"><div class="stage-name">' + htmlEncode(stage.name) + '</div>');
+
                        if (!pipeline.aggregated) {
-                           html.push('</div>');
+                           html.push('<div class="clear"></div></div>');
                        } else {
                            var stageversion = stage.version;
                            if (!stageversion) {
                                stageversion = "N/A"
                            }
-                           html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div></div>');
+                           html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div><div class="clear"></div></div>');
                        }
 
                        var task, id, timestamp, progress, progressClass, consoleLogLink = "";
@@ -264,7 +221,6 @@ function pipelineUtils() {
                            html.push(generateTestInfo(data, task));
                            html.push(generateStaticAnalysisInfo(data, task));
                            html.push(generatePromotionsInfo(data, task));
-
                        }
 
                        if (pipeline.aggregated && stage.changes && stage.changes.length > 0) {
@@ -276,9 +232,6 @@ function pipelineUtils() {
                    }
 
                    html.push("</section>");
-                   html.push('</td>');
-                   html.push('</tr>');
-                   html.push('</table>');
                    html.push('</div>');
                    html.push('</div>');
                    html.push('</div>');
@@ -319,7 +272,6 @@ function pipelineUtils() {
                    });
                });
            });
-
        } else {
            var comp, pipe, head, st, ta, time;
 
@@ -472,30 +424,25 @@ function generatePromotionsInfo(data, task) {
 
 function generateChangeLog(changes) {
     var html = [];
-    if(changes.length == 0) {
-        html.push('<tr><td>No changes.</td></tr>');
+    if (changes.length == 0) {
+        html.push('<span>No changes.</span>');
     }
     for (var i = 0; i < changes.length; i++) {
-        html.push('<tr>');
+        html.push('<div class="commit-changes-body">');
         var change = changes[i];
-        html.push('<td>');
+        html.push('<span>');
         if (change.changeLink) {
             html.push('<a href="' + change.changeLink + '">');
         }
 
-        html.push('<div class="change-commit-id">' + htmlEncode(change.commitId) + '</div>');
+        html.push('Commit <span class="change-commit-id">' + htmlEncode(change.commitId) + '</span>');
 
         if (change.changeLink) {
             html.push('</a>');
         }
-        html.push('</td>');
-        html.push('<td>');
-        html.push(htmlEncode(change.author.name));
-        html.push('</td>');
-        html.push('<td>');
-        html.push(change.message);
-        html.push('</td>');
-        html.push('</tr>');
+        html.push(' by ' + htmlEncode(change.author.name) + '</span>');
+        html.push('<div> - <b>' + change.message + '</b></div>');
+        html.push('</div>');
     }
 
     return html.join("");
@@ -570,7 +517,6 @@ function replace(string, replace, replaceWith) {
     return string.replace(re, replaceWith);
 }
 
-
 function formatDate(date, currentTime) {
     if (date != null) {
         return moment(date, "YYYY-MM-DDTHH:mm:ss").from(moment(currentTime, "YYYY-MM-DDTHH:mm:ss"))
@@ -579,28 +525,28 @@ function formatDate(date, currentTime) {
     }
 }
 
-function getFormatMonthYear(date) {
+function getFormattedDate(date, format) {
     if (date != null) {
-        return moment(date, "YYYY-MM-DDTHH:mm:ss").format("MMMM YYYY")
+        return moment(date, 'YYYY-MM-DDTHH:mm:ss').format(format);
     } else {
-        return "";
+        return '';
     }
+}
+
+function getFormatMonthYear(date) {
+    return getFormattedDate(date, 'MMMM YYYY');
 }
 
 function getFormatDay(date) {
-    if (date != null) {
-        return moment(date, "YYYY-MM-DDTHH:mm:ss").format("DD")
-    } else {
-        return "";
-    }
+    return getFormattedDate(date, 'DD');
 }
 
 function getFormatTime(date) {
-    if (date != null) {
-        return moment(date, "YYYY-MM-DDTHH:mm:ss").format("h:mm a")
-    } else {
-        return "";
-    }
+    return getFormattedDate(date, 'h:mm a');
+}
+
+function getFormatFullDate(date) {
+    return getFormattedDate(date, 'YYYY-MM-DD HH:mm:ss');
 }
 
 function formatDuration(millis) {

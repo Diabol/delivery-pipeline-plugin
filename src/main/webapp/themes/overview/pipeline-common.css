@@ -6,7 +6,7 @@ div.pipeline-loading-icon {
     content: url("white-load.gif");
     display: block;
     margin-left: auto;
-    margin-right: auto
+    margin-right: auto;
 }
 
 section.pipeline-component h1 {
@@ -24,69 +24,16 @@ section.pipeline-component h2 {
 }
 
 section.pipeline {
-    display: table;
     border-collapse: separate;
+    padding-bottom: 10px;
 }
 
-div.changes {
-    padding-top: 0;
-    margin-bottom: 10px;
-    padding-left: 10px;
-    display: table;
-}
-
-div.changes a {
-    text-decoration: none;
-    color: inherit;
-}
-
-div.changes a:visited {
-    color: inherit;
-}
-
-div.changes a:hover {
-    text-decoration: underline;
-}
-
-div.changes h1 {
-    font-size: 12px;
-    line-height: 12px;
-    padding: 0;
-    margin-bottom: 5px;
-}
-
-div.change {
-    clear: both;
-    padding-left: 5px;
-    display: table-row;
-}
-
-div.change-author {
-    vertical-align: top;
-    min-width: 75px;
-    display: table-cell;
-    padding-right: 10px;
-}
-
-div.change-commit-id {
-    vertical-align: top;
-    display: table-cell;
-    padding-right: 10px;
-}
-
-div.change-message {
-    display: table-cell;
-    padding-left: 10px;
-}
-
-div.pipeline-row {
-    display: table-row;
-    padding: 10px 10px 10px 10px;
+section.pipeline.aggregated {
+    margin-bottom: 20px;
 }
 
 div.pipeline-cell {
     display: table-cell;
-    padding-bottom: 30px;
 }
 
 div.stage {
@@ -110,6 +57,10 @@ div.stage-task {
     margin: 2px 2px 2px 2px;
 }
 
+div.stage-task.old {
+    opacity: 0.3;
+}
+
 div.task-content {
     padding: 3px 3px 3px 3px;
     width: 100%;
@@ -117,39 +68,34 @@ div.task-content {
 
 div.stage-header {
     background: #EEEEEE;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
-    display: table;
     width: 100%;
     white-space: nowrap;
 }
 
 .stage-name {
+    display: inline-block;
     padding: 8px;
-    display: table-cell;
-    vertical-align: top;
+    float: left;
 }
 
 .stage-version {
-    padding: 3px 6px 3px 3px;
-    display: table-cell;
+    padding: 8px;
     float: right;
-    vertical-align: top;
+}
+
+.stage-version.same-version {
+    background: lightgreen;
 }
 
 div.task-header {
-    display: table;
     white-space: nowrap;
     width: 100%;
     border: none;
 }
 
-div.taskname {
-    display: table-cell;
-}
-
 div.task-manual {
-    display: table-cell;
     background: url("play.png") no-repeat;
     background-size: 75%;
     cursor: pointer;
@@ -161,7 +107,6 @@ div.task-manual {
 }
 
 div.task-rebuild {
-    display: table-cell;
     background-color: #808080;
     background: url("refresh.png") no-repeat;
     background-size: 75%;
@@ -171,16 +116,15 @@ div.task-rebuild {
     float: right;
     padding-right: 5px;
     z-index: 100;
-
 }
 
 .timestamp {
-    display: table-cell;
+    display: inline-block;
 }
 
 .duration {
-    display: table-cell;
     padding-left: 20px;
+    display: inline-block;
 }
 
 div.task-progress-running {
@@ -192,7 +136,6 @@ div.task-progress-running {
     -webkit-animation-name: bluePulse;
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: infinite;
-
 }
 
 @keyframes bluePulse {
@@ -331,50 +274,53 @@ div.pipeline-message {
 }
 
 div.infoPanel {
-    display:block;
-    max-width:300px;
-    padding-left:2px;
-    padding-right:2px;
-    margin-top:-2px;
-    border-top:none;
+    display: block;
+    max-width: 300px;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-top: -2px;
+    border-top: none;
 }
+
 div.infoPanelInner {
-    padding:8px 4px;
+    padding: 8px 4px;
     overflow: hidden;
     border: 0;
 }
+
 div.infoPanelInner a {
     font-weight: bold;
 }
 div.infoPanelOuter {
-    margin: 4px 2px 4px 4px;
+    margin: 4px 2px;
     border: 1px solid lightgray;
     background-color: #FAF8F8;
 }
 
 div.aggregatedChangesPanel {
-    display:block;
-    max-width:300px;
-    padding-left:2px;
-    padding-right:2px;
-    margin-top:-2px;
-    border-top:none;
+    display: block;
+    max-width: 300px;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-top: -2px;
+    border-top: none;
 }
 
 div.aggregatedChangesPanelInner {
-    padding:8px 4px;
+    padding: 4px;
     overflow: hidden;
     border: 0;
 }
 
 div.aggregatedChangesPanelOuter {
-    margin: 8px;
+    margin: 2px;
     border: 1px solid lightgray;
     background-color: #FAF8F8;
 }
 
 div.aggregatedChangesPanelInner > ul {
-    padding-left: 1.2em;
+    padding-left: 1em;
+    margin: 0;
 }
 
 .MANUALTASK {
@@ -394,220 +340,106 @@ div.aggregatedChangesPanelInner > ul {
 }
 
 .pagination {
-	display:block;
-	text-align:left;
-	clear:both;	
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:14px;
-	font-weight:normal;
-	margin-bottom:16px;
+    display: block;
+    text-align: left;
+    clear: both;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 16px;
 }
 
-.pagination a, .pagination a:visited{
-	padding:7px;
-	padding-top:2px;
-	padding-bottom:2px;
-	border:1px solid #EBEBEB;
-	text-decoration:none;
-	background-color:#F5F5F5;
-	color:#0072bc;
-	width:22px;
-	font-weight:normal;
+.pagination a, .pagination a:visited {
+    padding: 7px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid #EBEBEB;
+    text-decoration: none;
+    background-color: #F5F5F5;
+    color: #0072bc;
+    width: 22px;
+    font-weight: normal;
 }
 
 .pagination a:hover {
-	background-color:#DDEEFF;
-	border:1px solid #BBDDFF;
-	color:#0072BC;	
+    background-color: #DDEEFF;
+    border: 1px solid #BBDDFF;
+    color: #0072BC;
 }
 
 .pagination .active_link a {
-	padding-top:2px;
-	padding-bottom:2px;
-	border:1px solid #BBDDFF;
-	text-decoration:none;
-	background-color:#DDEEFF;
-	color:#0072BC;
-	cursor:default;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid #BBDDFF;
+    text-decoration: none;
+    background-color: #DDEEFF;
+    color: #0072BC;
+    cursor: default;
 }
 
 .pagination .disabled_pagination {
-	padding:7px;
-	padding-top:2px;
-	padding-bottom:2px;
-	border:1px solid #EBEBEB;
-	margin-left:10px;
-	text-decoration:none;
-	background-color:#F5F5F5;
-	color:#D7D7D7;
-	cursor:default;
-}
-
-/* New Styles */
-time.icon {
-    font-size: 1em;
-    display: block;
-    position: relative;
-    min-width: 15em;
-    height: 10em;
-    background-color: #fff;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    border-radius:0.6em;
-    box-shadow: 0 0 0 1px #c8c8c8;
-    overflow: hidden;
-    -webkit-backface-visibility: hidden;
-    -webkit-transform: rotate(0deg) skewY(0deg);
-    -webkit-transform-origin: 50% 10%;
-    transform-origin: 50% 10%;
-}
-
-time.icon strong {
-    position: absolute;
-    top: 0;
-    padding: 0.4em 0;
-    background-color: #eeeeee;
-    font-size:1.5em;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-time.icon em {
-    position: absolute;
-    bottom: 0.3em;
-    font-size:1.8em;
-    border-top: 1px solid #c8c8c8;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-time.icon span {
-    width: 100%;
-    font-size: 2.8em;
-    letter-spacing: 0em;
-    padding-top: 1.2em;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric .icon {
-    font-size: 1em;
-    display: block;
-    position: relative;
-    min-width: 14em;
-    background-color: #fff;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    box-shadow: 0 0 0 1px #c8c8c8;
-    overflow: hidden;
-    -webkit-backface-visibility: hidden;
-    -webkit-transform: rotate(0deg) skewY(0deg);
-    -webkit-transform-origin: 50% 10%;
-    transform-origin: 50% 10%;
-    border-radius:0.6em;
-}
-
-.metric > .icon > strong {
-    position: absolute;
-    top: 0;
-    padding: 8px 0;
-    background-color: #eeeeee;
-    font-size:13px;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > em {
-    position: absolute;
-    bottom: 0.3em;
-    font-size:16px;
-    border-top: 1px solid #c8c8c8;
-    text-align:center;
-    display:block;
-    width:100%;
-    padding:8px 0;
-}
-
-.metric > .icon > span {
-    width: 100%;
-    font-size: 14px;
-    letter-spacing: 0em;
-    padding-top: 40px;
-    padding-bottom:10px;
-    padding-left:0px;
-    padding-right:0px;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > div.description {
-    width: 100%;
-    font-size: 14px;
-    letter-spacing: 0em;
-    padding-top: 40px;
-    padding-bottom:10px;
-    padding-right:5px;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > span.date {
-    font-size: 16px;
-}
-
-.metric .icon > table {
-    padding-top:3.2em;
-}
-
-.metric .icon > table td{
-    padding:5px;
-    font-size: 13px;
-}
-
-.metric .icon > table tr:nth-child(even) td {
-    background: #efefef;
-}
-
-.metric .icon > table tr:nth-child(odd) td {
-    background: #ffffff;
-}
-
-.metric .icon > table tr td {
-    border-right: 1px solid #c8c8c8;
-}
-
-.metric .icon > table tr td:last-child {
-    border:none;
+    padding: 7px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid #EBEBEB;
+    margin-left: 10px;
+    text-decoration: none;
+    background-color: #F5F5F5;
+    color: #D7D7D7;
+    cursor: default;
 }
 
 div.panel {
     min-height: 60px;
     border: solid 1px #C8C8C8;
     border-radius: 5px;
-    margin-bottom:10px;
+    margin-bottom: 10px;
 }
 
 div.panel div.panel-header {
     background: #EEEEEE;
     font-size: 13px;
-    font-weight: bold;
-    display: table;
     width: 100%;
     white-space: nowrap;
+    display: inline-block;
+    padding: 8px;
 }
 
 div.panel div.panel-name {
-    display: table-cell;
-    padding: 10px 10px 10px 10px;
-    font-size:16px;
+    float: left;
+    font-size: 16px;
+    display: inline-block;
+}
+
+div.panel .date {
+    float: right;
 }
 
 div.panel div.panel-body {
-    padding:10px;
+    padding: 8px;
+}
+
+.latest-version {
+    color: #777;
+}
+
+.metrics {
+    margin-bottom: 10px;
+}
+
+.metric {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.details::before {
+    content: ': ';
+}
+
+.commit-changes {
+    padding: 10px 0;
+}
+
+.commit-changes-body {
+    font-size: 12px;
 }

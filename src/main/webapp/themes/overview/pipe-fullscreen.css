@@ -44,7 +44,6 @@ div.pipeline-cell {
     margin: 0 60px 0 0;
 }
 
-
 div.pipeline-row-spacer {
     white-space: nowrap;
     height: 20px;
@@ -57,7 +56,6 @@ section.pipeline {
 section.pipeline img {
     height: 18px;
 }
-
 
 section.pipeline h1 {
     display: inline-table;
@@ -81,7 +79,6 @@ div.changes h1 {
     margin-bottom: 5px;
 }
 
-
 div.change {
     clear: both;
     padding-left: 5px;
@@ -98,7 +95,6 @@ div.change-message {
     display: table-cell;
     padding-left: 10px;
 }
-
 
 div.stage {
     display: inline-block;
@@ -128,7 +124,6 @@ div.stage div.task {
     padding-left: 5px;
 }
 
-
 div.task-progress {
     position: relative;
     height: 34px;
@@ -140,9 +135,18 @@ div.task-progress {
 }
 
 @-webkit-keyframes bluePulse {
-    from { background-color: #0197fe; -webkit-box-shadow: 0 0 9px #333; }
-    50% { background-color: #2daebf; -webkit-box-shadow: 0 0 18px #2daebf; }
-    to { background-color: #0197fe; -webkit-box-shadow: 0 0 9px #333; }
+    from {
+        background-color: #0197fe;
+        -webkit-box-shadow: 0 0 9px #333;
+    }
+    50% {
+        background-color: #2daebf;
+        -webkit-box-shadow: 0 0 18px #2daebf;
+    }
+    to {
+        background-color: #0197fe;
+        -webkit-box-shadow: 0 0 9px #333;
+    }
 }
 
 div.task-content {
@@ -161,7 +165,6 @@ div.task-header {
     height: 0;
     border: 0;
 }
-
 
 div.taskname {
     position: relative;
@@ -199,7 +202,6 @@ div.hide {
     border-left: 7px solid #d3d3d3;
     color: lightgray;
 }
-
 
 .FAILED {
     border-left: 7px solid #fe0000;
@@ -297,7 +299,7 @@ div.task-details {
 
 div.task-manual {
     float: right;
-    content:url("play.png");
+    content: url("play.png");
 }
 
 div.left {
@@ -314,5 +316,5 @@ div.clear {
 
 svg.relation path {
     stroke: #fefefe;
-    stroke-width:3;
+    stroke-width: 3;
 }

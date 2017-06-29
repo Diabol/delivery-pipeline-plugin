@@ -12,8 +12,6 @@ div.taskname {
     font-weight: normal;
 }
 
-
-
 div.stage-task {
     min-height: 42px;
 }
@@ -29,4 +27,3 @@ div.pipeline-main {
     border-color: #BBBBBB;
     position: relative;
 }
-

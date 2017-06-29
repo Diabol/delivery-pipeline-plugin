@@ -3,8 +3,8 @@ body {
     background: #000000;
     color: #fefefe;
     font-size: 14px;
-    position:absolute;
-    padding-right:20px;
+    position: absolute;
+    padding-right: 20px;
 }
 
 div.pipeline-loading-icon {
@@ -39,27 +39,15 @@ div.stage-header {
     border-bottom: solid #808080 1px;
 }
 
-div.stage-task {
-    min-height: 36px;
+div.stage-task, div.task-progress {
+    min-height: 42px;
 }
 
-div.task-progress {
-    min-height: 36px;
+.stage-name, .stage-version {
+    padding: 10px;
 }
 
-.stage-name {
-    padding: 10px 10px 10px 10px;
-}
-
-.stage-version {
-    padding: 10px 10px 10px 10px;
-}
-
-.timestamp {
-    font-size: 12px;
-}
-
-.duration {
+.timestamp, .duration {
     font-size: 12px;
 }
 
@@ -143,7 +131,7 @@ svg.relation path {
 }
 
 svg {
-    margin-left:-7px;
+    margin-left: -7px;
 }
 
 div.infoPanel {
@@ -163,171 +151,25 @@ div.aggregatedChangesPanelOuter {
     background-color: #646060;
 }
 
-/* New Styles */
-time.icon {
-    font-size: 1em;
-    display: block;
-    position: relative;
-    min-width: 10em;
-    height: 7em;
-    background-color: #404040;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    border-radius:0em;
-    box-shadow: 0 0 0 1px #404040;
-    overflow: hidden;
-    -webkit-backface-visibility: hidden;
-    -webkit-transform: rotate(0deg) skewY(0deg);
-    -webkit-transform-origin: 50% 10%;
-    transform-origin: 50% 10%;
-}
-
-time.icon strong {
-    position: absolute;
-    top: 0;
-    padding: 0.4em 0;
-    background-color: #808080;
-    font-size:1.5em;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-time.icon em {
-    position: absolute;
-    bottom: 0.3em;
-    font-size:1.8em;
-    border-top: 1px solid #c8c8c8;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-time.icon span {
-    width: 100%;
-    font-size: 2.8em;
-    letter-spacing: 0em;
-    padding-top: 1.2em;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric .icon {
-    font-size: 1em;
-    display: block;
-    position: relative;
-    min-width: 14em;
-    background-color: #404040;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    box-shadow: 0 0 0 1px #404040;
-    overflow: hidden;
-    -webkit-backface-visibility: hidden;
-    -webkit-transform: rotate(0deg) skewY(0deg);
-    -webkit-transform-origin: 50% 10%;
-    transform-origin: 50% 10%;
-    border-radius:0em;
-}
-
-.metric > .icon > strong {
-    position: absolute;
-    top: 0;
-    padding: 10px;
-    background-color: #808080;
-    font-size:13px;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > em {
-    position: absolute;
-    bottom: 0.3em;
-    font-size:16px;
-    border-top: 1px solid #c8c8c8;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > span {
-    width: 100%;
-    font-size: 14px;
-    letter-spacing: 0em;
-    padding-top: 40px;
-    padding-bottom:10px;
-    padding-left:0px;
-    padding-right:0px;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > div.description {
-    width: 100%;
-    font-size: 14px;
-    letter-spacing: 0em;
-    padding-top: 40px;
-    padding-bottom:10px;
-    padding-right:5px;
-    text-align:center;
-    display:block;
-    width:100%;
-}
-
-.metric > .icon > span.date {
-    font-size: 20px;
-}
-
-.metric .icon > table {
-    padding-top:2.2em;
-}
-
-.metric .icon > table td{
-    padding:5px;
-    font-size: 13px;
-}
-
-.metric .icon > table tr:nth-child(even) td {
-    background: #808080;
-}
-
-.metric .icon > table tr:nth-child(odd) td {
-    background: #404040;
-}
-
-.metric .icon > table tr td {
-    border-right: 1px solid #c8c8c8;
-}
-
-.metric .icon > table tr td:last-child {
-    border:none;
-}
-
 div.panel {
-    min-height: 60px;
-    border: solid 1px #C8C8C8;
     border-radius: 0px;
-    margin-bottom:10px;
 }
 
 div.panel div.panel-header {
-    font-size: 13px;
-    font-weight: bold;
-    display: table;
-    width: 100%;
-    white-space: nowrap;
+    padding: 0px;
     background: #808080;
     border-bottom: solid #808080 1px;
 }
 
 div.panel div.panel-name {
-    display: table-cell;
-    padding: 10px 10px 10px 10px;
-    font-size:16px;
+    padding: 10px;
+    font-size: 16px;
 }
 
-div.panel div.panel-body {
-    padding:10px;
+div.panel div.date, div.panel div.panel-body {
+    padding: 10px;
+}
+
+div.task-manual {
+    height: 16px;
 }
