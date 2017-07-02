@@ -127,6 +127,7 @@ public class SimpleStatusTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testResolveStatusSuccessWithPromotions() {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(Result.SUCCESS);
@@ -157,6 +158,7 @@ public class SimpleStatusTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testResolveStatusSuccessWithNoPromotionsPlugin() {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(Result.SUCCESS);
@@ -191,6 +193,7 @@ public class SimpleStatusTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testResolveStatusFailureWithPromotions() {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(Result.FAILURE);
@@ -221,6 +224,7 @@ public class SimpleStatusTest {
     }
 
     @Test
+    @WithoutJenkins
     public void testResolveStatusFailureWithNoPromotionsPlugin() {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(Result.FAILURE);
