@@ -1,0 +1,23 @@
+views:
+  - delivery_pipeline:
+      filter-executors: false
+      filter-queue: false
+      folder: false
+      components:
+        - name: 'Example pipeline'
+          first-job: 'example-str-build'
+      name: 'Pipeline view'
+      build-view-title: 'Test Build Pipeline'
+      number-of-pipelines: 3
+      show-aggregated-pipeline: false
+      number-of-columns: 1
+      sorting: none
+      show-avatars: false
+      update-interval: 2
+      show-changes: true
+      allow-manual-triggers: true
+      show-total-buildtime: true
+      allow-rebuild: true
+      allow-pipeline-start: true
+      show-description: false
+      show-promotions: false
