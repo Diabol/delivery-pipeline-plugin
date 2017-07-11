@@ -19,7 +19,6 @@ package se.diabol.jenkins.pipeline.domain;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
 
 import com.google.common.collect.ImmutableList;
 import hudson.model.AbstractBuild;
@@ -36,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -252,7 +252,7 @@ public class Pipeline extends AbstractItem {
 
             final AbstractBuild nextBuild = nextStage.getHighestBuild(firstProject, context, Result.SUCCESS);
 
-            Set<Change> changes = newHashSet();
+            Set<Change> changes = new LinkedHashSet<>();
 
             AbstractBuild build = stage.getHighestBuild(firstProject, context, Result.SUCCESS);
             for (; build != null && build != nextBuild; build = build.getPreviousBuild()) {
