@@ -3,6 +3,7 @@ folder('Demo')
 deliveryPipelineView('Demo/Pipeline') {
 
     pipelineInstances(5)
+    allowPipelineStart()
     enableManualTriggers()
     showChangeLog()
     pipelines {
