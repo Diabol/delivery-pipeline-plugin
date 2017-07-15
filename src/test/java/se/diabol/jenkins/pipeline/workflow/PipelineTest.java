@@ -29,6 +29,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import se.diabol.jenkins.workflow.WorkflowPipelineView;
 import se.diabol.jenkins.workflow.model.Pipeline;
 
 public class PipelineTest {
@@ -41,10 +42,11 @@ public class PipelineTest {
         final String pipelineName = "Pipeline";
         WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, pipelineName);
         pipelineProject.setDefinition(new CpsFlowDefinition("node {stage 'Build' \n stage 'CI' }"));
-        //pipelineProject.onCreatedFromScratch();
         WorkflowRun build = pipelineProject.scheduleBuild2(0).get();
 
-        Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
+        WorkflowPipelineView view = new WorkflowPipelineView(pipelineName);
+
+        Pipeline pipeline = Pipeline.resolve(pipelineProject, build, view.getOwnerItemGroup());
         assertNotNull(pipeline);
         assertThat(pipeline.getName(), is(pipelineName));
         assertThat(pipeline.getStages().size(), is(2));
@@ -58,18 +60,19 @@ public class PipelineTest {
         assertThat(pipeline.getTriggeredBy().size(), is(0));
         assertNotNull(pipeline.getChanges());
         assertThat(pipeline.getChanges().size(), is(0));
-
-        //TODO task assert
     }
 
     @Test
     public void simplePipelineTasks() throws Exception {
-        WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, "Pipeline");
+        String pipelineName = "Pipeline";
+        WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, pipelineName);
         pipelineProject.setDefinition(
-                new CpsFlowDefinition("node {stage 'Build'\n task 'Compile'\n stage 'CI' \n task 'Deploy'}"));
+                new CpsFlowDefinition("node {\n stage 'Build'\n task 'Compile'\n stage 'CI'\n task 'Deploy'\n}"));
         WorkflowRun build = pipelineProject.scheduleBuild2(0).get();
 
-        Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
+        WorkflowPipelineView view = new WorkflowPipelineView(pipelineName);
+
+        Pipeline pipeline = Pipeline.resolve(pipelineProject, build, view.getOwnerItemGroup());
         assertNotNull(pipeline);
         assertThat(pipeline.getStages().size(), is(2));
         assertThat(pipeline.getStages().get(0).getName(), is("Build"));
@@ -77,9 +80,5 @@ public class PipelineTest {
         assertThat(pipeline.getStages().get(0).getTasks().get(0).getName(), is("Compile"));
         assertThat(pipeline.getStages().get(1).getTasks().size(), is(1));
         assertThat(pipeline.getStages().get(1).getTasks().get(0).getName(), is("Deploy"));
-
-        //TODO task assert
     }
-
-
 }
