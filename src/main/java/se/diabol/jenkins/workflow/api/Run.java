@@ -17,11 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.api;
 
+import com.cloudbees.workflow.rest.external.RunExt;
+import com.cloudbees.workflow.rest.external.StageNodeExt;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.api.client.util.DateTime;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +58,17 @@ public class Run {
         this.stages = stages;
     }
 
+    public Run(RunExt run) {
+        this._links = new LinkedHashMap<>();
+        this.id = run.getId();
+        this.name = run.getName();
+        this.status = run.getStatus().toString();
+        this.startTimeMillis = new DateTime(run.getStartTimeMillis());
+        this.endTimeMillis = new DateTime(run.getEndTimeMillis());
+        this.durationMillis = run.getDurationMillis();
+        this.stages = asStages(run.getStages());
+    }
+
     public boolean hasStage(final String name) {
         for (Stage stage : stages) {
             String stageName = stage.name;
@@ -73,6 +87,21 @@ public class Run {
             }
         }
         return null;
+    }
+
+    private List<Stage> asStages(List<StageNodeExt> extStages) {
+        List<Stage> stages = new ArrayList<>(extStages.size());
+        for (StageNodeExt stage : extStages) {
+            stages.add(new Stage(
+                    null,
+                    stage.getId(),
+                    stage.getName(),
+                    stage.getStatus().toString(),
+                    new DateTime(stage.getStartTimeMillis()),
+                    stage.getDurationMillis()
+            ));
+        }
+        return stages;
     }
 
     @Override

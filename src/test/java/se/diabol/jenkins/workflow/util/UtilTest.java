@@ -21,7 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import com.google.api.client.util.DateTime;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import se.diabol.jenkins.workflow.api.Run;
 import se.diabol.jenkins.workflow.api.Stage;

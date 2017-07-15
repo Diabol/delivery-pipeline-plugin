@@ -21,14 +21,16 @@ import static java.lang.Math.round;
 import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
+import hudson.model.ItemGroup;
 import hudson.model.Result;
-import jenkins.model.Jenkins;
+import hudson.model.TopLevelItem;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.status.StatusType;
@@ -45,7 +47,7 @@ import java.util.List;
 
 public class Task extends AbstractItem {
 
-    private static final WorkflowApi workflowApi = new WorkflowApi(Jenkins.getInstance());
+    private static final WorkflowApi workflowApi = new WorkflowApi();
 
     private final String id;
     private final int buildId;
@@ -113,21 +115,24 @@ public class Task extends AbstractItem {
         return requiringInput;
     }
 
-    public static List<Task> resolve(WorkflowRun build, FlowNode stageStartNode) {
-        List<Task> result = new ArrayList<Task>();
+    public static List<Task> resolve(WorkflowRun build,
+                                     FlowNode stageStartNode,
+                                     ItemGroup<? extends TopLevelItem> ownerItemGroup)
+            throws PipelineException {
+        List<Task> result = new ArrayList<>();
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(stageStartNode);
         List<FlowNode> taskNodes = Util.getTaskNodes(stageNodes);
 
         if (taskNodesDefinedInStage(taskNodes)) {
             for (FlowNode flowNode : taskNodes) {
                 TaskAction action = flowNode.getAction(TaskAction.class);
-                Status status = resolveTaskStatus(build, stageStartNode);
+                Status status = resolveTaskStatus(build, stageStartNode, ownerItemGroup);
                 result.add(new Task(flowNode.getId(), action.getTaskName(), build.getNumber(), status,
                                     taskLinkFor(build), null, null,
                                     StatusType.PAUSED_PENDING_INPUT.equals(status.getType())));
             }
         } else {
-            Status stageStatus = resolveTaskStatus(build, stageStartNode);
+            Status stageStatus = resolveTaskStatus(build, stageStartNode, ownerItemGroup);
             result.add(createStageTask(build, stageStartNode, stageStatus));
         }
         return result;
@@ -146,8 +151,11 @@ public class Task extends AbstractItem {
         return !taskNodes.isEmpty();
     }
 
-    private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) {
-        List<Run> runs = workflowApi.getRunsFor(Name.of(build));
+    private static Status resolveTaskStatus(WorkflowRun build,
+                                            FlowNode stageStartNode,
+                                            ItemGroup<? extends TopLevelItem> ownerItemGroup)
+            throws PipelineException {
+        List<Run> runs = workflowApi.getRunsFor(Name.of(build), ownerItemGroup);
         Run run = getRunById(runs, build.getNumber());
         se.diabol.jenkins.workflow.api.Stage currentStage = run.getStageByName(stageStartNode.getDisplayName());
         if (currentStage == null) {
@@ -155,7 +163,7 @@ public class Task extends AbstractItem {
         } else {
             Status stageStatus = WorkflowStatus.of(currentStage);
             if (stageStatus.isRunning()) {
-                stageStatus = runningStatus(build, currentStage);
+                stageStatus = runningStatus(build, currentStage, ownerItemGroup);
             }
             return stageStatus;
         }
@@ -189,8 +197,10 @@ public class Task extends AbstractItem {
         return runningStatus(buildTimestamp, progress);
     }
 
-    private static Status runningStatus(WorkflowRun build, Stage stage) {
-        int progress = progressOfStage(build, stage);
+    private static Status runningStatus(WorkflowRun build,
+                                        Stage stage,
+                                        ItemGroup<? extends TopLevelItem> ownerItemGroup) throws PipelineException {
+        int progress = progressOfStage(build, stage, ownerItemGroup);
         return runningStatus(build.getTimeInMillis(), progress);
     }
 
@@ -201,13 +211,15 @@ public class Task extends AbstractItem {
         return StatusFactory.running(progress, buildTimestamp, System.currentTimeMillis() - buildTimestamp);
     }
 
-    private static int progressOfStage(WorkflowRun build, Stage currentStage) {
-        Run previousRun = workflowApi.lastFinishedRunFor(Name.of(build));
+    private static int progressOfStage(WorkflowRun build,
+                                       Stage currentStage,
+                                       ItemGroup<? extends TopLevelItem> ownerItemGroup) throws PipelineException {
+        Run previousRun = workflowApi.lastFinishedRunFor(Name.of(build), ownerItemGroup);
         if (previousRun == null || !previousRun.hasStage(currentStage.name)) {
             return 99;
         }
 
-        long stageStartTime = currentStage.startTimeMillis.getValue();
+        long stageStartTime = currentStage.startTimeMillis.getMillis();
         long estimatedStageDuration = Stage.getDurationOfStageFromRun(previousRun, currentStage);
         return calculateProgress(stageStartTime, estimatedStageDuration);
     }

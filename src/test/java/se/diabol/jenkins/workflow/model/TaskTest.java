@@ -17,10 +17,10 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
-import com.google.api.client.util.DateTime;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.ArrayList;

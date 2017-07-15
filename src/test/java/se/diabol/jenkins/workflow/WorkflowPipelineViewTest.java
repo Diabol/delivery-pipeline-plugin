@@ -17,14 +17,20 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
+import com.gargoylesoftware.htmlunit.Page;
+import hudson.cli.BuildCommand;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.Permission;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.workflow.model.Component;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -68,6 +74,40 @@ public class WorkflowPipelineViewTest {
         assertThat(pipelines.size(), is(1));
         Component component = pipelines.get(0);
         assertThat(component.getWorkflowJob(), is(pipeline));
+    }
+
+    @Test
+    @Issue("JENKINS-43797")
+    public void authentication() throws Exception {
+        WorkflowJob pipeline = jenkins.getInstance().createProject(WorkflowJob.class, "Test");
+
+        pipeline.setDefinition(new CpsFlowDefinition("node { stage 'Stage 1' echo 'Hello World 1' stage 'Stage 2' echo 'Hello World 2' }", true));
+
+        pipeline.scheduleBuild(0, new BuildCommand.CLICause());
+        jenkins.waitUntilNoActivity();
+
+        WorkflowPipelineView view = new WorkflowPipelineView("Pipeline");
+        view.setProject("Test");
+
+        jenkins.getInstance().addView(view);
+
+        jenkins.getInstance().setSecurityRealm(jenkins.createDummySecurityRealm());
+        GlobalMatrixAuthorizationStrategy gmas = new GlobalMatrixAuthorizationStrategy();
+        gmas.add(Permission.READ, "devel");
+
+        pipeline.getLastBuild().getExecution().getAuthentication().getCredentials();
+
+        jenkins.getInstance().setAuthorizationStrategy(gmas);
+
+        JenkinsRule.WebClient client = jenkins.createWebClient();
+
+        client.login("devel", "devel");
+
+        Page pageView = client.getPage(new URL(jenkins.getURL(), "/jenkins/view/Pipeline"));
+        assertThat(pageView.getWebResponse().getStatusCode(), is(200));
+
+        Page pageApi = client.getPage(new URL(jenkins.getURL(), "/jenkins/view/Pipeline/api/json"));
+        assertThat(pageApi.getWebResponse().getStatusCode(), is(200));
     }
 
     @Test

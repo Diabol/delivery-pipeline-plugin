@@ -19,8 +19,8 @@ package se.diabol.jenkins.workflow.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.api.client.util.DateTime;
 import com.google.common.base.Objects;
+import org.joda.time.DateTime;
 
 import java.util.Map;
 

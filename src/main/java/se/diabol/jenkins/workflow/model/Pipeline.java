@@ -18,6 +18,8 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.model;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
+import hudson.model.ItemGroup;
+import hudson.model.TopLevelItem;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -110,13 +112,18 @@ public class Pipeline extends AbstractItem {
         return triggeredBy;
     }
 
-    public static Pipeline resolve(WorkflowJob project, WorkflowRun build) throws PipelineException {
-        String pipeLineTimestamp = PipelineUtils.formatTimestamp(build.getTimeInMillis());
+    public static Pipeline resolve(WorkflowJob project,
+                                   WorkflowRun build,
+                                   ItemGroup<? extends TopLevelItem> ownerItemGroup) throws PipelineException {
+        String pipelineTimestamp = PipelineUtils.formatTimestamp(build.getTimeInMillis());
 
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(build.getExecution());
-        return new Pipeline("Pipeline", build.getDisplayName(), Stage.extractStages(build, stageNodes),
-                Change.getChanges(build.getChangeSets()), TriggerCause.getTriggeredBy(project, build),
-                pipeLineTimestamp);
+        return new Pipeline(project.getName(),
+                build.getDisplayName(),
+                Stage.extractStages(build, stageNodes, ownerItemGroup),
+                Change.getChanges(build.getChangeSets()),
+                TriggerCause.getTriggeredBy(project, build),
+                pipelineTimestamp);
     }
 
 }
