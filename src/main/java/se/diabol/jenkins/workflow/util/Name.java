@@ -32,14 +32,14 @@ public final class Name {
             return qualifiedNameOf(build);
         } else if (parentIsMultiBranch(build)) {
             return ((AbstractItem) ((MultiBranchProject)
-                    build.getParent().getParent())).getName() + "/job/" + build.getParent().getName();
+                    build.getParent().getParent())).getName() + "/" + build.getParent().getName();
         } else {
             return build.getParent().getName();
         }
     }
 
     protected static String qualifiedNameOf(WorkflowRun build) {
-        return build.getUrl().substring(4, build.getUrl().length() - 3);
+        return build.getParent().getFullName();
     }
 
     private static boolean parentIsMultiBranch(WorkflowRun build) {

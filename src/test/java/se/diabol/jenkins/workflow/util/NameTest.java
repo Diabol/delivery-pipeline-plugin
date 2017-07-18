@@ -52,7 +52,7 @@ public class NameTest {
         Folder folder = jenkins.jenkins.createProject(Folder.class, folderName);
         WorkflowJob workflowJob = folder.createProject(WorkflowJob.class, jobName);
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
-        assertThat(Name.of(workflowRun), is(folderName + "/job/" + jobName));
+        assertThat(Name.of(workflowRun), is(folderName + "/" + jobName));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class NameTest {
         WorkflowJob workflowJob = new WorkflowJob(multiBranch, "wf");
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
 
-        assertThat(Name.of(workflowRun), is("mb/job/wf"));
+        assertThat(Name.of(workflowRun), is("mb/wf"));
     }
     
     @Test
@@ -77,7 +77,7 @@ public class NameTest {
         rootFolder.createProject(Folder.class, leafFolderName);
         WorkflowJob workflowJob = leafFolder.createProject(WorkflowJob.class, jobName);
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
-        assertThat(Name.of(workflowRun), is(leafFolderName + "/job/" + jobName));
+        assertThat(Name.of(workflowRun), is(leafFolderName + "/" + jobName));
     }
 
     @Test
