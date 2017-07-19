@@ -52,5 +52,8 @@ public class TaskStep extends AbstractStepImpl {
             return "Task";
         }
 
+        @Override public boolean takesImplicitBlockArgument() {
+            return true;
+        }
     }
 }
