@@ -487,7 +487,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>dashboard-view</artifactId>
             <version>2.9.2</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
