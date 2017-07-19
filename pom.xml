@@ -48,6 +48,7 @@
     <scm>
         <connection>scm:git:https://github.com/Diabol/delivery-pipeline-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/Diabol/delivery-pipeline-plugin.git</developerConnection>
+        <url>https://github.com/Diabol/delivery-pipeline-plugin/</url>
         <tag>HEAD</tag>
     </scm>
 
