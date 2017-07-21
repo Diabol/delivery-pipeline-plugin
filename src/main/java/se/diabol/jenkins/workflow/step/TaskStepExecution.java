@@ -18,7 +18,6 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.step;
 
 import com.google.inject.Inject;
-import hudson.AbortException;
 import hudson.model.InvisibleAction;
 import hudson.model.TaskListener;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
@@ -28,7 +27,6 @@ import org.jenkinsci.plugins.workflow.steps.AbstractStepExecutionImpl;
 import org.jenkinsci.plugins.workflow.steps.BodyExecutionCallback;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
-import org.jenkinsci.plugins.workflow.support.steps.stage.Messages;
 
 public class TaskStepExecution extends AbstractStepExecutionImpl {
 
@@ -43,14 +41,14 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         TaskAction taskAction = new TaskActionImpl(step.name);
         StepContext context = this.getContext();
         if (context.hasBody()) {
-            context.get(TaskListener.class).getLogger().println("Invoking task [" + step.name + "] with body");
             ((CpsBodyInvoker) context.newBodyInvoker())
                     .withStartAction(taskAction)
                     .withCallback(BodyExecutionCallback.wrap(context))
                     .withDisplayName(this.step.name).start();
+        } else {
+            node.addAction(taskAction);
         }
         node.addAction(new LabelAction(step.name));
-        node.addAction(taskAction);
         getContext().onSuccess(null);
         return false;
     }
