@@ -44,7 +44,7 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
             ((CpsBodyInvoker) context.newBodyInvoker())
                     .withStartAction(taskAction)
                     .withCallback(BodyExecutionCallback.wrap(context))
-                    .withDisplayName(this.step.name).start();
+                    .withDisplayName(step.name).start();
         } else {
             node.addAction(taskAction);
         }

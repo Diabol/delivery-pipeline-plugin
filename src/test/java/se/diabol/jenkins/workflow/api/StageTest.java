@@ -20,7 +20,9 @@ package se.diabol.jenkins.workflow.api;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
@@ -33,6 +35,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class StageTest {
+
+    private static final Long expectedStageDuration = 1500L;
 
     @Test
     public void identicalStagesShouldBeConsideredEqual() {
@@ -83,15 +87,50 @@ public class StageTest {
         assertThat(Stage.getDurationOfStageFromRun(previousRun, getPopulatedStage()), is(-1L));
     }
 
+    @Test
+    public void shouldGetDurationForEmptyParameter() {
+        long duration = Stage.getDurationOf(Collections.<Stage>emptyList());
+        assertThat(duration, is(0L));
+    }
+
+    @Test
+    public void shouldGetDuration() {
+        List<Stage> stages = stages();
+        long duration = Stage.getDurationOf(stages);
+        assertThat(duration, is(expectedStageDuration * stages.size()));
+    }
+
+    @Test
+    public void shouldGetDurationForNullParameter() {
+        long duration = Stage.getDurationOf(null);
+        assertThat(duration, is(0L));
+    }
+
     private Stage getPopulatedStage() {
         Map<String, ?> links = Collections.emptyMap();
         String id = "stageId";
         String name = "stageName";
         String status = "SUCCESS";
         DateTime startTimeMillis = new DateTime(System.currentTimeMillis());
-        Long durationMillis = 1500L;
+        Long durationMillis = expectedStageDuration;
         return new Stage(links, id, name, status, startTimeMillis, durationMillis);
     }
 
+    private static List<Stage> stages() {
+        List<Stage> stages = new ArrayList<Stage>(5);
+        for (int i = 0; i < 5; i++) {
+            stages.add(stage("stage" + i));
+        }
+        return stages;
+    }
+
+    private static Stage stage(String name) {
+        return new Stage(null,
+                name,
+                name,
+                "SUCCESS",
+                new DateTime(0L),
+                expectedStageDuration);
+    }
 
 }

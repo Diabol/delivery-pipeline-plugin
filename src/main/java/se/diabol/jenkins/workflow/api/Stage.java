@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import org.joda.time.DateTime;
 
+import java.util.List;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -54,6 +55,16 @@ public class Stage {
             return -1L;
         }
         return previouslyRunStage.durationMillis;
+    }
+
+    public static long getDurationOf(List<Stage> stages) {
+        long result = 0;
+        if (stages != null) {
+            for (se.diabol.jenkins.workflow.api.Stage stage : stages) {
+                result = result + stage.durationMillis;
+            }
+        }
+        return result;
     }
 
     @Override

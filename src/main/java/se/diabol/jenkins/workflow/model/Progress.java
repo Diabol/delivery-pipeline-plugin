@@ -17,24 +17,16 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
-import org.jenkinsci.plugins.workflow.graph.FlowNode;
-import org.junit.Test;
+import static java.lang.Math.round;
 
-import java.util.Collections;
+public class Progress {
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
-public class TaskTest {
-
-    @Test
-    public void taskNodesDefinedInStageShouldReturnTrueWhenListPopulated() {
-        assertThat(Task.taskNodesDefinedInStage(Collections.singletonList(mock(FlowNode.class))), is(true));
+    private Progress() {
     }
 
-    @Test
-    public void taskNodesDefinedInStageShouldReturnFalseForEmptyList() {
-        assertThat(Task.taskNodesDefinedInStage(Collections.<FlowNode>emptyList()), is(false));
+    static int calculate(long timestampFromBuild, long estimatedDuration) {
+        return (int) round(100.0d
+                * (System.currentTimeMillis() - timestampFromBuild)
+                / estimatedDuration);
     }
 }
