@@ -153,6 +153,7 @@ public class Task extends AbstractItem {
                                             FlowNode stageStartNode,
                                             ItemGroup<? extends TopLevelItem> ownerItemGroup)
             throws PipelineException {
+
         List<Run> runs = workflowApi.getRunsFor(Name.of(build), ownerItemGroup);
         Run run = getRunById(runs, build.getNumber());
         se.diabol.jenkins.workflow.api.Stage currentStage = run.getStageByName(stageStartNode.getDisplayName());

@@ -19,8 +19,8 @@ package se.diabol.jenkins.workflow.step;
 
 import com.google.inject.Inject;
 import hudson.model.InvisibleAction;
-import hudson.model.TaskListener;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
+import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.CpsBodyInvoker;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepExecutionImpl;
@@ -49,6 +49,7 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
             node.addAction(taskAction);
         }
         node.addAction(new LabelAction(step.name));
+        node.addAction(new TimingAction());
         getContext().onSuccess(null);
         return false;
     }

@@ -17,14 +17,14 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.junit.Test;
 
 import java.util.Collections;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class TaskTest {
 
