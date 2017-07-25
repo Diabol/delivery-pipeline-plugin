@@ -26,15 +26,15 @@ function pipelineUtils() {
     var lastResponse = null;
 
     this.refreshPipelines = function(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb) {
-                           var lastUpdate = data.lastUpdated,
-                               cErrorDiv = Q("#" + errorDiv),
-                               pipeline,
-                               component,
-                               html,
-                               trigger,
-                               triggered,
-                               contributors,
-                               tasks = [];
+                           var lastUpdate = data.lastUpdated;
+                           var cErrorDiv = Q("#" + errorDiv);
+                           var pipeline;
+                           var component;
+                           var html;
+                           var trigger;
+                           var triggered;
+                           var contributors;
+                           var tasks = [];
 
                            if (data.error) {
                                cErrorDiv.html('Error: ' + data.error).show();
@@ -124,7 +124,9 @@ function pipelineUtils() {
 
                                        html.push('<section class="pipeline">');
 
-                                       var row = 0, column = 0, stage;
+                                       var row = 0;
+                                       var column = 0;
+                                       var stage;
 
                                        html.push('<div class="pipeline-row">');
 
@@ -156,7 +158,12 @@ function pipelineUtils() {
                                                html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div></div>');
                                            }
 
-                                           var task, id, timestamp, progress, progressClass, consoleLogLink = "";
+                                           var task;
+                                           var id;
+                                           var timestamp;
+                                           var progress;
+                                           var progressClass;
+                                           var consoleLogLink = "";
 
                                            for (var k = 0; k < stage.tasks.length; k++) {
                                                task = stage.tasks[k];
@@ -238,7 +245,9 @@ function pipelineUtils() {
                                    Q("#pipeline-message-" + pipelineid).html('');
                                }
 
-                               var index = 0, source, target;
+                               var index = 0;
+                               var source;
+                               var target;
                                lastResponse = data;
                                equalheight(".pipeline-row .stage");
 
@@ -270,7 +279,12 @@ function pipelineUtils() {
                                });
 
                            } else {
-                               var comp, pipe, head, st, ta, time;
+                               var comp;
+                               var pipe;
+                               var head;
+                               var st;
+                               var ta;
+                               var time;
 
                                for (var p = 0; p < data.pipelines.length; p++) {
                                    comp = data.pipelines[p];
@@ -525,10 +539,10 @@ function formatDate(date, currentTime) {
 
 function formatDuration(millis) {
     if (millis > 0) {
-        var seconds = Math.floor(millis / 1000),
-            minutes = Math.floor(seconds / 60),
-            minstr,
-            secstr;
+        var seconds = Math.floor(millis / 1000);
+        var minutes = Math.floor(seconds / 60);
+        var minstr;
+        var secstr;
 
         seconds = seconds % 60;
 
@@ -547,8 +561,8 @@ function formatDuration(millis) {
 
 function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild, viewUrl) {
     Q("#manual-" + taskId).hide();
-    var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild},
-        before;
+    var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild};
+    var before;
 
     if (crumb.value !== null && crumb.value !== "") {
         console.info("Crumb found and will be added to request header");
@@ -673,11 +687,11 @@ function getStageId(name, count) {
 
 function equalheight(container) {
 
-    var currentTallest = 0,
-        currentRowStart = 0,
-        rowDivs = new Array(),
-        $el,
-        topPosition = 0;
+    var currentTallest = 0;
+    var currentRowStart = 0;
+    var rowDivs = new Array();
+    var $el;
+    var topPosition = 0;
 
     Q(container).each(function () {
 
