@@ -1,6 +1,6 @@
 function pipelineUtils() {
-     var self = this;
-     this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb) {
+    var self = this;
+    this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb) {
         Q.ajax({
             url: rootURL + "/" + view.viewUrl + 'api/json' + "?page=" + page + "&component=" + component + "&fullscreen=" + fullscreen,
             dataType: 'json',
@@ -26,289 +26,303 @@ function pipelineUtils() {
     var lastResponse = null;
 
     this.refreshPipelines = function(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb) {
-       var lastUpdate = data.lastUpdated,
-           cErrorDiv = Q("#" + errorDiv),
-           pipeline,
-           component,
-           html,
-           trigger,
-           triggered,
-           contributors,
-           tasks = [];
+        var lastUpdate = data.lastUpdated;
+        var cErrorDiv = Q("#" + errorDiv);
+        var pipeline;
+        var component;
+        var html;
+        var trigger;
+        var triggered;
+        var contributors;
+        var tasks = [];
 
-       if (data.error) {
-           cErrorDiv.html('Error: ' + data.error).show();
-       } else {
-           cErrorDiv.hide().html('');
-       }
+        if (data.error) {
+            cErrorDiv.html('Error: ' + data.error).show();
+        } else {
+            cErrorDiv.hide().html('');
+        }
 
-       if (lastResponse === null || JSON.stringify(data.pipelines) !== JSON.stringify(lastResponse.pipelines)) {
+        if (lastResponse === null || JSON.stringify(data.pipelines) !== JSON.stringify(lastResponse.pipelines)) {
 
-           for (var z = 0; z < divNames.length; z++) {
-               Q("#" + divNames[z]).html('');
-           }
+            for (var z = 0; z < divNames.length; z++) {
+                Q("#" + divNames[z]).html('');
+            }
 
-           if (!data.pipelines || data.pipelines.length === 0) {
-               Q("#pipeline-message-" + pipelineid).html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
-           }
+            if (!data.pipelines || data.pipelines.length === 0) {
+                Q("#pipeline-message-" + pipelineid).html('No pipelines configured or found. Please review the <a href="configure">configuration</a>')
+            }
 
-           jsplumb.reset();
-           for (var c = 0; c < data.pipelines.length; c++) {
-               html = [];
-               component = data.pipelines[c];
-               html.push("<section class='pipeline-component'>");
-               html.push("<h1>" + htmlEncode(component.name));
-               if (data.allowPipelineStart) {
-                   if (component.workflowComponent) {
-                       html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\');">');
-                   } else if (component.firstJobParameterized) {
-                       html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
-                   } else {
-                       html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
-                   }
-                   html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.png">');
-                   html.push("</a>");
-               }
-               html.push("</h1>");
+            jsplumb.reset();
+            for (var c = 0; c < data.pipelines.length; c++) {
+                html = [];
+                component = data.pipelines[c];
+                html.push("<section class='pipeline-component'>");
+                html.push("<h1>" + htmlEncode(component.name));
+                if (data.allowPipelineStart) {
+                    if (component.workflowComponent) {
+                        html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\');">');
+                    } else if (component.firstJobParameterized) {
+                        html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
+                    } else {
+                        html.push('&nbsp;<a id=\'startpipeline-' + c  +'\' class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\');">');
+                    }
+                    html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.png">');
+                    html.push("</a>");
+                }
+                html.push("</h1>");
 
-               html.push(getPagination(showAvatars, component));
+                html.push(getPagination(showAvatars, component));
 
-               if (component.pipelines.length === 0) {
-                   html.push("No builds done yet.");
-               }
-               for (var i = 0; i < component.pipelines.length; i++) {
-                   pipeline = component.pipelines[i];
+                if (component.pipelines.length === 0) {
+                    html.push("No builds done yet.");
+                }
+                for (var i = 0; i < component.pipelines.length; i++) {
+                    pipeline = component.pipelines[i];
 
-                   if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
-                       triggered = "";
-                       for (var y = 0; y < pipeline.triggeredBy.length; y++) {
-                           trigger = pipeline.triggeredBy[y];
-                           triggered = triggered + ' <span class="' + trigger.type + '">' + htmlEncode(trigger.description) + '</span>';
-                           if (y < pipeline.triggeredBy.length - 1) {
-                               triggered = triggered + ", ";
-                           }
-                       }
-                   }
+                    if (pipeline.triggeredBy && pipeline.triggeredBy.length > 0) {
+                        triggered = "";
+                        for (var y = 0; y < pipeline.triggeredBy.length; y++) {
+                            trigger = pipeline.triggeredBy[y];
+                            triggered = triggered + ' <span class="' + trigger.type + '">' + htmlEncode(trigger.description) + '</span>';
+                            if (y < pipeline.triggeredBy.length - 1) {
+                                triggered = triggered + ", ";
+                            }
+                        }
+                    }
 
-                   if (pipeline.aggregated) {
-                       if (component.pipelines.length > 1) {
-                           html.push('<h2>Aggregated view</h2>');
-                       }
-                   } else {
-                       html.push('<div class="panel">');
-                       html.push('<div class="panel-header">');
-                       html.push('<div class="panel-name">');
-                       html.push('<b>' + pipeline.version + '</b>');
-                       html.push('</div>');
-                       html.push('<div class="date">' + getFormatFullDate(pipeline.timestamp) + ' (' + formatDate(pipeline.timestamp, lastUpdate) + ')</div>');
-                       html.push('</div>');
-                       html.push('<div class="panel-body">');
-                       html.push('<div class="metrics">');
-                       html.push('<div class="metric">');
-                       html.push('<b>Commits</b>');
-                       html.push('<span class="details">' + pipeline.commits + '</span>');
-                       html.push('</div>');
-                       html.push('<div class="metric">');
-                       html.push('<b>Trigger Details</b>');
-                       html.push('<span class="details">' + triggered + '</span>');
-                       html.push('</div>');
-                       html.push('<div class="metric">');
-                       html.push('<b>Total Duration</b>');
-                       html.push('<span class="details">' + formatDuration(pipeline.totalBuildTime) + '</span>');
-                       html.push('</div>');
-                       if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
-                           html.push('<div class="commit-changes">');
-                           html.push('<b>Changes</b>');
-                           html.push(generateChangeLog(pipeline.changes));
-                           html.push('</div>');
-                       }
-                   }
+                    if (pipeline.aggregated) {
+                        if (component.pipelines.length > 1) {
+                            html.push('<h2>Aggregated view</h2>');
+                        }
+                    } else {
+                        html.push('<div class="panel">');
+                        html.push('<div class="panel-header">');
+                        html.push('<div class="panel-name">');
+                        html.push('<b>' + pipeline.version + '</b>');
+                        html.push('</div>');
+                        html.push('<div class="date">' + getFormatFullDate(pipeline.timestamp) + ' (' + formatDate(pipeline.timestamp, lastUpdate) + ')</div>');
+                        html.push('</div>');
+                        html.push('<div class="panel-body">');
+                        html.push('<div class="metrics">');
+                        html.push('<div class="metric">');
+                        html.push('<b>Commits</b>');
+                        html.push('<span class="details">' + pipeline.commits + '</span>');
+                        html.push('</div>');
+                        html.push('<div class="metric">');
+                        html.push('<b>Trigger Details</b>');
+                        html.push('<span class="details">' + triggered + '</span>');
+                        html.push('</div>');
+                        html.push('<div class="metric">');
+                        html.push('<b>Total Duration</b>');
+                        html.push('<span class="details">' + formatDuration(pipeline.totalBuildTime) + '</span>');
+                        html.push('</div>');
+                        if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
+                            html.push('<div class="commit-changes">');
+                            html.push('<b>Changes</b>');
+                            html.push(generateChangeLog(pipeline.changes));
+                            html.push('</div>');
+                        }
+                    }
 
-                   html.push('</div>');
-                   html.push('<section class="pipeline' + (pipeline.aggregated ? ' aggregated' : '') + '">');
+                    html.push('</div>');
+                    html.push('<section class="pipeline' + (pipeline.aggregated ? ' aggregated' : '') + '">');
 
-                   var row = 0, column = 0, stage;
+                    var row = 0;
+                    var column = 0;
+                    var stage;
 
-                   html.push('<div class="pipeline-row">');
+                    html.push('<div class="pipeline-row">');
 
-                   for (var j = 0; j < pipeline.stages.length; j++) {
-                       stage = pipeline.stages[j];
-                       if (stage.row > row) {
-                           html.push('</div><div class="pipeline-row">');
-                           column = 0;
-                           row++;
-                       }
+                    for (var j = 0; j < pipeline.stages.length; j++) {
+                        stage = pipeline.stages[j];
+                        if (stage.row > row) {
+                            html.push('</div><div class="pipeline-row">');
+                            column = 0;
+                            row++;
+                        }
 
-                       if (stage.column > column) {
-                           for (var as = column; as < stage.column; as++) {
-                               html.push('<div class="pipeline-cell"><div class="stage hide"></div></div>');
-                               column++;
-                           }
-                       }
+                        if (stage.column > column) {
+                            for (var as = column; as < stage.column; as++) {
+                                html.push('<div class="pipeline-cell"><div class="stage hide"></div></div>');
+                                column++;
+                            }
+                        }
 
-                       html.push('<div class="pipeline-cell">');
-                       html.push('<div id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">');
-                       html.push('<div class="stage-header"><div class="stage-name">' + htmlEncode(stage.name) + '</div>');
+                        html.push('<div class="pipeline-cell">');
+                        html.push('<div id="' + getStageId(stage.id + "", i) + '" class="stage ' + getStageClassName(stage.name) + '">');
+                        html.push('<div class="stage-header"><div class="stage-name">' + htmlEncode(stage.name) + '</div>');
 
-                       if (!pipeline.aggregated) {
-                           html.push('<div class="clear"></div></div>');
-                       } else {
-                           var stageversion = stage.version;
-                           if (!stageversion) {
-                               stageversion = "N/A"
-                           }
-                           html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div><div class="clear"></div></div>');
-                       }
+                        if (!pipeline.aggregated) {
+                            html.push('<div class="clear"></div></div>');
+                        } else {
+                            var stageversion = stage.version;
+                            if (!stageversion) {
+                                stageversion = "N/A"
+                            }
+                            html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div><div class="clear"></div></div>');
+                        }
 
-                       var task, id, timestamp, progress, progressClass, consoleLogLink = "";
+                        var task;
+                        var id;
+                        var timestamp;
+                        var progress;
+                        var progressClass;
+                        var consoleLogLink = "";
 
-                       for (var k = 0; k < stage.tasks.length; k++) {
-                           task = stage.tasks[k];
+                        for (var k = 0; k < stage.tasks.length; k++) {
+                            task = stage.tasks[k];
 
-                           id = getTaskId(task.id, i);
+                            id = getTaskId(task.id, i);
 
-                           timestamp = formatDate(task.status.timestamp, lastUpdate);
+                            timestamp = formatDate(task.status.timestamp, lastUpdate);
 
-                           tasks.push({id: id, taskId: task.id, buildId: task.buildId});
+                            tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
-                           progress = 100;
-                           progressClass = "task-progress-notrunning";
+                            progress = 100;
+                            progressClass = "task-progress-notrunning";
 
-                           if (task.status.percentage) {
-                               progress = task.status.percentage;
-                               progressClass = "task-progress-running";
-                           } else if (data.linkToConsoleLog) {
-                              if (task.status.success ||
-                                  task.status.failed ||
-                                  task.status.unstable ||
-                                  task.status.cancelled) {
-                                  consoleLogLink = "console";
-                              }
-                           }
+                            if (task.status.percentage) {
+                                progress = task.status.percentage;
+                                progressClass = "task-progress-running";
+                            } else if (data.linkToConsoleLog) {
+                                if (task.status.success ||
+                                    task.status.failed ||
+                                    task.status.unstable ||
+                                    task.status.cancelled) {
+                                    consoleLogLink = "console";
+                                }
+                            }
 
-                           html.push("<div id=\"" + id + "\" class=\"status stage-task " + task.status.type +
-                               "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
-                               "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + getLink(data, task.link) + consoleLogLink + "\">" + htmlEncode(task.name) + "</a></div>");
-                           if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
-                               html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\');">');
-                               html.push("</div>");
-                           } else {
-                               if (!pipeline.aggregated) {
-                                  if (data.allowRebuild && task.rebuildable) {
-                                      html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
-                                      html.push("</div>");
-                                  }
-                                  if (task.requiringInput) {
-                                      html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
-                                      html.push("</div>");
-                                  }
-                               }
-                           }
+                            html.push("<div id=\"" + id + "\" class=\"status stage-task " + task.status.type +
+                                "\"><div class=\"task-progress " + progressClass + "\" style=\"width: " + progress + "%;\"><div class=\"task-content\">" +
+                                "<div class=\"task-header\"><div class=\"taskname\"><a href=\"" + getLink(data, task.link) + consoleLogLink + "\">" + htmlEncode(task.name) + "</a></div>");
+                            if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
+                                html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\');">');
+                                html.push("</div>");
+                            } else {
+                                if (!pipeline.aggregated) {
+                                    if (data.allowRebuild && task.rebuildable) {
+                                        html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
+                                        html.push("</div>");
+                                    }
+                                    if (task.requiringInput) {
+                                        html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\');">');
+                                        html.push("</div>");
+                                    }
+                                }
+                            }
 
-                           html.push('</div><div class="task-details">');
+                            html.push('</div><div class="task-details">');
 
-                           if (timestamp != "") {
-                               html.push("<div id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</div>");
-                           }
+                            if (timestamp != "") {
+                                html.push("<div id=\"" + id + ".timestamp\" class='timestamp'>" + timestamp + "</div>");
+                            }
 
-                           if (task.status.duration >= 0) {
-                               html.push("<div class='duration'>" + formatDuration(task.status.duration) + "</div>");
-                           }
+                            if (task.status.duration >= 0) {
+                                html.push("<div class='duration'>" + formatDuration(task.status.duration) + "</div>");
+                            }
 
-                           html.push("</div></div></div></div>");
+                            html.push("</div></div></div></div>");
 
-                           html.push(generateDescription(data, task));
-                           html.push(generateTestInfo(data, task));
-                           html.push(generateStaticAnalysisInfo(data, task));
-                           html.push(generatePromotionsInfo(data, task));
-                       }
+                            html.push(generateDescription(data, task));
+                            html.push(generateTestInfo(data, task));
+                            html.push(generateStaticAnalysisInfo(data, task));
+                            html.push(generatePromotionsInfo(data, task));
+                        }
 
-                       if (pipeline.aggregated && stage.changes && stage.changes.length > 0) {
-                           html.push(generateAggregatedChangelog(stage.changes, aggregatedChangesGroupingPattern));
-                       }
+                        if (pipeline.aggregated && stage.changes && stage.changes.length > 0) {
+                            html.push(generateAggregatedChangelog(stage.changes, aggregatedChangesGroupingPattern));
+                        }
 
-                       html.push("</div></div>");
-                       column++;
-                   }
+                        html.push("</div></div>");
+                        column++;
+                    }
 
-                   html.push("</section>");
-                   html.push('</div>');
-                   html.push('</div>');
-                   html.push('</div>');
-               }
-               html.push(getPagination(showAvatars, component));
-               html.push("</section>");
-               Q("#" + divNames[c % divNames.length]).append(html.join(""));
-               Q("#pipeline-message-" + pipelineid).html('');
-           }
+                    html.push("</section>");
+                    html.push('</div>');
+                    html.push('</div>');
+                    html.push('</div>');
+                }
+                html.push(getPagination(showAvatars, component));
+                html.push("</section>");
+                Q("#" + divNames[c % divNames.length]).append(html.join(""));
+                Q("#pipeline-message-" + pipelineid).html('');
+            }
 
-           var index = 0, source, target;
-           lastResponse = data;
-           equalheight(".pipeline-row .stage");
+            var index = 0;
+            var source;
+            var target;
+            lastResponse = data;
+            equalheight(".pipeline-row .stage");
 
-           Q.each(data.pipelines, function (i, component) {
-               Q.each(component.pipelines, function (j, pipeline) {
-                   index = j;
-                   Q.each(pipeline.stages, function (k, stage) {
-                       if (stage.downstreamStages) {
-                           Q.each(stage.downstreamStageIds, function (l, value) {
-                               source = getStageId(stage.id + "", index);
-                               target = getStageId(value + "", index);
+            Q.each(data.pipelines, function (i, component) {
+                Q.each(component.pipelines, function (j, pipeline) {
+                    index = j;
+                    Q.each(pipeline.stages, function (k, stage) {
+                        if (stage.downstreamStages) {
+                            Q.each(stage.downstreamStageIds, function (l, value) {
+                                source = getStageId(stage.id + "", index);
+                                target = getStageId(value + "", index);
 
-                               jsplumb.connect({
-                                   source: source,
-                                   target: target,
-                                   anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
-                                   overlays: [
-                                       [ "Arrow", { location: 1, foldback: 0.9, width: 12, length: 12}]
-                                   ],
-                                   cssClass: "relation",
-                                   connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
-                                   paintStyle: { lineWidth: 2, strokeStyle: "rgba(118,118,118,1)" },
-                                   endpoint: ["Blank"]
-                               });
-                           });
-                       }
-                   });
-               });
-           });
-       } else {
-           var comp, pipe, head, st, ta, time;
+                                jsplumb.connect({
+                                    source: source,
+                                    target: target,
+                                    anchors: [[1, 0, 1, 0, 0, 37], [0, 0, -1, 0, 0, 37]], // allow boxes to increase in height but keep anchor lines on the top
+                                    overlays: [
+                                        [ "Arrow", { location: 1, foldback: 0.9, width: 12, length: 12}]
+                                    ],
+                                    cssClass: "relation",
+                                    connector: ["Flowchart", { stub: 25, gap: 2, midpoint: 1, alwaysRespectStubs: true } ],
+                                    paintStyle: { lineWidth: 2, strokeStyle: "rgba(118,118,118,1)" },
+                                    endpoint: ["Blank"]
+                                });
+                            });
+                        }
+                    });
+                });
+            });
+        } else {
+            var comp;
+            var pipe;
+            var head;
+            var st;
+            var ta;
+            var time;
 
-           for (var p = 0; p < data.pipelines.length; p++) {
-               comp = data.pipelines[p];
-               for (var d = 0; d < comp.pipelines.length; d++) {
-                   pipe = comp.pipelines[d];
-                   head = document.getElementById(pipe.id);
-                   if (head) {
-                       head.innerHTML = formatDate(pipe.timestamp, lastUpdate)
-                   }
+            for (var p = 0; p < data.pipelines.length; p++) {
+                comp = data.pipelines[p];
+                for (var d = 0; d < comp.pipelines.length; d++) {
+                    pipe = comp.pipelines[d];
+                    head = document.getElementById(pipe.id);
+                    if (head) {
+                        head.innerHTML = formatDate(pipe.timestamp, lastUpdate)
+                    }
 
-                   for (var l = 0; l < pipe.stages.length; l++) {
-                       st = pipe.stages[l];
-                       for (var m = 0; m < st.tasks.length; m++) {
-                           ta = st.tasks[m];
-                           time = document.getElementById(getTaskId(ta.id, d) + ".timestamp");
-                           if (time) {
-                               time.innerHTML = formatDate(ta.status.timestamp, lastUpdate);
-                           }
-                       }
-                   }
-               }
-           }
-       }
-       jsplumb.repaintEverything();
-   }
+                    for (var l = 0; l < pipe.stages.length; l++) {
+                        st = pipe.stages[l];
+                        for (var m = 0; m < st.tasks.length; m++) {
+                            ta = st.tasks[m];
+                            time = document.getElementById(getTaskId(ta.id, d) + ".timestamp");
+                            if (time) {
+                                time.innerHTML = formatDate(ta.status.timestamp, lastUpdate);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        jsplumb.repaintEverything();
+    }
 }
 
 function getPagination(showAvatars, component) {
     var html = [];
     if (!showAvatars) {
-       if (component.pagingData != '') {
-           html.push("<div class='pagination'>");
-           html.push(component.pagingData);
-           html.push("</div>");
-       }
+        if (component.pagingData != '') {
+            html.push("<div class='pagination'>");
+            html.push(component.pagingData);
+            html.push("</div>");
+        }
     }
     return html.join("");
 }
@@ -551,10 +565,10 @@ function getFormatFullDate(date) {
 
 function formatDuration(millis) {
     if (millis > 0) {
-        var seconds = Math.floor(millis / 1000),
-            minutes = Math.floor(seconds / 60),
-            minstr,
-            secstr;
+        var seconds = Math.floor(millis / 1000);
+        var minutes = Math.floor(seconds / 60);
+        var minstr;
+        var secstr;
 
         seconds = seconds % 60;
 
@@ -573,8 +587,8 @@ function formatDuration(millis) {
 
 function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild, viewUrl) {
     Q("#manual-" + taskId).hide();
-    var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild},
-        before;
+    var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild};
+    var before;
 
     if (crumb.value !== null && crumb.value !== "") {
         console.info("Crumb found and will be added to request header");
@@ -630,9 +644,9 @@ function triggerRebuild(taskId, project, buildId, viewUrl) {
 
 function specifyInput(taskId, project, buildId, viewUrl) {
     Q("#input-" + taskId).hide();
-    var formData = {project: project, upstream: 'N/A', buildId: buildId}, before;
-
+    var formData = {project: project, upstream: 'N/A', buildId: buildId};
     var before;
+
     if (crumb.value !== null && crumb.value !== "") {
         console.info("Crumb found and will be added to request header");
         before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
@@ -699,11 +713,11 @@ function getStageId(name, count) {
 
 function equalheight(container) {
 
-    var currentTallest = 0,
-        currentRowStart = 0,
-        rowDivs = new Array(),
-        $el,
-        topPosition = 0;
+    var currentTallest = 0;
+    var currentRowStart = 0;
+    var rowDivs = new Array();
+    var $el;
+    var topPosition = 0;
 
     Q(container).each(function () {
 
