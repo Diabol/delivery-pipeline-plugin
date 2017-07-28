@@ -50,7 +50,9 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
             node.addAction(taskAction);
         }
         node.addAction(new LabelAction(step.name));
-        node.addAction(new TimingAction());
+        if (node.getAction(TimingAction.class) == null) {
+            node.addAction(new TimingAction());
+        }
         return false;
     }
 
