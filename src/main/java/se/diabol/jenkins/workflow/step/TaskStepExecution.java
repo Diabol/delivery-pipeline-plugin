@@ -42,12 +42,12 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         StepContext context = this.getContext();
         if (context.hasBody()) {
             ((CpsBodyInvoker) context.newBodyInvoker())
-                    .withContext(context)
                     .withStartAction(taskAction)
                     .withCallback(BodyExecutionCallback.wrap(context))
                     .withDisplayName(step.name).start();
         } else {
             node.addAction(taskAction);
+            getContext().onSuccess(null);
         }
         node.addAction(new LabelAction(step.name));
         if (node.getAction(TimingAction.class) == null) {
@@ -58,7 +58,6 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
 
     @Override
     public void stop(Throwable throwable) throws Exception {
-        getContext().onFailure(throwable);
     }
 
     @Override
