@@ -27,20 +27,14 @@ function pipelineUtils() {
 
     this.refreshPipelines = function(data, divNames, errorDiv, view, showAvatars, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb) {
         var lastUpdate = data.lastUpdated;
-        var cErrorDiv = Q('#' + errorDiv);
         var pipeline;
         var component;
         var html;
         var trigger;
         var triggered;
-        var contributors;
         var tasks = [];
 
-        if (data.error) {
-            cErrorDiv.html('Error: ' + data.error).show();
-        } else {
-            cErrorDiv.hide().html('');
-        }
+        checkDataForError(data, errorDiv);
 
         if (lastResponse === null || JSON.stringify(data.pipelines) !== JSON.stringify(lastResponse.pipelines)) {
             for (var z = 0; z < divNames.length; z++) {
@@ -55,21 +49,9 @@ function pipelineUtils() {
             for (var c = 0; c < data.pipelines.length; c++) {
                 html = [];
                 component = data.pipelines[c];
-                html.push('<section class="pipeline-component">');
-                html.push('<h1>' + htmlEncode(component.name));
-                if (data.allowPipelineStart) {
-                    if (component.workflowComponent) {
-                        html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\')">');
-                    } else if (component.firstJobParameterized) {
-                        html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
-                    } else {
-                        html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
-                    }
-                    html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.png">');
-                    html.push('</a>');
-                }
-                html.push('</h1>');
 
+                html.push('<section class="pipeline-component">');
+                addPipelineHeader(html, component, data, c, resURL);
                 html.push(getPagination(showAvatars, component));
 
                 if (component.pipelines.length === 0) {
@@ -89,11 +71,7 @@ function pipelineUtils() {
                         }
                     }
 
-                    if (pipeline.aggregated) {
-                        if (component.pipelines.length > 1) {
-                            html.push('<h2>Aggregated view</h2>');
-                        }
-                    } else {
+                    if (!pipeline.aggregated) {
                         html.push('<div class="panel">');
                         html.push('<div class="panel-header">');
                         html.push('<div class="panel-name">');
@@ -121,6 +99,8 @@ function pipelineUtils() {
                             html.push(generateChangeLog(pipeline.changes));
                             html.push('</div>');
                         }
+                    } else if (component.pipelines.length > 1) {
+                        html.push('<h2>Aggregated view</h2>');
                     }
 
                     html.push('</div>');
@@ -154,10 +134,7 @@ function pipelineUtils() {
                         if (!pipeline.aggregated) {
                             html.push('<div class="clear"></div></div>');
                         } else {
-                            var stageversion = stage.version;
-                            if (!stageversion) {
-                                stageversion = 'N/A'
-                            }
+                            var stageversion = stage.version || 'N/A';
                             html.push(' <div class="stage-version">' + htmlEncode(stageversion) + '</div><div class="clear"></div></div>');
                         }
 
@@ -183,13 +160,8 @@ function pipelineUtils() {
                             if (task.status.percentage) {
                                 progress = task.status.percentage;
                                 progressClass = 'task-progress-running';
-                            } else if (data.linkToConsoleLog) {
-                                if (task.status.success ||
-                                    task.status.failed ||
-                                    task.status.unstable ||
-                                    task.status.cancelled) {
-                                    consoleLogLink = 'console';
-                                }
+                            } else if (data.linkToConsoleLog && isTaskLoggedToConsole(task)) {
+                                consoleLogLink = 'console';
                             }
 
                             html.push('<div id="' + id + '" class="status stage-task ' + task.status.type +
@@ -198,16 +170,14 @@ function pipelineUtils() {
                             if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                                 html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\')">');
                                 html.push('</div>');
-                            } else {
-                                if (!pipeline.aggregated) {
-                                    if (data.allowRebuild && task.rebuildable) {
-                                        html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
-                                        html.push('</div>');
-                                    }
-                                    if (task.requiringInput) {
-                                        html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
-                                        html.push('</div>');
-                                    }
+                            } else if (!pipeline.aggregated) {
+                                if (data.allowRebuild && task.rebuildable) {
+                                    html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
+                                    html.push('</div>');
+                                }
+                                if (task.requiringInput) {
+                                    html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
+                                    html.push('</div>');
                                 }
                             }
 
@@ -314,6 +284,38 @@ function pipelineUtils() {
     }
 }
 
+function addPipelineHeader(html, component, data, c, resURL) {
+    html.push('<h1>' + htmlEncode(component.name));
+    if (data.allowPipelineStart) {
+        if (component.workflowComponent) {
+            html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\')">');
+        } else if (component.firstJobParameterized) {
+            html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
+        } else {
+            html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
+        }
+        html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.png">');
+        html.push('</a>');
+    }
+    html.push('</h1>');
+}
+
+function checkDataForError(data, errrorDivId) {
+    var cErrorDiv = Q('#' + errorDiv);
+    if (data.error) {
+        cErrorDiv.html('Error: ' + data.error).show();
+    } else {
+        cErrorDiv.hide().html('');
+    }
+}
+
+function isTaskLoggedToConsole(task) {
+    return task.status.success
+        || task.status.failed
+        || task.status.unstable
+        || task.status.cancelled;
+}
+
 function getPagination(showAvatars, component) {
     var html = [];
     if (!showAvatars) {
@@ -327,11 +329,9 @@ function getPagination(showAvatars, component) {
 }
 
 function getLink(data, link) {
-    if (data.linkRelative) {
-        return link;
-    } else {
-        return rootURL + '/' + link;
-    }
+    return data.linkRelative
+        ? link
+        : rootURL + '/' + link;
 }
 
 function generateDescription(data, task) {
@@ -404,11 +404,9 @@ function generateStaticAnalysisInfo(data, task) {
 
 function trimWarningsFromString(label) {
     var offset = label.indexOf('Warnings');
-    if (offset == -1) {
-        return label;
-    } else {
-        return label.substring(0, offset).trim()
-    }
+    return offset == -1
+        ? label
+        : label.substring(0, offset).trim();
 }
 
 function generatePromotionsInfo(data, task) {
@@ -531,19 +529,15 @@ function replace(string, replace, replaceWith) {
 }
 
 function formatDate(date, currentTime) {
-    if (date != null) {
-        return moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss'))
-    } else {
-        return '';
-    }
+    return date != null
+        ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss'))
+        : '';
 }
 
 function getFormattedDate(date, format) {
-    if (date != null) {
-        return moment(date, 'YYYY-MM-DDTHH:mm:ss').format(format);
-    } else {
-        return '';
-    }
+    return date != null
+        ? moment(date, 'YYYY-MM-DDTHH:mm:ss').format(format)
+        : '';
 }
 
 function getFormatMonthYear(date) {
@@ -571,16 +565,15 @@ function formatDuration(millis) {
 
         seconds = seconds % 60;
 
-        if (minutes === 0){
-            minstr = '';
-        } else {
-            minstr = minutes + ' min ';
-        }
+        minstr = minutes === 0
+            ? ''
+            : minutes + ' min ';
 
         secstr = '' + seconds + ' sec';
 
         return minstr + secstr;
     }
+
     return '0 sec';
 }
 
