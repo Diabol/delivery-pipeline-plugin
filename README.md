@@ -68,6 +68,10 @@ To build and run the Delivery Pipeline plugin in a container, you first need to 
     docker build -t dpp .
     docker run -p 8080:8080 dpp
 
+If you just want to run the Delivery Pipeline plugin in a container without building it yourself, you can pull certain versions from [Docker hub](https://hub.docker.com/r/diabol/delivery-pipeline-plugin/):
+
+    docker pull diabol/delivery-pipeline-plugin:1.0.3
+
 Configuring manually triggered jobs
 ----
 **Note:** This requires the [Build Pipeline plugin](https://github.com/jenkinsci/build-pipeline-plugin) to be installed.
