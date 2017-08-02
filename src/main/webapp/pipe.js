@@ -300,7 +300,7 @@ function addPipelineHeader(html, component, data, c, resURL) {
 }
 
 function checkDataForError(data, errrorDivId) {
-    var cErrorDiv = Q('#' + errorDiv);
+    var cErrorDiv = Q('#' + errrorDivId);
     if (data.error) {
         cErrorDiv.html('Error: ' + data.error).show();
     } else {
@@ -317,12 +317,10 @@ function isTaskLoggedToConsole(task) {
 
 function getPagination(showAvatars, component) {
     var html = [];
-    if (!showAvatars) {
-       if (component.pagingData != '') {
-           html.push('<div class="pagination">');
-           html.push(component.pagingData);
-           html.push('</div>');
-       }
+    if (!showAvatars && component.pagingData != '') {
+        html.push('<div class="pagination">');
+        html.push(component.pagingData);
+        html.push('</div>');
     }
     return html.join('');
 }
@@ -405,7 +403,7 @@ function trimWarningsFromString(label) {
     var offset = label.indexOf('Warnings');
     return offset == -1
         ? label
-        : label.substring(0, offset).trim()
+        : label.substring(0, offset).trim();
 }
 
 function generatePromotionsInfo(data, task) {

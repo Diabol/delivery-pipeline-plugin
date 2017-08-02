@@ -301,7 +301,7 @@ function addPipelineHeader(html, component, data, c, resURL) {
 }
 
 function checkDataForError(data, errrorDivId) {
-    var cErrorDiv = Q('#' + errorDiv);
+    var cErrorDiv = Q('#' + errrorDivId);
     if (data.error) {
         cErrorDiv.html('Error: ' + data.error).show();
     } else {
@@ -318,12 +318,10 @@ function isTaskLoggedToConsole(task) {
 
 function getPagination(showAvatars, component) {
     var html = [];
-    if (!showAvatars) {
-        if (component.pagingData != '') {
-            html.push('<div class="pagination">');
-            html.push(component.pagingData);
-            html.push('</div>');
-        }
+    if (!showAvatars && component.pagingData != '') {
+        html.push('<div class="pagination">');
+        html.push(component.pagingData);
+        html.push('</div>');
     }
     return html.join('');
 }
