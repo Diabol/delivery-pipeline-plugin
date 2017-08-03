@@ -34,7 +34,7 @@ function pipelineUtils() {
         var triggered;
         var tasks = [];
 
-        checkDataForError(data, errorDiv);
+        displayErrorIfAvailable(data, errorDiv);
 
         if (lastResponse === null || JSON.stringify(data.pipelines) !== JSON.stringify(lastResponse.pipelines)) {
             for (var z = 0; z < divNames.length; z++) {
@@ -160,7 +160,7 @@ function pipelineUtils() {
                             if (task.status.percentage) {
                                 progress = task.status.percentage;
                                 progressClass = 'task-progress-running';
-                            } else if (data.linkToConsoleLog && isTaskLoggedToConsole(task)) {
+                            } else if (isTaskLoggedToConsole(data, task)) {
                                 consoleLogLink = 'console';
                             }
 
@@ -300,7 +300,7 @@ function addPipelineHeader(html, component, data, c, resURL) {
     html.push('</h1>');
 }
 
-function checkDataForError(data, errrorDivId) {
+function displayErrorIfAvailable(data, errrorDivId) {
     var cErrorDiv = Q('#' + errrorDivId);
     if (data.error) {
         cErrorDiv.html('Error: ' + data.error).show();
@@ -309,11 +309,12 @@ function checkDataForError(data, errrorDivId) {
     }
 }
 
-function isTaskLoggedToConsole(task) {
-    return task.status.success
+function isTaskLoggedToConsole(data, task) {
+    return data.linkToConsoleLog
+        && (task.status.success
         || task.status.failed
         || task.status.unstable
-        || task.status.cancelled;
+        || task.status.cancelled);
 }
 
 function getPagination(showAvatars, component) {
