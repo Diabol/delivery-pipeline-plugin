@@ -158,7 +158,7 @@ function pipelineUtils() {
                             if (task.status.percentage) {
                                 progress = task.status.percentage;
                                 progressClass = 'task-progress-running';
-                            } else if (isTaskLoggedToConsole(data, task)) {
+                            } else if (isTaskLinkedToConsoleLog(data, task)) {
                                 consoleLogLink = 'console';
                             }
 
@@ -308,7 +308,7 @@ function displayErrorIfAvailable(data, errrorDivId) {
     }
 }
 
-function isTaskLoggedToConsole(data, task) {
+function isTaskLinkedToConsoleLog(data, task) {
     return data.linkToConsoleLog
         && (task.status.success
         || task.status.failed
