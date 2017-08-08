@@ -328,9 +328,7 @@ function getPagination(showAvatars, component) {
 }
 
 function getLink(data, link) {
-    return data.linkRelative
-        ? link
-        : rootURL + '/' + link;
+    return data.linkRelative ? link : rootURL + '/' + link;
 }
 
 function generateDescription(data, task) {
@@ -403,9 +401,7 @@ function generateStaticAnalysisInfo(data, task) {
 
 function trimWarningsFromString(label) {
     var offset = label.indexOf('Warnings');
-    return offset == -1
-        ? label
-        : label.substring(0, offset).trim();
+    return offset == -1 ? label : label.substring(0, offset).trim();
 }
 
 function generatePromotionsInfo(data, task) {
@@ -528,15 +524,11 @@ function replace(string, replace, replaceWith) {
 }
 
 function formatDate(date, currentTime) {
-    return date != null
-        ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss'))
-        : '';
+    return date != null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss')) : '';
 }
 
 function getFormattedDate(date, format) {
-    return date != null
-        ? moment(date, 'YYYY-MM-DDTHH:mm:ss').format(format)
-        : '';
+    return date != null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').format(format) : '';
 }
 
 function getFormatMonthYear(date) {
@@ -564,9 +556,7 @@ function formatDuration(millis) {
 
         seconds = seconds % 60;
 
-        minstr = minutes === 0
-            ? ''
-            : minutes + ' min ';
+        minstr = minutes === 0 ? '' : minutes + ' min ';
 
         secstr = '' + seconds + ' sec';
 
