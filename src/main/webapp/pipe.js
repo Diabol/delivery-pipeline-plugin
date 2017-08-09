@@ -85,7 +85,7 @@ function pipelineUtils() {
 
                     if (!pipeline.aggregated) {
                         html.push('<h2>' + htmlEncode(pipeline.version));
-                        if (triggered != '') {
+                        if (triggered !== '') {
                             html.push(' triggered by ' + triggered);
                         }
 
@@ -162,9 +162,16 @@ function pipelineUtils() {
                                 consoleLogLink = 'console';
                             }
 
-                            html.push('<div id="' + id + '" class="status stage-task ' + task.status.type +
-                                '"><div class="task-progress ' + progressClass + '" style="width: ' + progress + '%"><div class="task-content">' +
-                                '<div class="task-header"><div class="taskname"><a href="' + getLink(data, task.link) + consoleLogLink + '">' + htmlEncode(task.name) + '</a></div>');
+                            html.push(
+                                '<div id="' + id + '" class="status stage-task ' + task.status.type + '">'
+                                + '<div class="task-progress ' + progressClass + '" style="width: ' + progress + '%">'
+                                + '<div class="task-content">'
+                                + '<div class="task-header">'
+                                + '<div class="taskname">'
+                                + '<a href="' + getLink(data, task.link) + consoleLogLink + '">' + htmlEncode(task.name) + '</a>'
+                                + '</div>'
+                            );
+
                             if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                                 html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\')">');
                                 html.push('</div>');
@@ -181,7 +188,7 @@ function pipelineUtils() {
 
                             html.push('</div><div class="task-details">');
 
-                            if (timestamp != '') {
+                            if (timestamp !== '') {
                                 html.push('<div id="' + id + '.timestamp" class="timestamp">' + timestamp + '</div>');
                             }
 
@@ -216,20 +223,18 @@ function pipelineUtils() {
                 Q('#pipeline-message-' + pipelineid).html('');
             }
 
-            var index = 0;
             var source;
             var target;
             lastResponse = data;
             equalheight('.pipeline-row .stage');
 
-            Q.each(data.pipelines, function (i, component) {
-                Q.each(component.pipelines, function (j, pipeline) {
-                    index = j;
-                    Q.each(pipeline.stages, function (k, stage) {
+            Q.each(data.pipelines, function (dataPipelineIndex, component) {
+                Q.each(component.pipelines, function (componentPipelineIndex, pipeline) {
+                    Q.each(pipeline.stages, function (pipelineStagesIndex, stage) {
                         if (stage.downstreamStages) {
                             Q.each(stage.downstreamStageIds, function (l, value) {
-                                source = getStageId(stage.id + '', index);
-                                target = getStageId(value + '', index);
+                                source = getStageId(stage.id + '', componentPipelineIndex);
+                                target = getStageId(value + '', componentPipelineIndex);
 
                                 jsplumb.connect({
                                     source: source,
@@ -317,12 +322,14 @@ function isTaskLinkedToConsoleLog(data, task) {
 }
 
 function getPagination(showAvatars, component) {
-    var html = [];
-    if (!showAvatars && component.pagingData != '') {
-        html.push('<div class="pagination">');
-        html.push(component.pagingData);
-        html.push('</div>');
+    if (showAvatars || component.pagingData === '') {
+        return '';
     }
+
+    var html = [];
+    html.push('<div class="pagination">');
+    html.push(component.pagingData);
+    html.push('</div>');
     return html.join('');
 }
 
@@ -331,105 +338,119 @@ function getLink(data, link) {
 }
 
 function generateDescription(data, task) {
-    if (data.showDescription && task.description && task.description != '') {
-        var html = ['<div class="infoPanelOuter">'];
-        html.push('<div class="infoPanel"><div class="infoPanelInner">' + task.description.replace(/\r\n/g, '<br/>') + '</div></div>');
-        html.push('</div>');
-        return html.join('');
+    if (!data.showDescription || !task.description || task.description === '') {
+        return undefined;
     }
+
+    var html = ['<div class="infoPanelOuter">'];
+    html.push('<div class="infoPanel"><div class="infoPanelInner">' + task.description.replace(/\r\n/g, '<br/>') + '</div></div>');
+    html.push('</div>');
+    return html.join('');
 }
 
 function generateTestInfo(data, task) {
-    if (data.showTestResults && task.testResults && task.testResults.length > 0) {
-        var html = ['<div class="infoPanelOuter">'];
-        Q.each(task.testResults, function(i, analysis) {
-            html.push('<div class="infoPanel"><div class="infoPanelInner">');
-                html.push('<a href=' + getLink(data,analysis.url) + '>' + analysis.name + '</a>');
-                html.push('<table id="priority.summary" class="pane">');
-                html.push('<tbody>');
-                    html.push('<tr>');
-                        html.push('<td class="pane-header">Total</td>');
-                        html.push('<td class="pane-header">Failures</td>');
-                        html.push('<td class="pane-header">Skipped</td>');
-                    html.push('</tr>');
-                html.push('</tbody>');
-                html.push('<tbody>');
-                    html.push('<tr>');
-                        html.push('<td class="pane">' + analysis.total + '</td>');
-                        html.push('<td class="pane">' + analysis.failed + '</td>');
-                        html.push('<td class="pane">' + analysis.skipped + '</td>');
-                    html.push('</tr>');
-                html.push('</tbody>');
-                html.push('</table>');
-            html.push('</div></div>');
-        });
-        html.push('</div>');
-        return html.join('');
+    if (!data.showTestResults || !task.testResults || task.testResults.length === 0) {
+        return undefined;
     }
+
+    var html = ['<div class="infoPanelOuter">'];
+    Q.each(task.testResults, function(i, analysis) {
+        html.push('<div class="infoPanel"><div class="infoPanelInner">');
+        html.push('<a href=' + getLink(data,analysis.url) + '>' + analysis.name + '</a>');
+        html.push('<table id="priority.summary" class="pane">');
+        html.push('<tbody>');
+        html.push('<tr>');
+        html.push('<td class="pane-header">Total</td>');
+        html.push('<td class="pane-header">Failures</td>');
+        html.push('<td class="pane-header">Skipped</td>');
+        html.push('</tr>');
+        html.push('</tbody>');
+        html.push('<tbody>');
+        html.push('<tr>');
+        html.push('<td class="pane">' + analysis.total + '</td>');
+        html.push('<td class="pane">' + analysis.failed + '</td>');
+        html.push('<td class="pane">' + analysis.skipped + '</td>');
+        html.push('</tr>');
+        html.push('</tbody>');
+        html.push('</table>');
+        html.push('</div></div>');
+    });
+
+    html.push('</div>');
+    return html.join('');
 }
 
 function generateStaticAnalysisInfo(data, task) {
-    if (data.showStaticAnalysisResults && task.staticAnalysisResults && task.staticAnalysisResults.length > 0) {
-        var html = ['<div class="infoPanelOuter">'];
-        html.push('<div class="infoPanel"><div class="infoPanelInner">');
-            html.push('<table id="priority.summary" class="pane">');
-            html.push('<thead>');
-                html.push('<tr>');
-                    html.push('<td class="pane-header">Warnings</td>');
-                    html.push('<td class="pane-header" style="font-size: smaller; vertical-align: bottom">High</td>');
-                    html.push('<td class="pane-header" style="font-size: smaller; vertical-align: bottom">Normal</td>');
-                    html.push('<td class="pane-header" style="font-size: smaller; vertical-align: bottom">Low</td>');
-                html.push('</tr>');
-            html.push('</thead>');
-            html.push('<tbody>');
-            Q.each(task.staticAnalysisResults, function(i, analysis) {
-                html.push('<tr>');
-                    html.push('<td class="pane"><a href=' + getLink(data,analysis.url) + '>' + trimWarningsFromString(analysis.name) + '</a></td>');
-                    html.push('<td class="pane" style="text-align: center">' + analysis.high + '</td>');
-                    html.push('<td class="pane" style="text-align: center">' + analysis.normal + '</td>');
-                    html.push('<td class="pane" style="text-align: center">' + analysis.low + '</td>');
-                html.push('</tr>');
-            });
-            html.push('</tbody>');
-            html.push('</table>');
-        html.push('</div></div>');
-        html.push('</div>');
-        return html.join('');
+    if (!data.showStaticAnalysisResults || !task.staticAnalysisResults || task.staticAnalysisResults.length === 0) {
+        return undefined;
     }
+
+    var html = ['<div class="infoPanelOuter">'];
+    html.push('<div class="infoPanel"><div class="infoPanelInner">');
+    html.push('<table id="priority.summary" class="pane">');
+    html.push('<thead>');
+    html.push('<tr>');
+    html.push('<td class="pane-header">Warnings</td>');
+    html.push('<td class="pane-header" style="font-size: smaller; vertical-align: bottom">High</td>');
+    html.push('<td class="pane-header" style="font-size: smaller; vertical-align: bottom">Normal</td>');
+    html.push('<td class="pane-header" style="font-size: smaller; vertical-align: bottom">Low</td>');
+    html.push('</tr>');
+    html.push('</thead>');
+    html.push('<tbody>');
+
+    Q.each(task.staticAnalysisResults, function(i, analysis) {
+        html.push('<tr>');
+            html.push('<td class="pane"><a href=' + getLink(data,analysis.url) + '>' + trimWarningsFromString(analysis.name) + '</a></td>');
+            html.push('<td class="pane" style="text-align: center">' + analysis.high + '</td>');
+            html.push('<td class="pane" style="text-align: center">' + analysis.normal + '</td>');
+            html.push('<td class="pane" style="text-align: center">' + analysis.low + '</td>');
+        html.push('</tr>');
+    });
+
+    html.push('</tbody>');
+    html.push('</table>');
+    html.push('</div></div>');
+    html.push('</div>');
+    return html.join('');
 }
 
 function trimWarningsFromString(label) {
     var offset = label.indexOf('Warnings');
-    return offset == -1 ? label : label.substring(0, offset).trim();
+    return offset === -1 ? label : label.substring(0, offset).trim();
 }
 
 function generatePromotionsInfo(data, task) {
-    if (data.showPromotions && task.status.promoted && task.status.promotions && task.status.promotions.length > 0) {
-        var html = ['<div class="infoPanelOuter">'];
-        Q.each(task.status.promotions, function(i, promo) {
-            html.push('<div class="infoPanel"><div class="infoPanelInner"><div class="promo-layer">');
-            html.push('<img class="promo-icon" height="16" width="16" src="' + rootURL + promo.icon + '"/>');
-            html.push('<span class="promo-name"><a href="' + getLink(data,task.link) + 'promotion">' + htmlEncode(promo.name) + '</a></span><br/>');
-            if (promo.user != 'anonymous') {
-                html.push('<span class="promo-user">' + promo.user + '</span>');
-            }
-            html.push('<span class="promo-time">' + formatDuration(promo.time) + '</span><br/>');
-            if (promo.params.length > 0) {
-                html.push('<br/>');
-            }
-            Q.each(promo.params, function (j, param) {
-                html.push(param.replace(/\r\n/g, '<br/>') + '<br />');
-            });
-            html.push('</div></div></div>');
-        });
-        html.push('</div>');
-        return html.join('');
+    if (!data.showPromotions || !task.status.promoted || !task.status.promotions || task.status.promotions.length === 0) {
+        return undefined;
     }
+
+    var html = ['<div class="infoPanelOuter">'];
+    Q.each(task.status.promotions, function(i, promo) {
+        html.push('<div class="infoPanel"><div class="infoPanelInner"><div class="promo-layer">');
+        html.push('<img class="promo-icon" height="16" width="16" src="' + rootURL + promo.icon + '"/>');
+        html.push('<span class="promo-name"><a href="' + getLink(data,task.link) + 'promotion">' + htmlEncode(promo.name) + '</a></span><br/>');
+        if (promo.user !== 'anonymous') {
+            html.push('<span class="promo-user">' + promo.user + '</span>');
+        }
+        html.push('<span class="promo-time">' + formatDuration(promo.time) + '</span><br/>');
+        if (promo.params.length > 0) {
+            html.push('<br/>');
+        }
+        Q.each(promo.params, function (j, param) {
+            html.push(param.replace(/\r\n/g, '<br/>') + '<br />');
+        });
+        html.push('</div></div></div>');
+    });
+    html.push('</div>');
+    return html.join('');
 }
 
 function generateChangeLog(changes) {
-    var html = ['<div class="changes">'];
-    html.push('<h1>Changes:</h1>');
+    var html = [
+        '<div class="changes">',
+        '<h1>Changes:</h1>'
+    ];
+
     for (var i = 0; i < changes.length; i++) {
         html.push('<div class="change">');
         var change = changes[i];
@@ -445,7 +466,6 @@ function generateChangeLog(changes) {
         }
 
         html.push('<div class="change-author">' + htmlEncode(change.author.name) + '</div>');
-
         html.push('<div class="change-message">' + change.message + '</div>');
         html.push('</div>');
     }
@@ -472,7 +492,8 @@ function generateAggregatedChangelog(stageChanges, aggregatedChangesGroupingPatt
             var matches = stageChange.message.match(re) || [unmatchedChangesKey];
 
             Q.unique(matches).forEach(function (match) {
-                (changes[match] || (changes[match] = [])).push(stageChange);
+                changes[match] = changes[match] || [];
+                changes[match].push(stageChange);
             });
         });
     } else {
@@ -486,17 +507,19 @@ function generateAggregatedChangelog(stageChanges, aggregatedChangesGroupingPatt
     keys.push(unmatchedChangesKey);
 
     keys.forEach(function(matchKey) {
-        if (matchKey != unmatchedChangesKey) {
+        if (matchKey !== unmatchedChangesKey) {
             html.push('<li class="aggregatedKey"><b>' + matchKey + '</b><ul>');
         }
 
-        (changes[matchKey] || []).forEach(function (change) {
-            html.push('<li>');
-            html.push(change.message || '&nbsp;');
-            html.push('</li>');
-        });
+        if (changes[matchKey]) {
+            changes[matchKey].forEach(function (change) {
+                html.push('<li>');
+                html.push(change.message || '&nbsp;');
+                html.push('</li>');
+            });
+        }
 
-        if (matchKey != unmatchedChangesKey) {
+        if (matchKey !== unmatchedChangesKey) {
             html.push('</ul></li>');
         }
     });
@@ -524,25 +547,24 @@ function replace(string, replace, replaceWith) {
 
 
 function formatDate(date, currentTime) {
-    return date != null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss')) : '';
+    return date !== null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss')) : '';
 }
 
 function formatDuration(millis) {
-    if (millis > 0) {
-        var seconds = Math.floor(millis / 1000);
-        var minutes = Math.floor(seconds / 60);
-        var minstr;
-        var secstr;
-
-        seconds = seconds % 60;
-
-        minstr = minutes === 0 ? '' : minutes + ' min ';
-
-        secstr = '' + seconds + ' sec';
-
-        return minstr + secstr;
+    if (millis === 0) {
+        return '0 sec';
     }
-    return '0 sec';
+
+    var seconds = Math.floor(millis / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var minstr;
+    var secstr;
+
+    seconds = seconds % 60;
+    minstr = minutes === 0 ? '' : minutes + ' min ';
+    secstr = '' + seconds + ' sec';
+
+    return minstr + secstr;
 }
 
 function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild, viewUrl) {
@@ -579,7 +601,7 @@ function triggerRebuild(taskId, project, buildId, viewUrl) {
     var formData = {project: project, buildId: buildId};
 
     var before;
-    if (crumb.value != null && crumb.value != '') {
+    if (crumb.value !== null && crumb.value !== '') {
         console.info('Crumb found and will be added to request header');
         before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
     } else {
@@ -637,7 +659,7 @@ function triggerParameterizedBuild(url, taskId) {
 
 function triggerBuild(url, taskId) {
     var before;
-    if (crumb.value != null && crumb.value != '') {
+    if (crumb.value !== null && crumb.value !== '') {
         console.info('Crumb found and will be added to request header');
         before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
     } else {
@@ -667,7 +689,7 @@ function htmlEncode(html) {
 }
 
 function getStageId(name, count) {
-    var re = new RegExp(' ', 'g');
+    var re = / /g;
     return name.replace(re, '_') + '_' + count;
 }
 
@@ -684,7 +706,7 @@ function equalheight(container) {
         Q($el).height('auto');
         topPosition = $el.position().top;
 
-        if (currentRowStart != topPosition) {
+        if (currentRowStart !== topPosition) {
             rowDivs.length = 0; // empty the array
             currentRowStart = topPosition;
             currentTallest = $el.height() + 2;
