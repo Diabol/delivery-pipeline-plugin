@@ -650,6 +650,14 @@ public class DeliveryPipelineView extends View implements PipelineView {
             return options;
         }
 
+        public ListBoxModel doFillThemeItems(@AncestorInPath ItemGroup<?> context) {
+            ListBoxModel options = new ListBoxModel();
+            options.add("Default", "default");
+            options.add("Contrast", "contrast");
+            options.add("Overview", "overview");
+            return options;
+        }
+
         public FormValidation doCheckUpdateInterval(@QueryParameter String value) {
             int valueAsInt;
             try {
