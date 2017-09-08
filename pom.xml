@@ -132,27 +132,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.jvnet</groupId>
-                <artifactId>animal-sniffer</artifactId>
-                <version>1.2</version>
-                <executions>
-                    <execution>
-                        <id>animal-sniffer</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <signature>
-                                <groupId>org.jvnet.animal-sniffer</groupId>
-                                <artifactId>java1.6</artifactId>
-                                <version>1.0</version>
-                            </signature>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.1.201405082137</version>
@@ -371,7 +350,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>build-pipeline-plugin</artifactId>
-            <version>1.4.4</version>
+            <version>1.5.7.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>
