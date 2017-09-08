@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.domain.status;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.extension.StandardBuildCard;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -402,10 +403,10 @@ public class SimpleStatusTest {
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());
         assertEquals(StatusType.IDLE, pipelines.get(1).getStages().get(1).getTasks().get(0).getStatus().getType());
 
-        BuildPipelineView view = new BuildPipelineView("", "",
-                new DownstreamProjectGridBuilder("project1"), "0", false, "");
         project1.setQuietPeriod(3);
-        view.triggerManualBuild(1, "project2", "project1");
+        StandardBuildCard card = new StandardBuildCard();
+
+        card.triggerManualBuild(jenkins.jenkins, 1, "project2", "project1");
         pipelines = pipeline.createPipelineLatest(2, jenkins.getInstance(), pagingEnabledFalse, showChanges, component);
         assertEquals(2, pipelines.size());
         assertEquals(StatusType.IDLE, pipelines.get(0).getStages().get(1).getTasks().get(0).getStatus().getType());

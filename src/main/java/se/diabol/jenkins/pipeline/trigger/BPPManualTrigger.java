@@ -17,8 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.trigger;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
-import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.extension.StandardBuildCard;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
@@ -28,11 +27,13 @@ public class BPPManualTrigger implements ManualTrigger {
     @Override
     public void triggerManual(AbstractProject<?, ?> project, AbstractProject<?, ?> upstream, String buildId,
                               ItemGroup<? extends TopLevelItem> itemGroup) throws TriggerException {
-        MyView view = new MyView(itemGroup);
+        StandardBuildCard buildCard = new StandardBuildCard();
+
         if (upstream != null && upstream.getBuild(buildId) != null) {
 
             try {
-                view.triggerManualBuild(Integer.parseInt(buildId), project.getRelativeNameFrom(itemGroup),
+                buildCard.triggerManualBuild(itemGroup, Integer.parseInt(buildId),
+                        project.getRelativeNameFrom(itemGroup),
                         upstream.getRelativeNameFrom(itemGroup));
             } catch (Exception e) {
                 throw new TriggerException("Could not trigger", e);
@@ -40,23 +41,5 @@ public class BPPManualTrigger implements ManualTrigger {
         } else {
             throw new TriggerException("Could not find build: " + buildId + " for project: " + upstream);
         }
-
     }
-
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings("SIC_INNER_SHOULD_BE_STATIC")
-    public class MyView extends BuildPipelineView {
-
-        final ItemGroup<? extends TopLevelItem> context;
-
-        public MyView(ItemGroup<? extends TopLevelItem> context) {
-            super("", "", new DownstreamProjectGridBuilder(""), "1", false, "");
-            this.context = context;
-        }
-
-        @Override
-        public ItemGroup<? extends TopLevelItem> getOwnerItemGroup() {
-            return context;
-        }
-    }
-
 }
