@@ -1,6 +1,15 @@
 function pipelineUtils() {
     var self = this;
     this.updatePipelines = function(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb) {
+
+        // JENKINS-46160 Don't refresh pipelines if the tab/window is not active
+        if (document.hidden) {
+            setTimeout(function () {
+                self.updatePipelines(divNames, errorDiv, view, fullscreen, page, component, showChanges, aggregatedChangesGroupingPattern, timeout, pipelineid, jsplumb);
+            }, timeout);
+            return;
+        }
+
         Q.ajax({
             url: rootURL + '/' + view.viewUrl + 'api/json' + '?page=' + page + '&component=' + component + '&fullscreen=' + fullscreen,
             dataType: 'json',
