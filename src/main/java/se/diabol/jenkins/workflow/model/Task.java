@@ -144,7 +144,9 @@ public class Task extends AbstractItem {
     }
 
     private static String taskLinkFor(WorkflowRun build) {
-        return "job/" + Name.of(build).replace("/", "/job/");
+        String taskLink = "job/" + Name.of(build).replace("/", "/job/");
+        taskLink += "/" + build.getNumber() + "/";
+        return taskLink;
     }
 
     static boolean taskNodesDefinedInStage(List<FlowNode> taskNodes) {
