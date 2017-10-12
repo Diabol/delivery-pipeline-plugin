@@ -80,6 +80,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
     private String project;
+    private boolean linkToConsoleLog = false;
     private String description = null;
 
     private transient String error;
@@ -159,6 +160,15 @@ public class WorkflowPipelineView extends View implements PipelineView {
     @Exported
     public String getLastUpdated() {
         return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+    }
+
+    @Exported
+    public boolean isLinkToConsoleLog() {
+        return linkToConsoleLog;
+    }
+
+    public void setLinkToConsoleLog(boolean linkToConsoleLog) {
+        this.linkToConsoleLog = linkToConsoleLog;
     }
 
     @Override

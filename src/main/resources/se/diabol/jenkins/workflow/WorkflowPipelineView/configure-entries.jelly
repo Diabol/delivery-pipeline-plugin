@@ -22,6 +22,9 @@
         <f:entry title="Show commit messages" field="showChanges">
             <f:checkbox/>
         </f:entry>
+        <f:entry title="Use direct link to console log" field="linkToConsoleLog">
+            <f:checkbox/>
+        </f:entry>
         <f:entry title="Theme" field="theme">
             <f:select />
         </f:entry>
