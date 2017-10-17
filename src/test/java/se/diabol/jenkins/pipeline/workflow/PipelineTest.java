@@ -46,7 +46,7 @@ public class PipelineTest {
 
         WorkflowPipelineView view = new WorkflowPipelineView(pipelineName);
 
-        Pipeline pipeline = Pipeline.resolve(pipelineProject, build, view.getOwnerItemGroup());
+        Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
         assertNotNull(pipeline);
         assertThat(pipeline.getName(), is(pipelineName));
         assertThat(pipeline.getStages().size(), is(2));
@@ -72,7 +72,7 @@ public class PipelineTest {
 
         WorkflowPipelineView view = new WorkflowPipelineView(pipelineName);
 
-        Pipeline pipeline = Pipeline.resolve(pipelineProject, build, view.getOwnerItemGroup());
+        Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
         assertNotNull(pipeline);
         assertThat(pipeline.getStages().size(), is(2));
         assertThat(pipeline.getStages().get(0).getName(), is("Build"));

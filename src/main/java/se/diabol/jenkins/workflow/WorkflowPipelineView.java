@@ -285,7 +285,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     private Pipeline resolvePipeline(WorkflowJob job, WorkflowRun build) throws PipelineException {
-        Pipeline pipeline = Pipeline.resolve(job, build, getOwnerItemGroup());
+        Pipeline pipeline = Pipeline.resolve(job, build);
         if (showChanges) {
             pipeline.setChanges(getChangelog(build));
         }

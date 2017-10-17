@@ -63,7 +63,7 @@ public class NameTest {
         WorkflowJob workflowJob = new WorkflowJob(multiBranch, "wf");
         WorkflowRun workflowRun = new WorkflowRun(workflowJob);
 
-        assertThat(Name.of(workflowRun), is("mb/wf"));
+        assertThat(Name.of(workflowRun), is("folder/mb/wf"));
     }
     
     @Test
