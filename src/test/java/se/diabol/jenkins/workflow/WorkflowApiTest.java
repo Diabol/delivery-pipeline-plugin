@@ -21,15 +21,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import hudson.model.ItemGroup;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.workflow.api.Run;
@@ -43,9 +43,12 @@ public class WorkflowApiTest {
 
     private WorkflowApi workflowApi = mock(WorkflowApi.class);
 
+    @Mock
+    private ItemGroup itemGroup;
+
     @Before
     public void setup() throws IOException, PipelineException {
-        when(workflowApi.lastFinishedRunFor(anyString(), any(ItemGroup.class))).thenCallRealMethod();
+        when(workflowApi.lastFinishedRunFor(any(WorkflowJob.class))).thenCallRealMethod();
     }
 
     @Test
@@ -54,10 +57,10 @@ public class WorkflowApiTest {
         Run pausedRun = new Run(null, null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
         Run finishedRun = new Run(null, "5", "#5", "SUCCESS", null, null, null, null);
         Run earlierFinishedRun = new Run(null, "4", "#4", "SUCCESS", null, null, null, null);
-        when(workflowApi.getRunsFor(anyString(), any(ItemGroup.class)))
+        when(workflowApi.getRunsFor(any(WorkflowJob.class)))
                 .thenReturn(Arrays.asList(inProgressRun, pausedRun, finishedRun, earlierFinishedRun));
 
-        Run run = workflowApi.lastFinishedRunFor("Test Workflow", Mockito.mock(ItemGroup.class));
+        Run run = workflowApi.lastFinishedRunFor(new WorkflowJob(itemGroup, "Test Workflow"));
         assertThat(run.id, is(finishedRun.id));
         assertThat(run.name, is(finishedRun.name));
         assertThat(run.status, is(finishedRun.status));
@@ -67,9 +70,9 @@ public class WorkflowApiTest {
     public void shouldNotGetLastFinishedRunForJobIfOnlyInProgressOrPausedJobsExist() throws PipelineException {
         Run inProgressRun = new Run(null, null, null, "IN_PROGRESS", null, null, null, null);
         Run pausedRun = new Run(null, null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
-        when(workflowApi.getRunsFor(anyString(), any(ItemGroup.class)))
+        when(workflowApi.getRunsFor(any(WorkflowJob.class)))
                 .thenReturn(Arrays.asList(inProgressRun, pausedRun));
 
-        assertThat(workflowApi.lastFinishedRunFor("Test Workflow", Mockito.mock(ItemGroup.class)), nullValue());
+        assertThat(workflowApi.lastFinishedRunFor(new WorkflowJob(itemGroup, "Test Workflow")), nullValue());
     }
 }
