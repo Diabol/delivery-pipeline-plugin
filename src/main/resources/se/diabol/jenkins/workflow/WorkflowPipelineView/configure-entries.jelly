@@ -31,8 +31,8 @@
     </f:section>
 
     <f:section title="Pipelines">
-        <f:entry title="Pipeline project" field="project">
-            <f:select/>
+        <f:entry title="Pipeline projects">
+            <f:repeatableProperty minimum="0" field="componentSpecs" header="Pipeline"/>
         </f:entry>
     </f:section>
 

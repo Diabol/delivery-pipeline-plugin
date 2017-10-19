@@ -499,8 +499,8 @@ public class DeliveryPipelineView extends View implements PipelineView {
     @Exported
     public List<Component> getPipelines() {
         try {
-            LOG.fine("Getting pipelines!");
-            List<Component> components = new ArrayList<Component>();
+            LOG.fine("Getting pipelines");
+            List<Component> components = new ArrayList<>();
             if (componentSpecs != null) {
                 for (ComponentSpec componentSpec : componentSpecs) {
                     AbstractProject firstJob = ProjectUtil.getProject(componentSpec.getFirstJob(), getOwnerItemGroup());
@@ -801,7 +801,6 @@ public class DeliveryPipelineView extends View implements PipelineView {
                     return FormValidation.error("Please supply a title");
                 }
             }
-
         }
     }
 
