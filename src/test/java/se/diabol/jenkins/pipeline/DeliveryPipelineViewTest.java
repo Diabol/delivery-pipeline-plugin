@@ -159,7 +159,7 @@ public class DeliveryPipelineViewTest {
 
     @Test
     @WithoutJenkins
-    public void testSubmit() throws Exception {
+    public void shouldSubmitForm() throws Exception {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         StaplerRequest request = mock(StaplerRequest.class);
         when(request.getSubmittedForm()).thenReturn(new JSONObject());
@@ -172,19 +172,19 @@ public class DeliveryPipelineViewTest {
     @Test
     @WithoutJenkins
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    public void testDoCheckUpdateInterval() {
+    public void shouldValidateCheckUpdateInterval() {
         DeliveryPipelineView.DescriptorImpl descriptor = new DeliveryPipelineView.DescriptorImpl();
-        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("").kind);
-        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval(null).kind);
-        assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("3").kind);
-        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("3a").kind);
-        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("0").kind);
         assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("1").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("3").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("0").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("3a").kind);
     }
 
     @Test
     @WithoutJenkins
-    public void testDefaults() {
+    public void shouldHaveDefaults() {
         DeliveryPipelineView view = new DeliveryPipelineView("name");
         assertEquals(3, view.getNoOfPipelines());
         assertEquals(1, view.getNoOfColumns());
@@ -1015,7 +1015,6 @@ public class DeliveryPipelineViewTest {
             ParametersAction action1 = a1.get(i);
             ParametersAction action2 = a2.get(i);
             assertEquals(action1.getParameters(), action2.getParameters());
-
         }
     }
 }
