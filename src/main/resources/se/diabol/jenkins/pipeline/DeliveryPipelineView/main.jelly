@@ -2,11 +2,10 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
 
     <st:bind var="view" value="${it}"/>
-    <j:set var="fullscreen" value='${request.getParameter("fullscreen") == null ? "false" :
+    <st:bind var="fullscreen" value='${request.getParameter("fullscreen") == null ? null :
         (request.getParameter("fullscreen") == "true" ? "true" : "false")}'/>
 
-    <st:bind var="fullscreen" value='${request.getParameter("fullscreen") == null ? "false" :
-        (request.getParameter("fullscreen") == "true" ? "true" : "false")}'/>
+    <j:set var="fullscreen" value='${request.getParameter("fullscreen") == "true" ? "true" : "false"}'/>
 
     <st:bind var="page" value='${request.getParameter("page")}'/>
     <j:set var="page" value='${request.getParameter("page") == null ? 1 : request.getParameter("page")}'/>
