@@ -22,18 +22,17 @@
         <f:entry title="Show commit messages" field="showChanges">
             <f:checkbox/>
         </f:entry>
-        <f:entry name="theme" title="Theme" field="theme">
-            <select name="theme" class="setting-input  select">
-                <option value="default" selected="${instance.getTheme().equals('default')? 'true':null}">Default</option>
-                <option value="contrast" selected="${instance.getTheme().equals('contrast')? 'true':null}">Contrast</option>
-                <option value="overview" selected="${instance.getTheme().equals('overview')? 'true':null}">Overview</option>
-            </select>
+        <f:entry title="Use direct link to console log" field="linkToConsoleLog">
+            <f:checkbox/>
+        </f:entry>
+        <f:entry title="Theme" field="theme">
+            <f:select />
         </f:entry>
     </f:section>
 
     <f:section title="Pipelines">
-        <f:entry title="Pipeline project" field="project">
-            <f:select/>
+        <f:entry title="Pipeline projects">
+            <f:repeatableProperty minimum="0" field="componentSpecs" header="Pipeline"/>
         </f:entry>
     </f:section>
 

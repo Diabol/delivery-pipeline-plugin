@@ -122,10 +122,8 @@ public class Stage extends AbstractItem {
         return downstreamStageIds;
     }
 
-    static List<Stage> extractStages(WorkflowRun build,
-                                     List<FlowNode> stageNodes,
-                                     ItemGroup<? extends TopLevelItem> ownerItemGroup) throws PipelineException {
-        List<Stage> result = resolveStageNodes(build, stageNodes, ownerItemGroup);
+    static List<Stage> extractStages(WorkflowRun build, List<FlowNode> stageNodes) throws PipelineException {
+        List<Stage> result = resolveStageNodes(build, stageNodes);
         for (int i = 0; i < result.size(); i++) {
             Stage stage = result.get(i);
             if (i + 1 < result.size()) {
@@ -138,13 +136,11 @@ public class Stage extends AbstractItem {
         return result;
     }
 
-    private static List<Stage> resolveStageNodes(WorkflowRun build,
-                                                 List<FlowNode> stageNodes,
-                                                 ItemGroup<? extends TopLevelItem> ownerItemGroup)
+    private static List<Stage> resolveStageNodes(WorkflowRun build, List<FlowNode> stageNodes)
             throws PipelineException {
         List<Stage> result = new ArrayList<>();
         for (FlowNode stageNode : stageNodes) {
-            List<Task> tasks = Task.resolve(build, stageNode, ownerItemGroup);
+            List<Task> tasks = Task.resolve(build, stageNode);
             result.add(new Stage(stageNode.getDisplayName(), tasks));
         }
         return result;

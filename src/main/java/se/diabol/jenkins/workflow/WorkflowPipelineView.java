@@ -19,7 +19,9 @@ package se.diabol.jenkins.workflow;
 
 import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
 
+import com.google.common.collect.Sets;
 import hudson.Extension;
+import hudson.model.AbstractDescribableImpl;
 import hudson.model.Api;
 import hudson.model.Descriptor;
 import hudson.model.Item;
@@ -59,6 +61,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -79,7 +82,10 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private boolean allowPipelineStart = false;
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
+    @Deprecated
     private String project;
+    private List<ComponentSpec> componentSpecs;
+    private boolean linkToConsoleLog = false;
     private String description = null;
 
     private transient String error;
@@ -156,9 +162,29 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.project = project;
     }
 
+    public List<ComponentSpec> getComponentSpecs() {
+        if (componentSpecs == null) {
+            componentSpecs = new ArrayList<>();
+        }
+        return componentSpecs;
+    }
+
+    public void setComponentSpecs(List<ComponentSpec> componentSpecs) {
+        this.componentSpecs = componentSpecs;
+    }
+
     @Exported
     public String getLastUpdated() {
         return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+    }
+
+    @Exported
+    public boolean isLinkToConsoleLog() {
+        return linkToConsoleLog;
+    }
+
+    public void setLinkToConsoleLog(boolean linkToConsoleLog) {
+        this.linkToConsoleLog = linkToConsoleLog;
     }
 
     @Override
@@ -183,18 +209,37 @@ public class WorkflowPipelineView extends View implements PipelineView {
     @Exported
     public List<Component> getPipelines() {
         try {
-            if (project == null) {
-                return Collections.emptyList();
+            LOG.fine("Getting pipelines");
+            List<Component> components = new ArrayList<>();
+            backwardsCompatibilityHandling();
+            for (ComponentSpec componentSpec : getComponentSpecs()) {
+                WorkflowJob job = getWorkflowJob(componentSpec.job);
+                List<Pipeline> pipelines = resolvePipelines(job);
+                Component component = new Component(job.getName(), job, pipelines);
+                this.error = null;
+                components.add(component);
             }
-            WorkflowJob job = getWorkflowJob(project);
-            List<Pipeline> pipelines = resolvePipelines(job);
-            Component component = new Component(job.getName(), job, pipelines);
-            this.error = null;
-            return Collections.singletonList(component);
+            return components;
         } catch (PipelineException e) {
             error = e.getMessage();
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Automatically migrate views created prior to the introduction of component specs
+     * to use the new structure. Support subject to removal in a future release.
+     */
+    private void backwardsCompatibilityHandling() {
+        if (project != null && getComponentSpecs().isEmpty()) {
+            LOG.fine("Backwards compatibility check: Migrating legacy configuration to current structure");
+            componentSpecs.addAll(migrateToComponentSpec(project));
+            project = null;
+        }
+    }
+
+    private List<ComponentSpec> migrateToComponentSpec(String projectName) {
+        return Collections.singletonList(new ComponentSpec(projectName, projectName));
     }
 
     @Override
@@ -248,7 +293,23 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
     @Override
     public Collection<TopLevelItem> getItems() {
-        return (Collection) getOwnerItemGroup().getItems();
+        Set<TopLevelItem> jobs = Sets.newHashSet();
+        addJobsFromComponentSpecs(jobs);
+        return jobs;
+    }
+
+    private void addJobsFromComponentSpecs(Set<TopLevelItem> jobs) {
+        if (componentSpecs == null) {
+            return;
+        }
+        for (ComponentSpec spec : componentSpecs) {
+            try {
+                WorkflowJob job = getWorkflowJob(spec.job);
+                jobs.add(job);
+            } catch (PipelineException e) {
+                LOG.log(Level.SEVERE, "Failed to resolve WorkflowJob for configured job name: " + spec.job, e);
+            }
+        }
     }
 
     @Override
@@ -267,6 +328,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     @Override
     protected void submit(StaplerRequest req) throws IOException, ServletException, Descriptor.FormException {
         req.bindJSON(this, req.getSubmittedForm());
+        componentSpecs = req.bindJSONToList(ComponentSpec.class, req.getSubmittedForm().get("componentSpecs"));
     }
 
     private List<Pipeline> resolvePipelines(WorkflowJob job) throws PipelineException {
@@ -285,7 +347,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     private Pipeline resolvePipeline(WorkflowJob job, WorkflowRun build) throws PipelineException {
-        Pipeline pipeline = Pipeline.resolve(job, build, getOwnerItemGroup());
+        Pipeline pipeline = Pipeline.resolve(job, build);
         if (showChanges) {
             pipeline.setChanges(getChangelog(build));
         }
@@ -314,7 +376,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
             return options;
         }
 
-        public ListBoxModel doFillProjectItems(@AncestorInPath ItemGroup<?> context) {
+        public ListBoxModel doFillProjectsItems(@AncestorInPath ItemGroup<?> context) {
             return ProjectUtil.fillAllProjects(context, WorkflowJob.class);
         }
 
@@ -324,6 +386,14 @@ public class WorkflowPipelineView extends View implements PipelineView {
                 String opt = String.valueOf(i);
                 options.add(opt, opt);
             }
+            return options;
+        }
+
+        public ListBoxModel doFillThemeItems(@AncestorInPath ItemGroup<?> context) {
+            ListBoxModel options = new ListBoxModel();
+            options.add("Default", "default");
+            options.add("Contrast", "contrast");
+            options.add("Overview", "overview");
             return options;
         }
 
@@ -344,6 +414,51 @@ public class WorkflowPipelineView extends View implements PipelineView {
         @Override
         public String getDisplayName() {
             return "Delivery Pipeline View for Jenkins Pipelines";
+        }
+    }
+
+    public static class ComponentSpec extends AbstractDescribableImpl<ComponentSpec> {
+        private String name;
+        private String job;
+
+        @DataBoundConstructor
+        public ComponentSpec(String name, String job) {
+            this.name = name;
+            this.job = job;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getJob() {
+            return job;
+        }
+
+        public void setJob(String job) {
+            this.job = job;
+        }
+
+        @Extension
+        public static class DescriptorImpl extends Descriptor<WorkflowPipelineView.ComponentSpec> {
+
+            @Nonnull
+            @Override
+            public String getDisplayName() {
+                return "";
+            }
+
+            public ListBoxModel doFillJobItems(@AncestorInPath ItemGroup<?> context) {
+                return ProjectUtil.fillAllProjects(context, WorkflowJob.class);
+            }
+
+            public FormValidation doCheckName(@QueryParameter String value) {
+                if (value != null && !"".equals(value.trim())) {
+                    return FormValidation.ok();
+                } else {
+                    return FormValidation.error("Please supply a title");
+                }
+            }
         }
     }
 

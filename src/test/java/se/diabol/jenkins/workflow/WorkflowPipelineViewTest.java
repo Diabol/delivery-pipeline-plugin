@@ -21,6 +21,8 @@ import com.gargoylesoftware.htmlunit.Page;
 import hudson.cli.BuildCommand;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.Permission;
+import hudson.util.FormValidation;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Rule;
@@ -28,6 +30,8 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
+import org.kohsuke.stapler.StaplerRequest;
+import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.workflow.model.Component;
 import java.io.IOException;
 import java.net.URL;
@@ -40,11 +44,23 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class WorkflowPipelineViewTest {
 
     @Rule
     public JenkinsRule jenkins = new JenkinsRule();
+
+    @Test
+    @WithoutJenkins
+    public void shouldSubmitForm() throws Exception {
+        WorkflowPipelineView view = new WorkflowPipelineView("viewName");
+        StaplerRequest request = mock(StaplerRequest.class);
+        when(request.getSubmittedForm()).thenReturn(new JSONObject());
+        view.submit(request);
+        verify(request, times(1)).bindJSON(view, new JSONObject());
+        verify(request, times(1)).bindJSONToList(WorkflowPipelineView.ComponentSpec.class, null);
+    }
 
     @Test
     public void shouldGiveErrorWhenFailingToGetWorkflowJob() throws IOException {
@@ -111,6 +127,24 @@ public class WorkflowPipelineViewTest {
     }
 
     @Test
+    @Issue("JENKINS-47529")
+    public void shouldMigrateLegacyProjectConfigurationToComponentSpec() throws IOException {
+        String jobName = "PipelineProject";
+        WorkflowJob job = jenkins.getInstance().createProject(WorkflowJob.class, jobName);
+        WorkflowPipelineView view = new WorkflowPipelineView("view");
+        view.setProject(jobName);
+
+        assertThat(view.getProject(), is(jobName));
+        assertThat(view.getComponentSpecs().size(), is(0));
+
+        view.getPipelines();
+
+        assertNull(view.getProject());
+        assertThat(view.getComponentSpecs().size(), is(1));
+        assertThat(view.getComponentSpecs().get(0).getJob(), is(jobName));
+    }
+
+    @Test
     @WithoutJenkins
     public void getDescriptionShouldSetSuperDescriptionIfNotSet() {
         WorkflowPipelineView view = mock(WorkflowPipelineView.class);
@@ -129,5 +163,42 @@ public class WorkflowPipelineViewTest {
 
         view.getDescription();
         verify(view, times(2)).setDescription(anyString());
+    }
+
+    @Test
+    @WithoutJenkins
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    public void shouldValidateCheckUpdateInterval() {
+        WorkflowPipelineView.DescriptorImpl descriptor = new WorkflowPipelineView.DescriptorImpl();
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("1").kind);
+        assertEquals(FormValidation.Kind.OK, descriptor.doCheckUpdateInterval("3").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval(null).kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("0").kind);
+        assertEquals(FormValidation.Kind.ERROR, descriptor.doCheckUpdateInterval("3a").kind);
+    }
+
+    @Test
+    @WithoutJenkins
+    public void shouldHaveDefaults() {
+        WorkflowPipelineView view = new WorkflowPipelineView("name");
+        assertThat(view.getNoOfPipelines(), is(3));
+        assertThat(view.getNoOfColumns(), is(1));
+        assertThat(view.getUpdateInterval(), is(2));
+        assertNotNull(view.getComponentSpecs());
+        assertThat(view.getComponentSpecs().size(), is(0));
+        assertNull(view.getDescription());
+        assertThat(view.isShowChanges(), is(false));
+        assertThat(view.isAllowPipelineStart(), is(false));
+        assertThat(view.getTheme(), is("default"));
+        assertThat(view.isLinkToConsoleLog(), is(false));
+    }
+
+    @Test
+    @WithoutJenkins
+    public void testSetDefaultThemeIfNull() {
+        WorkflowPipelineView view = new WorkflowPipelineView("name");
+        view.setTheme(null);
+        assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
     }
 }

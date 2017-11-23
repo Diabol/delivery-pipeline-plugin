@@ -23,8 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
-import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.extension.StandardBuildCard;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.EnvVars;
 import hudson.Launcher;
@@ -52,6 +51,7 @@ import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.IOException;
 import java.util.Arrays;
+
 
 public class PipelineVersionContributorTest {
 
@@ -147,8 +147,8 @@ public class PipelineVersionContributorTest {
         secondProject.getBuildersList().clear();
         secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("firstProject"), "1", false, null);
-        view.triggerManualBuild(1, "secondProject", "firstProject");
+        StandardBuildCard card = new StandardBuildCard();
+        card.triggerManualBuild(jenkins.jenkins, 1, "secondProject", "firstProject");
         jenkins.waitUntilNoActivity();
 
         assertNotNull(secondProject.getLastBuild());
@@ -243,8 +243,9 @@ public class PipelineVersionContributorTest {
         secondProject.getBuildersList().clear();
         secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
 
-        BuildPipelineView view = new BuildPipelineView("", "", new DownstreamProjectGridBuilder("firstProject"), "1", false, null);
-        view.triggerManualBuild(1, "secondProject", "firstProject");
+        StandardBuildCard card = new StandardBuildCard();
+
+        card.triggerManualBuild(jenkins.jenkins,  1, "secondProject", "firstProject");
         jenkins.waitUntilNoActivity();
 
         assertNotNull(secondProject.getLastBuild());

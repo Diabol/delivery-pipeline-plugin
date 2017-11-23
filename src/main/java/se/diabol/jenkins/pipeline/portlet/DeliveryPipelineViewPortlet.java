@@ -93,7 +93,7 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
         view.setComponentSpecs(componentSpecs);
     }
 
-    @Extension
+    @Extension(optional = true)
     public static class DescriptorImpl extends Descriptor<DashboardPortlet> {
         @Override
         public String getDisplayName() {

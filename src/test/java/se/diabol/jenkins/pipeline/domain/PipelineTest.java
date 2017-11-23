@@ -17,17 +17,9 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.domain;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import au.com.centrumsystems.hudson.plugin.buildpipeline.BuildPipelineView;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.DownstreamProjectGridBuilder;
+import au.com.centrumsystems.hudson.plugin.buildpipeline.extension.StandardBuildCard;
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
 import hudson.model.Cause;
 import hudson.model.Descriptor;
@@ -61,6 +53,10 @@ import se.diabol.jenkins.pipeline.util.BuildUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PipelineTest {
 
@@ -269,9 +265,9 @@ public class PipelineTest {
         assertEquals("#2", aggregated1.getStages().get(1).getVersion());
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isIdle());
 
-        BuildPipelineView view =
-                new BuildPipelineView("", "", new DownstreamProjectGridBuilder("build1"), "1", false, null);
-        view.triggerManualBuild(1, "prod", "test");
+        StandardBuildCard card = new StandardBuildCard();
+        card.triggerManualBuild(jenkins.jenkins, 1, "prod", "test");
+
         jenkins.waitUntilNoActivity();
         aggregated1 = pipe1.createPipelineAggregatedWithoutChangesShown(jenkins.getInstance());
         assertTrue(aggregated1.getStages().get(2).getTasks().get(0).getStatus().isSuccess());

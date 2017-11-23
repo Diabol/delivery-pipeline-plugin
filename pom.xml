@@ -4,7 +4,7 @@
 
     <groupId>se.diabol.jenkins.pipeline</groupId>
     <artifactId>delivery-pipeline-plugin</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.9-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <name>Delivery Pipeline Plugin</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Delivery+Pipeline+Plugin</url>
@@ -59,11 +59,6 @@
             <organization>Diabol AB</organization>
         </developer>
         <developer>
-            <id>perhuss</id>
-            <name>Per Huss</name>
-            <organization>Diabol AB</organization>
-        </developer>
-        <developer>
             <id>mrfatstrat</id>
             <name>Andreas Rehn</name>
             <organization>Diabol AB</organization>
@@ -74,16 +69,20 @@
             <organization>Diabol AB</organization>
         </developer>
         <developer>
-            <id>gusran</id>
-            <name>Gustav Ranby</name>
-            <organization>Diabol AB</organization>
-        </developer>
-        <developer>
             <id>tommysdk</id>
-            <name>Tommy Tynja</name>
+            <name>Tommy Tynjä</name>
             <organization>Diabol AB</organization>
         </developer>
     </developers>
+
+    <contributors>
+        <contributor>
+            <name>Per Huss</name>
+        </contributor>
+        <contributor>
+            <name>Gustav Ranby</name>
+        </contributor>
+    </contributors>
 
     <repositories>
         <repository>
@@ -131,27 +130,6 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jvnet</groupId>
-                <artifactId>animal-sniffer</artifactId>
-                <version>1.2</version>
-                <executions>
-                    <execution>
-                        <id>animal-sniffer</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <signature>
-                                <groupId>org.jvnet.animal-sniffer</groupId>
-                                <artifactId>java1.6</artifactId>
-                                <version>1.0</version>
-                            </signature>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -372,7 +350,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>build-pipeline-plugin</artifactId>
-            <version>1.4.4</version>
+            <version>1.5.7.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>

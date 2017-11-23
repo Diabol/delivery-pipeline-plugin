@@ -18,12 +18,9 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow;
 
 import com.cloudbees.workflow.rest.external.RunExt;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
-import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.api.Run;
 
 import java.util.ArrayList;
@@ -34,11 +31,7 @@ public class WorkflowApi {
     public WorkflowApi() {
     }
 
-    public List<Run> getRunsFor(String name, ItemGroup<? extends TopLevelItem> ownerItemGroup)
-            throws PipelineException {
-        WorkflowJob job;
-        job = ProjectUtil.getWorkflowJob(name, ownerItemGroup);
-
+    public List<Run> getRunsFor(WorkflowJob job) {
         List<Run> runs = new ArrayList<>();
         for (WorkflowRun run : job.getBuilds()) {
             runs.add(new Run(RunExt.create(run)));
@@ -46,9 +39,12 @@ public class WorkflowApi {
         return runs;
     }
 
-    public Run lastFinishedRunFor(String job, ItemGroup<? extends TopLevelItem> ownerItemGroup)
-            throws PipelineException {
-        for (Run run : getRunsFor(job, ownerItemGroup)) {
+    public Run lastFinishedRunFor(WorkflowJob job) throws PipelineException {
+        return lastFinishedRun(getRunsFor(job));
+    }
+
+    private Run lastFinishedRun(List<Run> runs) {
+        for (Run run : runs) {
             if (!"IN_PROGRESS".equals(run.status) && !"PAUSED_PENDING_INPUT".equals(run.status)) {
                 return run;
             }
