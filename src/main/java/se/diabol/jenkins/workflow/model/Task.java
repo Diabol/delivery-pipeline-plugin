@@ -20,9 +20,7 @@ package se.diabol.jenkins.workflow.model;
 import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
-import hudson.model.ItemGroup;
 import hudson.model.Result;
-import hudson.model.TopLevelItem;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
@@ -150,12 +148,6 @@ public class Task extends AbstractItem {
 
     private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) throws PipelineException {
         List<Run> runs = workflowApi.getRunsFor(build.getParent());
-    private static Status resolveTaskStatus(WorkflowRun build,
-                                            FlowNode stageStartNode,
-                                            ItemGroup<? extends TopLevelItem> ownerItemGroup)
-            throws PipelineException {
-
-        List<Run> runs = workflowApi.getRunsFor(Name.of(build), ownerItemGroup);
         Run run = getRunById(runs, build.getNumber());
         se.diabol.jenkins.workflow.api.Stage currentStage = run.getStageByName(stageStartNode.getDisplayName());
         if (currentStage == null) {
