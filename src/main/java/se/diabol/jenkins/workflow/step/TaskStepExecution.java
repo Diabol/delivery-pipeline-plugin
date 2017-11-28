@@ -125,8 +125,8 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         }
 
         @Override
-        public void onFailure(StepContext context, Throwable t) {
-            futureCallback.onFailure(t);
+        public void onFailure(StepContext context, Throwable throwable) {
+            futureCallback.onFailure(throwable);
         }
 
         private static final long serialVersionUID = 1L;

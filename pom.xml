@@ -365,10 +365,6 @@
                     <artifactId>commons-io</artifactId>
                     <groupId>commons-io</groupId>
                 </exclusion>
-                <exclusion>
-                    <artifactId>com.google.guava</artifactId>
-                    <groupId>guava</groupId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

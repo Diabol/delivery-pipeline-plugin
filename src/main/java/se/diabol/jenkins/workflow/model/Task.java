@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
+import static se.diabol.jenkins.workflow.util.Util.getRunById;
+
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -38,8 +40,6 @@ import se.diabol.jenkins.workflow.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 public class Task extends AbstractItem {
 
@@ -171,7 +171,10 @@ public class Task extends AbstractItem {
         return stage;
     }
 
-    private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode, FlowNode taskNode, TaskAction taskAction) throws PipelineException {
+    private static Status resolveTaskStatus(WorkflowRun build,
+                                            FlowNode stageStartNode,
+                                            FlowNode taskNode,
+                                            TaskAction taskAction) throws PipelineException {
         Stage stage = getStage(build, stageStartNode);
 
         Long finishedTime = taskAction.getFinishedTime();
@@ -184,7 +187,8 @@ public class Task extends AbstractItem {
                 return runningStatus(build, stage);
             } else {
                 long duration = (stage.startTimeMillis.getMillis() + stage.durationMillis) - getTaskStartTime(taskNode);
-                return new SimpleStatus(stageStatus.getType(), stage.startTimeMillis.getMillis() + stage.durationMillis, duration);
+                return new SimpleStatus(stageStatus.getType(),
+                        stage.startTimeMillis.getMillis() + stage.durationMillis, duration);
             }
         }
     }
