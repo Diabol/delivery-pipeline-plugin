@@ -29,12 +29,12 @@ import java.util.Collections;
 public class TaskTest {
 
     @Test
-    public void taskNodesDefinedInStageShouldReturnTrueWhenListPopulated() {
-        assertThat(Task.taskNodesDefinedInStage(Collections.singletonList(mock(FlowNode.class))), is(true));
+    public void stageHasTaskNodesShouldReturnTrueWhenListPopulated() {
+        assertThat(Task.stageHasTaskNodes(Collections.singletonList(mock(FlowNode.class))), is(true));
     }
 
     @Test
-    public void taskNodesDefinedInStageShouldReturnFalseForEmptyList() {
-        assertThat(Task.taskNodesDefinedInStage(Collections.<FlowNode>emptyList()), is(false));
+    public void stageHasTaskNodesShouldReturnFalseForEmptyList() {
+        assertThat(Task.stageHasTaskNodes(Collections.<FlowNode>emptyList()), is(false));
     }
 }

@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.step;
 
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.inject.Inject;
 import hudson.model.InvisibleAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
@@ -28,7 +29,12 @@ import org.jenkinsci.plugins.workflow.steps.BodyExecutionCallback;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 
+import java.io.Serializable;
+import java.util.logging.Logger;
+
 public class TaskStepExecution extends AbstractStepExecutionImpl {
+
+    private static final Logger LOG = Logger.getLogger(TaskStepExecution.class.getName());
 
     @StepContextParameter
     private transient FlowNode node;
@@ -40,12 +46,15 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
     public boolean start() throws Exception {
         TaskAction taskAction = new TaskActionImpl(step.name);
         StepContext context = this.getContext();
+        LOG.info("Invoked at " + System.currentTimeMillis());
         if (context.hasBody()) {
             ((CpsBodyInvoker) context.newBodyInvoker())
                     .withStartAction(taskAction)
-                    .withCallback(BodyExecutionCallback.wrap(context))
+                    .withCallback(new TaskBodyExecutionWrapper(taskAction, context))
                     .withDisplayName(step.name).start();
         } else {
+            LOG.warning("Task pipeline step without body is deprecated and "
+                    + "may be subject for removal in a future release");
             node.addAction(taskAction);
             getContext().onSuccess(null);
         }
@@ -65,16 +74,61 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         super.onResume();
     }
 
-    private static final class TaskActionImpl extends InvisibleAction implements TaskAction {
+    private static final class TaskActionImpl extends InvisibleAction implements TaskAction, Serializable {
         private final String taskName;
+        private Long finishedTime = null;
 
         TaskActionImpl(String taskName) {
+            this(taskName, null);
+        }
+
+        TaskActionImpl(String taskName, Long finishedTime) {
             this.taskName = taskName;
+            this.finishedTime = finishedTime;
         }
 
         @Override
         public String getTaskName() {
             return taskName;
         }
+
+        @Override
+        public Long getFinishedTime() {
+            return finishedTime;
+        }
+
+        @Override
+        public void setFinishedTime(Long finishedTime) {
+            this.finishedTime = finishedTime;
+        }
+    }
+
+    private static class TaskBodyExecutionWrapper extends BodyExecutionCallback {
+        private final FutureCallback<Object> futureCallback;
+        private TaskAction taskAction;
+
+        TaskBodyExecutionWrapper(TaskAction taskAction, FutureCallback<Object> futureCallback) {
+            if (!(futureCallback instanceof Serializable)) {
+                throw new IllegalArgumentException(futureCallback.getClass() + " is not serializable");
+            }
+            if (taskAction == null || !(taskAction instanceof Serializable)) {
+                throw new IllegalArgumentException("Task execution expects serializable task action");
+            }
+            this.futureCallback = futureCallback;
+            this.taskAction = taskAction;
+        }
+
+        @Override
+        public void onSuccess(StepContext context, Object result) {
+            taskAction.setFinishedTime(System.currentTimeMillis());
+            futureCallback.onSuccess(result);
+        }
+
+        @Override
+        public void onFailure(StepContext context, Throwable t) {
+            futureCallback.onFailure(t);
+        }
+
+        private static final long serialVersionUID = 1L;
     }
 }

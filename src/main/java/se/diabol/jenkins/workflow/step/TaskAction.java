@@ -23,4 +23,7 @@ public interface TaskAction extends Action {
 
     String getTaskName();
 
+    Long getFinishedTime();
+
+    void setFinishedTime(Long finishedTime);
 }
