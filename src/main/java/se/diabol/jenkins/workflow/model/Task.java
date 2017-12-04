@@ -17,6 +17,7 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
@@ -116,7 +117,7 @@ public class Task extends AbstractItem {
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(stageStartNode);
         List<FlowNode> taskNodes = Util.getTaskNodes(stageNodes);
 
-        if (stageHasTaskNodes(taskNodes)) {
+        if (isNotEmpty(taskNodes)) {
             for (FlowNode taskNode : taskNodes) {
                 result.add(resolveTask(build, stageStartNode, taskNode));
             }
@@ -146,10 +147,6 @@ public class Task extends AbstractItem {
         String taskLink = "job/" + Name.of(build).replace("/", "/job/");
         taskLink += "/" + build.getNumber() + "/";
         return taskLink;
-    }
-
-    static boolean stageHasTaskNodes(List<FlowNode> taskNodes) {
-        return !taskNodes.isEmpty();
     }
 
     private static Status resolveStageStatus(WorkflowRun build, Stage stage) throws PipelineException {
