@@ -46,7 +46,6 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
     public boolean start() throws Exception {
         TaskAction taskAction = new TaskActionImpl(step.name);
         StepContext context = this.getContext();
-        LOG.info("Invoked at " + System.currentTimeMillis());
         if (context.hasBody()) {
             ((CpsBodyInvoker) context.newBodyInvoker())
                     .withStartAction(taskAction)
