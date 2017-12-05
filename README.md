@@ -34,6 +34,8 @@ The project contains a rigorous test suite which takes some time to run. If you 
 
 Run locally
 ---
+Requires you to have built the project first using the step mentioned above.
+
     mvn hpi:run
 
 This will start a local Jenkins with the Delivery Pipeline plugin installed. It will by default be available at http://localhost:8080/jenkins.
@@ -55,7 +57,7 @@ Run function tests
 
 Create Jenkins plugin artifact
 ---
-This can be used to manually upload a new plugin through the Jenkins plugin management console (under the Advanced tab).
+This can be used to manually upload a new plugin through the Jenkins plugin management console (under the Advanced tab). Requires you to have built the project first, see the Build section above.
 
     mvn hpi:hpi
 
