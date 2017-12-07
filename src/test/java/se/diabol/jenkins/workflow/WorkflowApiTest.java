@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,10 +54,10 @@ public class WorkflowApiTest {
 
     @Test
     public void shouldGetLastFinishedRunForJob() throws PipelineException {
-        Run inProgressRun = new Run(null, null, null, "IN_PROGRESS", null, null, null, null);
-        Run pausedRun = new Run(null, null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
-        Run finishedRun = new Run(null, "5", "#5", "SUCCESS", null, null, null, null);
-        Run earlierFinishedRun = new Run(null, "4", "#4", "SUCCESS", null, null, null, null);
+        Run inProgressRun = new Run(null, null, "IN_PROGRESS", null, null, null, null);
+        Run pausedRun = new Run(null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
+        Run finishedRun = new Run("5", "#5", "SUCCESS", null, null, null, null);
+        Run earlierFinishedRun = new Run("4", "#4", "SUCCESS", null, null, null, null);
         when(workflowApi.getRunsFor(any(WorkflowJob.class)))
                 .thenReturn(Arrays.asList(inProgressRun, pausedRun, finishedRun, earlierFinishedRun));
 
@@ -68,8 +69,8 @@ public class WorkflowApiTest {
 
     @Test
     public void shouldNotGetLastFinishedRunForJobIfOnlyInProgressOrPausedJobsExist() throws PipelineException {
-        Run inProgressRun = new Run(null, null, null, "IN_PROGRESS", null, null, null, null);
-        Run pausedRun = new Run(null, null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
+        Run inProgressRun = new Run(null, null, "IN_PROGRESS", null, null, null, null);
+        Run pausedRun = new Run(null, null, "PAUSED_PENDING_INPUT", null, null, null, null);
         when(workflowApi.getRunsFor(any(WorkflowJob.class)))
                 .thenReturn(Arrays.asList(inProgressRun, pausedRun));
 

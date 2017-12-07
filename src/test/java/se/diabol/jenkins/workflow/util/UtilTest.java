@@ -45,7 +45,7 @@ public class UtilTest {
     }
 
     private static Run createRun(String number) {
-        return new Run(null, number, "run" + number, "PENDING", null, null, 1000L, null);
+        return new Run(number, "run" + number, "PENDING", null, null, 1000L, null);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class UtilTest {
     private static List<Stage> stageFixture(Long duration) {
         List<Stage> stages = new ArrayList<Stage>(5);
         for (int i = 1; i <= 5; i = i + 1) {
-            stages.add(new Stage(Collections.<String, Object>emptyMap(),
+            stages.add(new Stage(
                     "2014-04-27_20-40-00",
                     "Stage" + i,
                     "SUCCESS",

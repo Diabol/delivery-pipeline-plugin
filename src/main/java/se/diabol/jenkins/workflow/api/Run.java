@@ -19,19 +19,13 @@ package se.diabol.jenkins.workflow.api;
 
 import com.cloudbees.workflow.rest.external.RunExt;
 import com.cloudbees.workflow.rest.external.StageNodeExt;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Run {
 
-    public final Map<String, ?> _links;
     public final String id;
     public final String name;
     public final String status;
@@ -40,15 +34,13 @@ public class Run {
     public final Long durationMillis;
     public final List<Stage> stages;
 
-    public Run(@JsonProperty("_links") Map<String, ?> _links,
-               @JsonProperty("id") String id,
-               @JsonProperty("name") String name,
-               @JsonProperty("status") String status,
-               @JsonProperty("startTimeMillis") DateTime startTimeMillis,
-               @JsonProperty("endTimeMillis") DateTime endTimeMillis,
-               @JsonProperty("durationMillis") Long durationMillis,
-               @JsonProperty("stages") List<Stage> stages) {
-        this._links = _links;
+    public Run(String id,
+               String name,
+               String status,
+               DateTime startTimeMillis,
+               DateTime endTimeMillis,
+               Long durationMillis,
+               List<Stage> stages) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -59,7 +51,6 @@ public class Run {
     }
 
     public Run(RunExt run) {
-        this._links = new LinkedHashMap<>();
         this.id = run.getId();
         this.name = run.getName();
         this.status = run.getStatus().toString();
@@ -93,7 +84,6 @@ public class Run {
         List<Stage> stages = new ArrayList<>(extStages.size());
         for (StageNodeExt stage : extStages) {
             stages.add(new Stage(
-                    null,
                     stage.getId(),
                     stage.getName(),
                     stage.getStatus().toString(),

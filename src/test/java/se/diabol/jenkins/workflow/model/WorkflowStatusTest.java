@@ -37,12 +37,12 @@ public class WorkflowStatusTest {
 
     @Test
     public void nullStageShouldYieldNotBuiltStatusType() throws Exception {
-        assertThat(WorkflowStatus.statusType(null), is(StatusType.NOT_BUILT));
+        assertThat(WorkflowStatus.statusType((Stage) null), is(StatusType.NOT_BUILT));
     }
 
     @Test
     public void stageWithNoStatusShouldYieldNotBuiltStatusType() throws Exception {
-        assertThat(WorkflowStatus.statusType(null), is(StatusType.NOT_BUILT));
+        assertThat(WorkflowStatus.statusType((Stage) null), is(StatusType.NOT_BUILT));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class WorkflowStatusTest {
     }
 
     private static Stage getStageWithStatus(String status) {
-        return new Stage(null, "id", "name", status, new DateTime(System.currentTimeMillis()), 100L);
+        return new Stage("id", "name", status, new DateTime(System.currentTimeMillis()), 100L);
     }
 
 }

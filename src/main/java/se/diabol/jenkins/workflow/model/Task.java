@@ -17,18 +17,17 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
-import static java.lang.Math.round;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static se.diabol.jenkins.workflow.util.Util.getRunById;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
-import hudson.model.Result;
-import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.AbstractItem;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
+import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusFactory;
 import se.diabol.jenkins.pipeline.domain.status.StatusType;
@@ -118,19 +117,25 @@ public class Task extends AbstractItem {
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(stageStartNode);
         List<FlowNode> taskNodes = Util.getTaskNodes(stageNodes);
 
-        if (taskNodesDefinedInStage(taskNodes)) {
-            for (FlowNode flowNode : taskNodes) {
-                TaskAction action = flowNode.getAction(TaskAction.class);
-                Status status = resolveTaskStatus(build, stageStartNode);
-                result.add(new Task(flowNode.getId(), action.getTaskName(), build.getNumber(), status,
-                                    taskLinkFor(build), null, null,
-                                    StatusType.PAUSED_PENDING_INPUT.equals(status.getType())));
+        if (isNotEmpty(taskNodes)) {
+            for (FlowNode taskNode : taskNodes) {
+                result.add(resolveTask(build, stageStartNode, taskNode));
             }
         } else {
-            Status stageStatus = resolveTaskStatus(build, stageStartNode);
+            Stage stage = getStage(build, stageStartNode);;
+            Status stageStatus = resolveStageStatus(build, stage);
             result.add(createStageTask(build, stageStartNode, stageStatus));
         }
         return result;
+    }
+
+    private static Task resolveTask(WorkflowRun build, FlowNode stageStartNode, FlowNode taskNode)
+            throws PipelineException {
+        TaskAction action = taskNode.getAction(TaskAction.class);
+        Status status = resolveTaskStatus(build, stageStartNode, taskNode, action);
+        return new Task(taskNode.getId(), action.getTaskName(), build.getNumber(), status,
+                taskLinkFor(build), null, null,
+                StatusType.PAUSED_PENDING_INPUT.equals(status.getType()));
     }
 
     private static Task createStageTask(WorkflowRun build, FlowNode stageStartNode, Status stageStatus) {
@@ -144,51 +149,49 @@ public class Task extends AbstractItem {
         return taskLink;
     }
 
-    static boolean taskNodesDefinedInStage(List<FlowNode> taskNodes) {
-        return !taskNodes.isEmpty();
+    private static Status resolveStageStatus(WorkflowRun build, Stage stage) throws PipelineException {
+        Status stageStatus = WorkflowStatus.of(stage);
+        if (stageStatus.isRunning()) {
+            stageStatus = runningStatus(build, stage);
+        }
+        return stageStatus;
     }
 
-    private static Status resolveTaskStatus(WorkflowRun build, FlowNode stageStartNode) throws PipelineException {
+    private static Stage getStage(WorkflowRun build, FlowNode stageStartNode) throws PipelineException {
         List<Run> runs = workflowApi.getRunsFor(build.getParent());
         Run run = getRunById(runs, build.getNumber());
-        se.diabol.jenkins.workflow.api.Stage currentStage = run.getStageByName(stageStartNode.getDisplayName());
-        if (currentStage == null) {
-            return resolveStatus(build, FlowNodeUtil.getStageNodes(stageStartNode), run.stages);
+        Stage stage = run.getStageByName(stageStartNode.getDisplayName());
+        if (stage == null) {
+            throw new PipelineException("Could not resolve stage " + stageStartNode.getDisplayName()
+                    + " for pipeline " + build.getDisplayName());
+        }
+        return stage;
+    }
+
+    private static Status resolveTaskStatus(WorkflowRun build,
+                                            FlowNode stageStartNode,
+                                            FlowNode taskNode,
+                                            TaskAction taskAction) throws PipelineException {
+        Stage stage = getStage(build, stageStartNode);
+
+        Long finishedTime = taskAction.getFinishedTime();
+        if (finishedTime != null) {
+            long duration = finishedTime - getTaskStartTime(taskNode);
+            return new SimpleStatus(StatusType.SUCCESS, finishedTime, duration);
         } else {
-            Status stageStatus = WorkflowStatus.of(currentStage);
+            Status stageStatus = resolveStageStatus(build, stage);
             if (stageStatus.isRunning()) {
-                stageStatus = runningStatus(build, currentStage);
-            }
-            return stageStatus;
-        }
-    }
-
-    private static Status resolveStatus(WorkflowRun build, List<FlowNode> taskNodes, List<Stage> stages) {
-        if (Result.FAILURE.equals(build.getResult())) {
-            return StatusFactory.failed(getStartTime(taskNodes), getDuration(stages), false, null);
-        }
-        if (isRunning(taskNodes) && !build.getExecution().isComplete()) {
-            return runningStatus(build);
-        }
-        if (allExecuted(taskNodes)) {
-            if (failed(Util.head(taskNodes))) {
-                return StatusFactory.failed(getStartTime(taskNodes), getDuration(stages), false, null);
+                return runningStatus(build, stage);
             } else {
-                return StatusFactory.success(getStartTime(taskNodes), getDuration(stages), false, null);
+                long duration = (stage.startTimeMillis.getMillis() + stage.durationMillis) - getTaskStartTime(taskNode);
+                return new SimpleStatus(stageStatus.getType(),
+                        stage.startTimeMillis.getMillis() + stage.durationMillis, duration);
             }
-        } else {
-            return StatusFactory.idle();
         }
     }
 
-    protected static boolean failed(FlowNode node) {
-        return node != null && node.getError() != null;
-    }
-
-    private static Status runningStatus(WorkflowRun build) {
-        long buildTimestamp = build.getTimeInMillis();
-        int progress = calculateProgress(buildTimestamp, build.getEstimatedDuration());
-        return runningStatus(buildTimestamp, progress);
+    private static long getTaskStartTime(FlowNode taskNode) {
+        return taskNode.getAction(TimingAction.class).getStartTime();
     }
 
     private static Status runningStatus(WorkflowRun build, Stage stage) throws PipelineException {
@@ -211,49 +214,6 @@ public class Task extends AbstractItem {
 
         long stageStartTime = currentStage.startTimeMillis.getMillis();
         long estimatedStageDuration = Stage.getDurationOfStageFromRun(previousRun, currentStage);
-        return calculateProgress(stageStartTime, estimatedStageDuration);
-    }
-
-    static int calculateProgress(long timestampFromBuild, long estimatedDuration) {
-        return (int) round(100.0d
-                * (System.currentTimeMillis() - timestampFromBuild)
-                / estimatedDuration);
-    }
-
-    private static boolean allExecuted(List<FlowNode> nodes) {
-        for (FlowNode node : nodes) {
-            if (!NotExecutedNodeAction.isExecuted(node)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    static boolean isRunning(List<FlowNode> nodes) {
-        if (nodes != null) {
-            for (FlowNode node : nodes) {
-                if (node.isRunning()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    static long getStartTime(List<FlowNode> nodes) {
-        if (nodes != null && !nodes.isEmpty()) {
-            return TimingAction.getStartTime(nodes.get(0));
-        }
-        return 0;
-    }
-
-    protected static long getDuration(List<Stage> stages) {
-        long result = 0;
-        if (stages != null) {
-            for (Stage stage : stages) {
-                result = result + stage.durationMillis;
-            }
-        }
-        return result;
+        return Progress.calculate(stageStartTime, estimatedStageDuration);
     }
 }
