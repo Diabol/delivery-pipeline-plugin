@@ -27,6 +27,7 @@ import static java.util.Collections.singleton;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Stage extends AbstractItem {
@@ -187,12 +189,24 @@ public class Stage extends AbstractItem {
             if (stage == null) {
                 stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
             }
-            stages.put(stageName,
-                    Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
+
+            List<Task> newTasks = newArrayList(concat(stage.getTasks(), singleton(task)));
+            Collections.sort(newTasks, new OrderingByStageName());
+            stages.put(stageName, Stage.getPrototypeStage(stage.getName(), newTasks));
         }
         Collection<Stage> stagesResult = stages.values();
 
         return Stage.placeStages(firstProject, stagesResult);
+    }
+
+    private static class OrderingByStageName extends Ordering<Task> {
+
+        @Override
+        public int compare(@Nullable Task t1, @Nullable Task t2) {
+            String t1Name = t1.getName();
+            String t2Name = t2.getName();
+            return t1Name.compareTo(t2Name);
+        }
     }
 
 
