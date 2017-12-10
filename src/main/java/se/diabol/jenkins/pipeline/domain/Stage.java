@@ -256,11 +256,7 @@ public class Stage extends AbstractItem {
 
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(
                 Jenkins.getInstance()), stages), graph);
-        allPaths.sort(new Comparator<List<Stage>>() {
-            public int compare(List<Stage> stages1, List<Stage> stages2) {
-                return stages2.size() - stages1.size();
-            }
-        });
+        allPaths.sort((stages1, stages2) -> stages2.size() - stages1.size());
         
         //for keeping track of which row has an available column
         final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
@@ -336,19 +332,15 @@ public class Stage extends AbstractItem {
     }
 
     protected static void sortByRowsCols(List<Stage> stages) {
-        stages.sort(new Comparator<Stage>() {
-            @Override
-            public int compare(Stage stage1, Stage stage2) {
-                int result = Integer.valueOf(stage1.getRow()).compareTo(stage2.getRow());
-                if (result == 0) {
-                    return Integer.valueOf(stage1.getColumn()).compareTo(stage2.getColumn());
-                } else {
-                    return result;
-                }
+        stages.sort((stage1, stage2) -> {
+            int result = Integer.compare(stage1.getRow(), stage2.getRow());
+            if (result == 0) {
+                return Integer.compare(stage1.getColumn(), stage2.getColumn());
+            } else {
+                return result;
             }
         });
     }
-
 
     private static List<Stage> getDownstreamStagesForStage(Stage stage, Collection<Stage> stages) {
         List<Stage> result = newArrayList();

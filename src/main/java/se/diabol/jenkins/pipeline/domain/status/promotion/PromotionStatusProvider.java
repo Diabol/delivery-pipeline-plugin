@@ -106,12 +106,8 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
     }
 
     private void sortPromotionStatusListByStartTimeInDescOrder(List<PromotionStatus> promotionStatusList) {
-        Collections.sort(promotionStatusList, new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                return (int) (promotionStatusWrapper.getStartTime(o2) - promotionStatusWrapper.getStartTime(o1));
-            }
-        });
+        promotionStatusList.sort((Comparator<Object>) (o1, o2)
+                -> (int) (promotionStatusWrapper.getStartTime(o2) - promotionStatusWrapper.getStartTime(o1)));
     }
 
     // Decorators to make code unit-testable
