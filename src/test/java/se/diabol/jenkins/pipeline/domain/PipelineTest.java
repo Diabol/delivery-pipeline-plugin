@@ -52,6 +52,7 @@ import se.diabol.jenkins.pipeline.util.BuildUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -726,11 +727,11 @@ public class PipelineTest {
         when(task1.getId()).thenReturn("task1");
         when(task2.getId()).thenReturn("task2");
         when(task3.getId()).thenReturn("task3");
-        when(task2.getDownstreamTasks()).thenReturn(Arrays.asList("task3"));
-        when(task1.getDownstreamTasks()).thenReturn(Arrays.asList("task2"));
-        when(stage1.getTasks()).thenReturn(Arrays.asList(task1));
-        when(stage2.getTasks()).thenReturn(Arrays.asList(task2));
-        when(stage3.getTasks()).thenReturn(Arrays.asList(task3));
+        when(task2.getDownstreamTasks()).thenReturn(Collections.singletonList("task3"));
+        when(task1.getDownstreamTasks()).thenReturn(Collections.singletonList("task2"));
+        when(stage1.getTasks()).thenReturn(Collections.singletonList(task1));
+        when(stage2.getTasks()).thenReturn(Collections.singletonList(task2));
+        when(stage3.getTasks()).thenReturn(Collections.singletonList(task3));
 
         FreeStyleProject project = jenkins.createFreeStyleProject("A");
         Pipeline pipeline = new Pipeline("SimpleRoute", project, null, Arrays.asList(stage1, stage2, stage3));
@@ -788,11 +789,11 @@ public class PipelineTest {
         when(task5.getStatus()).thenReturn(status5);
         when(task6.getStatus()).thenReturn(status6);
         when(task7.getStatus()).thenReturn(status7);
-        when(task6.getDownstreamTasks()).thenReturn(Arrays.asList("task7"));
-        when(task4.getDownstreamTasks()).thenReturn(Arrays.asList("task6"));
+        when(task6.getDownstreamTasks()).thenReturn(Collections.singletonList("task7"));
+        when(task4.getDownstreamTasks()).thenReturn(Collections.singletonList("task6"));
         when(task2.getDownstreamTasks()).thenReturn(Arrays.asList("task4", "task5"));
         when(task1.getDownstreamTasks()).thenReturn(Arrays.asList("task2", "task3"));
-        when(stage1.getTasks()).thenReturn(Arrays.asList(task1));
+        when(stage1.getTasks()).thenReturn(Collections.singletonList(task1));
         when(stage2.getTasks()).thenReturn(Arrays.asList(task2, task3));
         when(stage3.getTasks()).thenReturn(Arrays.asList(task4, task5));
         when(stage4.getTasks()).thenReturn(Arrays.asList(task6, task7));
