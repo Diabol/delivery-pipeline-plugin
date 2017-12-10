@@ -26,13 +26,11 @@ import hudson.model.StringParameterValue;
 import hudson.plugins.promoted_builds.PromotedBuildAction;
 import hudson.plugins.promoted_builds.Promotion;
 import hudson.plugins.promoted_builds.Status;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -107,7 +105,7 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
 
     private void sortPromotionStatusListByStartTimeInDescOrder(List<PromotionStatus> promotionStatusList) {
         promotionStatusList.sort((Comparator<Object>) (o1, o2)
-                -> (int) (promotionStatusWrapper.getStartTime(o2) - promotionStatusWrapper.getStartTime(o1)));
+            -> (int) (promotionStatusWrapper.getStartTime(o2) - promotionStatusWrapper.getStartTime(o1)));
     }
 
     // Decorators to make code unit-testable
