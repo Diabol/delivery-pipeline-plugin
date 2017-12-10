@@ -29,7 +29,7 @@ public class LatestActivityComparator extends ComponentComparator implements Ser
 
     @Override
     public int compare(Component o1, Component o2) {
-        return Long.valueOf(getLastActivity(o2)).compareTo(getLastActivity(o1));
+        return Long.compare(getLastActivity(o2), getLastActivity(o1));
     }
 
     private long getLastActivity(Pipeline pipeline) {

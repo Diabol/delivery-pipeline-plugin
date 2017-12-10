@@ -29,6 +29,6 @@ public final class BuildStartTimeComparator implements Comparator<AbstractBuild>
     }
 
     protected int compare(long first, long second) {
-        return (first < second) ? -1 : ((first == second) ? 0 : 1);
+        return Long.compare(first, second);
     }
 }
