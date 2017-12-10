@@ -122,7 +122,7 @@ public class Task extends AbstractItem {
                 result.add(resolveTask(build, stageStartNode, taskNode));
             }
         } else {
-            Stage stage = getStage(build, stageStartNode);;
+            Stage stage = getStage(build, stageStartNode);
             Status stageStatus = resolveStageStatus(build, stage);
             result.add(createStageTask(build, stageStartNode, stageStatus));
         }
