@@ -225,7 +225,7 @@ public class SimpleStatus implements Status {
     }
 
     private static List<PromotionStatus> getPromotionStatusList(AbstractBuild build) {
-        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        final List<PromotionStatus> promotionStatusList = new ArrayList<>();
 
         final List<AbstractPromotionStatusProvider> promotionStatusProviders =
                 SimpleStatus.promotionStatusProviderWrapper.getAllPromotionStatusProviders();

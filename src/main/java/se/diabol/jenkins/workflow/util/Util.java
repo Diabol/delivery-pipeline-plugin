@@ -30,7 +30,7 @@ public final class Util {
     }
 
     public static List<FlowNode> getTaskNodes(List<FlowNode> stageNodes) {
-        List<FlowNode> result = new ArrayList<FlowNode>();
+        List<FlowNode> result = new ArrayList<>();
         for (FlowNode stageNode : stageNodes) {
             if (isTaskNode(stageNode)) {
                 result.add(stageNode);

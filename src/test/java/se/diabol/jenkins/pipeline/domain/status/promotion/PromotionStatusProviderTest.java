@@ -71,7 +71,7 @@ public class PromotionStatusProviderTest {
         final AbstractBuild<?, ?> mockBuild = mock(AbstractBuild.class);
         when(mockBuild.getAction(any(Class.class))).thenReturn(mock(BuildBadgeAction.class));
 
-        final List<Status> mockPromotionList = new ArrayList<Status>();
+        final List<Status> mockPromotionList = new ArrayList<>();
         PowerMockito.mockStatic(Status.class);
         mockPromotionList.add(mock(Status.class));
 
@@ -106,7 +106,7 @@ public class PromotionStatusProviderTest {
 
         final String promotion2Name = "Promotion-2";
 
-        final List<ParameterValue> mockParameterValues = new ArrayList<ParameterValue>();
+        final List<ParameterValue> mockParameterValues = new ArrayList<>();
         mockParameterValues.add(new StringParameterValue(stringParamName, stringParamValue));
         mockParameterValues.add(new BooleanParameterValue(booleanParamName, booleanParamValue));
 
@@ -122,13 +122,13 @@ public class PromotionStatusProviderTest {
         final Promotion mockPromotionSecond = mock(Promotion.class);
         when(mockPromotionSecond.getParameterValues()).thenReturn(mockParameterValues);
 
-        final List<Promotion> mockPromotions = new ArrayList<Promotion>();
+        final List<Promotion> mockPromotions = new ArrayList<>();
         mockPromotions.add(mockPromotionFirst);
 
         final PromotionStatusProvider.PromotionStatusWrapper mockPromotionStatusWrapper = mock(PromotionStatusProvider.PromotionStatusWrapper.class);
         when(mockPromotionStatusWrapper.getPromotionBuilds(anyObject())).thenReturn(mockPromotions);
 
-        final List<Status> mockStatusList = new ArrayList<Status>();
+        final List<Status> mockStatusList = new ArrayList<>();
         PowerMockito.mockStatic(Status.class);
         final Status mockStatusObject1 = mock(Status.class);
         mockStatusList.add(mockStatusObject1);

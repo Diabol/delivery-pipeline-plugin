@@ -43,7 +43,7 @@ public class PromotedBuildRelationshipResolver extends RelationshipResolver {
     @Override
     public List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?> project) {
         DependencyGraph graph = new DependencyGraph();
-        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        List<AbstractProject> result = new ArrayList<>();
         JobPropertyImpl property = project.getProperty(JobPropertyImpl.class);
         if (property != null) {
             List<PromotionProcess> promotionProcesses = property.getActiveItems();

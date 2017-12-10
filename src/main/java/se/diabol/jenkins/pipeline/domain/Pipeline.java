@@ -157,7 +157,7 @@ public class Pipeline extends AbstractItem {
         if (stages.size() == 0) {
             this.totalBuildTime = 0L;
         } else {
-            List<Route> allRoutes = new ArrayList<Route>();
+            List<Route> allRoutes = new ArrayList<>();
             calculatePipelineRoutes(getStages().get(0).getTasks().get(0), null, allRoutes);
             long maxTime = 0L;
             for (Route route : allRoutes) {
@@ -194,7 +194,7 @@ public class Pipeline extends AbstractItem {
 
     private Task getTaskFromName(String taskName) {
         if (allTasks == null) {
-            allTasks = new HashMap<String, Task>();
+            allTasks = new HashMap<>();
             for (Stage stage : stages) {
                 for (Task task : stage.getTasks()) {
                     allTasks.put(task.getId(), task);
@@ -232,7 +232,7 @@ public class Pipeline extends AbstractItem {
     }
 
     public Pipeline createPipelineAggregated(ItemGroup context, boolean showAggregatedChanges) {
-        List<Stage> pipelineStages = new ArrayList<Stage>();
+        List<Stage> pipelineStages = new ArrayList<>();
         for (Stage stage : getStages()) {
             pipelineStages.add(stage.createAggregatedStage(context, firstProject));
         }
@@ -273,10 +273,10 @@ public class Pipeline extends AbstractItem {
                                                boolean pagingEnabled,
                                                boolean showChanges,
                                                Component component) throws PipelineException {
-        List<Pipeline> result = new ArrayList<Pipeline>();
+        List<Pipeline> result = new ArrayList<>();
         if (firstProject.isInQueue()) {
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
-            List<Stage> pipelineStages = new ArrayList<Stage>();
+            List<Stage> pipelineStages = new ArrayList<>();
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, null));
             }
@@ -301,7 +301,7 @@ public class Pipeline extends AbstractItem {
     }
 
     protected List<AbstractBuild> resolveBuilds(List<AbstractProject> firstProjects) {
-        List<AbstractBuild> builds = new ArrayList<AbstractBuild>();
+        List<AbstractBuild> builds = new ArrayList<>();
         for (AbstractProject firstProject : firstProjects) {
             builds.addAll(firstProject.getBuilds());
         }
@@ -312,14 +312,14 @@ public class Pipeline extends AbstractItem {
 
     protected List<Pipeline> getPipelines(Iterator it, ItemGroup context, int startIndex, int retrieveSize,
                                         boolean showChanges) throws PipelineException {
-        List<Pipeline> result = new ArrayList<Pipeline>();
+        List<Pipeline> result = new ArrayList<>();
         for (int i = startIndex; i < (startIndex + retrieveSize) && it.hasNext(); i++) {
             AbstractBuild firstBuild = (AbstractBuild) it.next();
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
             Set<UserInfo> contributors = showChanges ? UserInfo.getContributors(pipelineChanges) : null;
 
             String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
-            List<Stage> pipelineStages = new ArrayList<Stage>();
+            List<Stage> pipelineStages = new ArrayList<>();
             Pipeline pipeline = this;
             if (showUpstream()) {
                 pipeline = Pipeline.extractPipeline(getName(), firstBuild.getProject(), lastProject, showUpstream());

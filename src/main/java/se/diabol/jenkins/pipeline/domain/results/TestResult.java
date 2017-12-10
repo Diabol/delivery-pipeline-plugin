@@ -56,7 +56,7 @@ public class TestResult extends Result {
 
     public static List<TestResult> getResults(AbstractBuild<?, ?> build) {
         if (build != null) {
-            List<TestResult> result = new ArrayList<TestResult>();
+            List<TestResult> result = new ArrayList<>();
             AbstractTestResultAction resultAction = build.getAction(AbstractTestResultAction.class);
             if (resultAction != null) {
                 result.add(new TestResult(

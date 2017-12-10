@@ -78,7 +78,7 @@ public class RunTests {
     }
 
     private static List<Stage> stageFixture() {
-        List<Stage> stages = new ArrayList<Stage>(5);
+        List<Stage> stages = new ArrayList<>(5);
         for (int i = 1; i <= 5; i = i + 1) {
             stages.add(new Stage("2014-04-27_20-40-00",
                                  "Stage" + i,

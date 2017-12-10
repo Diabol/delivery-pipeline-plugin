@@ -67,7 +67,7 @@ public class Stage extends AbstractItem {
     private List<String> downstreamStages;
     private List<Long> downstreamStageIds;
     private final long id;
-    private Set<Change> changes = new HashSet<Change>();
+    private Set<Change> changes = new HashSet<>();
 
     public Stage(String name, List<Task> tasks) {
         super(name);
@@ -197,7 +197,7 @@ public class Stage extends AbstractItem {
 
 
     public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
-        List<Task> stageTasks = new ArrayList<Task>();
+        List<Task> stageTasks = new ArrayList<>();
 
         //The version build for this stage is the highest first task build
         AbstractBuild versionBuild = getHighestBuild(firstProject, context);
@@ -214,7 +214,7 @@ public class Stage extends AbstractItem {
 
 
     public Stage createLatestStage(ItemGroup context, AbstractBuild firstBuild) {
-        List<Task> stageTasks = new ArrayList<Task>();
+        List<Task> stageTasks = new ArrayList<>();
         for (Task task : getTasks()) {
             stageTasks.add(task.getLatestTask(context, firstBuild));
         }
@@ -225,13 +225,13 @@ public class Stage extends AbstractItem {
 
     public static List<Stage> placeStages(AbstractProject firstProject, Collection<Stage> stages)
             throws PipelineException {
-        DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<Stage, Edge>(new StageEdgeFactory());
+        DirectedGraph<Stage, Edge> graph = new SimpleDirectedGraph<>(new StageEdgeFactory());
         for (Stage stage : stages) {
             stage.setTaskConnections(getStageConnections(stage, stages));
             graph.addVertex(stage);
             List<Stage> downstreamStages = getDownstreamStagesForStage(stage, stages);
-            List<String> downstreamStageNames = new ArrayList<String>();
-            List<Long> downstreamStageIds = new ArrayList<Long>();
+            List<String> downstreamStageNames = new ArrayList<>();
+            List<Long> downstreamStageIds = new ArrayList<>();
             for (Stage downstream : downstreamStages) {
                 downstreamStageNames.add(downstream.getName());
                 downstreamStageIds.add(downstream.getId());
@@ -243,7 +243,7 @@ public class Stage extends AbstractItem {
 
         }
 
-        CycleDetector<Stage, Edge> cycleDetector = new CycleDetector<Stage, Edge>(graph);
+        CycleDetector<Stage, Edge> cycleDetector = new CycleDetector<>(graph);
         if (cycleDetector.detectCycles()) {
             Set<Stage> stageSet = cycleDetector.findCycles();
             StringBuilder message = new StringBuilder("Circular dependencies between stages: ");
@@ -286,7 +286,7 @@ public class Stage extends AbstractItem {
             }
         }
 
-        List<Stage> result = new ArrayList<Stage>(stages);
+        List<Stage> result = new ArrayList<>(stages);
 
         sortByRowsCols(result);
 
@@ -294,7 +294,7 @@ public class Stage extends AbstractItem {
     }
 
     private static Map<String, List<String>> getStageConnections(Stage stage, Collection<Stage> stages) {
-        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        Map<String, List<String>> result = new HashMap<>();
         for (int i = 0; i < stage.getTasks().size(); i++) {
             Task task = stage.getTasks().get(i);
             for (int j = 0; j < task.getDownstreamTasks().size(); j++) {
@@ -302,7 +302,7 @@ public class Stage extends AbstractItem {
                 Stage target = findStageForJob(downstreamTask, stages);
                 if (!stage.equals(target)) {
                     if (result.get(task.getId()) == null) {
-                        result.put(task.getId(), new ArrayList<String>(singleton(downstreamTask)));
+                        result.put(task.getId(), new ArrayList<>(singleton(downstreamTask)));
                     } else {
                         result.get(task.getId()).add(downstreamTask);
                     }
@@ -313,9 +313,9 @@ public class Stage extends AbstractItem {
     }
 
     private static List<List<Stage>> findAllRunnablePaths(Stage start, DirectedGraph<Stage, Edge> graph) {
-        List<List<Stage>> paths = new LinkedList<List<Stage>>();
+        List<List<Stage>> paths = new LinkedList<>();
         if (graph.outDegreeOf(start) == 0) {
-            List<Stage> path = new LinkedList<Stage>();
+            List<Stage> path = new LinkedList<>();
             path.add(start);
             paths.add(path);
         } else {

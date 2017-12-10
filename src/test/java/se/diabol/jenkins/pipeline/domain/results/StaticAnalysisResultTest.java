@@ -67,7 +67,7 @@ public class StaticAnalysisResultTest {
         when(r2.getNumberOfNormalPriorityWarnings()).thenReturn(2);
         when(r2.getNumberOfLowPriorityWarnings()).thenReturn(3);
 
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<>();
         actions.add(findbugs);
         actions.add(owasp);
 

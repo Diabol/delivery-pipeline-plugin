@@ -34,7 +34,7 @@ public class NameComparatorTest {
     public void testCompare() {
         Component componentB = new Component("B", "B", "job/A", false, 3, PAGING_DISABLED, 1);
         Component componentA = new Component("A", "A", "job/B", false, 3, PAGING_DISABLED, 2);
-        List<Component> list = new ArrayList<Component>();
+        List<Component> list = new ArrayList<>();
         list.add(componentB);
         list.add(componentA);
         list.sort(new NameComparator.DescriptorImpl().createInstance());

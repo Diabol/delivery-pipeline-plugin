@@ -63,7 +63,7 @@ public class ComponentTest {
     @Test
     @WithoutJenkins
     public void shouldExposePipelines() {
-        final List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        final List<Pipeline> pipelines = new ArrayList<>();
         Component component = new Component("Component", null, pipelines);
         assertThat(component.getPipelines(), is(pipelines));
     }

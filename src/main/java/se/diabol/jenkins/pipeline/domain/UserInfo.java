@@ -43,7 +43,7 @@ public class UserInfo extends AbstractItem {
     }
 
     public static Set<UserInfo> getContributors(List<Change> changes) {
-        Set<UserInfo> contributors = new HashSet<UserInfo>();
+        Set<UserInfo> contributors = new HashSet<>();
         for (Change change : changes) {
             contributors.add(change.getAuthor());
         }

@@ -48,7 +48,7 @@ public class FailedJobComparatorTest {
         Component failedComponent = createComponent(status(FAILED, new DateTime().minusDays(1)));
         Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
 
-        List<Component> list = new ArrayList<Component>();
+        List<Component> list = new ArrayList<>();
         list.add(successfulComponent);
         list.add(failedComponent);
         list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
@@ -63,7 +63,7 @@ public class FailedJobComparatorTest {
         Component failedComponentRunLongAgo = createComponent(status(FAILED, new DateTime().minusDays(10)));
         Component failedComponent = createComponent(status(FAILED, new DateTime().minusDays(1)));
         Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
-        List<Component> list = new ArrayList<Component>();
+        List<Component> list = new ArrayList<>();
         list.add(successfulComponent);
         list.add(failedComponent);
         list.add(failedComponentRunLongAgo);
@@ -79,7 +79,7 @@ public class FailedJobComparatorTest {
         Component notRunComponent = createComponentWithNoRuns();
         Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
         Component failedComponent = createComponent(status(FAILED, new DateTime().minusDays(1)));
-        List<Component> list = new ArrayList<Component>();
+        List<Component> list = new ArrayList<>();
         list.add(notRunComponent);
         list.add(successfulComponent);
         list.add(failedComponent);

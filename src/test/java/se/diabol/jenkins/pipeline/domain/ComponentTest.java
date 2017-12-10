@@ -49,7 +49,7 @@ public class ComponentTest {
     public void testSettersAndGetters() {
         Component component = new Component("Component", "Build", null, false, 10, PAGING_ENABLED_FALSE, 1);
         component.setTotalNoOfPipelines(10);
-        component.setPipelines(new ArrayList<Pipeline>());
+        component.setPipelines(new ArrayList<>());
         assertEquals(1, component.getComponentNumber());
         assertEquals("Component", component.getName());
         assertEquals("Build", component.getFirstJob());
@@ -82,7 +82,7 @@ public class ComponentTest {
 
         DeliveryPipelineView.ComponentSpec componentSpec =
                 new DeliveryPipelineView.ComponentSpec("Pipeline","comp", null, false);
-        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> componentSpecs = new ArrayList<>();
         componentSpecs.add(componentSpec);
         view.setComponentSpecs(componentSpecs);
 

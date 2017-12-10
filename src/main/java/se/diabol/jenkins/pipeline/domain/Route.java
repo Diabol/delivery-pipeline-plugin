@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class Route {
 
-    private List<Task> tasks = new ArrayList<Task>();
+    private List<Task> tasks = new ArrayList<>();
 
     public List<Task> getTasks() {
         return tasks;
