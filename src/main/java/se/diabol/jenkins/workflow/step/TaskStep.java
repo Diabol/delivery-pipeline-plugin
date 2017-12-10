@@ -18,7 +18,6 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.step;
 
 import hudson.Extension;
-import hudson.model.InvisibleAction;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.kohsuke.stapler.DataBoundConstructor;

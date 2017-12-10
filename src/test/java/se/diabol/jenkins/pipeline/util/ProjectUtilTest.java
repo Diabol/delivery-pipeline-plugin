@@ -28,7 +28,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

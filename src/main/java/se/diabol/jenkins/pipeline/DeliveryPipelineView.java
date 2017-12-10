@@ -64,7 +64,6 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -528,7 +527,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
             if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
                 ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
                 if (comparatorDescriptor != null) {
-                    Collections.sort(components, comparatorDescriptor.createInstance());
+                    components.sort(comparatorDescriptor.createInstance());
                 }
             }
             if (maxNumberOfVisiblePipelines > 0) {

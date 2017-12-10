@@ -21,8 +21,6 @@ import static java.util.Collections.singletonList;
 import static se.diabol.jenkins.workflow.util.Util.head;
 
 import com.google.common.collect.ImmutableList;
-import hudson.model.ItemGroup;
-import hudson.model.TopLevelItem;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
