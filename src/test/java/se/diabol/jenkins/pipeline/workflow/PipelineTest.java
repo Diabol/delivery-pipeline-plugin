@@ -53,7 +53,6 @@ public class PipelineTest {
         assertThat(pipeline.getStages().get(1).getName(), is("CI"));
         assertThat(pipeline.isAggregated(), is(false));
         assertNotNull(pipeline.getTimestamp());
-        assertNotNull(pipeline.getTotalBuildTime());
         assertNull(pipeline.getContributors());
         assertNotNull(pipeline.getTriggeredBy());
         assertThat(pipeline.getTriggeredBy().size(), is(0));
