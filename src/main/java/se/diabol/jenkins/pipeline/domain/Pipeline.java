@@ -305,7 +305,7 @@ public class Pipeline extends AbstractItem {
         for (AbstractProject firstProject : firstProjects) {
             builds.addAll(firstProject.getBuilds());
         }
-        Collections.sort(builds, new BuildStartTimeComparator());
+        builds.sort(new BuildStartTimeComparator());
         return builds;
     }
 

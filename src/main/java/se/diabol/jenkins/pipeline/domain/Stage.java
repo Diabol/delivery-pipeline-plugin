@@ -256,7 +256,7 @@ public class Stage extends AbstractItem {
 
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(
                 Jenkins.getInstance()), stages), graph);
-        Collections.sort(allPaths, new Comparator<List<Stage>>() {
+        allPaths.sort(new Comparator<List<Stage>>() {
             public int compare(List<Stage> stages1, List<Stage> stages2) {
                 return stages2.size() - stages1.size();
             }
@@ -336,7 +336,7 @@ public class Stage extends AbstractItem {
     }
 
     protected static void sortByRowsCols(List<Stage> stages) {
-        Collections.sort(stages, new Comparator<Stage>() {
+        stages.sort(new Comparator<Stage>() {
             @Override
             public int compare(Stage stage1, Stage stage2) {
                 int result = Integer.valueOf(stage1.getRow()).compareTo(stage2.getRow());

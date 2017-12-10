@@ -40,7 +40,7 @@ public class LatestActivityComparatorTest {
         List<Component> list = new ArrayList<Component>();
         list.add(componentRunRecently);
         list.add(componentRunLongAgo);
-        Collections.sort(list, new LatestActivityComparator.DescriptorImpl().createInstance());
+        list.sort(new LatestActivityComparator.DescriptorImpl().createInstance());
         assertEquals(componentRunRecently, list.get(0));
         assertEquals(componentRunLongAgo, list.get(1));
     }
