@@ -51,7 +51,7 @@ public class FailedJobComparatorTest {
         List<Component> list = new ArrayList<Component>();
         list.add(successfulComponent);
         list.add(failedComponent);
-        Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
+        list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
         assertThat(list.size(), is(2));
         assertEquals(failedComponent, list.get(0));
         assertEquals(successfulComponent, list.get(1));
@@ -67,7 +67,7 @@ public class FailedJobComparatorTest {
         list.add(successfulComponent);
         list.add(failedComponent);
         list.add(failedComponentRunLongAgo);
-        Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
+        list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
         assertThat(list.size(), is(3));
         assertEquals(failedComponent, list.get(0));
         assertEquals(failedComponentRunLongAgo, list.get(1));
@@ -83,7 +83,7 @@ public class FailedJobComparatorTest {
         list.add(notRunComponent);
         list.add(successfulComponent);
         list.add(failedComponent);
-        Collections.sort(list, new FailedJobComparator.DescriptorImpl().createInstance());
+        list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
         assertThat(list.size(), is(3));
         assertEquals(failedComponent, list.get(0));
         assertEquals(successfulComponent, list.get(1));
