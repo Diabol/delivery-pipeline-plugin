@@ -376,7 +376,7 @@ public class SimpleStatusTest {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MILLISECOND, -10000);
         Mockito.when(build.getTimestamp()).thenReturn(calendar);
-        Mockito.when(build.getEstimatedDuration()).thenReturn(10l);
+        Mockito.when(build.getEstimatedDuration()).thenReturn(10L);
 
         assertEquals(99, ((Running) SimpleStatus.resolveStatus(null, build, null)).getPercentage());
     }
