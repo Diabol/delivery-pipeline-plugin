@@ -37,7 +37,7 @@ public class LatestActivityComparatorTest {
     public void shouldSortRecentlyRunnedPipelinesFirst() {
         Component componentRunLongAgo = createComponent(status(SUCCESS, new DateTime().minusDays(2)));
         Component componentRunRecently = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
-        List<Component> list = new ArrayList<Component>();
+        List<Component> list = new ArrayList<>();
         list.add(componentRunRecently);
         list.add(componentRunLongAgo);
         list.sort(new LatestActivityComparator.DescriptorImpl().createInstance());

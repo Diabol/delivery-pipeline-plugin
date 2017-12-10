@@ -460,7 +460,7 @@ public class PipelineTest {
         projectB.getPublishersList().add(new BuildTrigger("D", false));
         projectC.getPublishersList().add(new BuildTrigger("D", false));
         projectD.getPublishersList().add(
-                new JoinTrigger(new DescribableList<Publisher, Descriptor<Publisher>>(Saveable.NOOP), "", false));
+                new JoinTrigger(new DescribableList<>(Saveable.NOOP), "", false));
         jenkins.getInstance().rebuildDependencyGraph();
         Pipeline prototype = Pipeline.extractPipeline("ForkJoin", projectA);
         assertNotNull(prototype);
@@ -670,11 +670,11 @@ public class PipelineTest {
         projectD.addProperty(new PipelineProperty("D", "B", ""));
 
         projectA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
-                new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+                new BuildTriggerConfig("B", ResultCondition.SUCCESS, new ArrayList<>())));
         projectB.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
-                new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+                new BuildTriggerConfig("C", ResultCondition.SUCCESS, new ArrayList<>())));
         projectC.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
-                new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<AbstractBuildParameterFactory>())));
+                new BuildTriggerConfig("D", ResultCondition.SUCCESS, new ArrayList<>())));
 
         jenkins.getInstance().rebuildDependencyGraph();
 
@@ -734,7 +734,7 @@ public class PipelineTest {
 
         FreeStyleProject project = jenkins.createFreeStyleProject("A");
         Pipeline pipeline = new Pipeline("SimpleRoute", project, null, Arrays.asList(stage1, stage2, stage3));
-        List<Route> allRoutes = new ArrayList<Route>();
+        List<Route> allRoutes = new ArrayList<>();
         pipeline.calculatePipelineRoutes(task1, null, allRoutes);
         /*
         task1 -> task2 -> task3
@@ -813,7 +813,7 @@ public class PipelineTest {
     @Test
     public void testCalculateTotalBuildTimeNoStages() throws Exception {
         FreeStyleProject project = jenkins.createFreeStyleProject("A");
-        Pipeline pipeline = new Pipeline("NoStages", project, null, new ArrayList<Stage>());
+        Pipeline pipeline = new Pipeline("NoStages", project, null, new ArrayList<>());
         pipeline.calculateTotalBuildTime();
         assertEquals(0L, pipeline.getTotalBuildTime());
     }
@@ -836,7 +836,7 @@ public class PipelineTest {
                 new BlockableBuildTriggerConfig("Job Util 2", new BlockingBehaviour("never", "never", "never"), null)));
         jobA.getPublishersList().add(new hudson.plugins.parameterizedtrigger.BuildTrigger(
                 new BuildTriggerConfig("Job C", ResultCondition.SUCCESS,
-                        new ArrayList<AbstractBuildParameterFactory>())));
+                        new ArrayList<>())));
 
         jenkins.getInstance().rebuildDependencyGraph();
 

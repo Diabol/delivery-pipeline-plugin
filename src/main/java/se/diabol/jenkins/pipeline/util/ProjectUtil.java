@@ -107,7 +107,7 @@ public final class ProjectUtil {
     }
 
     public static List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?> project) {
-        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        List<AbstractProject> result = new ArrayList<>();
         List<RelationshipResolver> resolvers = RelationshipResolver.all();
         for (RelationshipResolver resolver : resolvers) {
             result.addAll(resolver.getDownstreamProjects(project));
@@ -136,7 +136,7 @@ public final class ProjectUtil {
         }
         try {
             Pattern pattern = Pattern.compile(regExp);
-            Map<String, AbstractProject> result = new HashMap<String, AbstractProject>();
+            Map<String, AbstractProject> result = new HashMap<>();
             for (AbstractProject<?, ?> project : JenkinsUtil.getInstance().getAllItems(AbstractProject.class)) {
                 Matcher matcher = pattern.matcher(project.getFullName());
                 if (matcher.find()) {
@@ -181,7 +181,7 @@ public final class ProjectUtil {
     }
 
     public static List<AbstractProject> getProjectList(String projects, ItemGroup context, EnvVars env) {
-        List<AbstractProject> projectList = new ArrayList<AbstractProject>();
+        List<AbstractProject> projectList = new ArrayList<>();
 
         // expand variables if applicable
         StringBuilder projectNames = new StringBuilder();
@@ -201,9 +201,9 @@ public final class ProjectUtil {
     public static List<AbstractProject> getStartUpstreams(AbstractProject project) {
         List<AbstractProject> upstreams = project.getUpstreamProjects();
         if (upstreams.isEmpty()) {
-            return new ArrayList<AbstractProject>(Collections.singleton(project));
+            return new ArrayList<>(Collections.singleton(project));
         } else {
-            return getStartUpstreams(project, new ArrayList<AbstractProject>());
+            return getStartUpstreams(project, new ArrayList<>());
         }
     }
 
@@ -213,7 +213,7 @@ public final class ProjectUtil {
             edges.add(project);
             return edges;
         } else {
-            List<AbstractProject> result = new ArrayList<AbstractProject>(edges);
+            List<AbstractProject> result = new ArrayList<>(edges);
             for (AbstractProject upstream : upstreams) {
                 result = (getStartUpstreams(upstream, edges));
             }

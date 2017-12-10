@@ -48,7 +48,7 @@ public class StageTest {
     @Issue("JENKINS-22211")
     @WithoutJenkins
     public void testSortByRowsCols() {
-        List<Stage> stages = new ArrayList<Stage>();
+        List<Stage> stages = new ArrayList<>();
         Stage stage1 = new Stage("1", Collections.<Task>emptyList());
         stage1.setRow(3);
         stage1.setColumn(2);
@@ -93,7 +93,7 @@ public class StageTest {
     @Test
     @WithoutJenkins
     public void testSortByRowsCols2() {
-        List<Stage> stages = new ArrayList<Stage>();
+        List<Stage> stages = new ArrayList<>();
         Stage stageA = new Stage("A", Collections.<Task>emptyList());
         stageA.setRow(0);
         stageA.setColumn(0);

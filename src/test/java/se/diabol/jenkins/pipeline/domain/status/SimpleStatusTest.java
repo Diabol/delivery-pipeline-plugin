@@ -130,7 +130,7 @@ public class SimpleStatusTest {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(Result.SUCCESS);
 
-        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        final List<PromotionStatus> promotionStatusList = new ArrayList<>();
         promotionStatusList.add(Mockito.mock(PromotionStatus.class));
         promotionStatusList.add(Mockito.mock(PromotionStatus.class));
         promotionStatusList.add(Mockito.mock(PromotionStatus.class));
@@ -139,7 +139,7 @@ public class SimpleStatusTest {
         Mockito.when(promotionStatusProvider.isBuildPromoted(build)).thenReturn(true);
         Mockito.when(promotionStatusProvider.getPromotionStatusList(build)).thenReturn(promotionStatusList);
 
-        final List<AbstractPromotionStatusProvider> promotionStatusProviders = new ArrayList<AbstractPromotionStatusProvider>();
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = new ArrayList<>();
         promotionStatusProviders.add(promotionStatusProvider);
 
         final SimpleStatus.PromotionStatusProviderWrapper promotionStatusProviderWrapper = Mockito.mock(SimpleStatus.PromotionStatusProviderWrapper.class);
@@ -194,7 +194,7 @@ public class SimpleStatusTest {
         final AbstractBuild build = Mockito.mock(AbstractBuild.class);
         Mockito.when(build.getResult()).thenReturn(Result.FAILURE);
 
-        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        final List<PromotionStatus> promotionStatusList = new ArrayList<>();
         promotionStatusList.add(Mockito.mock(PromotionStatus.class));
         promotionStatusList.add(Mockito.mock(PromotionStatus.class));
         promotionStatusList.add(Mockito.mock(PromotionStatus.class));
@@ -203,7 +203,7 @@ public class SimpleStatusTest {
         Mockito.when(promotionStatusProvider.isBuildPromoted(build)).thenReturn(true);
         Mockito.when(promotionStatusProvider.getPromotionStatusList(build)).thenReturn(promotionStatusList);
 
-        final List<AbstractPromotionStatusProvider> promotionStatusProviders = new ArrayList<AbstractPromotionStatusProvider>();
+        final List<AbstractPromotionStatusProvider> promotionStatusProviders = new ArrayList<>();
         promotionStatusProviders.add(promotionStatusProvider);
 
         final SimpleStatus.PromotionStatusProviderWrapper promotionStatusProviderWrapper = Mockito.mock(SimpleStatus.PromotionStatusProviderWrapper.class);

@@ -57,11 +57,11 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
     }
 
     public List<PromotionStatus> getPromotionStatusList(AbstractBuild<?, ?> build) {
-        final List<PromotionStatus> promotionStatusList = new ArrayList<PromotionStatus>();
+        final List<PromotionStatus> promotionStatusList = new ArrayList<>();
         final Object action = build.getAction(PromotedBuildAction.class);
         if (action != null) {
             for (Object status : promotedBuildActionWrapper.getPromotions(action)) {
-                final List<String> params = new ArrayList<String>();
+                final List<String> params = new ArrayList<>();
                 for (Promotion promotion : (Collection<Promotion>) promotionStatusWrapper.getPromotionBuilds(status)) {
                     populatePromotionParameters(params, promotion);
                     promotionStatusList.add(buildNewPromotionStatus(build, status, params, promotion));

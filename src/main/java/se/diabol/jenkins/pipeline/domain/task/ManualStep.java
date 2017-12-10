@@ -74,7 +74,7 @@ public class ManualStep {
 
     private static List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project) {
         List<ManualTriggerResolver> resolvers = ManualTriggerResolver.all();
-        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        List<AbstractProject> result = new ArrayList<>();
         for (ManualTriggerResolver manualTriggerResolver : resolvers) {
             result.addAll(manualTriggerResolver.getUpstreamManualTriggered(project));
         }
@@ -120,7 +120,7 @@ public class ManualStep {
     @CheckForNull
     public static ManualStep getManualStepAggregated(AbstractProject project, AbstractProject firstProject) {
         if (isManualTrigger(project)) {
-            Map<String, String> versions = new HashMap<String, String>();
+            Map<String, String> versions = new HashMap<>();
             AbstractProject<?, ?> upstream = (AbstractProject<?, ?>) project.getUpstreamProjects().get(0);
             for (AbstractBuild build : upstream.getBuilds()) {
                 AbstractBuild versionBuild = BuildUtil.getFirstUpstreamBuild(build, firstProject);

@@ -177,7 +177,7 @@ public class Task extends AbstractItem {
 
         Status status = project.isDisabled() ? disabled() : idle();
         List<AbstractProject> downStreams = ProjectUtil.getDownstreamProjects(project);
-        List<String> downStreamTasks = new ArrayList<String>();
+        List<String> downStreamTasks = new ArrayList<>();
         for (AbstractProject downstreamProject : downStreams) {
             downStreamTasks.add(downstreamProject.getRelativeNameFrom(Jenkins.getInstance()));
         }

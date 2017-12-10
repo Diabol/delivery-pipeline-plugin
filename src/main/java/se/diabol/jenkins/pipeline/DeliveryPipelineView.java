@@ -470,7 +470,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
 
         @SuppressWarnings("unchecked")
         List<Cause> prevCauses = build.getCauses();
-        List<Cause> newCauses = new ArrayList<Cause>();
+        List<Cause> newCauses = new ArrayList<>();
         for (Cause cause : prevCauses) {
             if (!(cause instanceof Cause.UserIdCause)) {
                 newCauses.add(cause);
@@ -549,7 +549,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
         Pipeline pipeline = Pipeline.extractPipeline(name, firstJob, lastJob, showUpstream);
         Component component = new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(),
                 noOfPipelines, pagingEnabled, componentNumber);
-        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        List<Pipeline> pipelines = new ArrayList<>();
         if (showAggregatedPipeline) {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup(), showAggregatedChanges));
         }

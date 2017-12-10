@@ -36,7 +36,7 @@ public class SubProjectRelationshipResolver extends RelationshipResolver {
 
     @Override
     public List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?>  project) {
-        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        List<AbstractProject> result = new ArrayList<>();
         for (SubProjectsAction action : Util.filter(project.getActions(), SubProjectsAction.class)) {
             for (BlockableBuildTriggerConfig config : action.getConfigs()) {
                 for (AbstractProject subProject : config.getProjectList(project.getParent(), null)) {

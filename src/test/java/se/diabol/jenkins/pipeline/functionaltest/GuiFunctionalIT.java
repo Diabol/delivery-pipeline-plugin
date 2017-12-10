@@ -73,7 +73,7 @@ public class GuiFunctionalIT {
         projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
@@ -101,7 +101,7 @@ public class GuiFunctionalIT {
         projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
@@ -136,7 +136,7 @@ public class GuiFunctionalIT {
         projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowManualTriggers(true);
@@ -177,7 +177,7 @@ public class GuiFunctionalIT {
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
@@ -205,7 +205,7 @@ public class GuiFunctionalIT {
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
@@ -235,7 +235,7 @@ public class GuiFunctionalIT {
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "Start", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);
@@ -263,7 +263,7 @@ public class GuiFunctionalIT {
         jenkins.getInstance().rebuildDependencyGraph();
 
         DeliveryPipelineView view = new DeliveryPipelineView("Pipeline");
-        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<DeliveryPipelineView.ComponentSpec>();
+        List<DeliveryPipelineView.ComponentSpec> specs = new ArrayList<>();
         specs.add(new DeliveryPipelineView.ComponentSpec("Component", "A", NONE, DO_NOT_SHOW_UPSTREAM));
         view.setComponentSpecs(specs);
         view.setAllowPipelineStart(true);

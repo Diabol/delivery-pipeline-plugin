@@ -80,7 +80,7 @@ public class BuildUtilTest {
     @Test
     public void testGetUpstreamBuildProjectRenamed() {
         AbstractBuild build = mock(AbstractBuild.class);
-        List<CauseAction> causeActions = new ArrayList<CauseAction>();
+        List<CauseAction> causeActions = new ArrayList<>();
         Cause.UpstreamCause cause = mock(Cause.UpstreamCause.class);
         when(cause.getUpstreamProject()).thenReturn("thisprojectdontexists");
         causeActions.add(new CauseAction(cause));

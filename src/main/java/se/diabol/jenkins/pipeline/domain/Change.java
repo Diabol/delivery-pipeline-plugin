@@ -88,7 +88,7 @@ public class Change {
 
     public static List<Change> getChanges(AbstractBuild<?, ?> build) {
         RepositoryBrowser repositoryBrowser = build.getProject().getScm().getBrowser();
-        List<Change> result = new ArrayList<Change>();
+        List<Change> result = new ArrayList<>();
         for (ChangeLogSet.Entry entry : build.getChangeSet()) {
             UserInfo user = UserInfo.getUser(entry.getAuthor());
             String changeLink = null;
@@ -110,7 +110,7 @@ public class Change {
     }
 
     public static List<Change> getChanges(List<ChangeLogSet<? extends ChangeLogSet.Entry>> changes) {
-        List<Change> result = new ArrayList<Change>();
+        List<Change> result = new ArrayList<>();
         for (ChangeLogSet<? extends ChangeLogSet.Entry> entries : changes) {
             for (ChangeLogSet.Entry entry : entries) {
                 UserInfo user = UserInfo.getUser(entry.getAuthor());

@@ -114,7 +114,7 @@ public class PipelineVersionContributor extends BuildWrapper {
         ParameterValue value = new StringParameterValue(PipelineVersionContributor.VERSION_PARAMETER, version);
         ParametersAction action = build.getAction(ParametersAction.class);
         if (action != null) {
-            List<ParameterValue> parameters = new ArrayList<ParameterValue>(action.getParameters());
+            List<ParameterValue> parameters = new ArrayList<>(action.getParameters());
             parameters.add(value);
             return new ParametersAction(parameters);
         }

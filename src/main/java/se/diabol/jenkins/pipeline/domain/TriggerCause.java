@@ -59,7 +59,7 @@ public class TriggerCause {
     }
 
     public static List<TriggerCause> getTriggeredBy(Job project, Run<?, ?> build) {
-        Set<TriggerCause> result = new HashSet<TriggerCause>();
+        Set<TriggerCause> result = new HashSet<>();
         List<Cause> causes;
         if (build == null && project.isInQueue()) {
             causes = project.getQueueItem().getCauses();
@@ -67,14 +67,14 @@ public class TriggerCause {
             if (build != null) {
                 causes = build.getCauses();
             } else {
-                return new ArrayList<TriggerCause>();
+                return new ArrayList<>();
             }
 
         }
         for (Cause cause : causes) {
             result.add(CauseResolver.getTrigger(cause));
         }
-        return new ArrayList<TriggerCause>(result);
+        return new ArrayList<>(result);
     }
 
     @Override

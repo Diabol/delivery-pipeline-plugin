@@ -93,7 +93,7 @@ public class Stage extends AbstractItem {
         if (hasNoDownstreamStages()) {
             return Collections.emptyMap();
         }
-        Map<String, List<String>> taskIdToConnectionsMap = new HashMap<String, List<String>>();
+        Map<String, List<String>> taskIdToConnectionsMap = new HashMap<>();
         taskIdToConnectionsMap.put("" + getId(), getFirstDownstreamIdAsList());
         return taskIdToConnectionsMap;
     }

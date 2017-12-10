@@ -74,7 +74,7 @@ public class StaticAnalysisResult extends Result {
     public static List<StaticAnalysisResult> getResults(AbstractBuild<?, ?> build) {
         if (build != null) {
             if (JenkinsUtil.isPluginInstalled(ANALYSIS_CORE_PLUGIN)) {
-                List<StaticAnalysisResult> result = new ArrayList<StaticAnalysisResult>();
+                List<StaticAnalysisResult> result = new ArrayList<>();
                 for (Action action : build.getActions()) {
                     if (AbstractResultAction.class.isInstance(action) || MavenResultAction.class.isInstance(action)) {
                         @SuppressWarnings("rawtypes")

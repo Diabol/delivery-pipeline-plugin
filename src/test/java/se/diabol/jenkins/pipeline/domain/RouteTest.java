@@ -35,7 +35,7 @@ public class RouteTest {
         Route route = new Route();
         assertEquals(0, route.getTasks().size());
 
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         tasks.add(mock(Task.class));
         tasks.add(mock(Task.class));
         tasks.add(mock(Task.class));
@@ -49,7 +49,7 @@ public class RouteTest {
         Route route = new Route();
         assertEquals(0, route.getTotalBuildTime());
 
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         Task task1 = mock(Task.class);
         Status status1 = mock(Status.class);
         when(status1.getDuration()).thenReturn(100L);

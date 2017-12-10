@@ -83,7 +83,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
     public static Set<String> getStageNames() {
         List<AbstractProject> projects = JenkinsUtil.getInstance().getAllItems(AbstractProject.class);
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (AbstractProject project : projects) {
             PipelineProperty property = (PipelineProperty) project.getProperty(PipelineProperty.class);
             if (property != null && property.getStageName() != null) {

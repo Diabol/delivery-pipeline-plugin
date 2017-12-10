@@ -115,7 +115,7 @@ public class StageTest {
     }
 
     private static List<Stage> stages() {
-        List<Stage> stages = new ArrayList<Stage>(5);
+        List<Stage> stages = new ArrayList<>(5);
         for (int i = 0; i < 5; i++) {
             stages.add(stage("stage" + i));
         }

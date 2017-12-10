@@ -36,13 +36,13 @@ public class PipelineUtil {
     public static Component createComponent(Status status) {
         Task task = new Task(null, "task", "Build", status, null, null, null, true, "");
 
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         tasks.add(task);
         Stage stage = new Stage("Build", tasks);
-        List<Stage> stages = new ArrayList<Stage>();
+        List<Stage> stages = new ArrayList<>();
         stages.add(stage);
         Pipeline pipeline = new Pipeline("Pipeline B", null, null, "1.0.0.1", null, null, null, stages, false);
-        List<Pipeline> pipelines = new ArrayList<Pipeline>();
+        List<Pipeline> pipelines = new ArrayList<>();
         pipelines.add(pipeline);
         Component component = new Component("B", "B", "job/A", false, 3, false, 1);
         component.setPipelines(pipelines);
@@ -56,5 +56,4 @@ public class PipelineUtil {
     public static Status status(StatusType statusType, DateTime lastRunedAt) {
         return new SimpleStatus(statusType, lastRunedAt.getMillis(), 10, false, Lists.<PromotionStatus>newArrayList());
     }
-
 }

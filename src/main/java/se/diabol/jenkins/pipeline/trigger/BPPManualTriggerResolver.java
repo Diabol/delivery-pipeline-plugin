@@ -70,7 +70,7 @@ public class BPPManualTriggerResolver extends ManualTriggerResolver {
 
     @Override
     public List<AbstractProject> getUpstreamManualTriggered(AbstractProject<?, ?> project) {
-        List<AbstractProject> result = new ArrayList<AbstractProject>();
+        List<AbstractProject> result = new ArrayList<>();
         List<AbstractProject> upstreamProjects = project.getUpstreamProjects();
         for (AbstractProject upstream : upstreamProjects) {
             @SuppressWarnings("unchecked")
