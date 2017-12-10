@@ -261,12 +261,11 @@ public class Stage extends AbstractItem {
         //for keeping track of which row has an available column
         final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
-        
-        for (int row = 0; row < allPaths.size(); row++) {
-            List<Stage> path = allPaths.get(row);            
+
+        for (List<Stage> path : allPaths) {
             for (int column = 0; column < path.size(); column++) {
                 Stage stage = path.get(column);
-                
+
                 //skip processed stage since the row/column has already been set
                 if (!processedStages.contains(stage)) {
                     stage.setColumn(Math.max(stage.getColumn(), column));
@@ -286,7 +285,7 @@ public class Stage extends AbstractItem {
                 }
             }
         }
-        
+
         List<Stage> result = new ArrayList<Stage>(stages);
 
         sortByRowsCols(result);
