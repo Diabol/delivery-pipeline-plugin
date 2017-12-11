@@ -35,12 +35,11 @@ public class BuildPipelineRelationshipResolver extends RelationshipResolver {
 
         List<AbstractProject> result = new ArrayList<>();
 
-        for (BuildPipelineTrigger buildPipelineTrigger: Util.filter(project.getPublishersList(), BuildPipelineTrigger.class)) {
-            String downstreamProjectNames = buildPipelineTrigger.getDownstreamProjectNames();
+        for (BuildPipelineTrigger bpTrigger: Util.filter(project.getPublishersList(), BuildPipelineTrigger.class)) {
+            String downstreams = bpTrigger.getDownstreamProjectNames();
 
-            for (final Object o : Items.fromNameList(project.getParent(), downstreamProjectNames, AbstractProject.class)) {
+            for (final Object o : Items.fromNameList(project.getParent(), downstreams, AbstractProject.class)) {
                 final AbstractProject downstream = (AbstractProject) o;
-
                 if (project != downstream) {
                     result.add(downstream);
                 }
