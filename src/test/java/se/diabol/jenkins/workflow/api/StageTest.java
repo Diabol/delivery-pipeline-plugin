@@ -17,12 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.api;
 
-import org.joda.time.DateTime;
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.Map;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,12 +26,21 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class StageTest {
+
+    private static final Long expectedStageDuration = 1500L;
 
     @Test
     public void identicalStagesShouldBeConsideredEqual() {
         Stage stage1 = getPopulatedStage();
-        Stage stage2 = new Stage(stage1._links, stage1.id, stage1.name, stage1.status, stage1.startTimeMillis, stage1.durationMillis);
+        Stage stage2 = new Stage(stage1.id, stage1.name, stage1.status, stage1.startTimeMillis, stage1.durationMillis);
 
         assertTrue(stage1.equals(stage2));
         assertTrue(stage2.equals(stage1));
@@ -48,7 +51,7 @@ public class StageTest {
     @SuppressWarnings("ObjectEqualsNull")
     public void shouldIdentifyNonEqualStages() {
         Stage stage1 = getPopulatedStage();
-        Stage stage2 = new Stage(null, "uniqueId", "uniqueName", null, null, 5000L);
+        Stage stage2 = new Stage("uniqueId", "uniqueName", null, null, 5000L);
 
         assertFalse(stage1.equals(stage2));
         assertFalse(stage2.equals(stage1));
@@ -59,7 +62,7 @@ public class StageTest {
     @Test
     public void shouldGetDurationOfStageFromPreviousRun() {
         long expectedDuration = 1000L;
-        Stage stageWithDuration = new Stage(null, "stageId", "stageName", "SUCCESS", null, expectedDuration);
+        Stage stageWithDuration = new Stage("stageId", "stageName", "SUCCESS", null, expectedDuration);
         Run previousRun = mock(Run.class);
         when(previousRun.getStageByName(anyString())).thenReturn(stageWithDuration);
 
@@ -68,7 +71,7 @@ public class StageTest {
     
     @Test
     public void getDurationOfStageFromRunShouldReturnDefaultWhenPreviousRunDidNotContainStage() {
-        Stage stageWithUnknownDuration = new Stage(null, "stageId", "stageName", "SUCCESS", null, null);
+        Stage stageWithUnknownDuration = new Stage("stageId", "stageName", "SUCCESS", null, null);
         Run previousRun = mock(Run.class);
         when(previousRun.getStageByName(anyString())).thenReturn(stageWithUnknownDuration);
 
@@ -83,15 +86,44 @@ public class StageTest {
         assertThat(Stage.getDurationOfStageFromRun(previousRun, getPopulatedStage()), is(-1L));
     }
 
+    @Test
+    public void shouldGetDurationForEmptyParameter() {
+        long duration = Stage.getDurationOf(Collections.<Stage>emptyList());
+        assertThat(duration, is(0L));
+    }
+
+    @Test
+    public void shouldGetDuration() {
+        List<Stage> stages = stages();
+        long duration = Stage.getDurationOf(stages);
+        assertThat(duration, is(expectedStageDuration * stages.size()));
+    }
+
+    @Test
+    public void shouldGetDurationForNullParameter() {
+        long duration = Stage.getDurationOf(null);
+        assertThat(duration, is(0L));
+    }
+
     private Stage getPopulatedStage() {
-        Map<String, ?> links = Collections.emptyMap();
         String id = "stageId";
         String name = "stageName";
         String status = "SUCCESS";
         DateTime startTimeMillis = new DateTime(System.currentTimeMillis());
-        Long durationMillis = 1500L;
-        return new Stage(links, id, name, status, startTimeMillis, durationMillis);
+        Long durationMillis = expectedStageDuration;
+        return new Stage(id, name, status, startTimeMillis, durationMillis);
     }
 
+    private static List<Stage> stages() {
+        List<Stage> stages = new ArrayList<Stage>(5);
+        for (int i = 0; i < 5; i++) {
+            stages.add(stage("stage" + i));
+        }
+        return stages;
+    }
+
+    private static Stage stage(String name) {
+        return new Stage(name, name, "SUCCESS", new DateTime(0L), expectedStageDuration);
+    }
 
 }

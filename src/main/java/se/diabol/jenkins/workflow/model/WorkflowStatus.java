@@ -32,7 +32,7 @@ public class WorkflowStatus extends SimpleStatus {
                 statusType(stage), stage.startTimeMillis.getMillis() + stage.durationMillis, stage.durationMillis);
     }
 
-    public static StatusType statusType(Stage currentStage) {
+    static StatusType statusType(Stage currentStage) {
         StatusType statusType;
         if (currentStage == null || currentStage.status == null) {
             return StatusType.NOT_BUILT;

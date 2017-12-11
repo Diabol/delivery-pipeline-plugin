@@ -97,7 +97,7 @@ public class WorkflowPipelineViewTest {
     public void authentication() throws Exception {
         WorkflowJob pipeline = jenkins.getInstance().createProject(WorkflowJob.class, "Test");
 
-        pipeline.setDefinition(new CpsFlowDefinition("node { stage 'Stage 1' echo 'Hello World 1' stage 'Stage 2' echo 'Hello World 2' }", true));
+        pipeline.setDefinition(new CpsFlowDefinition("node {\nstage 'Stage 1'\necho 'Hello World 1'\nstage 'Stage 2'\necho 'Hello World 2'\n}", true));
 
         pipeline.scheduleBuild(0, new BuildCommand.CLICause());
         jenkins.waitUntilNoActivity();

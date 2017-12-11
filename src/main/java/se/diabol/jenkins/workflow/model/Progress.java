@@ -15,15 +15,18 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.workflow.step;
+package se.diabol.jenkins.workflow.model;
 
-import hudson.model.Action;
+import static java.lang.Math.round;
 
-public interface TaskAction extends Action {
+public class Progress {
 
-    String getTaskName();
+    private Progress() {
+    }
 
-    Long getFinishedTime();
-
-    void setFinishedTime(Long finishedTime);
+    static int calculate(long timestampFromBuild, long estimatedDuration) {
+        return (int) round(100.0d
+                * (System.currentTimeMillis() - timestampFromBuild)
+                / estimatedDuration);
+    }
 }

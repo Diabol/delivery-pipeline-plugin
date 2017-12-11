@@ -17,30 +17,24 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import org.joda.time.DateTime;
 
-import java.util.Map;
+import java.util.List;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Stage {
 
-    public final Map<String, ?> _links;
     public final String id;
     public final String name;
     public final String status;
     public final DateTime startTimeMillis;
     public final Long durationMillis;
 
-    public Stage(@JsonProperty("_links") Map<String, ?> _links,
-                 @JsonProperty("id") String id,
-                 @JsonProperty("name") String name,
-                 @JsonProperty("status") String status,
-                 @JsonProperty("startTimeMillis") DateTime startTimeMillis,
-                 @JsonProperty("durationMillis") Long durationMillis) {
-        this._links = _links;
+    public Stage(String id,
+                 String name,
+                 String status,
+                 DateTime startTimeMillis,
+                 Long durationMillis) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -56,6 +50,16 @@ public class Stage {
         return previouslyRunStage.durationMillis;
     }
 
+    public static long getDurationOf(List<Stage> stages) {
+        long result = 0;
+        if (stages != null) {
+            for (se.diabol.jenkins.workflow.api.Stage stage : stages) {
+                result = result + stage.durationMillis;
+            }
+        }
+        return result;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -65,8 +69,7 @@ public class Stage {
             return false;
         }
         Stage stage = (Stage) other;
-        return Objects.equal(_links, stage._links)
-                && Objects.equal(id, stage.id)
+        return Objects.equal(id, stage.id)
                 && Objects.equal(name, stage.name)
                 && Objects.equal(status, stage.status)
                 && Objects.equal(startTimeMillis, stage.startTimeMillis)
@@ -75,7 +78,7 @@ public class Stage {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(_links, id, name, status, startTimeMillis, durationMillis);
+        return Objects.hashCode(id, name, status, startTimeMillis, durationMillis);
     }
 
     @Override

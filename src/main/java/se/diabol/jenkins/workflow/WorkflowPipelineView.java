@@ -215,7 +215,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
             for (ComponentSpec componentSpec : getComponentSpecs()) {
                 WorkflowJob job = getWorkflowJob(componentSpec.job);
                 List<Pipeline> pipelines = resolvePipelines(job);
-                Component component = new Component(job.getName(), job, pipelines);
+                Component component = new Component(componentSpec.name, job, pipelines);
                 this.error = null;
                 components.add(component);
             }

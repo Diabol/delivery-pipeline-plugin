@@ -21,7 +21,6 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -68,8 +67,8 @@ public class RunTests {
     }
 
     private static Run runFixture() {
-        return new Run(Collections.<String, Object>emptyMap(),
-                       "2014-04-27_20-40-00",
+        return new Run(
+                "2014-04-27_20-40-00",
                        "#1",
                        "SUCCESS",
                        new DateTime(System.currentTimeMillis()),
@@ -81,8 +80,7 @@ public class RunTests {
     private static List<Stage> stageFixture() {
         List<Stage> stages = new ArrayList<Stage>(5);
         for (int i = 1; i <= 5; i = i + 1) {
-            stages.add(new Stage(Collections.<String, Object>emptyMap(),
-                                 "2014-04-27_20-40-00",
+            stages.add(new Stage("2014-04-27_20-40-00",
                                  "Stage" + i,
                                  "SUCCESS",
                                  new DateTime(System.currentTimeMillis()),

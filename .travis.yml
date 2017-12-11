@@ -10,6 +10,7 @@ notifications:
 before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+  - "sed 's/localhost.localdomain localhost/localhost localhost.localdomain/' /etc/hosts > /tmp/etchostsfile && cat /tmp/etchostsfile | sudo tee /etc/hosts"
   - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=1024m'" > ~/.mavenrc
 script:
   - "if [[ -z $TRAVIS_TAG ]]; then mvn --batch-mode install; fi"
