@@ -187,7 +187,6 @@ public class Stage extends AbstractItem {
             if (stage == null) {
                 stage = Stage.getPrototypeStage(stageName, Collections.<Task>emptyList());
             }
-
             stages.put(stageName,
                     Stage.getPrototypeStage(stage.getName(), newArrayList(concat(stage.getTasks(), singleton(task)))));
         }
@@ -195,6 +194,7 @@ public class Stage extends AbstractItem {
 
         return Stage.placeStages(firstProject, stagesResult);
     }
+
 
     public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
         List<Task> stageTasks = new ArrayList<Task>();
