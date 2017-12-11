@@ -27,7 +27,6 @@ import static java.util.Collections.singleton;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
@@ -196,7 +195,6 @@ public class Stage extends AbstractItem {
 
         return Stage.placeStages(firstProject, stagesResult);
     }
-
 
     public Stage createAggregatedStage(ItemGroup context, AbstractProject firstProject) {
         List<Task> stageTasks = new ArrayList<Task>();
