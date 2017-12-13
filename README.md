@@ -14,17 +14,19 @@ Project wiki page can be found here: [Delivery Pipeline Plugin - Wiki](https://w
 
 We use the official Jenkins [issue tracker](https://issues.jenkins-ci.org/secure/IssueNavigator.jspa?mode=hide&reset=true&jqlQuery=project+%3D+JENKINS+AND+status+in+%28Open%2C+%22In+Progress%22%2C+Reopened%29+AND+component+%3D+%27delivery-pipeline-plugin%27) for bugs, improvements and new features. Please report any issues on component [delivery-pipeline-plugin](https://issues.jenkins-ci.org/browse/JENKINS/component/18134).
 
-This plugin has been contributed to the community by [Diabol AB](http://www.diabol.se).
+This plugin has been contributed to the community by [Diabol AB](https://www.diabol.se).
 
 Requirements
 ---
+Delivery Pipeline plugin 1.1.0 and later requires Java 8 and Jenkins core 1.642.3 or later.
+
 Delivery Pipeline plugin 1.0.0 and later requires Java 7 and Jenkins core 1.642.3 or later.
 
 Delivery Pipeline plugin 0.10.3 requires Java 6 and Jenkins core 1.565 or later.
 
 Build
 ---
-Requires Java 7, Apache Maven 3.3.x or later.
+Requires Java 8, Apache Maven 3.3.x or later.
 
     mvn clean install
 
@@ -74,7 +76,7 @@ If you just want to run the Delivery Pipeline plugin in a container without buil
 
     docker pull diabol/delivery-pipeline-plugin:1.0.3
 
-Configuring manually triggered jobs
+Configuring manually triggered jobs for views based on traditional Jenkins jobs with downstream dependencies
 ----
 **Note:** This requires the [Build Pipeline plugin](https://github.com/jenkinsci/build-pipeline-plugin) to be installed.
 
@@ -142,6 +144,8 @@ Example configurations can be found in the [examples subdirectory](https://githu
 For [Jenkins Job Builder](https://docs.openstack.org/infra/jenkins-job-builder/) job configuration examples, see: [demo.yaml](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.yaml)
 
 For [JobDSL](https://github.com/jenkinsci/job-dsl-plugin) job configuration examples, see: [demo.groovy](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/demo.groovy)
+
+For examples on how to use the Jenkins pipeline task step to visualize steps within a stage, see this [example pipeline](https://github.com/Diabol/delivery-pipeline-plugin/blob/master/examples/JENKINS-45738-declarative-pipeline-with-task-closures.txt)
 
 How to contribute
 ---
