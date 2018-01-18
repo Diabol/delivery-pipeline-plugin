@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 import se.diabol.jenkins.pipeline.domain.status.StatusType;
 import se.diabol.jenkins.workflow.api.Stage;
 
@@ -55,6 +56,13 @@ public class WorkflowStatusTest {
     public void stageWithAbortedStatusShouldYieldCancelledStatusType() throws Exception {
         Stage stageInProgress = getStageWithStatus("ABORTED");
         assertThat(WorkflowStatus.statusType(stageInProgress), is(StatusType.CANCELLED));
+    }
+
+    @Test
+    @Issue("JENKINS-49019")
+    public void stageWithNotExecutedStatusShouldYieldNotBuiltStatusType() throws Exception {
+        Stage stageInProgress = getStageWithStatus("NOT_EXECUTED");
+        assertThat(WorkflowStatus.statusType(stageInProgress), is(StatusType.NOT_BUILT));
     }
 
     @Test
