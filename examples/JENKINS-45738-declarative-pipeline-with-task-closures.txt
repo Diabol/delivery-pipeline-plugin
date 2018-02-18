@@ -31,7 +31,7 @@ pipeline {
 
                 task('Run integration tests') {
                     sleep 5
-                    echo 'Integration tests finished
+                    echo 'Integration tests finished'
                 }
             }
         }
