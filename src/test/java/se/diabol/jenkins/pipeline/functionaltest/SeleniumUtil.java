@@ -19,35 +19,22 @@ package se.diabol.jenkins.pipeline.functionaltest;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class NewJobPage {
+import javax.annotation.Nullable;
 
-    private WebDriver webDriver;
-    private String baseUrl;
+public class SeleniumUtil {
+    public static WebElement waitForElement(WebDriver driver, String id) {
 
-
-    public NewJobPage(WebDriver webDriver, String baseUrl) {
-        this.webDriver = webDriver;
-        this.baseUrl = baseUrl;
-    }
-
-    public NewJobPage open() {
-        webDriver.get(baseUrl + "/newJob");
-        return this;
-    }
-
-    public void setJobName(String name) {
-        SeleniumUtil.waitForElement(webDriver, "ok-button");
-        webDriver.findElement(By.id("name")).sendKeys(name);
-    }
-
-    public void setFreeStyle() {
-        webDriver.findElement(By.xpath("/html/body/table[2]/tbody/tr/td[2]/form/table/tbody/tr[3]/td/input")).click();
-    }
-
-    public ConfigureJobPage submit() {
-        webDriver.findElement(By.id("ok-button")).click();
-        return new ConfigureJobPage(webDriver);
+        return new WebDriverWait(driver, 30).until(
+                new com.google.common.base.Function<WebDriver, WebElement>() {
+            @Nullable
+            @Override
+            public WebElement apply(@Nullable WebDriver webDriver) {
+                return webDriver.findElement(By.id(id));
+            }
+        });
     }
 
 }

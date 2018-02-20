@@ -20,6 +20,7 @@ package se.diabol.jenkins.pipeline;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.collect.Lists;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.ParametersAction;
@@ -32,6 +33,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 public class EnvVersionTokenMacroTest {
 
@@ -58,7 +60,9 @@ public class EnvVersionTokenMacroTest {
         jenkins.setQuietPeriod(0);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectA);
 
-        ParametersAction action = new ParametersAction(new StringParameterValue("ENV_VERSION", "1.0-SNAPSHOT"));
+        //Due to https://issues.jenkins-ci.org/browse/SECURITY-170
+        ParametersAction action = new ParametersAction(Lists.newArrayList(new StringParameterValue("ENV_VERSION",
+                "1.0-SNAPSHOT")), Lists.newArrayList("ENV_VERSION"));
         build.addAction(action);
         String string = macro.evaluate(build, listener, "ENV_VERSION");
         assertEquals("1.0-SNAPSHOT", string);
@@ -72,7 +76,9 @@ public class EnvVersionTokenMacroTest {
         jenkins.setQuietPeriod(0);
         FreeStyleBuild build = jenkins.buildAndAssertSuccess(projectA);
 
-        ParametersAction action = new ParametersAction(new StringParameterValue("ENV_VERSION", "1.0-SNAPSHOT"));
+        //Due to https://issues.jenkins-ci.org/browse/SECURITY-170
+        ParametersAction action = new ParametersAction(Lists.newArrayList(new StringParameterValue("ENV_VERSION",
+                "1.0-SNAPSHOT")), Lists.newArrayList("ENV_VERSION"));
         build.addAction(action);
 
         macro.stripSnapshot = true;
