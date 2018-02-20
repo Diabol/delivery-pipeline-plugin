@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 
@@ -54,19 +55,18 @@ public class GuiFunctionalIT {
 
     @Before
     public void before() {
-        webDriver = new FirefoxDriver();
+        webDriver = new ChromeDriver();
+        //webDriver.
     }
 
     @After
     public void cleanUpWebDriver() {
         if (webDriver != null) {
             webDriver.close();
-            webDriver.quit();
         }
     }
 
     @Test
-    @Ignore
     public void triggerManualBuild() throws Exception {
         final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
@@ -94,7 +94,6 @@ public class GuiFunctionalIT {
     }
 
     @Test
-    @Ignore
     public void triggerManualRebuild() throws Exception {
         final FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         final FreeStyleProject projectB = jenkins.createFreeStyleProject("B");
@@ -129,7 +128,6 @@ public class GuiFunctionalIT {
     }
 
     @Test
-    @Ignore
     public void defaultView() throws Exception {
         FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
@@ -156,6 +154,8 @@ public class GuiFunctionalIT {
 
         NewJobPage newJobPage = new NewJobPage(webDriver, jenkins.getURL() + "view/Pipeline");
         newJobPage.open();
+        //TODO should do somethng better than this
+        Thread.sleep(2 * 1000);
         newJobPage.setJobName("NewJob");
         newJobPage.setFreeStyle();
         ConfigureJobPage configureJobPage = newJobPage.submit();

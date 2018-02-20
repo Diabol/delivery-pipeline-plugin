@@ -130,10 +130,10 @@ public class TriggerCauseTest {
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
         jenkins.setQuietPeriod(0);
-        CauseAction action = new CauseAction(new SCMTrigger.SCMTriggerCause(""));
-        action.getCauses().add(new SCMTrigger.SCMTriggerCause(""));
-        action.getCauses().add(new SCMTrigger.SCMTriggerCause(""));
-        action.getCauses().add(new SCMTrigger.SCMTriggerCause(""));
+        CauseAction action = new CauseAction(new SCMTrigger.SCMTriggerCause(""),
+                new SCMTrigger.SCMTriggerCause(""),
+                new SCMTrigger.SCMTriggerCause(""),
+                new SCMTrigger.SCMTriggerCause(""));
 
 
         project.scheduleBuild(0, null, action);

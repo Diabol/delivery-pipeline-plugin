@@ -19,18 +19,22 @@ package se.diabol.jenkins.pipeline.functionaltest;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class ConfigureJobPage {
+import javax.annotation.Nullable;
 
-    private WebDriver webDriver;
+public class SeleniumUtil {
+    public static WebElement waitForElement(WebDriver driver, String id) {
 
-    public ConfigureJobPage(WebDriver webDriver) {
-        this.webDriver = webDriver;
-    }
-
-    public void submit() {
-
-        webDriver.findElement(By.xpath("//*[@id=\"yui-gen30-button\"]")).click();
+        return new WebDriverWait(driver, 30).until(
+                new com.google.common.base.Function<WebDriver, WebElement>() {
+            @Nullable
+            @Override
+            public WebElement apply(@Nullable WebDriver webDriver) {
+                return webDriver.findElement(By.id(id));
+            }
+        });
     }
 
 }
