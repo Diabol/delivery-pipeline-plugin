@@ -29,7 +29,8 @@ public class ConfigureJobPage {
     }
 
     public void submit() {
-        webDriver.findElement(By.id("yui-gen44-button")).click();
+
+        webDriver.findElement(By.xpath("//*[@id=\"yui-gen30-button\"]")).click();
     }
 
 }

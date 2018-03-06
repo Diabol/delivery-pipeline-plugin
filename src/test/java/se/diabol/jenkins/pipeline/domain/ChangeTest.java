@@ -105,7 +105,7 @@ public class ChangeTest {
         assertEquals("http://somewhere.com/test-user", change.getChangeLink());
     }
 
-/*    @Test
+    @Test
     public void testGetChangesWithAnnotator() throws Exception {
         ChangeLogAnnotator.all().add(new ChangeLogAnnotator() {
             @Override
@@ -114,7 +114,7 @@ public class ChangeTest {
             }
         });
         FreeStyleProject project = jenkins.createFreeStyleProject("build");
-        ParentAwareSCM scm = new ParentAwareSCM();
+        FakeRepositoryBrowserSCM scm = new FakeRepositoryBrowserSCM();
         scm.addChange().withAuthor("test-user").withMsg("Fixed bug");
         project.setScm(scm);
         jenkins.setQuietPeriod(0);
@@ -125,7 +125,7 @@ public class ChangeTest {
         assertEquals(1, changes.size());
         Change change = changes.get(0);
         assertEquals("Something huge: Fixed bug", change.getMessage());
-    }*/
+    }
 
     @Test
     public void testGetChangesWithBrowserThrowIOException() throws Exception {
