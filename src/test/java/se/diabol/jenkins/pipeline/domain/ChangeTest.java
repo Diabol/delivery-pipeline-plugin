@@ -28,6 +28,7 @@ import hudson.scm.ChangeLogAnnotator;
 import hudson.scm.ChangeLogSet;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.FakeChangeLogSCM;
@@ -106,6 +107,7 @@ public class ChangeTest {
     }
 
     @Test
+    @Ignore
     public void testGetChangesWithAnnotator() throws Exception {
         ChangeLogAnnotator.all().add(new ChangeLogAnnotator() {
             @Override
