@@ -19,6 +19,7 @@ package se.diabol.jenkins.pipeline.domain;
 
 import hudson.model.User;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.core.AbstractItem;
 
 import java.util.HashSet;
 import java.util.List;

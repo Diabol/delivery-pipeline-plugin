@@ -26,13 +26,12 @@ import hudson.model.AbstractProject;
 import hudson.model.ItemGroup;
 import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.core.GenericPipeline;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.sort.BuildStartTimeComparator;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -40,8 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Pipeline extends AbstractItem {
+public class Pipeline extends GenericPipeline {
 
     private final AbstractProject firstProject;
     private final AbstractProject lastProject;
@@ -168,6 +166,18 @@ public class Pipeline extends AbstractItem {
             }
             this.totalBuildTime = maxTime;
         }
+    }
+
+    public long getLastActivity() {
+        long result = 0;
+        for (Stage stage : getStages()) {
+            for (Task task : stage.getTasks()) {
+                if (task.getStatus().getLastActivity() > result) {
+                    result = task.getStatus().getLastActivity();
+                }
+            }
+        }
+        return result;
     }
 
     private Route createRouteAndCopyTasks(final Route route, Task task) {

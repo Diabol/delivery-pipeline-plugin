@@ -25,7 +25,7 @@ import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
-import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.core.AbstractItem;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
 import se.diabol.jenkins.pipeline.domain.status.Status;

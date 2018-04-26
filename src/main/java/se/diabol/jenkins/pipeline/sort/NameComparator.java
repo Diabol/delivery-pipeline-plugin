@@ -18,15 +18,15 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.sort;
 
 import hudson.Extension;
-import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.core.GenericComponent;
 
 import java.io.Serializable;
 
-public class NameComparator extends ComponentComparator implements Serializable {
+public class NameComparator extends GenericComponentComparator implements Serializable {
 
     @Override
-    public int compare(Component o1, Component o2) {
-        return o1.getName().compareTo(o2.getName());
+    public int compare(GenericComponent component1, GenericComponent component2) {
+        return component1.getName().compareTo(component2.getName());
     }
 
     @Extension
@@ -37,7 +37,7 @@ public class NameComparator extends ComponentComparator implements Serializable 
         }
 
         @Override
-        public ComponentComparator createInstance() {
+        public GenericComponentComparator createInstance() {
             return new NameComparator();
         }
     }

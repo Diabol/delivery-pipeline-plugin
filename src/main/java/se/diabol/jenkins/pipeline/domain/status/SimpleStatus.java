@@ -35,7 +35,7 @@ import hudson.model.Result;
 import org.apache.commons.collections.CollectionUtils;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.core.AbstractItem;
 import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
 import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;

@@ -23,13 +23,14 @@ import com.google.common.collect.ImmutableList;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.core.AbstractItem;
+import se.diabol.jenkins.core.GenericComponent;
 
 import java.util.Collections;
 import java.util.List;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Component extends AbstractItem {
+public class Component extends GenericComponent {
     private final List<Pipeline> pipelines;
     private final WorkflowJob workflowJob;
 

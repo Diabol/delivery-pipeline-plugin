@@ -24,15 +24,18 @@ import com.google.common.collect.ImmutableList;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
+import org.kohsuke.stapler.export.ExportedBean;
+import se.diabol.jenkins.core.AbstractItem;
+import se.diabol.jenkins.core.GenericComponent;
 import se.diabol.jenkins.pipeline.PipelinePagination;
 import se.diabol.jenkins.pipeline.util.FullScreen;
 
 import java.util.List;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Component extends AbstractItem {
+public class Component extends GenericComponent {
+
     private List<Pipeline> pipelines;
     private final String firstJob;
     private final String firstJobUrl;

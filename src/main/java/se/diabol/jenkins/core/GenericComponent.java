@@ -15,32 +15,34 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.domain.results;
+package se.diabol.jenkins.core;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import se.diabol.jenkins.core.AbstractItem;
+import java.util.List;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
-public class Result {
+public abstract class GenericComponent extends AbstractItem {
 
-    protected final String name;
-    protected final String url;
-
-    public Result(String name, String url) {
-        this.name = name;
-        this.url = url;
+    public GenericComponent(String name) {
+        super(name);
     }
 
     @Exported
-    public String getName() {
-        return name;
+    public long getLastActivity() {
+        long result = 0;
+        if (getPipelines() != null) {
+            for (GenericPipeline pipeline : getPipelines()) {
+                long lastActivity = pipeline.getLastActivity();
+                if (lastActivity > result) {
+                    result = lastActivity;
+                }
+            }
+        }
+        return result;
     }
 
     @Exported
-    public String getUrl() {
-        return url;
-    }
-
+    public abstract List<? extends GenericPipeline> getPipelines();
 }

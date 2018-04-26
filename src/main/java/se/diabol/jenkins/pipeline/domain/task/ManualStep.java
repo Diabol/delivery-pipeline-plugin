@@ -23,7 +23,7 @@ import hudson.model.Item;
 import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.core.AbstractItem;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerResolver;
 import se.diabol.jenkins.pipeline.util.BuildUtil;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;

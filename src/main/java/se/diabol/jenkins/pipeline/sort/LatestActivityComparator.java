@@ -18,43 +18,17 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.sort;
 
 import hudson.Extension;
-import se.diabol.jenkins.pipeline.domain.Component;
-import se.diabol.jenkins.pipeline.domain.Pipeline;
-import se.diabol.jenkins.pipeline.domain.Stage;
-import se.diabol.jenkins.pipeline.domain.task.Task;
+import se.diabol.jenkins.core.GenericComponent;
 
 import java.io.Serializable;
 
-public class LatestActivityComparator extends ComponentComparator implements Serializable {
+public class LatestActivityComparator extends GenericComponentComparator implements Serializable {
 
     @Override
-    public int compare(Component o1, Component o2) {
-        return Long.compare(getLastActivity(o2), getLastActivity(o1));
-    }
-
-    private long getLastActivity(Pipeline pipeline) {
-        long result = 0;
-        for (Stage stage : pipeline.getStages()) {
-            for (Task task : stage.getTasks()) {
-                if (task.getStatus().getLastActivity() > result) {
-                    result = task.getStatus().getLastActivity();
-                }
-            }
-        }
-        return result;
-    }
-
-    private long getLastActivity(Component component) {
-        long result = 0;
-        if (component != null && component.getPipelines() != null) {
-            for (Pipeline pipeline : component.getPipelines()) {
-                long lastActivity = getLastActivity(pipeline);
-                if (lastActivity > result) {
-                    result = lastActivity;
-                }
-            }
-        }
-        return result;
+    public int compare(GenericComponent component1, GenericComponent component2) {
+        long component1LastActivity = component1 == null ? 0 : component1.getLastActivity();
+        long component2LastActivity = component2 == null ? 0 : component2.getLastActivity();
+        return Long.compare(component2LastActivity, component1LastActivity);
     }
 
     @Extension
@@ -65,10 +39,8 @@ public class LatestActivityComparator extends ComponentComparator implements Ser
         }
 
         @Override
-        public ComponentComparator createInstance() {
+        public GenericComponentComparator createInstance() {
             return new LatestActivityComparator();
         }
     }
-
-
 }

@@ -19,7 +19,7 @@ package se.diabol.jenkins.pipeline.sort;
 
 import hudson.model.Descriptor;
 
-public abstract class ComponentComparatorDescriptor extends Descriptor<ComponentComparator> {
+public abstract class ComponentComparatorDescriptor extends Descriptor<GenericComponentComparator> {
 
-    public abstract ComponentComparator createInstance();
+    public abstract GenericComponentComparator createInstance();
 }

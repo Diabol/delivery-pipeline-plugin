@@ -16,6 +16,9 @@
         <f:entry title="Number of columns" field="noOfColumns">
             <f:select/>
         </f:entry>
+        <f:entry title="Sorting" field="sorting">
+            <f:select/>
+        </f:entry>
         <f:entry title="Enable start of new pipeline build" field="allowPipelineStart">
             <f:checkbox/>
         </f:entry>

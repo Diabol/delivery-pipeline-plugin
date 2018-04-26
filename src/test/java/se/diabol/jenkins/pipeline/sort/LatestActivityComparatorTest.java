@@ -25,16 +25,18 @@ import static se.diabol.jenkins.pipeline.test.PipelineUtil.status;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.pipeline.domain.status.StatusType;
+import se.diabol.jenkins.workflow.model.WorkflowStatus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class LatestActivityComparatorTest {
 
-
     @Test
-    public void shouldSortRecentlyRunnedPipelinesFirst() {
+    public void shouldSortRecentlyRunDeliveryPipelineFirst() {
         Component componentRunLongAgo = createComponent(status(SUCCESS, new DateTime().minusDays(2)));
         Component componentRunRecently = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
         List<Component> list = new ArrayList<>();
@@ -43,5 +45,18 @@ public class LatestActivityComparatorTest {
         list.sort(new LatestActivityComparator.DescriptorImpl().createInstance());
         assertEquals(componentRunRecently, list.get(0));
         assertEquals(componentRunLongAgo, list.get(1));
+    }
+
+    @Test
+    public void shouldSortRecentlyRunWorkflowPipelineFirst() {
+        se.diabol.jenkins.workflow.model.Component componentRunLongAgo = createComponent(
+                new WorkflowStatus(StatusType.SUCCESS, 1000, 100));
+        se.diabol.jenkins.workflow.model.Component componentRunRecently = createComponent(
+                new WorkflowStatus(StatusType.SUCCESS, 9000, 100));
+        List<se.diabol.jenkins.workflow.model.Component> components = Arrays
+                .asList(componentRunLongAgo, componentRunRecently);
+        components.sort(new LatestActivityComparator.DescriptorImpl().createInstance());
+        assertEquals(componentRunRecently, components.get(0));
+        assertEquals(componentRunLongAgo, components.get(1));
     }
 }
