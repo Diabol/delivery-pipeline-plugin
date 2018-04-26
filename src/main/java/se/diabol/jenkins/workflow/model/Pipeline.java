@@ -22,19 +22,18 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
-import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.core.GenericPipeline;
 import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.domain.UserInfo;
-import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Pipeline extends AbstractItem {
+public class Pipeline extends GenericPipeline {
 
     private List<Stage> stages;
 
@@ -109,6 +108,22 @@ public class Pipeline extends AbstractItem {
     @Exported
     public List<TriggerCause> getTriggeredBy() {
         return triggeredBy;
+    }
+
+    @Override
+    public long getLastActivity() {
+        if (getStages() == null || getStages().isEmpty()) {
+            return 0;
+        }
+        long result = 0;
+        for (Stage stage : getStages()) {
+            for (Task task : stage.getTasks()) {
+                if (task.getStatus().getLastActivity() > result) {
+                    result = task.getStatus().getLastActivity();
+                }
+            }
+        }
+        return result;
     }
 
     public static Pipeline resolve(WorkflowJob project, WorkflowRun build) throws PipelineException {

@@ -18,17 +18,18 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.pipeline.sort;
 
 import hudson.Extension;
-import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.core.GenericComponent;
+import se.diabol.jenkins.core.GenericPipeline;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 
 import java.io.Serializable;
 
-public class FailedJobComparator extends ComponentComparator implements Serializable {
+public class FailedJobComparator extends GenericComponentComparator implements Serializable {
 
     @Override
-    public int compare(Component o1, Component o2) {
+    public int compare(GenericComponent o1, GenericComponent o2) {
         if ((hasFailedJob(firstPipeline(o1)) && (!hasFailedJob(firstPipeline(o2))))) {
             return -1;
         } else if ((hasFailedJob(firstPipeline(o2)) && (!hasFailedJob(firstPipeline(o1))))) {
@@ -38,7 +39,7 @@ public class FailedJobComparator extends ComponentComparator implements Serializ
         }
     }
 
-    private Pipeline firstPipeline(Component component) {
+    private GenericPipeline firstPipeline(GenericComponent component) {
         if (component != null && component.getPipelines() != null && !component.getPipelines().isEmpty()) {
             return component.getPipelines().get(0);
         } else {
@@ -46,10 +47,36 @@ public class FailedJobComparator extends ComponentComparator implements Serializ
         }
     }
 
-    private boolean hasFailedJob(Pipeline pipeline) {
+    private boolean hasFailedJob(GenericPipeline pipeline) {
+        if (pipeline == null) {
+            return false;
+        }
+        if (pipeline instanceof Pipeline) {
+            return hasFailedJobs((Pipeline) pipeline);
+        } else if (pipeline instanceof se.diabol.jenkins.workflow.model.Pipeline) {
+            return hasFailed((se.diabol.jenkins.workflow.model.Pipeline) pipeline);
+        } else {
+            throw new IllegalStateException("Unable to resolve pipeline type for " + pipeline);
+        }
+    }
+
+    private boolean hasFailedJobs(Pipeline pipeline) {
         if (pipeline != null) {
             for (Stage stage : pipeline.getStages()) {
                 for (Task task : stage.getTasks()) {
+                    if (task.getStatus().isFailed()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean hasFailed(se.diabol.jenkins.workflow.model.Pipeline pipeline) {
+        if (pipeline != null) {
+            for (se.diabol.jenkins.workflow.model.Stage stage : pipeline.getStages()) {
+                for (se.diabol.jenkins.workflow.model.Task task : stage.getTasks()) {
                     if (task.getStatus().isFailed()) {
                         return true;
                     }
@@ -67,7 +94,7 @@ public class FailedJobComparator extends ComponentComparator implements Serializ
         }
 
         @Override
-        public ComponentComparator createInstance() {
+        public GenericComponentComparator createInstance() {
             return new FailedJobComparator();
         }
     }

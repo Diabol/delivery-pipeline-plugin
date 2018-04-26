@@ -20,7 +20,7 @@ package se.diabol.jenkins.pipeline.domain.status.promotion;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-import se.diabol.jenkins.pipeline.domain.AbstractItem;
+import se.diabol.jenkins.core.AbstractItem;
 
 import java.util.List;
 

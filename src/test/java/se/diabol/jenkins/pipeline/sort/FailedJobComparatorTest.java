@@ -24,7 +24,8 @@ import static org.junit.Assert.assertTrue;
 import static se.diabol.jenkins.pipeline.domain.status.StatusType.FAILED;
 import static se.diabol.jenkins.pipeline.domain.status.StatusType.SUCCESS;
 import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponent;
-import static se.diabol.jenkins.pipeline.test.PipelineUtil.createComponentWithNoRuns;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.createDeliveryPipelineComponentWithNoRuns;
+import static se.diabol.jenkins.pipeline.test.PipelineUtil.createWorkflowPipelineComponentWithNoRuns;
 
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
@@ -34,13 +35,12 @@ import se.diabol.jenkins.pipeline.domain.status.SimpleStatus;
 import se.diabol.jenkins.pipeline.domain.status.Status;
 import se.diabol.jenkins.pipeline.domain.status.StatusType;
 import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
+import se.diabol.jenkins.workflow.model.WorkflowStatus;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FailedJobComparatorTest {
-
 
     @Test
     public void shouldSortFailedBeforeSuccessful() {
@@ -76,10 +76,65 @@ public class FailedJobComparatorTest {
 
     @Test
     public void shouldSortNotRunJobLast() {
-        Component notRunComponent = createComponentWithNoRuns();
+        Component notRunComponent = createDeliveryPipelineComponentWithNoRuns();
         Component successfulComponent = createComponent(status(SUCCESS, new DateTime().minusDays(1)));
         Component failedComponent = createComponent(status(FAILED, new DateTime().minusDays(1)));
         List<Component> list = new ArrayList<>();
+        list.add(notRunComponent);
+        list.add(successfulComponent);
+        list.add(failedComponent);
+        list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
+        assertThat(list.size(), is(3));
+        assertEquals(failedComponent, list.get(0));
+        assertEquals(successfulComponent, list.get(1));
+        assertEquals(notRunComponent, list.get(2));
+    }
+
+    @Test
+    public void shouldSortFailedWorkflowPipelinesBeforeSuccessful() {
+        se.diabol.jenkins.workflow.model.Component failedComponent = createComponent(
+                new WorkflowStatus(StatusType.FAILED, 1000, 100));
+        se.diabol.jenkins.workflow.model.Component successfulComponent = createComponent(
+                new WorkflowStatus(StatusType.SUCCESS, 1000, 100));
+
+        List<se.diabol.jenkins.workflow.model.Component> list = new ArrayList<>();
+        list.add(successfulComponent);
+        list.add(failedComponent);
+        list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
+        assertThat(list.size(), is(2));
+        assertEquals(failedComponent, list.get(0));
+        assertEquals(successfulComponent, list.get(1));
+    }
+
+    @Test
+    public void shouldSortRecentlyRunWorkflowPipelinesFirstIfSameStatus() {
+        se.diabol.jenkins.workflow.model.Component failedComponentRunLongAgo = createComponent(
+                new WorkflowStatus(StatusType.FAILED, 1000, 100));
+        se.diabol.jenkins.workflow.model.Component failedComponent = createComponent(
+                new WorkflowStatus(StatusType.FAILED, 9000, 100));
+        se.diabol.jenkins.workflow.model.Component successfulComponent = createComponent(
+                new WorkflowStatus(StatusType.SUCCESS, 9000, 100));
+
+        List<se.diabol.jenkins.workflow.model.Component> list = new ArrayList<>();
+        list.add(successfulComponent);
+        list.add(failedComponent);
+        list.add(failedComponentRunLongAgo);
+        list.sort(new FailedJobComparator.DescriptorImpl().createInstance());
+        assertThat(list.size(), is(3));
+        assertEquals(failedComponent, list.get(0));
+        assertEquals(failedComponentRunLongAgo, list.get(1));
+        assertEquals(successfulComponent, list.get(2));
+    }
+
+    @Test
+    public void shouldSortNotRunWorkflowPipelineLast() {
+        se.diabol.jenkins.workflow.model.Component notRunComponent = createWorkflowPipelineComponentWithNoRuns();
+        se.diabol.jenkins.workflow.model.Component successfulComponent = createComponent(
+                new WorkflowStatus(StatusType.SUCCESS, 1000, 100));
+        se.diabol.jenkins.workflow.model.Component failedComponent = createComponent(
+                new WorkflowStatus(StatusType.FAILED, 9000, 100));
+
+        List<se.diabol.jenkins.workflow.model.Component> list = new ArrayList<>();
         list.add(notRunComponent);
         list.add(successfulComponent);
         list.add(failedComponent);

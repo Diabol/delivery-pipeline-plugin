@@ -20,6 +20,7 @@ package se.diabol.jenkins.workflow;
 import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
 
 import com.google.common.collect.Sets;
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Api;
@@ -48,6 +49,8 @@ import se.diabol.jenkins.pipeline.PipelineApi;
 import se.diabol.jenkins.pipeline.PipelineView;
 import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
+import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
+import se.diabol.jenkins.pipeline.sort.GenericComponentComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import se.diabol.jenkins.pipeline.util.PipelineUtils;
@@ -75,10 +78,12 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
     public static final int DEFAULT_NO_OF_PIPELINES = 3;
     private static final int MAX_NO_OF_PIPELINES = 50;
+    private static final String NONE_SORTER = "none";
 
     private int updateInterval = DEFAULT_INTERVAL;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
     private int noOfColumns = 1;
+    private String sorting = NONE_SORTER;
     private boolean allowPipelineStart = false;
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
@@ -127,6 +132,14 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
     public void setNoOfPipelines(int noOfPipelines) {
         this.noOfPipelines = noOfPipelines;
+    }
+
+    public String getSorting() {
+        return sorting;
+    }
+
+    public void setSorting(String sorting) {
+        this.sorting = sorting;
     }
 
     @Exported
@@ -219,10 +232,24 @@ public class WorkflowPipelineView extends View implements PipelineView {
                 this.error = null;
                 components.add(component);
             }
+            if (sortingConfigured()) {
+                sort(components);
+            }
             return components;
         } catch (PipelineException e) {
             error = e.getMessage();
             return Collections.emptyList();
+        }
+    }
+
+    private boolean sortingConfigured() {
+        return getSorting() != null && !getSorting().equals(NONE_SORTER);
+    }
+
+    private void sort(List<Component> components) {
+        ComponentComparatorDescriptor comparatorDescriptor = GenericComponentComparator.all().find(sorting);
+        if (comparatorDescriptor != null) {
+            components.sort(comparatorDescriptor.createInstance());
         }
     }
 
@@ -388,6 +415,18 @@ public class WorkflowPipelineView extends View implements PipelineView {
             }
             return options;
         }
+
+        public ListBoxModel doFillSortingItems() {
+            DescriptorExtensionList<GenericComponentComparator, ComponentComparatorDescriptor> descriptors =
+                    GenericComponentComparator.all();
+            ListBoxModel options = new ListBoxModel();
+            options.add("None", NONE_SORTER);
+            for (ComponentComparatorDescriptor descriptor : descriptors) {
+                options.add(descriptor.getDisplayName(), descriptor.getId());
+            }
+            return options;
+        }
+
 
         public ListBoxModel doFillThemeItems(@AncestorInPath ItemGroup<?> context) {
             ListBoxModel options = new ListBoxModel();

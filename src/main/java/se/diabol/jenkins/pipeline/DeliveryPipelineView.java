@@ -51,8 +51,8 @@ import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
-import se.diabol.jenkins.pipeline.sort.ComponentComparator;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
+import se.diabol.jenkins.pipeline.sort.GenericComponentComparator;
 import se.diabol.jenkins.pipeline.trigger.ManualTrigger;
 import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
@@ -525,7 +525,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
                 }
             }
             if (getSorting() != null && !getSorting().equals(NONE_SORTER)) {
-                ComponentComparatorDescriptor comparatorDescriptor = ComponentComparator.all().find(sorting);
+                ComponentComparatorDescriptor comparatorDescriptor = GenericComponentComparator.all().find(sorting);
                 if (comparatorDescriptor != null) {
                     components.sort(comparatorDescriptor.createInstance());
                 }
@@ -639,8 +639,8 @@ public class DeliveryPipelineView extends View implements PipelineView {
         }
 
         public ListBoxModel doFillSortingItems() {
-            DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> descriptors =
-                    ComponentComparator.all();
+            DescriptorExtensionList<GenericComponentComparator, ComponentComparatorDescriptor> descriptors =
+                    GenericComponentComparator.all();
             ListBoxModel options = new ListBoxModel();
             options.add("None", NONE_SORTER);
             for (ComponentComparatorDescriptor descriptor : descriptors) {

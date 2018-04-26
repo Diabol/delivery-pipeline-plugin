@@ -21,20 +21,21 @@ import hudson.DescriptorExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-import se.diabol.jenkins.pipeline.domain.Component;
+import se.diabol.jenkins.core.GenericComponent;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.Comparator;
 
-public abstract class ComponentComparator implements Comparator<Component>, ExtensionPoint,
-        Describable<ComponentComparator> {
+public abstract class GenericComponentComparator implements Comparator<GenericComponent>,
+        ExtensionPoint,
+        Describable<GenericComponentComparator> {
 
     @Override
-    public Descriptor<ComponentComparator> getDescriptor() {
+    public Descriptor<GenericComponentComparator> getDescriptor() {
         return (ComponentComparatorDescriptor) JenkinsUtil.getInstance().getDescriptor(getClass());
     }
 
-    public static DescriptorExtensionList<ComponentComparator, ComponentComparatorDescriptor> all() {
-        return JenkinsUtil.getInstance().getDescriptorList(ComponentComparator.class);
+    public static DescriptorExtensionList<GenericComponentComparator, ComponentComparatorDescriptor> all() {
+        return JenkinsUtil.getInstance().getDescriptorList(GenericComponentComparator.class);
     }
 }
