@@ -19,7 +19,11 @@ package se.diabol.jenkins.pipeline.functionaltest;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class DeliveryPipelinePage {
 
@@ -41,30 +45,29 @@ public class DeliveryPipelinePage {
 
 
     public void triggerManual(String build) {
-        String id = "manual-task-" + build;
 
-        webDriver.findElement(By.id(id)).click();
+        SeleniumUtil.waitForElement(webDriver,"manual-task-" + build).click();
+
     }
 
     public void triggerRebuild(String build) {
         String id = "rebuild-task-" + build;
-
-        webDriver.findElement(By.id(id)).click();
+        SeleniumUtil.waitForElement(webDriver,"rebuild-task-" + build).click();
     }
 
     public void triggerNewPipelineBuild(String no) {
-        webDriver.findElement(By.id("startpipeline-" + no)).click();
+        SeleniumUtil.waitForElement(webDriver,"startpipeline-" + no).sendKeys(Keys.RETURN);
+        SeleniumUtil.waitForElement(webDriver,"task-Start0.timestamp");
     }
 
     public void triggerNewParameterizedPipelineBuild(String no) {
-        webDriver.findElement(By.id("startpipeline-" + no)).click();
+        SeleniumUtil.waitForElement(webDriver,"startpipeline-" + no).sendKeys(Keys.RETURN);
         /* this build requires parameter */
-        webDriver.findElement(By.id("yui-gen1-button")).click();
+        SeleniumUtil.waitForElement(webDriver,"yui-gen5-button").click();
     }
 
     public String getJsPlumbUtilityVariable() {
         JavascriptExecutor jse = (JavascriptExecutor) webDriver;
         return jse.executeScript("return jsPlumbUtilityVariable.length").toString();
     }
-
 }
