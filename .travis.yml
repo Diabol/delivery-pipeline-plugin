@@ -12,7 +12,7 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - "sed 's/localhost.localdomain localhost/localhost localhost.localdomain/' /etc/hosts > /tmp/etchostsfile && cat /tmp/etchostsfile | sudo tee /etc/hosts"
   - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=1024m'" > ~/.mavenrc
-  - wget -N http://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip -P ~/
+  - wget -N http://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P ~/
   - unzip ~/chromedriver_linux64.zip -d ~/
   - rm ~/chromedriver_linux64.zip
   - sudo mv -f ~/chromedriver /usr/local/share/
