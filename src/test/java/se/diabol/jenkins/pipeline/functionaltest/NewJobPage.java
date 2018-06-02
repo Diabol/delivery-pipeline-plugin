@@ -33,15 +33,17 @@ public class NewJobPage {
 
     public NewJobPage open() {
         webDriver.get(baseUrl + "/newJob");
+        SeleniumUtil.waitForElement(webDriver, "ok-button");
         return this;
     }
 
     public void setJobName(String name) {
-        webDriver.findElement(By.id("name")).sendKeys(name);
+        SeleniumUtil.waitForElement(webDriver, "ok-button");
+        webDriver.findElement(By.xpath("//*[@id=\"name\"]")).sendKeys(name);
     }
 
     public void setFreeStyle() {
-        webDriver.findElement(By.xpath("/html/body/table[2]/tbody/tr/td[2]/form/table/tbody/tr[3]/td/input")).click();
+        webDriver.findElement(By.xpath("//*[@id=\"j-add-item-type-standalone-projects\"]/ul/li[1]")).click();
     }
 
     public ConfigureJobPage submit() {

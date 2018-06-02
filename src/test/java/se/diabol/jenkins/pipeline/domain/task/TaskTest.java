@@ -131,7 +131,7 @@ public class TaskTest {
     @Test
     @Issue("JENKINS-22654")
     public void testTaskNameForMultiConfiguration() throws Exception {
-        MatrixProject project = jenkins.createMatrixProject("Multi");
+        MatrixProject project = jenkins.createProject(MatrixProject.class, "Multi");
         project.setAxes(new AxisList(new Axis("axis", "foo", "bar")));
         project.addProperty(new PipelineProperty("task", "stage", ""));
 

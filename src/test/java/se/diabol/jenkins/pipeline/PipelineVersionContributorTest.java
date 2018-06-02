@@ -198,61 +198,73 @@ public class PipelineVersionContributorTest {
     @Test
     @Issue("JENKINS-28848")
     public void testWithBuildNameSetterPluginAndAdditionalParameters() throws Exception {
-        FreeStyleProject a = jenkins.createFreeStyleProject("a");
-        FreeStyleProject b = jenkins.createFreeStyleProject("b");
+        try {
+            System.setProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME, PIPELINE_VERSION);
 
-        a.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
-        a.getPublishersList().add(new BuildTrigger("b", false));
-        a.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
-        b.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
+            FreeStyleProject a = jenkins.createFreeStyleProject("a");
+            FreeStyleProject b = jenkins.createFreeStyleProject("b");
+
+            a.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
+            a.getPublishersList().add(new BuildTrigger("b", false));
+            a.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
+            b.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
 
 
-        jenkins.getInstance().rebuildDependencyGraph();
-        jenkins.setQuietPeriod(0);
+            jenkins.getInstance().rebuildDependencyGraph();
+            jenkins.setQuietPeriod(0);
 
-        jenkins.buildAndAssertSuccess(a);
-        jenkins.waitUntilNoActivity();
+            jenkins.buildAndAssertSuccess(a);
+            jenkins.waitUntilNoActivity();
 
-        assertEquals("1.0.0.1", a.getLastBuild().getDisplayName());
-        assertEquals("1.0.0.1", b.getLastBuild().getDisplayName());
-        assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
-        assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+            assertEquals("1.0.0.1", a.getLastBuild().getDisplayName());
+            assertEquals("1.0.0.1", b.getLastBuild().getDisplayName());
+            assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+            assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+        } finally {
+            System.clearProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME);
+        }
     }
 
     @Test
     public void testVersionContributorIsNotBreakingParametersPassing() throws Exception {
-        FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
-        FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
-        firstProject.getPublishersList().add(
-                new BuildPipelineTrigger("secondProject",
-                        Collections.singletonList(new BooleanParameters(
-                                Collections.singletonList(new BooleanParameterConfig("test", true))))));
-        firstProject.save();
+        try {
+            System.setProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME, PIPELINE_VERSION +"," + "test");
 
-        firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
+            FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
+            FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
+            firstProject.getPublishersList().add(
+                    new BuildPipelineTrigger("secondProject",
+                            Collections.singletonList(new BooleanParameters(
+                                    Collections.singletonList(new BooleanParameterConfig("test", true))))));
+            firstProject.save();
 
-        firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
-        secondProject.getBuildersList().add(new AssertNoPipelineVersion());
+            firstProject.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.${BUILD_NUMBER}"));
 
-        jenkins.setQuietPeriod(0);
-        jenkins.getInstance().rebuildDependencyGraph();
-        jenkins.buildAndAssertSuccess(firstProject);
-        jenkins.waitUntilNoActivity();
+            firstProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+            secondProject.getBuildersList().add(new AssertNoPipelineVersion());
 
-        assertNotNull(firstProject.getLastBuild());
-        assertNull(secondProject.getLastBuild());
-        assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
+            jenkins.setQuietPeriod(0);
+            jenkins.getInstance().rebuildDependencyGraph();
+            jenkins.buildAndAssertSuccess(firstProject);
+            jenkins.waitUntilNoActivity();
 
-        secondProject.getBuildersList().clear();
-        secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
+            assertNotNull(firstProject.getLastBuild());
+            assertNull(secondProject.getLastBuild());
+            assertEquals("1.0.0.1", firstProject.getLastBuild().getDisplayName());
 
-        StandardBuildCard card = new StandardBuildCard();
+            secondProject.getBuildersList().clear();
+            secondProject.getBuildersList().add(new AssertPipelineVersion("1.0.0.1"));
 
-        card.triggerManualBuild(jenkins.jenkins,  1, "secondProject", "firstProject");
-        jenkins.waitUntilNoActivity();
+            StandardBuildCard card = new StandardBuildCard();
 
-        assertNotNull(secondProject.getLastBuild());
-        assertEquals("true", secondProject.getLastBuild().getBuildVariableResolver().resolve("test"));
+            card.triggerManualBuild(jenkins.jenkins, 1, "secondProject", "firstProject");
+            jenkins.waitUntilNoActivity();
+
+            assertNotNull(secondProject.getLastBuild());
+            assertEquals("true", secondProject.getLastBuild().getBuildVariableResolver().resolve("test"));
+        } finally {
+            System.clearProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME);
+        }
     }
 
 

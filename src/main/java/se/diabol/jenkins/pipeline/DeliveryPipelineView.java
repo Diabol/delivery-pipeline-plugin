@@ -478,7 +478,8 @@ public class DeliveryPipelineView extends View implements PipelineView {
         }
         newCauses.add(new Cause.UserIdCause());
         CauseAction causeAction = new CauseAction(newCauses);
-        project.scheduleBuild2(project.getQuietPeriod(),null, causeAction, build.getAction(ParametersAction.class));
+        project.scheduleBuild2(project.getQuietPeriod(), (Cause) null, causeAction,
+                build.getAction(ParametersAction.class));
     }
 
     protected static String triggerExceptionMessage(final String projectName, final String upstreamName,
