@@ -306,8 +306,6 @@ public class WorkflowPipelineView extends View implements PipelineView {
                     }
                 }
             }
-            throw new PipelineException("Failed to resolve manual/input step for build with id: "
-                    + buildId + " for project: " + projectName);
         } catch (IOException | PipelineException e) {
             LOG.warning("Failed to resolve project to trigger manual/input step for: " + e);
         }
