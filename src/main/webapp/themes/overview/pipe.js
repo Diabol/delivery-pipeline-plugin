@@ -182,6 +182,7 @@ function pipelineUtils() {
                                 + '<a href="' + getLink(data, task.link) + consoleLogLink + '">' + htmlEncode(task.name) + '</a>'
                                 + '</div>'
                             );
+
                             if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                                 html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\')">');
                                 html.push('</div>');
@@ -191,7 +192,7 @@ function pipelineUtils() {
                                     html.push('</div>');
                                 }
                                 if (task.requiringInput) {
-                                    html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
+                                    html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.workflowJob.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
                                 }
                             }

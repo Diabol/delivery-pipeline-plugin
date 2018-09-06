@@ -184,7 +184,7 @@ function pipelineUtils() {
                             if (data.allowManualTriggers && task.manual && task.manualStep.enabled && task.manualStep.permission) {
                                 html.push('<div class="task-manual" id="manual-' + id + '" title="Trigger manual build" onclick="triggerManual(\'' + id + '\', \'' + task.id + '\', \'' + task.manualStep.upstreamProject + '\', \'' + task.manualStep.upstreamId + '\', \'' + view.viewUrl + '\')">');
                                 html.push('</div>');
-                            } else  if (!pipeline.aggregated) {
+                            } else if (!pipeline.aggregated) {
                                 if (data.allowRebuild && task.rebuildable) {
                                     html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
@@ -211,7 +211,6 @@ function pipelineUtils() {
                             html.push(generateTestInfo(data, task));
                             html.push(generateStaticAnalysisInfo(data, task));
                             html.push(generatePromotionsInfo(data, task));
-
                         }
 
                         if (pipeline.aggregated && stage.changes && stage.changes.length > 0) {
