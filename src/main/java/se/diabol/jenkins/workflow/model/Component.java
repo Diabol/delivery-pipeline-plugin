@@ -60,6 +60,11 @@ public class Component extends GenericComponent {
     }
 
     @Exported
+    public String getFullJobName() {
+        return workflowJob.getFullName();
+    }
+
+    @Exported
     public List<Pipeline> getPipelines() {
         return pipelines;
     }

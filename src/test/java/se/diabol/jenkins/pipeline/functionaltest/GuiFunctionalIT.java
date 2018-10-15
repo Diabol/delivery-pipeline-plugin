@@ -128,7 +128,7 @@ public class GuiFunctionalIT {
     }
 
     @Test
-    public void defaultView() throws Exception {
+    public void shouldBeAbleToSetDeliveryPipelineViewAsJenkinsDefaultView() throws Exception {
         FreeStyleProject projectA = jenkins.createFreeStyleProject("A");
         jenkins.createFreeStyleProject("B");
         projectA.getPublishersList().add(new BuildPipelineTrigger("B", null));
@@ -154,7 +154,6 @@ public class GuiFunctionalIT {
 
         NewJobPage newJobPage = new NewJobPage(webDriver, jenkins.getURL() + "view/Pipeline");
         newJobPage.open();
-        //TODO should do somethng better than this
         Thread.sleep(2 * 1000);
         newJobPage.setJobName("NewJob");
         newJobPage.setFreeStyle();

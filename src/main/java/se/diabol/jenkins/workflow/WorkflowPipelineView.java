@@ -65,6 +65,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
@@ -307,7 +308,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
                 }
             }
         } catch (IOException | PipelineException e) {
-            LOG.warning("Failed to resolve project to trigger manual/input step for: " + e);
+            LOG.warning("Failed to resolve project to trigger manual/input: " + e);
         }
     }
 
