@@ -62,6 +62,14 @@ public final class ProjectUtil {
     }
 
     /**
+     * Get all downstream projects for a given project. This will recursively call all downstream projects
+     * for a given first project.
+     * A project that has a downstream project and will eventually loop back to itself will log a warning,
+     * and will NOT add. Adding a project that already exists will produce a stack overflow.
+     *
+     * @param first The first project
+     * @param last The last project to visualize
+     * @return A map of all downstream projects.
      * @see ProjectUtil#getAllDownstreamProjects(
      * hudson.model.AbstractProject, hudson.model.AbstractProject, java.util.Map)
      */

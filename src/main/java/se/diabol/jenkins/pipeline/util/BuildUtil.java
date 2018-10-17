@@ -57,6 +57,7 @@ public final class BuildUtil {
      * Finds the first upstream build in the chain of triggered builds.
      *
      * @param build the build to find the first upstream for
+     * @param first the known first upstream build
      * @return the first upstream build for the given build
      */
     @CheckForNull
@@ -81,7 +82,11 @@ public final class BuildUtil {
     }
 
     /**
-     * Returns the build for a projects that has been triggered by the supplied upstream project.
+     * Returns the build for projects that has been triggered by the supplied upstream project.
+     *
+     * @param firstBuild the upstream project
+     * @param runList the list of projects
+     * @return the build for projects that has been triggered by the supplied upstream project.
      */
     @CheckForNull
     public static AbstractBuild match(RunList<? extends AbstractBuild> runList, AbstractBuild firstBuild) {

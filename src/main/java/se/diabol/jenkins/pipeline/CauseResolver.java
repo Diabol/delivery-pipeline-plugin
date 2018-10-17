@@ -41,6 +41,8 @@ public abstract class CauseResolver implements ExtensionPoint {
 
     /**
      * Returns all loaded implementations of this extension point.
+     *
+     * @return all loaded implementations of this extension point.
      */
     public static List<CauseResolver> all() {
         return JenkinsUtil.getInstance().getExtensionList(CauseResolver.class);
