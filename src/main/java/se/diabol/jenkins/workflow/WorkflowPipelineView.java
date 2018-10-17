@@ -307,7 +307,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
                 }
             }
         } catch (IOException | PipelineException e) {
-            LOG.warning("Failed to resolve project to trigger manual/input step for: " + e);
+            LOG.warning("Failed to resolve project to trigger manual/input: " + e);
         }
     }
 

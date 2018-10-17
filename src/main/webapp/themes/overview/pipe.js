@@ -192,7 +192,7 @@ function pipelineUtils() {
                                     html.push('</div>');
                                 }
                                 if (task.requiringInput) {
-                                    html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.workflowJob.name + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
+                                    html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.fullJobName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
                                 }
                             }
