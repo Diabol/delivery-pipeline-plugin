@@ -24,17 +24,22 @@ import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import java.util.List;
 
 /**
- * Defines a ExtensionPoint for resolving a projects downstream relationships.
+ * Defines an ExtensionPoint for resolving a projects downstream relationships.
  */
 public abstract class RelationshipResolver implements ExtensionPoint {
 
     /**
      * Returns the downstream projects for the given project.
+     *
+     * @param project the project which to resolve downstream dependencies for
+     * @return the downstream projects for the given project.
      */
     public abstract List<AbstractProject> getDownstreamProjects(AbstractProject<?, ?>  project);
 
     /**
      * Returns all loaded implementations of this extension point.
+     *
+     * @return all loaded implementations of this extension point.
      */
     public static List<RelationshipResolver> all() {
         return JenkinsUtil.getInstance().getExtensionList(RelationshipResolver.class);

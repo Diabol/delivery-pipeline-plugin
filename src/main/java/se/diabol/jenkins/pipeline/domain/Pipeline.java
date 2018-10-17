@@ -216,6 +216,13 @@ public class Pipeline extends GenericPipeline {
 
     /**
      * Created a pipeline prototype for the supplied first project.
+     *
+     * @param name pipeline name
+     * @param firstProject the first project of the pipeline
+     * @param lastProject the last project of the pipeline
+     * @param withUpstream whether to resolve the upstream dependency of this pipeline
+     * @return a pipeline model object representing this delivery pipeline
+     * @throws PipelineException if unable to successfully resolve the pipeline given the specified parameters
      */
     public static Pipeline extractPipeline(String name,
                                            AbstractProject<?, ?> firstProject,
@@ -277,6 +284,12 @@ public class Pipeline extends GenericPipeline {
      * Populates and return pipelines for the supplied pipeline prototype with the current status.
      *
      * @param noOfPipelines number of pipeline instances
+     * @param context the Jenkins ItemGroup context
+     * @param pagingEnabled whether paging option is enabled for the current view
+     * @param showChanges whether SCM changes is displayed for the current view
+     * @param component the current component to resolve the latest pipeline for
+     * @return a list of the latest pipeline resolved for this component given the specified parameters
+     * @throws PipelineException if unable to successfully resolve the pipeline given the specified parameters
      */
     public List<Pipeline> createPipelineLatest(int noOfPipelines,
                                                ItemGroup context,
