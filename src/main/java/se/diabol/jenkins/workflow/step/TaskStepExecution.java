@@ -44,7 +44,7 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
 
     @Override
     public boolean start() throws Exception {
-        TaskAction taskAction = new TaskActionImpl(step.name);
+        TaskAction taskAction = new TaskActionImpl(node, step.name);
         StepContext context = this.getContext();
         if (context.hasBody()) {
             ((CpsBodyInvoker) context.newBodyInvoker())
@@ -74,14 +74,17 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
     }
 
     private static final class TaskActionImpl extends InvisibleAction implements TaskAction, Serializable {
+
+        private final transient FlowNode associatedNode;
         private final String taskName;
         private Long finishedTime = null;
 
-        TaskActionImpl(String taskName) {
-            this(taskName, null);
+        TaskActionImpl(FlowNode associatedNode, String taskName) {
+            this(associatedNode, taskName, null);
         }
 
-        TaskActionImpl(String taskName, Long finishedTime) {
+        TaskActionImpl(FlowNode associatedNode, String taskName, Long finishedTime) {
+            this.associatedNode = associatedNode;
             this.taskName = taskName;
             this.finishedTime = finishedTime;
         }
@@ -99,6 +102,7 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         @Override
         public void setFinishedTime(Long finishedTime) {
             this.finishedTime = finishedTime;
+            this.associatedNode.addAction(new TaskFinishedAction(finishedTime));
         }
     }
 
