@@ -20,9 +20,11 @@ package se.diabol.jenkins.workflow.util;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import se.diabol.jenkins.workflow.api.Run;
 import se.diabol.jenkins.workflow.step.TaskAction;
+import se.diabol.jenkins.workflow.step.TaskFinishedAction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class Util {
 
@@ -37,6 +39,20 @@ public final class Util {
             }
         }
         return result;
+    }
+
+    public static Optional<FlowNode> getParentNodeWithTaskFinishedAction(FlowNode taskNode) {
+        return taskNode.getParents().stream()
+                .filter(parent -> parent.getAction(TaskFinishedAction.class) != null)
+                .findFirst();
+    }
+
+    public static boolean isAnyParentNodeContainingTaskFinishedAction(FlowNode taskNode) {
+        if (taskNode != null && !taskNode.getParents().isEmpty()) {
+            Optional<FlowNode> parentWithTaskFinishedAction = getParentNodeWithTaskFinishedAction(taskNode);
+            return parentWithTaskFinishedAction.isPresent();
+        }
+        return false;
     }
 
     public static Run getRunById(List<Run> runs, int buildNumber) {

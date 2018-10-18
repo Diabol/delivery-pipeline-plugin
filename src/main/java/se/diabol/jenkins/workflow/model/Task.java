@@ -18,7 +18,9 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.model;
 
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static se.diabol.jenkins.workflow.util.Util.getParentNodeWithTaskFinishedAction;
 import static se.diabol.jenkins.workflow.util.Util.getRunById;
+import static se.diabol.jenkins.workflow.util.Util.isAnyParentNodeContainingTaskFinishedAction;
 
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -36,11 +38,13 @@ import se.diabol.jenkins.workflow.WorkflowApi;
 import se.diabol.jenkins.workflow.api.Run;
 import se.diabol.jenkins.workflow.api.Stage;
 import se.diabol.jenkins.workflow.step.TaskAction;
+import se.diabol.jenkins.workflow.step.TaskFinishedAction;
 import se.diabol.jenkins.workflow.util.Name;
 import se.diabol.jenkins.workflow.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Task extends AbstractItem {
 
@@ -173,25 +177,38 @@ public class Task extends AbstractItem {
                                             FlowNode taskNode,
                                             TaskAction taskAction) throws PipelineException {
         Stage stage = getStage(build, stageStartNode);
-
-        Long finishedTime = taskAction.getFinishedTime();
+        Long finishedTime = getTaskFinishedTime(taskNode, taskAction);
         if (finishedTime != null) {
-            long duration = finishedTime - getTaskStartTime(taskNode);
-            return new SimpleStatus(StatusType.SUCCESS, finishedTime, duration);
+            long taskDuration = finishedTime - getTaskStartTime(taskNode);
+            return new SimpleStatus(StatusType.SUCCESS, finishedTime, taskDuration);
         } else {
             Status stageStatus = resolveStageStatus(build, stage);
             if (stageStatus.isRunning()) {
                 return runningStatus(build, stage);
             } else {
-                long duration = (stage.startTimeMillis.getMillis() + stage.durationMillis) - getTaskStartTime(taskNode);
-                return new SimpleStatus(stageStatus.getType(),
-                        stage.startTimeMillis.getMillis() + stage.durationMillis, duration);
+                long taskDuration = getStageDuration(stage) - getTaskStartTime(taskNode);
+                return new SimpleStatus(stageStatus.getType(), getStageDuration(stage), taskDuration);
             }
         }
     }
 
+    private static long getStageDuration(Stage stage) {
+        return stage.startTimeMillis.getMillis() + stage.durationMillis;
+    }
+
     private static long getTaskStartTime(FlowNode taskNode) {
         return taskNode.getAction(TimingAction.class).getStartTime();
+    }
+
+    private static Long getTaskFinishedTime(FlowNode taskNode, TaskAction taskAction) {
+        Long finishedTime = taskAction.getFinishedTime();
+        if (finishedTime == null && isAnyParentNodeContainingTaskFinishedAction(taskNode)) {
+            Optional<FlowNode> parentNode = getParentNodeWithTaskFinishedAction(taskNode);
+            if (parentNode.isPresent()) {
+                finishedTime = parentNode.get().getAction(TaskFinishedAction.class).getFinishedTime();
+            }
+        }
+        return finishedTime;
     }
 
     private static Status runningStatus(WorkflowRun build, Stage stage) throws PipelineException {
