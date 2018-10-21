@@ -18,6 +18,8 @@ This plugin has been contributed to the community by [Diabol AB](https://www.dia
 
 Requirements
 ---
+Delivery Pipeline plugin 1.3.0 and later requires Java 8 and Jenkins core 2.73.3 or later.
+
 Delivery Pipeline plugin 1.2.0 and later requires Java 8 and Jenkins core 2.62 or later.
 
 Delivery Pipeline plugin 1.1.0 and later requires Java 8 and Jenkins core 1.642.3 or later.
