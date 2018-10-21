@@ -19,6 +19,9 @@
         <f:entry title="Sorting" field="sorting">
             <f:select/>
         </f:entry>
+        <f:entry title="Max number of pipelines" field="maxNumberOfVisiblePipelines" default="-1">
+            <f:textbox/>
+        </f:entry>
         <f:entry title="Enable start of new pipeline build" field="allowPipelineStart">
             <f:checkbox/>
         </f:entry>
