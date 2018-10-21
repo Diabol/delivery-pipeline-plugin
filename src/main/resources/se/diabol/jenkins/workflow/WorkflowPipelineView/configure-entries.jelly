@@ -10,9 +10,6 @@
         <f:entry title="Number of pipeline instances per pipeline" field="noOfPipelines">
             <f:select/>
         </f:entry>
-        <f:entry title="Update interval" field="updateInterval" default="2">
-            <f:textbox/>
-        </f:entry>
         <f:entry title="Number of columns" field="noOfColumns">
             <f:select/>
         </f:entry>
@@ -20,6 +17,9 @@
             <f:select/>
         </f:entry>
         <f:entry title="Max number of pipelines" field="maxNumberOfVisiblePipelines" default="-1">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Update interval" field="updateInterval" default="2">
             <f:textbox/>
         </f:entry>
         <f:entry title="Enable start of new pipeline build" field="allowPipelineStart">
