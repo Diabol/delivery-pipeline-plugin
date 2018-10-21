@@ -17,6 +17,18 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.gargoylesoftware.htmlunit.Page;
 import hudson.cli.BuildCommand;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
@@ -33,18 +45,11 @@ import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.workflow.model.Component;
+
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class WorkflowPipelineViewTest {
 
@@ -191,6 +196,7 @@ public class WorkflowPipelineViewTest {
         assertThat(view.isShowChanges(), is(false));
         assertThat(view.isAllowPipelineStart(), is(false));
         assertThat(view.getTheme(), is("default"));
+        assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertThat(view.isLinkToConsoleLog(), is(false));
     }
 
@@ -200,5 +206,37 @@ public class WorkflowPipelineViewTest {
         WorkflowPipelineView view = new WorkflowPipelineView("name");
         view.setTheme(null);
         assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
+    }
+
+    @Test
+    public void shouldSetMaxNumberOfVisiblePipelines() throws Exception {
+        final String jobName = "workflowJob";
+        jenkins.getInstance().createProject(WorkflowJob.class, jobName);
+        List<WorkflowPipelineView.ComponentSpec> specs = new ArrayList<>();
+        specs.add(new WorkflowPipelineView.ComponentSpec("Comp", jobName));
+        specs.add(new WorkflowPipelineView.ComponentSpec("Comp1", jobName));
+        WorkflowPipelineView view = new WorkflowPipelineView("Pipeline");
+        view.setComponentSpecs(specs);
+        view.setMaxNumberOfVisiblePipelines(1);
+        jenkins.getInstance().addView(view);
+        List<Component> pipelines = view.getPipelines();
+        assertEquals(1, pipelines.size());
+        assertNull(view.getError());
+    }
+
+    @Test
+    public void shouldReturnAllJobsWhenMaxNumberOfPipelinesNotSet() throws Exception {
+        final String jobName = "pipelineJobName";
+        jenkins.getInstance().createProject(WorkflowJob.class, jobName);
+        List<WorkflowPipelineView.ComponentSpec> specs = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            specs.add(new WorkflowPipelineView.ComponentSpec("Comp" + i, jobName));
+        }
+        WorkflowPipelineView view = new WorkflowPipelineView("Pipeline");
+        view.setComponentSpecs(specs);
+        jenkins.getInstance().addView(view);
+        List<Component> pipelines = view.getPipelines();
+        assertEquals(specs.size(), pipelines.size());
+        assertNull(view.getError());
     }
 }

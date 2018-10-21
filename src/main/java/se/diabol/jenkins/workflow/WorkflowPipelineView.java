@@ -87,6 +87,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private boolean allowPipelineStart = false;
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
+    private int maxNumberOfVisiblePipelines = -1;
     @Deprecated
     private String project;
     private List<ComponentSpec> componentSpecs;
@@ -167,6 +168,14 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.theme = theme;
     }
 
+    public int getMaxNumberOfVisiblePipelines() {
+        return maxNumberOfVisiblePipelines;
+    }
+
+    public void setMaxNumberOfVisiblePipelines(int maxNumberOfVisiblePipelines) {
+        this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
+    }
+
     public String getProject() {
         return project;
     }
@@ -234,6 +243,10 @@ public class WorkflowPipelineView extends View implements PipelineView {
             }
             if (sortingConfigured()) {
                 sort(components);
+            }
+            if (maxNumberOfVisiblePipelines > 0) {
+                LOG.fine("Limiting number of jobs to: " + maxNumberOfVisiblePipelines);
+                components = components.subList(0, Math.min(components.size(), maxNumberOfVisiblePipelines));
             }
             return components;
         } catch (PipelineException e) {

@@ -446,7 +446,6 @@ public class DeliveryPipelineViewTest {
         assertEquals(2, components.size());
     }
 
-
     @Test
     public void testGetPipelines() throws Exception {
         FreeStyleProject build = jenkins.createFreeStyleProject("build");
