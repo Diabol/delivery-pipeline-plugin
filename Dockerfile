@@ -1,4 +1,4 @@
-FROM jenkins:1.642.3
+FROM jenkins/jenkins:2.107.3-alpine
 MAINTAINER Diabol AB - http://www.diabol.se - https://github.com/Diabol
 
 USER jenkins
