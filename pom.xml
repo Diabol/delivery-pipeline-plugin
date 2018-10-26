@@ -525,12 +525,6 @@
             <artifactId>selenium-support</artifactId>
             <version>${selenium.version}</version>
             <scope>test</scope>
-            <!--exclusions>
-                <exclusion>
-                    <artifactId>com.google.guava</artifactId>
-                    <groupId>guava</groupId>
-                </exclusion>
-            </exclusions-->
         </dependency>
 
         <!-- Dependencies to other Jenkins plugins-->

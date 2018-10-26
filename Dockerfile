@@ -1,5 +1,5 @@
-FROM jenkins:1.642.3
-MAINTAINER Diabol AB - http://www.diabol.se - https://github.com/Diabol
+FROM jenkins/jenkins:2.107.3-alpine
+MAINTAINER Diabol AB - https://www.diabol.se - https://github.com/Diabol
 
 USER jenkins
 COPY docker/plugins.txt /usr/share/jenkins/ref/
