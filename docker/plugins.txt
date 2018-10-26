@@ -1,4 +1,5 @@
 credentials:2.1.11
+job-dsl:1.44
 junit:1.20
 structs:1.10
 javadoc:1.0
@@ -12,6 +13,7 @@ ssh-credentials:1.10
 scm-api:2.2.6
 git-client:1.17.1
 git:2.3.5
+build-name-setter:1.3
 ace-editor:1.0.1
 jquery-detached:1.2.1
 workflow-support:2.17
@@ -36,6 +38,6 @@ pipeline-rest-api:2.5
 promoted-builds:2.27
 token-macro:1.12.1
 jquery:1.7.2-1
-parameterized-trigger:2.21
+parameterized-trigger:2.26
 cloudbees-folder:6.1.2
 dashboard-view:2.9.2

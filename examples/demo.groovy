@@ -1,7 +1,6 @@
 folder('Demo')
 
 deliveryPipelineView('Demo/Pipeline') {
-
     pipelineInstances(5)
     allowPipelineStart()
     enableManualTriggers()
@@ -9,7 +8,6 @@ deliveryPipelineView('Demo/Pipeline') {
     pipelines {
         component('Component', 'Demo/Build')
     }
-
 }
 
 job('Demo/Build') {
@@ -17,7 +15,7 @@ job('Demo/Build') {
     scm {
         git {
             remote {
-                url('https://github.com/Diabol/dummy.git')
+                url('https://github.com/Diabol/delivery-pipeline-plugin')
             }
         }
     }
@@ -27,21 +25,26 @@ job('Demo/Build') {
     publishers {
         downstreamParameterized {
             trigger('Demo/Sonar') {
-                gitRevision(false)
+                parameters {
+                    currentBuild()
+                }
             }
-            trigger('Demo/DeployCI', 'SUCCESS', true) {
-
+            trigger('Demo/DeployCI') {
+                condition('SUCCESS')
+                parameters {
+                    currentBuild()
+                }
             }
         }
     }
 }
 
 job('Demo/Sonar') {
-    deliveryPipelineConfiguration("Build", "Sonar")
+    deliveryPipelineConfiguration("Build", "Static code analysis")
     scm {
         git {
             remote {
-                url('https://github.com/Diabol/dummy.git')
+                url('https://github.com/Diabol/delivery-pipeline-plugin')
             }
         }
     }
@@ -51,9 +54,7 @@ job('Demo/Sonar') {
     }
 
     steps {
-        shell(
-                'sleep 10'
-        )
+        shell 'sleep 10'
     }
 }
 
@@ -65,15 +66,16 @@ job('Demo/DeployCI') {
     }
 
     steps {
-        shell(
-                'sleep 5'
-        )
+        shell 'sleep 5'
     }
 
     publishers {
         downstreamParameterized {
-            trigger('Demo/TestCI', 'SUCCESS', true) {
-
+            trigger('Demo/TestCI') {
+                condition('SUCCESS')
+                parameters {
+                    currentBuild()
+                }
             }
         }
     }
@@ -87,9 +89,7 @@ job('Demo/TestCI') {
     }
 
     steps {
-        shell(
-                'sleep 10'
-        )
+        shell 'sleep 10'
     }
 
 
@@ -107,15 +107,16 @@ job('Demo/DeployQA') {
     }
 
     steps {
-        shell(
-                'sleep 5'
-        )
+        shell 'sleep 5'
     }
 
     publishers {
         downstreamParameterized {
-            trigger('Demo/TestQA', 'SUCCESS', true) {
-
+            trigger('Demo/TestQA') {
+                condition('SUCCESS')
+                parameters {
+                    currentBuild()
+                }
             }
         }
     }
@@ -129,11 +130,8 @@ job('Demo/TestQA') {
     }
 
     steps {
-        shell(
-                'sleep 10'
-        )
+        shell 'sleep 10'
     }
-
 
     publishers {
         buildPipelineTrigger('Demo/DeployProd') {
@@ -149,15 +147,16 @@ job('Demo/DeployProd') {
     }
 
     steps {
-        shell(
-                'sleep 5'
-        )
+        shell 'sleep 5'
     }
 
     publishers {
         downstreamParameterized {
-            trigger('Demo/TestProd', 'SUCCESS', true) {
-
+            trigger('Demo/TestProd') {
+                condition('SUCCESS')
+                parameters {
+                    currentBuild()
+                }
             }
         }
     }
@@ -171,10 +170,7 @@ job('Demo/TestProd') {
     }
 
     steps {
-        shell(
-                'sleep 5'
-        )
+        shell 'sleep 5'
     }
-
 }
 
