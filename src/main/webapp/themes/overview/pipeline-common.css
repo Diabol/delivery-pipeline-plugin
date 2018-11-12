@@ -118,6 +118,19 @@ div.task-rebuild {
     z-index: 100;
 }
 
+div.task-abort {
+    display: table-cell;
+    background-color: #808080;
+    background: url("abort.png") no-repeat;
+    background-size: 100%;
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+    float: right;
+    padding-right: 5px;
+    z-index: 100;
+}
+
 .timestamp {
     display: inline-block;
 }

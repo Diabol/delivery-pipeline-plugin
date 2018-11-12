@@ -195,6 +195,14 @@ function pipelineUtils() {
                                     html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.fullJobName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
                                 }
+                                if (data.allowAbort && progressClass === 'task-progress-running') {
+                                    var projectName = component.fullJobName;
+                                    if (typeof projectName === "undefined") {
+                                        projectName = task.id;
+                                    }
+                                    html.push('<div class="task-abort" id="abort-' + id + '" title="Abort progress" onclick="abortBuild(\'' + id + '\', \'' + projectName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
+                                    html.push('</div>');
+                                }
                             }
 
                             html.push('</div><div class="task-details">');
@@ -680,6 +688,34 @@ function specifyInput(taskId, project, buildId, viewUrl) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             window.alert('Could not trigger input step! error: ' + errorThrown + ' status: ' + textStatus)
+        }
+    });
+}
+
+function abortBuild(taskId, project, buildId, viewUrl) {
+    Q('#abort-' + taskId).hide();
+    var formData = {project: project, upstream: 'N/A', buildId: buildId}, before;
+
+    var before;
+    if (crumb.value !== null && crumb.value !== '') {
+        console.info('Crumb found and will be added to request header');
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info('Crumb not needed');
+        before = function(xhr){}
+    }
+
+    Q.ajax({
+        url: rootURL + '/' + viewUrl + 'api/abortBuild',
+        type: 'POST',
+        data: formData,
+        beforeSend: before,
+        timeout: 20000,
+        success: function (data, textStatus, jqXHR) {
+            console.info('Successfully aborted build of ' + project + '!')
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            window.alert('Could not abort build! error: ' + errorThrown + ' status: ' + textStatus)
         }
     });
 }

@@ -36,6 +36,7 @@ import hudson.util.ListBoxModel;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.BadCredentialsException;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -64,6 +65,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,6 +87,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private int noOfColumns = 1;
     private String sorting = NONE_SORTER;
     private boolean allowPipelineStart = false;
+    private boolean allowAbort = false;
     private boolean showChanges = false;
     private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
@@ -150,6 +153,15 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
     public void setAllowPipelineStart(boolean allowPipelineStart) {
         this.allowPipelineStart = allowPipelineStart;
+    }
+
+    @Exported
+    public boolean isAllowAbort() {
+        return allowAbort;
+    }
+
+    public void setAllowAbort(boolean allowAbort) {
+        this.allowAbort = allowAbort;
     }
 
     public boolean isShowChanges() {
@@ -303,8 +315,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Override
-    public void triggerManual(String projectName, String upstreamName, String buildId)
-            throws TriggerException, AuthenticationException {
+    public void triggerManual(String projectName, String upstreamName, String buildId) throws AuthenticationException {
         LOG.fine("Manual/Input step called for project: " + projectName + " and build id: " + buildId);
 
         WorkflowJob workflowJob;
@@ -327,6 +338,23 @@ public class WorkflowPipelineView extends View implements PipelineView {
     @Override
     public void triggerRebuild(String projectName, String buildId) {
         LOG.log(Level.SEVERE, "Rebuild not implemented for workflow/pipeline projects");
+    }
+
+    @Override
+    public void abortBuild(String projectName, String buildId) throws TriggerException {
+        try {
+            WorkflowJob workflowJob = ProjectUtil.getWorkflowJob(projectName, getOwnerItemGroup());
+            if (!workflowJob.hasAbortPermission()) {
+                throw new BadCredentialsException("Not authorized to abort build");
+            }
+            RunList<WorkflowRun> builds = workflowJob.getBuilds();
+            Optional<WorkflowRun> run = builds.stream()
+                    .filter(r -> Integer.toString(r.getNumber()).equals(buildId))
+                    .findFirst();
+            run.ifPresent(WorkflowRun::doStop);
+        } catch (PipelineException e) {
+            throw new TriggerException("Could not abort build");
+        }
     }
 
     @Override
