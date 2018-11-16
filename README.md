@@ -78,7 +78,7 @@ To build and run the Delivery Pipeline plugin in a container, you first need to 
 
 If you just want to run the Delivery Pipeline plugin in a container without building it yourself, you can pull certain versions from [Docker hub](https://hub.docker.com/r/diabol/delivery-pipeline-plugin/):
 
-    docker pull diabol/delivery-pipeline-plugin:1.0.3
+    docker pull diabol/delivery-pipeline-plugin:1.3.0
 
 Configuring manually triggered jobs for views based on traditional Jenkins jobs with downstream dependencies
 ----
