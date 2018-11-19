@@ -195,17 +195,8 @@ public class WorkflowPipelineViewTest {
         assertNull(view.getDescription());
         assertThat(view.isShowChanges(), is(false));
         assertThat(view.isAllowPipelineStart(), is(false));
-        assertThat(view.getTheme(), is("default"));
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertThat(view.isLinkToConsoleLog(), is(false));
-    }
-
-    @Test
-    @WithoutJenkins
-    public void testSetDefaultThemeIfNull() {
-        WorkflowPipelineView view = new WorkflowPipelineView("name");
-        view.setTheme(null);
-        assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
     }
 
     @Test

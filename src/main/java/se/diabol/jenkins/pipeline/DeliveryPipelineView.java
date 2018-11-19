@@ -87,8 +87,6 @@ public class DeliveryPipelineView extends View implements PipelineView {
     private static final String OLD_NONE_SORTER = "se.diabol.jenkins.pipeline.sort.NoOpComparator";
     private static final String NONE_SORTER = "none";
 
-    public static final String DEFAULT_THEME = "default";
-
     private List<ComponentSpec> componentSpecs;
     private int noOfPipelines = DEFAULT_NO_OF_PIPELINES;
     private boolean showAggregatedPipeline = false;
@@ -111,7 +109,6 @@ public class DeliveryPipelineView extends View implements PipelineView {
     private boolean pagingEnabled = false;
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
-    private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
     private List<RegExpSpec> regexpFirstJobs;
     private boolean linkToConsoleLog = false;
@@ -269,14 +266,6 @@ public class DeliveryPipelineView extends View implements PipelineView {
     @Exported
     public boolean getPagingEnabled() {
         return pagingEnabled;
-    }
-
-    public String getTheme() {
-        return this.theme == null ? DEFAULT_THEME : this.theme;
-    }
-
-    public void setTheme(String theme) {
-        this.theme = theme;
     }
 
     public boolean isFullScreenView() {
@@ -647,14 +636,6 @@ public class DeliveryPipelineView extends View implements PipelineView {
             for (ComponentComparatorDescriptor descriptor : descriptors) {
                 options.add(descriptor.getDisplayName(), descriptor.getId());
             }
-            return options;
-        }
-
-        public ListBoxModel doFillThemeItems(@AncestorInPath ItemGroup<?> context) {
-            ListBoxModel options = new ListBoxModel();
-            options.add("Default", "default");
-            options.add("Contrast", "contrast");
-            options.add("Overview", "overview");
             return options;
         }
 

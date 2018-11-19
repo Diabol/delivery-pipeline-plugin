@@ -207,7 +207,6 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isLinkRelative());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
-        assertEquals("default", view.getTheme());
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertFalse(view.isShowAggregatedChanges());
         assertNull(view.getAggregatedChangesGroupingPattern());
@@ -251,8 +250,6 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.getPagingEnabled());
         view.setAllowPipelineStart(true);
         assertTrue(view.isAllowPipelineStart());
-        view.setTheme("test");
-        assertEquals("test", view.getTheme());
         view.setMaxNumberOfVisiblePipelines(10);
         assertEquals(10, view.getMaxNumberOfVisiblePipelines());
         view.setShowAggregatedChanges(true);
@@ -261,14 +258,6 @@ public class DeliveryPipelineViewTest {
         assertEquals("TestRegex", view.getAggregatedChangesGroupingPattern());
         view.setLinkToConsoleLog(true);
         assertTrue(view.isLinkToConsoleLog());
-    }
-
-    @Test
-    @WithoutJenkins
-    public void testSetDefaultThemeIfNull() {
-        DeliveryPipelineView view = new DeliveryPipelineView("name");
-        view.setTheme(null);
-        assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
     }
 
     @Test
