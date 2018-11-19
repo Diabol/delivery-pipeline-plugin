@@ -105,6 +105,7 @@ div.task-manual {
     float: right;
     padding-right: 5px;
     z-index: 100;
+    margin-top: -18px;
 }
 
 div.task-rebuild {
@@ -144,7 +145,7 @@ div.task-abort {
     display: inline-block;
 }
 
-.task-progress-running.task-abortable .duration {
+.task-abortable .duration {
     padding-right: 20px;
 }
 

@@ -171,8 +171,12 @@ function pipelineUtils() {
                                 consoleLogLink = 'console';
                             }
 
+                            var showAbortButton = false;
                             if (data.allowAbort) {
                                 progressClass += ' task-abortable';
+                                if (progressClass.indexOf('task-progress-running') !== -1) {
+                                    showAbortButton = true;
+                                }
                             }
 
                             html.push(
@@ -194,10 +198,11 @@ function pipelineUtils() {
                                     html.push('</div>');
                                 }
                                 if (task.requiringInput) {
+                                    showAbortButton = true;
                                     html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.fullJobName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
                                 }
-                                if (data.allowAbort && progressClass.indexOf('task-progress-running') !== -1) {
+                                if (showAbortButton) {
                                     var projectName = component.fullJobName;
                                     if (typeof projectName === "undefined") {
                                         projectName = task.id;

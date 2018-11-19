@@ -199,7 +199,7 @@ div.task-abort {
     padding-left: 20px;
 }
 
-.task-progress-running.task-abortable .duration {
+.task-abortable .duration {
     padding-right: 20px;
 }
 
