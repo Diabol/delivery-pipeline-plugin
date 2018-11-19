@@ -171,6 +171,10 @@ function pipelineUtils() {
                                 consoleLogLink = 'console';
                             }
 
+                            if (data.allowAbort) {
+                                progressClass += ' task-abortable';
+                            }
+
                             html.push(
                                 '<div id="' + id + '" class="status stage-task ' + task.status.type + '">'
                                 + '<div class="task-progress ' + progressClass + '" style="width: ' + progress + '%">'
@@ -193,7 +197,7 @@ function pipelineUtils() {
                                     html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.fullJobName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
                                 }
-                                if (data.allowAbort && progressClass === 'task-progress-running') {
+                                if (data.allowAbort && progressClass.indexOf('task-progress-running') !== -1) {
                                     var projectName = component.fullJobName;
                                     if (typeof projectName === "undefined") {
                                         projectName = task.id;

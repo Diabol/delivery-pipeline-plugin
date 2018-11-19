@@ -53,6 +53,7 @@ div.stage a:visited {
 }
 
 div.stage-task {
+    position: relative;
     white-space: nowrap;
     margin: 2px 2px 2px 2px;
 }
@@ -123,11 +124,14 @@ div.task-abort {
     background-color: #808080;
     background: url("abort.png") no-repeat;
     background-size: 100%;
+    position: absolute;
+    bottom: 6px;
+    right: 3px;
     cursor: pointer;
     height: 14px;
     width: 14px;
     float: right;
-    padding-right: 5px;
+    margin-left: 5px;
     z-index: 100;
 }
 
@@ -138,6 +142,10 @@ div.task-abort {
 .duration {
     padding-left: 20px;
     display: inline-block;
+}
+
+.task-progress-running.task-abortable .duration {
+    padding-right: 20px;
 }
 
 div.task-progress-running {
