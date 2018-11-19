@@ -17,9 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.resolver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import hudson.cli.BuildCommand;
 import hudson.model.Cause;
 import org.junit.Rule;
@@ -27,6 +24,9 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CoreCauseResolverTest {
 
@@ -37,21 +37,21 @@ public class CoreCauseResolverTest {
 
     @Test
     @WithoutJenkins
-    public void remote() {
+    public void shouldResolveRemoteCause() {
         TriggerCause triggerCause = resolver.resolveCause(new Cause.RemoteCause("hostname", "note"));
         assertNotNull(triggerCause);
         assertEquals(TriggerCause.TYPE_REMOTE, triggerCause.getType());
     }
 
     @Test
-    public void cliCause() {
+    public void shouldResolveCliCause() {
         TriggerCause triggerCause = resolver.resolveCause(new BuildCommand.CLICause("username"));
         assertNotNull(triggerCause);
         assertEquals(TriggerCause.TYPE_MANUAL, triggerCause.getType());
     }
 
     @Test
-    public void testNullUser() {
+    public void shouldYieldAnonymousForUnknownUser() {
         assertEquals("anonymous", CoreCauseResolver.getDisplayName(null));
     }
 

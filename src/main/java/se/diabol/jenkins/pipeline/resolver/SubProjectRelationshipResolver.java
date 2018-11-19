@@ -39,9 +39,7 @@ public class SubProjectRelationshipResolver extends RelationshipResolver {
         List<AbstractProject> result = new ArrayList<>();
         for (SubProjectsAction action : Util.filter(project.getActions(), SubProjectsAction.class)) {
             for (BlockableBuildTriggerConfig config : action.getConfigs()) {
-                for (AbstractProject subProject : config.getProjectList(project.getParent(), null)) {
-                    result.add(subProject);
-                }
+                result.addAll(config.getProjectList(project.getParent(), null));
             }
         }
         return result;
