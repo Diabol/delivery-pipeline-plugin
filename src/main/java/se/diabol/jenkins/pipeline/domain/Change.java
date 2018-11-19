@@ -33,13 +33,13 @@ import java.util.logging.Logger;
 
 @ExportedBean(defaultVisibility = AbstractItem.VISIBILITY)
 public class Change {
+
+    private static final Logger LOG = Logger.getLogger(Change.class.getName());
+
     private final UserInfo author;
     private final String message;
     private final String commitId;
     private final String changeLink;
-
-    private static final Logger LOG = Logger.getLogger(Change.class.getName());
-
 
     public Change(UserInfo author, String message, String commitId, String changeLink) {
         this.author = author;
@@ -115,13 +115,9 @@ public class Change {
         for (ChangeLogSet<? extends ChangeLogSet.Entry> entries : changes) {
             for (ChangeLogSet.Entry entry : entries) {
                 UserInfo user = UserInfo.getUser(entry.getAuthor());
-                String changeLink = null;
-                result.add(new Change(user, entry.getMsgAnnotated(), entry.getCommitId(), changeLink));
+                result.add(new Change(user, entry.getMsgAnnotated(), entry.getCommitId(), null));
             }
         }
         return result;
     }
-
-
-
 }
