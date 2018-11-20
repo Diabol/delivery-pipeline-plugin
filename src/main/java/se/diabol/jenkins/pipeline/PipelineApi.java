@@ -46,7 +46,7 @@ public class PipelineApi extends Api {
                              StaplerResponse response,
                              @QueryParameter String project,
                              @QueryParameter String upstream,
-                             @QueryParameter String buildId) throws IOException, ServletException {
+                             @QueryParameter String buildId) {
         if (project != null && upstream != null && buildId != null) {
             try {
                 view.triggerManual(project, upstream, buildId);
@@ -65,7 +65,7 @@ public class PipelineApi extends Api {
     public void doRebuildStep(StaplerRequest request,
                               StaplerResponse response,
                               @QueryParameter String project,
-                              @QueryParameter String buildId) throws IOException, ServletException {
+                              @QueryParameter String buildId) {
         if (project != null && buildId != null) {
             try {
                 view.triggerRebuild(project, buildId);
@@ -85,6 +85,24 @@ public class PipelineApi extends Api {
                              @QueryParameter String upstream,
                              @QueryParameter String buildId) throws IOException, ServletException {
         doManualStep(request, response, project, upstream, buildId);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void doAbortBuild(StaplerRequest request,
+                             StaplerResponse response,
+                             @QueryParameter String project,
+                             @QueryParameter String buildId) {
+        if (project != null && buildId != null) {
+            try {
+                view.abortBuild(project, buildId);
+            } catch (AuthenticationException e) {
+                response.setStatus(SC_FORBIDDEN);
+            } catch (TriggerException e) {
+                response.setStatus(SC_NOT_ACCEPTABLE);
+            }
+        } else {
+            response.setStatus(SC_NOT_ACCEPTABLE);
+        }
     }
 
 }

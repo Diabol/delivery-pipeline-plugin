@@ -43,6 +43,14 @@ div.stage-task, div.task-progress {
     min-height: 42px;
 }
 
+div.task-abort {
+    bottom: 4px;
+}
+
+div.task-details {
+    padding-top: 5px;
+}
+
 .stage-name, .stage-version {
     padding: 10px;
 }

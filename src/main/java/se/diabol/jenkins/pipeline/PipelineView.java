@@ -26,4 +26,6 @@ public interface PipelineView {
             throws TriggerException, AuthenticationException;
 
     void triggerRebuild(String projectName, String buildId);
+
+    void abortBuild(String projectName, String buildId) throws TriggerException, AuthenticationException;
 }

@@ -106,6 +106,7 @@ div.stage a:visited {
 }
 
 div.stage-task {
+    position: relative;
     white-space: nowrap;
     margin: 2px 2px 2px 2px;
 }
@@ -171,7 +172,22 @@ div.task-rebuild {
     float: right;
     padding-right: 5px;
     z-index: 100;
+}
 
+div.task-abort {
+    display: table-cell;
+    background-color: #808080;
+    background: url("abort.png") no-repeat;
+    background-size: 100%;
+    position: absolute;
+    bottom: 6px;
+    right: 3px;
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+    float: right;
+    margin-left: 5px;
+    z-index: 100;
 }
 
 .timestamp {
@@ -181,6 +197,10 @@ div.task-rebuild {
 .duration {
     display: table-cell;
     padding-left: 20px;
+}
+
+.task-abortable .duration {
+    padding-right: 20px;
 }
 
 div.task-progress-running {
@@ -398,7 +418,7 @@ div.aggregatedChangesPanelInner > ul {
 .pagination {
 	display:block;
 	text-align:left;
-	clear:both;	
+	clear:both;
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:14px;
 	font-weight:normal;
@@ -420,7 +440,7 @@ div.aggregatedChangesPanelInner > ul {
 .pagination a:hover {
 	background-color:#DDEEFF;
 	border:1px solid #BBDDFF;
-	color:#0072BC;	
+	color:#0072BC;
 }
 
 .pagination .active_link a {

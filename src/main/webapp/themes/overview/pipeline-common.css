@@ -53,6 +53,7 @@ div.stage a:visited {
 }
 
 div.stage-task {
+    position: relative;
     white-space: nowrap;
     margin: 2px 2px 2px 2px;
 }
@@ -104,6 +105,7 @@ div.task-manual {
     float: right;
     padding-right: 5px;
     z-index: 100;
+    margin-top: -18px;
 }
 
 div.task-rebuild {
@@ -118,6 +120,22 @@ div.task-rebuild {
     z-index: 100;
 }
 
+div.task-abort {
+    display: table-cell;
+    background-color: #808080;
+    background: url("abort.png") no-repeat;
+    background-size: 100%;
+    position: absolute;
+    bottom: 6px;
+    right: 3px;
+    cursor: pointer;
+    height: 14px;
+    width: 14px;
+    float: right;
+    margin-left: 5px;
+    z-index: 100;
+}
+
 .timestamp {
     display: inline-block;
 }
@@ -125,6 +143,10 @@ div.task-rebuild {
 .duration {
     padding-left: 20px;
     display: inline-block;
+}
+
+.task-abortable .duration {
+    padding-right: 20px;
 }
 
 div.task-progress-running {

@@ -103,6 +103,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
     private boolean showTotalBuildTime = false;
     private boolean allowRebuild = false;
     private boolean allowPipelineStart = false;
+    private boolean allowAbort = false;
     private boolean showDescription = false;
     private boolean showPromotions = false;
     private boolean showTestResults = false;
@@ -209,6 +210,15 @@ public class DeliveryPipelineView extends View implements PipelineView {
 
     public void setAllowPipelineStart(boolean allowPipelineStart) {
         this.allowPipelineStart = allowPipelineStart;
+    }
+
+    @Exported
+    public boolean isAllowAbort() {
+        return allowAbort;
+    }
+
+    public void setAllowAbort(boolean allowAbort) {
+        this.allowAbort = allowAbort;
     }
 
     @Exported
@@ -480,6 +490,20 @@ public class DeliveryPipelineView extends View implements PipelineView {
         CauseAction causeAction = new CauseAction(newCauses);
         project.scheduleBuild2(project.getQuietPeriod(), (Cause) null, causeAction,
                 build.getAction(ParametersAction.class));
+    }
+
+    @Override
+    public void abortBuild(String projectName, String buildId) throws TriggerException {
+        AbstractProject project = ProjectUtil.getProject(projectName, Jenkins.getInstance());
+        if (!project.hasPermission(Item.CANCEL)) {
+            throw new BadCredentialsException("Not authorized to abort build");
+        }
+        AbstractBuild build = project.getBuildByNumber(Integer.parseInt(buildId));
+        try {
+            build.doStop();
+        } catch (IOException | ServletException e) {
+            throw new TriggerException("Could not abort build");
+        }
     }
 
     protected static String triggerExceptionMessage(final String projectName, final String upstreamName,
