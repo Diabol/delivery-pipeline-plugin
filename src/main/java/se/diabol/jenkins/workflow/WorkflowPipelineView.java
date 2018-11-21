@@ -46,15 +46,15 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.core.PipelineView;
+import se.diabol.jenkins.core.TimestampFormat;
 import se.diabol.jenkins.pipeline.PipelineApi;
-import se.diabol.jenkins.pipeline.PipelineView;
 import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.sort.GenericComponentComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
-import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
@@ -89,6 +89,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private boolean allowPipelineStart = false;
     private boolean allowAbort = false;
     private boolean showChanges = false;
+    private boolean showAbsoluteDateTime = false;
     private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
     @Deprecated
@@ -147,6 +148,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public boolean isAllowPipelineStart() {
         return allowPipelineStart;
     }
@@ -156,6 +158,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public boolean isAllowAbort() {
         return allowAbort;
     }
@@ -170,6 +173,15 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
+    }
+
+    @Exported
+    public boolean isShowAbsoluteDateTime() {
+        return showAbsoluteDateTime;
+    }
+
+    public void setShowAbsoluteDateTime(boolean showAbsoluteDateTime) {
+        this.showAbsoluteDateTime = showAbsoluteDateTime;
     }
 
     public String getTheme() {
@@ -208,8 +220,9 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public String getLastUpdated() {
-        return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+        return TimestampFormat.formatTimestamp(System.currentTimeMillis());
     }
 
     @Exported
@@ -221,8 +234,8 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.linkToConsoleLog = linkToConsoleLog;
     }
 
-    @Override
     @Exported
+    @Override
     public String getDescription() {
         if (super.description == null) {
             setDescription(this.description);
@@ -236,11 +249,13 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public String getError() {
         return error;
     }
 
     @Exported
+    @Override
     public List<Component> getPipelines() {
         try {
             LOG.fine("Getting pipelines");

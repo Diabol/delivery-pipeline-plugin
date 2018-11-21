@@ -48,6 +48,8 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.core.PipelineView;
+import se.diabol.jenkins.core.TimestampFormat;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
@@ -58,7 +60,6 @@ import se.diabol.jenkins.pipeline.trigger.ManualTriggerFactory;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.FullScreen;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
-import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.io.IOException;
@@ -110,6 +111,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
     private boolean showStaticAnalysisResults = false;
     private boolean linkRelative = false;
     private boolean pagingEnabled = false;
+    private boolean showAbsoluteDateTime = false;
     private boolean showAggregatedChanges = false;
     private String aggregatedChangesGroupingPattern = null;
     private String theme = DEFAULT_THEME;
@@ -204,6 +206,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public boolean isAllowPipelineStart() {
         return allowPipelineStart;
     }
@@ -213,6 +216,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public boolean isAllowAbort() {
         return allowAbort;
     }
@@ -328,11 +332,13 @@ public class DeliveryPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public String getLastUpdated() {
-        return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+        return TimestampFormat.formatTimestamp(System.currentTimeMillis());
     }
 
     @Exported
+    @Override
     public String getError() {
         return error;
     }
@@ -393,6 +399,15 @@ public class DeliveryPipelineView extends View implements PipelineView {
 
     public void setPagingEnabled(boolean pagingEnabled) {
         this.pagingEnabled = pagingEnabled;
+    }
+
+    @Exported
+    public boolean isShowAbsoluteDateTime() {
+        return showAbsoluteDateTime;
+    }
+
+    public void setShowAbsoluteDateTime(boolean showAbsoluteDateTime) {
+        this.showAbsoluteDateTime = showAbsoluteDateTime;
     }
 
     @Exported
@@ -521,6 +536,7 @@ public class DeliveryPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public List<Component> getPipelines() {
         try {
             LOG.fine("Getting pipelines");

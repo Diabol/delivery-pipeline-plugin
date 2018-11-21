@@ -207,6 +207,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isLinkRelative());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
+        assertFalse(view.isAllowAbort());
         assertEquals("default", view.getTheme());
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertFalse(view.isShowAggregatedChanges());

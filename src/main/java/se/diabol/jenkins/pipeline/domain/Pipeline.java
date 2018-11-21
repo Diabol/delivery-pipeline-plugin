@@ -27,9 +27,9 @@ import hudson.model.ItemGroup;
 import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.core.GenericPipeline;
+import se.diabol.jenkins.core.TimestampFormat;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.sort.BuildStartTimeComparator;
-import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -298,7 +298,7 @@ public class Pipeline extends GenericPipeline {
                                                Component component) throws PipelineException {
         List<Pipeline> result = new ArrayList<>();
         if (firstProject.isInQueue()) {
-            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
+            String pipeLineTimestamp = TimestampFormat.formatTimestamp(firstProject.getQueueItem().getInQueueSince());
             List<Stage> pipelineStages = new ArrayList<>();
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, null));
@@ -341,7 +341,7 @@ public class Pipeline extends GenericPipeline {
             List<Change> pipelineChanges = Change.getChanges(firstBuild);
             Set<UserInfo> contributors = showChanges ? UserInfo.getContributors(pipelineChanges) : null;
 
-            String pipeLineTimestamp = PipelineUtils.formatTimestamp(firstBuild.getTimeInMillis());
+            String pipeLineTimestamp = TimestampFormat.formatTimestamp(firstBuild.getTimeInMillis());
             List<Stage> pipelineStages = new ArrayList<>();
             Pipeline pipeline = this;
             if (showUpstream()) {
