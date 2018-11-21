@@ -24,6 +24,8 @@ import hudson.model.Cause;
 import hudson.model.User;
 import hudson.triggers.SCMTrigger;
 import hudson.triggers.TimerTrigger;
+import jenkins.branch.BranchEventCause;
+import jenkins.branch.BranchIndexingCause;
 import se.diabol.jenkins.pipeline.CauseResolver;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
@@ -34,33 +36,39 @@ public class CoreCauseResolver extends CauseResolver {
     @Override
     public TriggerCause resolveCause(Cause cause) {
         if (cause instanceof Cause.UserIdCause) {
-            return new TriggerCause(TriggerCause.TYPE_MANUAL, "user "
-                    + getDisplayName(((Cause.UserIdCause) cause).getUserName()));
+            return new TriggerCause(TriggerCause.TYPE_MANUAL,
+                    "user " + getDisplayName(((Cause.UserIdCause) cause).getUserName()));
         } else if (cause instanceof Cause.RemoteCause) {
             return new TriggerCause(TriggerCause.TYPE_REMOTE, "remote trigger");
         } else if (cause instanceof Cause.UpstreamCause) {
-            Cause.UpstreamCause upstreamCause = (Cause.UpstreamCause) cause;
-            AbstractProject upstreamProject = JenkinsUtil.getInstance().getItem(upstreamCause.getUpstreamProject(),
-                    JenkinsUtil.getInstance(), AbstractProject.class);
-            StringBuilder causeString = new StringBuilder("upstream project");
-            if (upstreamProject != null) {
-
-                causeString.append(" ").append(upstreamProject.getDisplayName());
-                AbstractBuild upstreamBuild = upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
-                if (upstreamBuild != null) {
-                    causeString.append(" build ").append(upstreamBuild.getDisplayName());
-                }
-            }
-            return new TriggerCause(TriggerCause.TYPE_UPSTREAM, causeString.toString());
+            return new TriggerCause(TriggerCause.TYPE_UPSTREAM, getUpstreamCauseString((Cause.UpstreamCause) cause));
         } else if (cause instanceof Cause.UpstreamCause.DeeplyNestedUpstreamCause) {
             return new TriggerCause(TriggerCause.TYPE_UPSTREAM, "upstream");
         } else if (cause instanceof SCMTrigger.SCMTriggerCause) {
-            return new TriggerCause(TriggerCause.TYPE_SCM, "SCM");
+            return new TriggerCause(TriggerCause.TYPE_SCM, "VCS");
         } else if (cause instanceof TimerTrigger.TimerTriggerCause) {
             return new TriggerCause(TriggerCause.TYPE_TIMER, "timer");
+        } else if (cause instanceof BranchEventCause) {
+            return new TriggerCause(TriggerCause.TYPE_SCM, "VCS");
+        } else if (cause instanceof BranchIndexingCause) {
+            return new TriggerCause(TriggerCause.TYPE_SCM, "VCS indexing");
         } else {
             return null;
         }
+    }
+
+    private static String getUpstreamCauseString(Cause.UpstreamCause upstreamCause) {
+        AbstractProject upstreamProject = JenkinsUtil.getInstance().getItem(upstreamCause.getUpstreamProject(),
+                JenkinsUtil.getInstance(), AbstractProject.class);
+        String causeString = "upstream project";
+        if (upstreamProject != null) {
+            causeString += " " + upstreamProject.getDisplayName();
+            AbstractBuild upstreamBuild = upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
+            if (upstreamBuild != null) {
+                causeString += " build " + upstreamBuild.getDisplayName();
+            }
+        }
+        return causeString;
     }
 
     protected static String getDisplayName(String userName) {
@@ -71,5 +79,4 @@ public class CoreCauseResolver extends CauseResolver {
             return "anonymous";
         }
     }
-
 }
