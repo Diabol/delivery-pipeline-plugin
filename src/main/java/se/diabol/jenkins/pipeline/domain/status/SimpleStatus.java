@@ -36,9 +36,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import se.diabol.jenkins.core.AbstractItem;
+import se.diabol.jenkins.core.TimestampFormat;
 import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
 import se.diabol.jenkins.pipeline.domain.status.promotion.PromotionStatus;
-import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class SimpleStatus implements Status {
     @Exported
     public String getTimestamp() {
         if (lastActivity != -1) {
-            return PipelineUtils.formatTimestamp(lastActivity);
+            return TimestampFormat.formatTimestamp(lastActivity);
         } else {
             return null;
         }

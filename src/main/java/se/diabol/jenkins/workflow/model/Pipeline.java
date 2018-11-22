@@ -23,11 +23,11 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.core.GenericPipeline;
+import se.diabol.jenkins.core.TimestampFormat;
 import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.domain.UserInfo;
-import se.diabol.jenkins.pipeline.util.PipelineUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -127,7 +127,7 @@ public class Pipeline extends GenericPipeline {
     }
 
     public static Pipeline resolve(WorkflowJob project, WorkflowRun build) throws PipelineException {
-        String pipelineTimestamp = PipelineUtils.formatTimestamp(build.getTimeInMillis());
+        String pipelineTimestamp = TimestampFormat.formatTimestamp(build.getTimeInMillis());
 
         List<FlowNode> stageNodes = FlowNodeUtil.getStageNodes(build.getExecution());
         return new Pipeline(project.getName(),

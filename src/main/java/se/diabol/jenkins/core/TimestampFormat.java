@@ -15,17 +15,20 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline;
+package se.diabol.jenkins.core;
 
-import org.acegisecurity.AuthenticationException;
-import se.diabol.jenkins.pipeline.trigger.TriggerException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public interface PipelineView {
+public final class TimestampFormat {
 
-    void triggerManual(String projectName, String upstreamName, String buildId)
-            throws TriggerException, AuthenticationException;
+    private static final DateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    void triggerRebuild(String projectName, String buildId);
+    private TimestampFormat() {
+    }
 
-    void abortBuild(String projectName, String buildId) throws TriggerException, AuthenticationException;
+    public static String formatTimestamp(long timestamp) {
+        return DATE_TIME_FORMAT.format(new Date(timestamp));
+    }
 }

@@ -27,10 +27,8 @@ import org.acegisecurity.AuthenticationException;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import se.diabol.jenkins.core.PipelineView;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
-
-import java.io.IOException;
-import javax.servlet.ServletException;
 
 public class PipelineApi extends Api {
 
@@ -83,7 +81,7 @@ public class PipelineApi extends Api {
                              StaplerResponse response,
                              @QueryParameter String project,
                              @QueryParameter String upstream,
-                             @QueryParameter String buildId) throws IOException, ServletException {
+                             @QueryParameter String buildId) {
         doManualStep(request, response, project, upstream, buildId);
     }
 
