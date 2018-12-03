@@ -28,7 +28,7 @@ Delivery Pipeline plugin 1.0.0 and later requires Java 7 and Jenkins core 1.642.
 
 Delivery Pipeline plugin 0.10.3 requires Java 6 and Jenkins core 1.565 or later.
 
-Build
+Building the project
 ---
 Requires Java 8, Apache Maven 3.3.x or later.
 
@@ -40,7 +40,8 @@ The project contains a rigorous test suite which takes some time to run. If you 
 
 Run locally
 ---
-Requires you to have built the project first using the step mentioned above.
+During development you can easily start a local Jenkins instance with the Delivery Pipeline plugin installed based on your current source code revision.
+Build the project using the step mentioned above and run:
 
     mvn hpi:run
 
@@ -59,26 +60,36 @@ Mount the examples directory to the Docker container, and then invoke JJB ising 
 
 Run function tests
 ---
+The project contains a set of functional tests that run in a separate Maven goal. These can be run using:
+
     mvn integration-test
 
 Create Jenkins plugin artifact
 ---
-This can be used to manually upload a new plugin through the Jenkins plugin management console (under the Advanced tab). Requires you to have built the project first, see the Build section above.
+To create a Jenkins plugin artifact, build the project and run:
 
     mvn hpi:hpi
 
+This creates a delivery-pipeline-plugin.hpi file in the target directory.
+This file can be manually uploaded through the Jenkins plugin management console (under the Advanced tab) to load the built plugin into Jenkins.
 
 Build and run in a Docker container
 ----
-To build and run the Delivery Pipeline plugin in a container, you first need to build the project before building the Docker image: 
+To build and run the Delivery Pipeline plugin together with Jenkins in a Docker container, you first need to build the project before building the Docker image: 
 
-    mvn clean install
+    mvn clean package
     docker build -t dpp .
     docker run -p 8080:8080 dpp
 
-If you just want to run the Delivery Pipeline plugin in a container without building it yourself, you can pull certain versions from [Docker hub](https://hub.docker.com/r/diabol/delivery-pipeline-plugin/):
+You can then access your local Jenkins instance on http://localhost:8080.
+
+If you just want to run Jenkins and the Delivery Pipeline plugin in a Docker container without building it yourself, you can pull certain versions from [Docker hub](https://hub.docker.com/r/diabol/delivery-pipeline-plugin/):
 
     docker pull diabol/delivery-pipeline-plugin:1.3.0
+    docker run -it -p 8080:8080 diabol/delivery-pipeline-plugin:1.3.0
+
+The Docker container will be bootstrapped with a few Jenkins job configurations and a delivery pipeline view. 
+Jenkins will be available at http://localhost:8080.
 
 Configuring manually triggered jobs for views based on traditional Jenkins jobs with downstream dependencies
 ----
@@ -162,12 +173,10 @@ It basically comes down to the following guidelines:
  3. Contribute and have fun!
  4. Add as much unit testing as possible to any new code changes
     + This will make the code much more easy to maintain and to understand its intent
- 5. Make sure your code is well formatted and aligns with the projects code style conventions
+ 5. Make sure your code is well formatted and aligns with the projects code style conventions. This will be enforced by the CI build that runs on each pull request.
  6. Make sure to prefix the commit message with the associated Jira issue number together with a descriptive commit message
- 7. If you have multiple commits, please make sure to squash them before creating a pull request
-    + It's hard to follow contributions when they are scattered across several commits
- 8. Create a pull request to get feedback from the maintainers
-    + Add a link to the pull request to the associated Jira issue
+ 7. Create a pull request to start a discussion and to get feedback from the maintainers
+    + Add a link to the pull request in the associated Jira issue
 
 Contact
 ----
