@@ -15,7 +15,7 @@ function pipelineUtils() {
             dataType: 'json',
             async: true,
             cache: false,
-            timeout: 20000,
+            timeout: 120000,
             success: function (data) {
                 self.refreshPipelines(data, divNames, errorDiv, view, fullscreen, showChanges, aggregatedChangesGroupingPattern, pipelineid, jsplumb);
                 setTimeout(function () {
