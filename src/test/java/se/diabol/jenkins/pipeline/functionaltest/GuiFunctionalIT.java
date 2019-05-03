@@ -20,29 +20,30 @@ package se.diabol.jenkins.pipeline.functionaltest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import com.cloudbees.hudson.plugins.folder.Folder;
-import hudson.model.FreeStyleProject;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.StringParameterDefinition;
-import hudson.model.View;
-import hudson.plugins.view.dashboard.Dashboard;
-import hudson.tasks.BuildTrigger;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.transform.stream.StreamSource;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.transform.stream.StreamSource;
+import com.cloudbees.hudson.plugins.folder.Folder;
+
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import hudson.model.FreeStyleProject;
+import hudson.model.ParametersDefinitionProperty;
+import hudson.model.StringParameterDefinition;
+import hudson.model.View;
+import hudson.plugins.view.dashboard.Dashboard;
+import hudson.tasks.BuildTrigger;
+import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 
 public class GuiFunctionalIT {
 
@@ -157,6 +158,7 @@ public class GuiFunctionalIT {
         Thread.sleep(2 * 1000);
         newJobPage.setJobName("NewJob");
         newJobPage.setFreeStyle();
+
         ConfigureJobPage configureJobPage = newJobPage.submit();
         configureJobPage.submit();
 

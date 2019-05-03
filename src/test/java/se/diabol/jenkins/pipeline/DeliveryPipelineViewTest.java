@@ -25,36 +25,20 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
-import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import hudson.model.AbstractBuild;
-import hudson.model.Api;
-import hudson.model.FreeStyleProject;
-import hudson.model.ParametersAction;
-import hudson.model.ParametersDefinitionProperty;
-import hudson.model.StringParameterDefinition;
-import hudson.model.TopLevelItem;
-import hudson.model.User;
-import hudson.plugins.parameterizedtrigger.AbstractBuildParameterFactory;
-import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
-import hudson.plugins.parameterizedtrigger.PredefinedBuildParameters;
-import hudson.plugins.parameterizedtrigger.ResultCondition;
-import hudson.security.ACL;
-import hudson.security.GlobalMatrixAuthorizationStrategy;
-import hudson.security.Permission;
-import hudson.tasks.BuildTrigger;
-import hudson.util.FormValidation;
-import hudson.util.ListBoxModel;
-
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.context.SecurityContext;
@@ -69,20 +53,36 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import hudson.model.AbstractBuild;
+import hudson.model.Api;
+import hudson.model.FreeStyleProject;
+import hudson.model.ParametersAction;
+import hudson.model.ParametersDefinitionProperty;
+import hudson.model.StringParameterDefinition;
+import hudson.model.TopLevelItem;
+import hudson.model.User;
+import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
+import hudson.plugins.parameterizedtrigger.PredefinedBuildParameters;
+import hudson.plugins.parameterizedtrigger.ResultCondition;
+import hudson.security.ACL;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.Permission;
+import hudson.tasks.BuildTrigger;
+import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
@@ -952,8 +952,8 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     public void shouldNotShowPagingForFullScreenViewWhenPagingEnabled() {
         DeliveryPipelineView view = mock(DeliveryPipelineView.class);
-        when(view.isFullScreenView()).thenReturn(true);
-        when(view.getPagingEnabled()).thenReturn(true);
+        lenient().when(view.isFullScreenView()).thenReturn(true);
+        lenient().when(view.getPagingEnabled()).thenReturn(true);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
     }
@@ -962,8 +962,8 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     public void shouldNotShowPagingForFullScreenViewWhenPagingDisabled() {
         DeliveryPipelineView view = mock(DeliveryPipelineView.class);
-        when(view.isFullScreenView()).thenReturn(true);
-        when(view.getPagingEnabled()).thenReturn(false);
+        lenient().when(view.isFullScreenView()).thenReturn(true);
+        lenient().when(view.getPagingEnabled()).thenReturn(false);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
     }
@@ -996,17 +996,17 @@ public class DeliveryPipelineViewTest {
         doCallRealMethod().when(view).setDescription(anyString());
 
         String description = view.getDescription();
-        verify(view, times(1)).setDescription(anyString());
+        verify(view, times(1)).setDescription(any());
         assertNull(description);
 
         String expectedDescription = "some description";
         view.setDescription(expectedDescription);
         assertNotNull(view.getDescription());
         assertThat(view.getDescription(), is(expectedDescription));
-        verify(view, times(2)).setDescription(anyString());
+        verify(view, times(2)).setDescription(any());
 
         view.getDescription();
-        verify(view, times(2)).setDescription(anyString());
+        verify(view, times(2)).setDescription(any());
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {

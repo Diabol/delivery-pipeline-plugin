@@ -22,19 +22,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.gargoylesoftware.htmlunit.Page;
-import hudson.cli.BuildCommand;
-import hudson.security.GlobalMatrixAuthorizationStrategy;
-import hudson.security.Permission;
-import hudson.util.FormValidation;
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Rule;
@@ -43,13 +43,17 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.Mockito;
+
+import com.gargoylesoftware.htmlunit.Page;
+
+import hudson.cli.BuildCommand;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.Permission;
+import hudson.util.FormValidation;
+import net.sf.json.JSONObject;
 import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.workflow.model.Component;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class WorkflowPipelineViewTest {
 
@@ -154,20 +158,20 @@ public class WorkflowPipelineViewTest {
     public void getDescriptionShouldSetSuperDescriptionIfNotSet() {
         WorkflowPipelineView view = mock(WorkflowPipelineView.class);
         doCallRealMethod().when(view).getDescription();
-        doCallRealMethod().when(view).setDescription(anyString());
+        doCallRealMethod().when(view).setDescription(or(Mockito.isNull(), anyString()));
 
         String description = view.getDescription();
-        verify(view, times(1)).setDescription(anyString());
+        verify(view, times(1)).setDescription(or(Mockito.isNull(), anyString()));
         assertNull(description);
 
         String expectedDescription = "some description";
         view.setDescription(expectedDescription);
         assertNotNull(view.getDescription());
         assertThat(view.getDescription(), is(expectedDescription));
-        verify(view, times(2)).setDescription(anyString());
+        verify(view, times(2)).setDescription(or(Mockito.isNull(), anyString()));
 
         view.getDescription();
-        verify(view, times(2)).setDescription(anyString());
+        verify(view, times(2)).setDescription(or(Mockito.isNull(), anyString()));
     }
 
     @Test
