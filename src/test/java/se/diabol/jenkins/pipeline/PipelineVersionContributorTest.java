@@ -36,7 +36,6 @@ import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
-import hudson.plugins.parameterizedtrigger.AbstractBuildParameters;
 import hudson.plugins.parameterizedtrigger.BooleanParameterConfig;
 import hudson.plugins.parameterizedtrigger.BooleanParameters;
 import hudson.tasks.BuildTrigger;
@@ -52,7 +51,6 @@ import org.jvnet.hudson.test.TestBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-
 
 public class PipelineVersionContributorTest {
 
@@ -103,7 +101,6 @@ public class PipelineVersionContributorTest {
 
     @Test
     public void testVersionContributorConfigured() throws Exception {
-
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
         FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
         firstProject.getPublishersList().add(new BuildTrigger("secondProject", false));
@@ -125,7 +122,6 @@ public class PipelineVersionContributorTest {
 
     @Test
     public void testVersionContributorConfiguredManualTrigger() throws Exception {
-
         FreeStyleProject firstProject = jenkins.createFreeStyleProject("firstProject");
         FreeStyleProject secondProject = jenkins.createFreeStyleProject("secondProject");
         firstProject.getPublishersList().add(new BuildPipelineTrigger("secondProject", null));
@@ -164,7 +160,6 @@ public class PipelineVersionContributorTest {
     @Test
     @Issue("JENKINS-21070")
     public void testVersionContributorErrorInPattern() throws Exception {
-
         FreeStyleProject project = jenkins.createFreeStyleProject("firstProject");
 
         project.getBuildWrappersList().add(new PipelineVersionContributor(true, "${GFGFGFG}"));
@@ -196,30 +191,32 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
-    @Issue("JENKINS-28848")
+    @Issue({"JENKINS-28848", "JENKINS-38062"})
     public void testWithBuildNameSetterPluginAndAdditionalParameters() throws Exception {
         try {
             System.setProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME, PIPELINE_VERSION);
 
-            FreeStyleProject a = jenkins.createFreeStyleProject("a");
-            FreeStyleProject b = jenkins.createFreeStyleProject("b");
+            FreeStyleProject firstJob = jenkins.createFreeStyleProject("a");
+            FreeStyleProject secondJob = jenkins.createFreeStyleProject("b");
 
-            a.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
-            a.getPublishersList().add(new BuildTrigger("b", false));
-            a.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
-            b.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
+            firstJob.addProperty(new ParametersDefinitionProperty(
+                    new StringParameterDefinition("BUILD_VERSION", "DEFAULT_VALUE")));
+            firstJob.getPublishersList().add(new BuildTrigger("b", false));
+            firstJob.getBuildWrappersList().add(
+                    new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
+            secondJob.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
 
 
             jenkins.getInstance().rebuildDependencyGraph();
             jenkins.setQuietPeriod(0);
 
-            jenkins.buildAndAssertSuccess(a);
+            jenkins.buildAndAssertSuccess(firstJob);
             jenkins.waitUntilNoActivity();
 
-            assertEquals("1.0.0.1", a.getLastBuild().getDisplayName());
-            assertEquals("1.0.0.1", b.getLastBuild().getDisplayName());
-            assertEquals("1.0.0.1", a.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
-            assertEquals("1.0.0.1", b.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+            assertEquals("1.0.0.1", firstJob.getLastBuild().getDisplayName());
+            assertEquals("1.0.0.1", secondJob.getLastBuild().getDisplayName());
+            assertNull(firstJob.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+            assertNull(secondJob.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
         } finally {
             System.clearProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME);
         }
@@ -267,7 +264,6 @@ public class PipelineVersionContributorTest {
         }
     }
 
-
     private class AssertNoPipelineVersion extends TestBuilder {
         public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
                                BuildListener listener) throws InterruptedException, IOException {
@@ -294,5 +290,4 @@ public class PipelineVersionContributorTest {
             return true;
         }
     }
-
 }
