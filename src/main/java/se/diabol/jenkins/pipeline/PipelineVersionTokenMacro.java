@@ -23,15 +23,13 @@ import hudson.model.TaskListener;
 import org.jenkinsci.plugins.tokenmacro.DataBoundTokenMacro;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 
-import java.io.IOException;
-
 @Extension
 @SuppressWarnings("UnusedDeclaration")
 public class PipelineVersionTokenMacro extends DataBoundTokenMacro {
 
     @Override
-    public String evaluate(AbstractBuild<?, ?> context, TaskListener listener, String macroName) throws
-            MacroEvaluationException, IOException, InterruptedException {
+    public String evaluate(AbstractBuild<?, ?> context, TaskListener listener, String macroName)
+            throws MacroEvaluationException {
         String version = PipelineVersionContributor.getVersion(context);
         if (version == null) {
             throw new MacroEvaluationException("Could not find " + PipelineVersionContributor.VERSION_PARAMETER

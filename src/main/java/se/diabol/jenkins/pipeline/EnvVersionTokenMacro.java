@@ -21,7 +21,6 @@ import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import org.jenkinsci.plugins.tokenmacro.DataBoundTokenMacro;
-import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -37,7 +36,7 @@ public class EnvVersionTokenMacro extends DataBoundTokenMacro {
 
     @Override
     public String evaluate(AbstractBuild<?, ?> context, TaskListener listener, String macroName)
-            throws MacroEvaluationException, IOException, InterruptedException {
+            throws IOException, InterruptedException {
         Map<String, String> env = context.getEnvironment(listener);
         if (env.containsKey(NAME)) {
             if (stripSnapshot) {

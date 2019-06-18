@@ -17,9 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 public final class PipelineUtils {
@@ -27,11 +24,6 @@ public final class PipelineUtils {
     private static final Random RANDOM = new Random(System.currentTimeMillis());
 
     private PipelineUtils() {
-    }
-
-    public static String formatTimestamp(long timestamp) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        return format.format(new Date(timestamp));
     }
 
     public static long getRandom() {

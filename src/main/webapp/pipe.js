@@ -43,6 +43,7 @@ function pipelineUtils() {
         var triggered;
         var contributors;
         var tasks = [];
+        var showAbsoluteDateTime = data.showAbsoluteDateTime;
 
         displayErrorIfAvailable(data, errorDiv);
 
@@ -98,7 +99,7 @@ function pipelineUtils() {
                             html.push(' triggered by ' + triggered);
                         }
 
-                        html.push(' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate) + '</span></h2>');
+                        html.push(' started <span id="' + pipeline.id + '\">' + formatDate(pipeline.timestamp, lastUpdate, showAbsoluteDateTime) + '</span></h2>');
 
                         if (data.showTotalBuildTime) {
                             html.push('<h3>Total build time: ' + formatDuration(pipeline.totalBuildTime) + '</h3>');
@@ -157,7 +158,7 @@ function pipelineUtils() {
 
                             id = getTaskId(task.id, i);
 
-                            timestamp = formatDate(task.status.timestamp, lastUpdate);
+                            timestamp = formatDate(task.status.timestamp, lastUpdate, showAbsoluteDateTime);
 
                             tasks.push({id: id, taskId: task.id, buildId: task.buildId});
 
@@ -169,6 +170,14 @@ function pipelineUtils() {
                                 progressClass = 'task-progress-running';
                             } else if (isTaskLinkedToConsoleLog(data, task)) {
                                 consoleLogLink = 'console';
+                            }
+
+                            var showAbortButton = false;
+                            if (data.allowAbort) {
+                                progressClass += ' task-abortable';
+                                if (progressClass.indexOf('task-progress-running') !== -1) {
+                                    showAbortButton = true;
+                                }
                             }
 
                             html.push(
@@ -190,7 +199,16 @@ function pipelineUtils() {
                                     html.push('</div>');
                                 }
                                 if (task.requiringInput) {
+                                    showAbortButton = true;
                                     html.push('<div class="task-manual" id="input-' + id + '" title="Specify input" onclick="specifyInput(\'' + id + '\', \'' + component.fullJobName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
+                                    html.push('</div>');
+                                }
+                                if (showAbortButton) {
+                                    var projectName = component.fullJobName;
+                                    if (typeof projectName === "undefined") {
+                                        projectName = task.id;
+                                    }
+                                    html.push('<div class="task-abort" id="abort-' + id + '" title="Abort progress" onclick="abortBuild(\'' + id + '\', \'' + projectName + '\', \'' + task.buildId + '\', \'' + view.viewUrl + '\')">');
                                     html.push('</div>');
                                 }
                             }
@@ -275,7 +293,7 @@ function pipelineUtils() {
                     pipe = comp.pipelines[d];
                     head = document.getElementById(pipe.id);
                     if (head) {
-                        head.innerHTML = formatDate(pipe.timestamp, lastUpdate)
+                        head.innerHTML = formatDate(pipe.timestamp, lastUpdate, showAbsoluteDateTime)
                     }
 
                     for (var l = 0; l < pipe.stages.length; l++) {
@@ -284,7 +302,7 @@ function pipelineUtils() {
                             ta = st.tasks[m];
                             time = document.getElementById(getTaskId(ta.id, d) + '.timestamp');
                             if (time) {
-                                time.innerHTML = formatDate(ta.status.timestamp, lastUpdate);
+                                time.innerHTML = formatDate(ta.status.timestamp, lastUpdate, showAbsoluteDateTime);
                             }
                         }
                     }
@@ -554,8 +572,12 @@ function replace(string, replace, replaceWith) {
 }
 
 
-function formatDate(date, currentTime) {
-    return date !== null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss')) : '';
+function formatDate(date, currentTime, showAbsoluteDateTime) {
+    if (showAbsoluteDateTime) {
+        return date !== null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss') : '';
+    } else {
+        return date !== null ? moment(date, 'YYYY-MM-DDTHH:mm:ss').from(moment(currentTime, 'YYYY-MM-DDTHH:mm:ss')) : '';
+    }
 }
 
 function formatDuration(millis) {
@@ -656,6 +678,34 @@ function specifyInput(taskId, project, buildId, viewUrl) {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             window.alert('Could not trigger input step! error: ' + errorThrown + ' status: ' + textStatus)
+        }
+    });
+}
+
+function abortBuild(taskId, project, buildId, viewUrl) {
+    Q('#abort-' + taskId).hide();
+    var formData = {project: project, upstream: 'N/A', buildId: buildId}, before;
+
+    var before;
+    if (crumb.value !== null && crumb.value !== '') {
+        console.info('Crumb found and will be added to request header');
+        before = function(xhr){xhr.setRequestHeader(crumb.fieldName, crumb.value);}
+    } else {
+        console.info('Crumb not needed');
+        before = function(xhr){}
+    }
+
+    Q.ajax({
+        url: rootURL + '/' + viewUrl + 'api/abortBuild',
+        type: 'POST',
+        data: formData,
+        beforeSend: before,
+        timeout: 20000,
+        success: function (data, textStatus, jqXHR) {
+            console.info('Successfully aborted build of ' + project + '!')
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            window.alert('Could not abort build! error: ' + errorThrown + ' status: ' + textStatus)
         }
     });
 }

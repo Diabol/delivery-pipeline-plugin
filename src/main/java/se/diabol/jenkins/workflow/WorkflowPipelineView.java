@@ -34,6 +34,7 @@ import hudson.util.ListBoxModel;
 import hudson.util.RunList;
 import jenkins.model.Jenkins;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.BadCredentialsException;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -43,15 +44,15 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
+import se.diabol.jenkins.core.PipelineView;
+import se.diabol.jenkins.core.TimestampFormat;
 import se.diabol.jenkins.pipeline.PipelineApi;
-import se.diabol.jenkins.pipeline.PipelineView;
 import se.diabol.jenkins.pipeline.domain.Change;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.sort.ComponentComparatorDescriptor;
 import se.diabol.jenkins.pipeline.sort.GenericComponentComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
-import se.diabol.jenkins.pipeline.util.PipelineUtils;
 import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
@@ -62,6 +63,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,7 +85,9 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private int noOfColumns = 1;
     private String sorting = NONE_SORTER;
     private boolean allowPipelineStart = false;
+    private boolean allowAbort = false;
     private boolean showChanges = false;
+    private boolean showAbsoluteDateTime = false;
     private int maxNumberOfVisiblePipelines = -1;
     @Deprecated
     private String project;
@@ -141,6 +145,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public boolean isAllowPipelineStart() {
         return allowPipelineStart;
     }
@@ -149,12 +154,31 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.allowPipelineStart = allowPipelineStart;
     }
 
+    @Exported
+    @Override
+    public boolean isAllowAbort() {
+        return allowAbort;
+    }
+
+    public void setAllowAbort(boolean allowAbort) {
+        this.allowAbort = allowAbort;
+    }
+
     public boolean isShowChanges() {
         return showChanges;
     }
 
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
+    }
+
+    @Exported
+    public boolean isShowAbsoluteDateTime() {
+        return showAbsoluteDateTime;
+    }
+
+    public void setShowAbsoluteDateTime(boolean showAbsoluteDateTime) {
+        this.showAbsoluteDateTime = showAbsoluteDateTime;
     }
 
     public int getMaxNumberOfVisiblePipelines() {
@@ -185,8 +209,9 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public String getLastUpdated() {
-        return PipelineUtils.formatTimestamp(System.currentTimeMillis());
+        return TimestampFormat.formatTimestamp(System.currentTimeMillis());
     }
 
     @Exported
@@ -198,8 +223,8 @@ public class WorkflowPipelineView extends View implements PipelineView {
         this.linkToConsoleLog = linkToConsoleLog;
     }
 
-    @Override
     @Exported
+    @Override
     public String getDescription() {
         if (super.description == null) {
             setDescription(this.description);
@@ -213,11 +238,13 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Exported
+    @Override
     public String getError() {
         return error;
     }
 
     @Exported
+    @Override
     public List<Component> getPipelines() {
         try {
             LOG.fine("Getting pipelines");
@@ -292,8 +319,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     }
 
     @Override
-    public void triggerManual(String projectName, String upstreamName, String buildId)
-            throws TriggerException, AuthenticationException {
+    public void triggerManual(String projectName, String upstreamName, String buildId) throws AuthenticationException {
         LOG.fine("Manual/Input step called for project: " + projectName + " and build id: " + buildId);
 
         WorkflowJob workflowJob;
@@ -316,6 +342,23 @@ public class WorkflowPipelineView extends View implements PipelineView {
     @Override
     public void triggerRebuild(String projectName, String buildId) {
         LOG.log(Level.SEVERE, "Rebuild not implemented for workflow/pipeline projects");
+    }
+
+    @Override
+    public void abortBuild(String projectName, String buildId) throws TriggerException {
+        try {
+            WorkflowJob workflowJob = ProjectUtil.getWorkflowJob(projectName, getOwnerItemGroup());
+            if (!workflowJob.hasAbortPermission()) {
+                throw new BadCredentialsException("Not authorized to abort build");
+            }
+            RunList<WorkflowRun> builds = workflowJob.getBuilds();
+            Optional<WorkflowRun> run = builds.stream()
+                    .filter(r -> Integer.toString(r.getNumber()).equals(buildId))
+                    .findFirst();
+            run.ifPresent(WorkflowRun::doStop);
+        } catch (PipelineException e) {
+            throw new TriggerException("Could not abort build");
+        }
     }
 
     @Override

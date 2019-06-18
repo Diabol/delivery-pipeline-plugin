@@ -21,6 +21,7 @@ import org.junit.Test;
 import se.diabol.jenkins.pipeline.test.TestUtil;
 
 public class PipelineUtilsTest {
+
     @Test
     public void testValidUtilClass() throws Exception {
         TestUtil.assertUtilityClassWellDefined(PipelineUtils.class);

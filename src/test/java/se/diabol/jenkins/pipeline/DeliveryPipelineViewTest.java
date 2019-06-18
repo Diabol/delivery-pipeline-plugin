@@ -25,7 +25,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -207,6 +208,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isLinkRelative());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
+        assertFalse(view.isAllowAbort());
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertFalse(view.isShowAggregatedChanges());
         assertNull(view.getAggregatedChangesGroupingPattern());
@@ -984,17 +986,17 @@ public class DeliveryPipelineViewTest {
         doCallRealMethod().when(view).setDescription(anyString());
 
         String description = view.getDescription();
-        verify(view, times(1)).setDescription(anyString());
+        verify(view, times(1)).setDescription(any());
         assertNull(description);
 
         String expectedDescription = "some description";
         view.setDescription(expectedDescription);
         assertNotNull(view.getDescription());
         assertThat(view.getDescription(), is(expectedDescription));
-        verify(view, times(2)).setDescription(anyString());
+        verify(view, times(2)).setDescription(any());
 
         view.getDescription();
-        verify(view, times(2)).setDescription(anyString());
+        verify(view, times(2)).setDescription(any());
     }
 
     private void assertEqualsList(List<ParametersAction> a1, List<ParametersAction> a2) {
