@@ -37,6 +37,7 @@ import hudson.plugins.promoted_builds.Status;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -45,6 +46,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"com.thoughtworks.xstream.*"})
 @PrepareForTest(Status.class)
 public class PromotionStatusProviderTest {
 

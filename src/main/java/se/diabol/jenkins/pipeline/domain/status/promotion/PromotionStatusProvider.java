@@ -88,8 +88,8 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
         final Promotion promotion = (Promotion) promotionObj;
         for (ParameterValue value : promotion.getParameterValues()) {
             if (value instanceof StringParameterValue) {
-                if (StringUtils.isNotBlank(((StringParameterValue) value).value)) {
-                    params.add("<strong>" + value.getName() + "</strong>: " + ((StringParameterValue) value).value);
+                if (StringUtils.isNotBlank((String)((StringParameterValue) value).getValue())) {
+                    params.add("<strong>" + value.getName() + "</strong>: " + ((StringParameterValue)value).getValue());
                 }
             } else if (value instanceof FileParameterValue) {
                 params.add("<strong>" + value.getName() + "</strong>: " + ((FileParameterValue) value).getLocation());
