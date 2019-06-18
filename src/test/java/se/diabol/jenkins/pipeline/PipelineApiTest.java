@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
 
 import javax.servlet.http.HttpServletResponse;
