@@ -44,7 +44,6 @@ import hudson.model.ParametersDefinitionProperty;
 import hudson.model.StringParameterDefinition;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
-import hudson.plugins.parameterizedtrigger.AbstractBuildParameterFactory;
 import hudson.plugins.parameterizedtrigger.BuildTriggerConfig;
 import hudson.plugins.parameterizedtrigger.PredefinedBuildParameters;
 import hudson.plugins.parameterizedtrigger.ResultCondition;
@@ -70,8 +69,8 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.runners.MockitoJUnitRunner;
 
+import org.mockito.junit.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
@@ -943,7 +942,6 @@ public class DeliveryPipelineViewTest {
     public void shouldNotShowPagingForFullScreenViewWhenPagingEnabled() {
         DeliveryPipelineView view = mock(DeliveryPipelineView.class);
         when(view.isFullScreenView()).thenReturn(true);
-        when(view.getPagingEnabled()).thenReturn(true);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
     }
@@ -953,7 +951,6 @@ public class DeliveryPipelineViewTest {
     public void shouldNotShowPagingForFullScreenViewWhenPagingDisabled() {
         DeliveryPipelineView view = mock(DeliveryPipelineView.class);
         when(view.isFullScreenView()).thenReturn(true);
-        when(view.getPagingEnabled()).thenReturn(false);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
     }
