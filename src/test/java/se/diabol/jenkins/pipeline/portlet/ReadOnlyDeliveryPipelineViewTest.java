@@ -17,11 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.portlet;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.WithoutJenkins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertFalse;
@@ -31,13 +28,9 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReadOnlyDeliveryPipelineViewTest {
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
-    private final static String NONE = null;
 
     @Test
-    @WithoutJenkins
-    public void testDefaults() {
+    public void shouldHaveDefaults() {
         ReadOnlyDeliveryPipelineView view = new ReadOnlyDeliveryPipelineView("name");
         assertEquals(3, view.getNoOfPipelines());
         assertEquals(1, view.getNoOfColumns());
@@ -58,7 +51,6 @@ public class ReadOnlyDeliveryPipelineViewTest {
         assertFalse(view.isShowStaticAnalysisResults());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
-        assertEquals("default", view.getTheme());
         assertNotNull(view.getId());
         assertFalse(view.getIsPortletView());
         assertFalse(view.isShowAggregatedChanges());

@@ -17,8 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
-import static se.diabol.jenkins.pipeline.DeliveryPipelineView.DEFAULT_THEME;
-
 import com.google.common.collect.Sets;
 import hudson.DescriptorExtensionList;
 import hudson.Extension;
@@ -90,7 +88,6 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private boolean allowAbort = false;
     private boolean showChanges = false;
     private boolean showAbsoluteDateTime = false;
-    private String theme = DEFAULT_THEME;
     private int maxNumberOfVisiblePipelines = -1;
     @Deprecated
     private String project;
@@ -182,14 +179,6 @@ public class WorkflowPipelineView extends View implements PipelineView {
 
     public void setShowAbsoluteDateTime(boolean showAbsoluteDateTime) {
         this.showAbsoluteDateTime = showAbsoluteDateTime;
-    }
-
-    public String getTheme() {
-        return this.theme == null ? DEFAULT_THEME : this.theme;
-    }
-
-    public void setTheme(String theme) {
-        this.theme = theme;
     }
 
     public int getMaxNumberOfVisiblePipelines() {
@@ -478,15 +467,6 @@ public class WorkflowPipelineView extends View implements PipelineView {
             for (ComponentComparatorDescriptor descriptor : descriptors) {
                 options.add(descriptor.getDisplayName(), descriptor.getId());
             }
-            return options;
-        }
-
-
-        public ListBoxModel doFillThemeItems(@AncestorInPath ItemGroup<?> context) {
-            ListBoxModel options = new ListBoxModel();
-            options.add("Default", "default");
-            options.add("Contrast", "contrast");
-            options.add("Overview", "overview");
             return options;
         }
 

@@ -32,33 +32,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.lenient;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.acegisecurity.AuthenticationException;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.junit.ComparisonFailure;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.MockFolder;
-import org.jvnet.hudson.test.WithoutJenkins;
-import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
 import hudson.model.FreeStyleProject;
@@ -76,13 +53,36 @@ import hudson.security.Permission;
 import hudson.tasks.BuildTrigger;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+
 import net.sf.json.JSONObject;
+
+import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.junit.ComparisonFailure;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.WithoutJenkins;
+import org.kohsuke.stapler.StaplerRequest;
+
+import org.mockito.junit.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.Stage;
 import se.diabol.jenkins.pipeline.domain.task.Task;
 import se.diabol.jenkins.pipeline.sort.NameComparator;
 import se.diabol.jenkins.pipeline.trigger.TriggerException;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeliveryPipelineViewTest {
@@ -208,7 +208,6 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
         assertFalse(view.isAllowAbort());
-        assertEquals("default", view.getTheme());
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertFalse(view.isShowAggregatedChanges());
         assertNull(view.getAggregatedChangesGroupingPattern());
@@ -252,8 +251,6 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.getPagingEnabled());
         view.setAllowPipelineStart(true);
         assertTrue(view.isAllowPipelineStart());
-        view.setTheme("test");
-        assertEquals("test", view.getTheme());
         view.setMaxNumberOfVisiblePipelines(10);
         assertEquals(10, view.getMaxNumberOfVisiblePipelines());
         view.setShowAggregatedChanges(true);
@@ -262,14 +259,6 @@ public class DeliveryPipelineViewTest {
         assertEquals("TestRegex", view.getAggregatedChangesGroupingPattern());
         view.setLinkToConsoleLog(true);
         assertTrue(view.isLinkToConsoleLog());
-    }
-
-    @Test
-    @WithoutJenkins
-    public void testSetDefaultThemeIfNull() {
-        DeliveryPipelineView view = new DeliveryPipelineView("name");
-        view.setTheme(null);
-        assertEquals(DeliveryPipelineView.DEFAULT_THEME, view.getTheme());
     }
 
     @Test
@@ -952,8 +941,7 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     public void shouldNotShowPagingForFullScreenViewWhenPagingEnabled() {
         DeliveryPipelineView view = mock(DeliveryPipelineView.class);
-        lenient().when(view.isFullScreenView()).thenReturn(true);
-        lenient().when(view.getPagingEnabled()).thenReturn(true);
+        when(view.isFullScreenView()).thenReturn(true);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
     }
@@ -962,8 +950,7 @@ public class DeliveryPipelineViewTest {
     @WithoutJenkins
     public void shouldNotShowPagingForFullScreenViewWhenPagingDisabled() {
         DeliveryPipelineView view = mock(DeliveryPipelineView.class);
-        lenient().when(view.isFullScreenView()).thenReturn(true);
-        lenient().when(view.getPagingEnabled()).thenReturn(false);
+        when(view.isFullScreenView()).thenReturn(true);
         when(view.showPaging()).thenCallRealMethod();
         assertFalse(view.showPaging());
     }
