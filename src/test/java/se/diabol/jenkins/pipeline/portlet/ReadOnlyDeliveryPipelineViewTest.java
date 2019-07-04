@@ -19,8 +19,10 @@ package se.diabol.jenkins.pipeline.portlet;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -51,6 +53,7 @@ public class ReadOnlyDeliveryPipelineViewTest {
         assertFalse(view.isShowStaticAnalysisResults());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
+        assertEquals("default", view.getTheme());
         assertNotNull(view.getId());
         assertFalse(view.getIsPortletView());
         assertFalse(view.isShowAggregatedChanges());

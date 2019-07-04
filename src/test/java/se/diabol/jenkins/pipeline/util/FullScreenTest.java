@@ -20,7 +20,7 @@ package se.diabol.jenkins.pipeline.util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;

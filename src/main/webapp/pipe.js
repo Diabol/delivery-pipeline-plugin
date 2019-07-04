@@ -458,7 +458,7 @@ function generatePromotionsInfo(data, task) {
         if (promo.user !== 'anonymous') {
             html.push('<span class="promo-user">' + promo.user + '</span>');
         }
-        html.push('<span class="promo-time">' + formatDuration(promo.time) + '</span><br/>');
+        html.push('<span class="promo-time">' + formatDuration(promo.duration) + '</span><br/>');
         if (promo.params.length > 0) {
             html.push('<br/>');
         }
