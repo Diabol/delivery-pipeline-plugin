@@ -15,6 +15,11 @@ We use the official Jenkins [issue tracker](https://issues.jenkins-ci.org/secure
 
 This plugin has been contributed to the community by [Diabol AB](https://www.diabol.se).
 
+
+---
+
+![alt tag](https://raw.githubusercontent.com/Diabol/delivery-pipeline-plugin/master/docs/dpp_screenshot.png)
+
 Requirements
 ---
 Delivery Pipeline plugin 1.4.0 and later requires Java 8 and Jenkins core 2.164 or later (Java 11 required for plugin development).
