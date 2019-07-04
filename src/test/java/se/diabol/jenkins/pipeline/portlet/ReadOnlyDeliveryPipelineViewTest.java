@@ -24,9 +24,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReadOnlyDeliveryPipelineViewTest {
@@ -53,7 +51,6 @@ public class ReadOnlyDeliveryPipelineViewTest {
         assertFalse(view.isShowStaticAnalysisResults());
         assertFalse(view.getPagingEnabled());
         assertFalse(view.isAllowPipelineStart());
-        assertEquals("default", view.getTheme());
         assertNotNull(view.getId());
         assertFalse(view.getIsPortletView());
         assertFalse(view.isShowAggregatedChanges());
