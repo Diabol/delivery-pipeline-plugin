@@ -37,7 +37,7 @@ import org.jvnet.hudson.test.UnstableBuilder;
 import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.diabol.jenkins.pipeline.domain.Component;
 import se.diabol.jenkins.pipeline.domain.Pipeline;
 import se.diabol.jenkins.pipeline.domain.status.promotion.AbstractPromotionStatusProvider;
