@@ -4,7 +4,6 @@ Delivery Pipeline Plugin
 ![alt tag](https://raw.githubusercontent.com/Diabol/delivery-pipeline-plugin/master/docs/dpp_logo.png)
 
 [![Build Status](https://travis-ci.org/Diabol/delivery-pipeline-plugin.png)](https://travis-ci.org/Diabol/delivery-pipeline-plugin)
-[![Coverage Status](https://coveralls.io/repos/Diabol/delivery-pipeline-plugin/badge.png?branch=master)](https://coveralls.io/r/Diabol/delivery-pipeline-plugin?branch=master)
 
 The purpose of the Delivery Pipeline plugin is to provide visualisation of delivery/build pipelines in Jenkins. The plugin is perfect for Continuous Delivery pipeline visualisation on information radiators.
 
@@ -32,7 +31,7 @@ Delivery Pipeline plugin 0.10.3 requires Java 6 and Jenkins core 1.565 or later.
 
 Building the project
 ---
-Requires Java 8, Apache Maven 3.3.x or later.
+Requires Java 11, Apache Maven 3.3.x or later.
 
     mvn clean install
 
