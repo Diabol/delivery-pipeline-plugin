@@ -42,11 +42,20 @@ public final class BuildUtil {
                 Cause.UpstreamCause upstreamCause = causes.get(0);
                 AbstractProject upstreamProject = JenkinsUtil.getInstance().getItemByFullName(
                         upstreamCause.getUpstreamProject(), AbstractProject.class);
+
                 //Due to https://issues.jenkins-ci.org/browse/JENKINS-14030 when a project has been renamed triggers
                 // are not updated correctly
                 if (upstreamProject == null) {
                     return null;
                 }
+
+                // FIX: upstream project is actually the current project when the current project is built using rebuild-plugin trigger
+                AbstractProject currentProject = JenkinsUtil.getInstance().getItemByFullName(
+                        build.getParent().getFullName(), AbstractProject.class);
+                if (upstreamProject == currentProject) {
+                    return null;
+                }
+
                 return upstreamProject.getBuildByNumber(upstreamCause.getUpstreamBuild());
             }
         }
