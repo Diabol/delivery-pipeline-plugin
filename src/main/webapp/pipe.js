@@ -62,7 +62,7 @@ function pipelineUtils() {
                 component = data.pipelines[c];
 
                 html.push('<section class="pipeline-component">');
-                addPipelineHeader(html, component, data, c, resURL);
+                addPipelineHeader(html, component, data, c, resURL, view);
                 html.push(getPagination(showAvatars, component));
 
                 if (component.pipelines.length === 0) {
@@ -314,13 +314,13 @@ function pipelineUtils() {
     }
 }
 
-function addPipelineHeader(html, component, data, c, resURL) {
+function addPipelineHeader(html, component, data, c, resURL, view) {
     html.push('<h1>' + htmlEncode(component.name));
     if (data.allowPipelineStart) {
         if (component.workflowComponent) {
             html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.workflowUrl + '\', \'' + data.name + '\')">');
         } else if (component.firstJobParameterized) {
-            html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
+            html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerParameterizedBuild(\'' + view.viewUrl + '\',\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
         } else {
             html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
         }
@@ -710,9 +710,9 @@ function abortBuild(taskId, project, buildId, viewUrl) {
     });
 }
 
-function triggerParameterizedBuild(url, taskId) {
+function triggerParameterizedBuild(viewUrl, url, taskId) {
     console.info('Job is parameterized');
-    window.location.href = rootURL + '/' + url + 'build?delay=0sec';
+    window.location.href = rootURL + '/' + viewUrl + url + 'build?delay=0sec';
 }
 
 function triggerBuild(url, taskId) {
