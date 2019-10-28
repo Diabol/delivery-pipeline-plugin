@@ -128,6 +128,14 @@ public class DeliveryPipelineView extends View implements PipelineView {
         super(name, owner);
     }
 
+    /**
+     * Gets the {@link TopLevelItem} of the given name.
+     */
+    @Override
+    public TopLevelItem getItem(String name) {
+        return Jenkins.getInstanceOrNull().getItem(name);
+    }
+
     public List<RegExpSpec> getRegexpFirstJobs() {
         return regexpFirstJobs;
     }
