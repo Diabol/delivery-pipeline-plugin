@@ -9,7 +9,6 @@ notifications:
     secure: phVNsiDfu5nDM7okqhGgX1Qhh3Sawqy5X3p5bgDarh9RX82V2OAebyiiKiw6aNGyDCoD0ElMHmz7tbdBODsR3muWyoQ5EJBsDgNv1NM9dhkdeIQ/182bF7EBFciPW5SYjl0+dOkIeMn9DHdg8i0RVxwjy6GjJX2r/6oUmYxExQk=
 before_install:
   - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
   - "sed 's/localhost.localdomain localhost/localhost localhost.localdomain/' /etc/hosts > /tmp/etchostsfile && cat /tmp/etchostsfile | sudo tee /etc/hosts"
   - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=1024m'" > ~/.mavenrc
   - wget -N http://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P ~/
@@ -20,6 +19,8 @@ before_install:
 script:
   - "if [[ -z $TRAVIS_TAG ]]; then mvn --batch-mode -Dwebdriver.chrome.driver=/usr/local/share/chromedriver install; fi"
   - "if [[ -n $TRAVIS_TAG ]]; then ./release.sh master $TRAVIS_TAG; fi"
+services:
+  - xvfb
 cache:
   directories:
   - $HOME/.m2
