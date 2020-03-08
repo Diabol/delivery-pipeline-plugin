@@ -19,12 +19,10 @@ package se.diabol.jenkins.pipeline;
 
 import hudson.ExtensionPoint;
 import hudson.model.Cause;
-
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
 import java.util.List;
-
 import javax.annotation.CheckForNull;
 
 public abstract class CauseResolver implements ExtensionPoint {
