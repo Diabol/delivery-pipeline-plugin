@@ -40,6 +40,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -110,6 +111,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return noOfColumns;
     }
 
+    @DataBoundSetter
     public void setNoOfColumns(int noOfColumns) {
         this.noOfColumns = noOfColumns;
     }
@@ -124,6 +126,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return updateInterval;
     }
 
+    @DataBoundSetter
     public void setUpdateInterval(int updateInterval) {
         this.updateInterval = updateInterval;
     }
@@ -132,6 +135,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return noOfPipelines;
     }
 
+    @DataBoundSetter
     public void setNoOfPipelines(int noOfPipelines) {
         this.noOfPipelines = noOfPipelines;
     }
@@ -140,6 +144,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return sorting;
     }
 
+    @DataBoundSetter
     public void setSorting(String sorting) {
         this.sorting = sorting;
     }
@@ -150,6 +155,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return allowPipelineStart;
     }
 
+    @DataBoundSetter
     public void setAllowPipelineStart(boolean allowPipelineStart) {
         this.allowPipelineStart = allowPipelineStart;
     }
@@ -160,6 +166,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return allowAbort;
     }
 
+    @DataBoundSetter
     public void setAllowAbort(boolean allowAbort) {
         this.allowAbort = allowAbort;
     }
@@ -168,6 +175,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return showChanges;
     }
 
+    @DataBoundSetter
     public void setShowChanges(boolean showChanges) {
         this.showChanges = showChanges;
     }
@@ -177,6 +185,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return showAbsoluteDateTime;
     }
 
+    @DataBoundSetter
     public void setShowAbsoluteDateTime(boolean showAbsoluteDateTime) {
         this.showAbsoluteDateTime = showAbsoluteDateTime;
     }
@@ -185,6 +194,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return maxNumberOfVisiblePipelines;
     }
 
+    @DataBoundSetter
     public void setMaxNumberOfVisiblePipelines(int maxNumberOfVisiblePipelines) {
         this.maxNumberOfVisiblePipelines = maxNumberOfVisiblePipelines;
     }
@@ -204,6 +214,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return componentSpecs;
     }
 
+    @DataBoundSetter
     public void setComponentSpecs(List<ComponentSpec> componentSpecs) {
         this.componentSpecs = componentSpecs;
     }
@@ -219,6 +230,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return linkToConsoleLog;
     }
 
+    @DataBoundSetter
     public void setLinkToConsoleLog(boolean linkToConsoleLog) {
         this.linkToConsoleLog = linkToConsoleLog;
     }
@@ -232,6 +244,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         return super.description;
     }
 
+    @DataBoundSetter
     public void setDescription(String description) {
         super.description = description;
         this.description = description;
