@@ -20,7 +20,6 @@ package se.diabol.jenkins.pipeline.resolver;
 import hudson.Extension;
 import hudson.model.Cause;
 import hudson.plugins.git.GitStatus;
-
 import se.diabol.jenkins.pipeline.CauseResolver;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 
