@@ -24,11 +24,11 @@ import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import java.util.List;
 
 public final class TokenUtils {
 
@@ -65,8 +65,9 @@ public final class TokenUtils {
             // This avoids broken variable expansion on builds with transient workspaces
             FilePath workspace = build.getWorkspace();
             if (workspace == null) {
-               workspace = new FilePath((hudson.remoting.VirtualChannel) null, "") ;
-               return TokenMacro.expandAll(build, workspace, TaskListener.NULL, template, true, (List<TokenMacro>) null ) ;
+                workspace = new FilePath((hudson.remoting.VirtualChannel) null, "") ;
+                return TokenMacro
+                        .expandAll(build, workspace, TaskListener.NULL, template, true, (List<TokenMacro>)null);
             }
             return TokenMacro.expandAll(build, TaskListener.NULL, template);
         }
