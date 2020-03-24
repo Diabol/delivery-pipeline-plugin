@@ -178,11 +178,11 @@ public class Task extends AbstractItem {
                                             TaskAction taskAction) throws PipelineException {
         Stage stage = getStage(build, stageStartNode);
         Long finishedTime = getTaskFinishedTime(taskNode, taskAction);
+        Status stageStatus = resolveStageStatus(build, stage);
         if (finishedTime != null) {
             long taskDuration = finishedTime - getTaskStartTime(taskNode);
-            return new SimpleStatus(StatusType.SUCCESS, finishedTime, taskDuration);
+            return new SimpleStatus(stageStatus.getType(), finishedTime, taskDuration);
         } else {
-            Status stageStatus = resolveStageStatus(build, stage);
             if (stageStatus.isRunning()) {
                 return runningStatus(build, stage);
             } else {
