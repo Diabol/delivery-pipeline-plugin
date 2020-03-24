@@ -44,20 +44,21 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
 
     @Override
     public boolean start() throws Exception {
-        TaskAction taskAction = new TaskActionImpl(node, step.name);
+        TaskAction taskAction = new TaskActionImpl(node, step.getName());
+        taskAction.setDescription(step.getDescription());
         StepContext context = this.getContext();
         if (context.hasBody()) {
             ((CpsBodyInvoker) context.newBodyInvoker())
                     .withStartAction(taskAction)
                     .withCallback(new TaskBodyExecutionWrapper(taskAction, context))
-                    .withDisplayName(step.name).start();
+                    .withDisplayName(step.getName()).start();
         } else {
             LOG.warning("Task pipeline step without body is deprecated and "
                     + "may be subject for removal in a future release");
             node.addAction(taskAction);
             getContext().onSuccess(null);
         }
-        node.addAction(new LabelAction(step.name));
+        node.addAction(new LabelAction(step.getName()));
         if (node.getAction(TimingAction.class) == null) {
             node.addAction(new TimingAction());
         }
@@ -78,6 +79,7 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         private final transient FlowNode associatedNode;
         private final String taskName;
         private Long finishedTime = null;
+        private String description;
 
         TaskActionImpl(FlowNode associatedNode, String taskName) {
             this(associatedNode, taskName, null);
@@ -103,6 +105,16 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
         public void setFinishedTime(Long finishedTime) {
             this.finishedTime = finishedTime;
             this.associatedNode.addAction(new TaskFinishedAction(finishedTime));
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public void setDescription(String description) {
+            this.description = description;
         }
     }
 

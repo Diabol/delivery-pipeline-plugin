@@ -38,7 +38,15 @@ public class TaskStepTest {
     public void constructorShouldTakeName() {
         String expectedName = "taskStep";
         TaskStep taskStep = new TaskStep(expectedName);
-        assertThat(taskStep.name, is(expectedName));
+        assertThat(taskStep.getName(), is(expectedName));
+    }
+
+    @Test
+    public void descriptionShouldReturnExpectedValue() {
+        String expectedValue = "expected";
+        TaskStep taskStep = new TaskStep("test");
+        taskStep.setDescription(expectedValue);
+        assertThat(taskStep.getDescription(), is(expectedValue));
     }
 
     @Test

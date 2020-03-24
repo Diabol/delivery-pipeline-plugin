@@ -201,6 +201,7 @@ public class WorkflowPipelineViewTest {
         assertThat(view.isAllowPipelineStart(), is(false));
         assertEquals(-1, view.getMaxNumberOfVisiblePipelines());
         assertThat(view.isLinkToConsoleLog(), is(false));
+        assertThat(view.isShowDescription(), is(false));
     }
 
     @Test

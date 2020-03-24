@@ -18,20 +18,36 @@ If not, see <http://www.gnu.org/licenses/>.
 package se.diabol.jenkins.workflow.step;
 
 import hudson.Extension;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 public class TaskStep extends AbstractStepImpl {
 
-    public final String name;
+    private final String name;
+    private String description;
 
     @DataBoundConstructor
     public TaskStep(String name) {
-        if (name == null || name.isEmpty()) {
+        if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("must specify name");
         }
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @DataBoundSetter
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Extension

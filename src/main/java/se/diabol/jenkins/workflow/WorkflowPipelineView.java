@@ -95,6 +95,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
     private List<ComponentSpec> componentSpecs;
     private boolean linkToConsoleLog = false;
     private String description = null;
+    private boolean showDescription = false;
 
     private transient String error;
 
@@ -248,6 +249,16 @@ public class WorkflowPipelineView extends View implements PipelineView {
     public void setDescription(String description) {
         super.description = description;
         this.description = description;
+    }
+
+    @Exported
+    public boolean isShowDescription() {
+        return showDescription;
+    }
+
+    @DataBoundSetter
+    public void setShowDescription(boolean showDescription) {
+        this.showDescription = showDescription;
     }
 
     @Exported

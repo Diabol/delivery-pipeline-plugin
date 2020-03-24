@@ -138,7 +138,7 @@ public class Task extends AbstractItem {
         TaskAction action = taskNode.getAction(TaskAction.class);
         Status status = resolveTaskStatus(build, stageStartNode, taskNode, action);
         return new Task(taskNode.getId(), action.getTaskName(), build.getNumber(), status,
-                taskLinkFor(build), null, null,
+                taskLinkFor(build), null, action.getDescription(),
                 StatusType.PAUSED_PENDING_INPUT.equals(status.getType()));
     }
 
