@@ -191,7 +191,7 @@ public class PipelineVersionContributorTest {
     }
 
     @Test
-    @Issue({"JENKINS-28848", "JENKINS-38062"})
+    @Issue({"JENKINS-28848", "JENKINS-38062", "JENKINS-59651"})
     public void testWithBuildNameSetterPluginAndAdditionalParameters() throws Exception {
         try {
             System.setProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME, PIPELINE_VERSION);
@@ -215,8 +215,8 @@ public class PipelineVersionContributorTest {
 
             assertEquals("1.0.0.1", firstJob.getLastBuild().getDisplayName());
             assertEquals("1.0.0.1", secondJob.getLastBuild().getDisplayName());
-            assertNull(firstJob.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
-            assertNull(secondJob.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+            assertEquals("1.0.0.1", firstJob.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
+            assertEquals("1.0.0.1", secondJob.getLastBuild().getBuildVariableResolver().resolve(PIPELINE_VERSION));
         } finally {
             System.clearProperty(ParametersAction.SAFE_PARAMETERS_SYSTEM_PROPERTY_NAME);
         }
@@ -287,6 +287,7 @@ public class PipelineVersionContributorTest {
                     build.getAction(PipelineVersionContributor.PipelineVersionAction.class);
             assertNotNull(versionAction);
             assertEquals(version, versionAction.getVersion());
+            assertEquals(version, build.getBuildVariableResolver().resolve(PIPELINE_VERSION));
             return true;
         }
     }
