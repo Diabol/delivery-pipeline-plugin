@@ -17,14 +17,18 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.token;
 
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 
 public final class TokenUtils {
 
@@ -57,6 +61,14 @@ public final class TokenUtils {
         if (build == null) {
             return hideVariable(template);
         } else {
+            // If workspace is not available, build a phony one and expand anyway.
+            // This avoids broken variable expansion on builds with transient workspaces
+            FilePath workspace = build.getWorkspace();
+            if (workspace == null) {
+                workspace = new FilePath((hudson.remoting.VirtualChannel) null, "") ;
+                return TokenMacro
+                        .expandAll(build, workspace, TaskListener.NULL, template, true, (List<TokenMacro>)null);
+            }
             return TokenMacro.expandAll(build, TaskListener.NULL, template);
         }
     }
