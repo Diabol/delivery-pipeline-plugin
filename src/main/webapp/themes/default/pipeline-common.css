@@ -367,7 +367,7 @@ div.infoPanelInner a {
     font-weight: bold;
 }
 div.infoPanelOuter {
-    margin: 4px 2px 4px 4px;
+    margin: 4px 2px;
     border: 1px solid lightgray;
     background-color: #FAF8F8;
 }
