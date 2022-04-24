@@ -249,7 +249,7 @@
                         <exclude>**/*IT.java</exclude>
                     </excludes>
                     <argLine>-Xmx2048m</argLine>
-                    <forkCount>0</forkCount>
+                    <forkCount>1.5C</forkCount>
                 </configuration>
                 <executions>
                     <execution>
