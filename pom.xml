@@ -704,7 +704,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.12</version>
+            <version>1.17</version>
             <scope>test</scope>
         </dependency>
         <dependency>
