@@ -324,7 +324,7 @@ function addPipelineHeader(html, component, data, c, resURL) {
         } else {
             html.push('&nbsp;<a id="startpipeline-' + c  +'" class="task-icon-link" href="#" onclick="triggerBuild(\'' + component.firstJobUrl + '\', \'' + data.name + '\')">');
         }
-        html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.png">');
+        html.push('<img class="icon-clock icon-md" title="Build now" src="' + resURL + '/images/24x24/clock.svg">');
         html.push('</a>');
     }
     html.push('</h1>');
