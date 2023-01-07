@@ -151,7 +151,7 @@ div.taskname {
 
 div.task-manual {
     display: table-cell;
-    background: url("play.png") no-repeat;
+    background: url("play.svg") no-repeat;
     background-size: 75%;
     cursor: pointer;
     height: 14px;
@@ -164,7 +164,7 @@ div.task-manual {
 div.task-rebuild {
     display: table-cell;
     background-color: #808080;
-    background: url("refresh.png") no-repeat;
+    background: url("refresh.svg") no-repeat;
     background-size: 75%;
     cursor: pointer;
     height: 14px;
@@ -177,7 +177,7 @@ div.task-rebuild {
 div.task-abort {
     display: table-cell;
     background-color: #808080;
-    background: url("abort.png") no-repeat;
+    background: url("abort.svg") no-repeat;
     background-size: 100%;
     position: absolute;
     bottom: 6px;
