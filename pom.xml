@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.42</version>
+        <version>4.76</version>
         <relativePath />
     </parent>
 
@@ -54,12 +54,13 @@
     </distributionManagement>
 
     <properties>
-        <jenkins.version>2.164</jenkins.version>
-        <java.level>8</java.level>
+        <jenkins.version>2.414.1</jenkins.version>
         <findbugs.failOnError>false</findbugs.failOnError>
-        <selenium.version>2.53.1</selenium.version>
+        <selenium.version>4.16.1</selenium.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <webdriver.chrome.driver.path>/usr/local/share/chromedriver</webdriver.chrome.driver.path>
     </properties>
 
     <scm>
@@ -99,6 +100,9 @@
         <contributor>
             <name>Gustav Ranby</name>
         </contributor>
+        <contributor>
+            <name>Gianluca Soffredini</name>
+        </contributor>
     </contributors>
 
     <build>
@@ -126,7 +130,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.1.0</version>
                     <configuration>
-                        <source>${java.level}</source>
+                        <source>${maven.compiler.release}</source>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -141,6 +145,13 @@
                                             <exclude>org.apache.maven.plugins:plugin</exclude>
                                         </excludes>
                                     </enforceBytecodeVersion>
+                                    <bannedDependencies>
+                                        <includes>
+                                            <include>org.powermock:powermock-module-junit4</include>
+                                            <include>org.powermock:powermock-api-mockito2</include>
+                                        </includes>
+                                        <searchTransitive>false</searchTransitive>
+                                    </bannedDependencies>
                                 </rules>
                             </configuration>
                         </execution>
@@ -155,8 +166,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.release}</source>
+                    <target>${maven.compiler.release}</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -317,6 +328,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>webdriver.chrome.driver</name>
+                                    <value>${webdriver.chrome.driver.path}</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -340,12 +371,12 @@
             <dependency>
                 <groupId>org.jenkins-ci.plugins</groupId>
                 <artifactId>git-client</artifactId>
-                <version>1.19.7</version>
+                <version>4.6.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jenkins-ci.plugins</groupId>
                 <artifactId>ssh-credentials</artifactId>
-                <version>1.12</version>
+                <version>308.ve4497b_ccd8f4</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jgit</groupId>
@@ -358,9 +389,28 @@
                 <version>2.5.2</version>
             </dependency>
             <dependency>
+                <groupId>org.jenkins-ci.plugins</groupId>
+                <artifactId>bouncycastle-api</artifactId>
+                <version>2.30.1.77-225.v26ea_c9455fd9</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jenkins-ci.main</groupId>
                 <artifactId>maven-plugin</artifactId>
-                <version>2.17</version>
+                <version>3.23</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.jenkins-ci.plugins</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.jenkins.plugins</groupId>
+                        <artifactId>commons-lang3-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jenkins-ci.plugins</groupId>
+                        <artifactId>bouncycastle-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.jcraft</groupId>
@@ -416,12 +466,12 @@
             <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
-                <version>4.0</version>
+                <version>6.0.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.6</version>
+                <version>2.15.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -431,12 +481,12 @@
             <dependency>
                 <groupId>org.jenkins-ci.plugins</groupId>
                 <artifactId>script-security</artifactId>
-                <version>1.39</version>
+                <version>1313.v7a_6067dc7087</version>
             </dependency>
             <dependency>
                 <groupId>org.jenkins-ci.ui</groupId>
                 <artifactId>handlebars</artifactId>
-                <version>1.1.1</version>
+                <version>3.0.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -451,22 +501,22 @@
             <dependency>
                 <groupId>org.jenkins-ci.plugins.workflow</groupId>
                 <artifactId>workflow-step-api</artifactId>
-                <version>2.19</version>
+                <version>639.v6eca_cd8c04a_a_</version>
             </dependency>
             <dependency>
                 <groupId>org.jenkins-ci.plugins.workflow</groupId>
                 <artifactId>workflow-api</artifactId>
-                <version>2.30</version>
+                <version>1283.v99c10937efcb_</version>
             </dependency>
             <dependency>
                 <groupId>org.jenkins-ci.plugins.workflow</groupId>
                 <artifactId>workflow-support</artifactId>
-                <version>3.3</version>
+                <version>865.v43e78cc44e0d</version>
             </dependency>
             <dependency>
                 <groupId>org.jenkins-ci.plugins.workflow</groupId>
                 <artifactId>workflow-job</artifactId>
-                <version>2.17</version>
+                <version>1385.vb_58b_86ea_fff1</version>
             </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
@@ -484,6 +534,15 @@
     </dependencyManagement>
 
     <dependencies>
+        <!--<dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>com.springsource.com.gargoylesoftware.htmlunit</artifactId>
+            <version>2.6.0</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>bouncycastle-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-jdk1.5</artifactId>
@@ -492,7 +551,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>32.1.1-jre</version>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.findbugs</groupId>
@@ -509,25 +568,46 @@
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.8.3</version>
+            <version>1.9.4</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.9</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.objenesis</groupId>
+                    <artifactId>objenesis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.bytebuddy</groupId>
+                    <artifactId>byte-buddy-agent</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito2</artifactId>
-            <version>2.0.2</version>
+            <version>2.0.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -546,7 +626,23 @@
                     <artifactId>commons-io</artifactId>
                     <groupId>commons-io</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.gson</groupId>
+                    <artifactId>gson</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -569,25 +665,58 @@
 
         <!-- Dependencies to other Jenkins plugins -->
         <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>maven-plugin</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>build-pipeline-plugin</artifactId>
-            <version>1.5.7.1</version>
+            <version>2.0.1</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.pipeline-stage-view</groupId>
             <artifactId>pipeline-stage-view</artifactId>
-            <version>2.5</version>
+            <version>2.34</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.pipeline-stage-view</groupId>
             <artifactId>pipeline-rest-api</artifactId>
-            <version>2.9</version>
+            <version>2.34</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>jackson2-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.json</groupId>
+                    <artifactId>json</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>credentials</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>promoted-builds</artifactId>
-            <version>2.27</version>
+            <version>945.v597f5c6a_d3fd</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
@@ -605,14 +734,19 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>caffeine-api</artifactId>
+            <version>3.1.8-133.v17b_1ff2e0599</version>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
-            <version>2.0</version>
+            <version>400.v35420b_922dcb_</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jquery</artifactId>
-            <version>1.7.2-1</version>
+            <version>1.12.4-1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.kohsuke.stapler</groupId>
@@ -623,7 +757,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>parameterized-trigger</artifactId>
-            <version>2.21</version>
+            <version>787.v665fcf2a_830b_</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
@@ -635,99 +769,166 @@
                     <groupId>com.google.code.findbugs</groupId>
                     <artifactId>annotations</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.12.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>join</artifactId>
-            <version>1.16</version>
+            <version>1.21</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>build-name-setter</artifactId>
-            <version>1.3</version>
+            <version>2.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>6.1.2</version>
+            <version>6.858.v898218f3609d</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>2.2.6</version>
+            <version>676.v886669a_199a_a_</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
-            <version>2.1.11</version>
+            <!--<version>1311.vcf0a_900b_37c2</version>-->
+            <version>1254.vb_96f366e7b_a_d</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>2.2.10</version>
+            <version>5.2.1</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15on</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jgit</groupId>
+                    <artifactId>org.eclipse.jgit</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>6.8.0.202311291450-r</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.77</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
-            <version>1.20</version>
+            <!--<version>1256.v002534a_5f33e</version>-->
+            <version>1240.vf9529b_881428</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.jenkins.plugins</groupId>
+                    <artifactId>commons-text-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.jenkins.plugins</groupId>
+                    <artifactId>commons-lang3-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>commons-text-api</artifactId>
+            <version>1.10.0-78.v3e7b_ea_d5a_fe1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.17</version>
+            <version>325.vcb_307d2a_2782</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.14</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>dashboard-view</artifactId>
-            <version>2.9.2</version>
+            <version>2.495.v07e81500c3f2</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.12</version>
+            <version>822.v01b_8c85d16d2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-auth</artifactId>
-            <version>2.2</version>
+            <version>3.2.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
-            <version>2.17</version>
+            <version>770.v1a_d0708dd1f6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>mailer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>credentials</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.19</version>
+            <version>1313.vcb_970b_d2a_fb_3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <version>2.6</version>
+            <version>991.v43d80fea_ff66</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>apache-httpcomponents-client-4-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -748,4 +949,12 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <webdriver.chrome.driver.path>C:\\Users\\${user.name}\\.m2\\drivers\\chromedriver.exe</webdriver.chrome.driver.path>
+            </properties>
+        </profile>
+    </profiles>
 </project>

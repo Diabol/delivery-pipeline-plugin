@@ -35,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.htmlunit.Page;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Rule;
@@ -45,14 +46,11 @@ import org.jvnet.hudson.test.WithoutJenkins;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
 
-import com.gargoylesoftware.htmlunit.Page;
-
 import hudson.cli.BuildCommand;
 import hudson.security.GlobalMatrixAuthorizationStrategy;
 import hudson.security.Permission;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-import se.diabol.jenkins.pipeline.DeliveryPipelineView;
 import se.diabol.jenkins.workflow.model.Component;
 
 public class WorkflowPipelineViewTest {

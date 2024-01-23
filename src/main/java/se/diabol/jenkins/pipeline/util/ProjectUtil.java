@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nonnull;
 
 public final class ProjectUtil {
 
@@ -138,7 +139,7 @@ public final class ProjectUtil {
         return job;
     }
 
-    public static Map<String, AbstractProject> getProjects(String regExp) {
+    public static Map<String, AbstractProject> getProjects(@Nonnull String regExp) {
         if (regExp != null && regExp.trim().equals("")) {
             return Collections.emptyMap();
         }

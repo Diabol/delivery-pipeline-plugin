@@ -140,13 +140,13 @@ public class PromotionStatusProviderTest {
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject1)).thenReturn(promotion1Name);
         when(mockPromotionStatusWrapper
-                .getIcon(mockStatusObject1, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
+                .getIcon(mockStatusObject1)).thenReturn(promotionIcon);
         when(mockPromotionStatusWrapper.getStartTime(mockStatusObject1)).thenReturn(promotionStartTime);
         when(mockPromotionStatusWrapper.getDuration(mockStatusObject1)).thenReturn(promotionDuration);
 
         when(mockPromotionStatusWrapper.getName(mockStatusObject2)).thenReturn(promotion2Name);
         when(mockPromotionStatusWrapper
-                .getIcon(mockStatusObject2, PromotionStatusProvider.DEFAULT_ICON_SIZE)).thenReturn(promotionIcon);
+                .getIcon(mockStatusObject2)).thenReturn(promotionIcon);
         when(mockPromotionStatusWrapper.getStartTime(mockStatusObject2)).thenReturn(promotionStartTime);
         when(mockPromotionStatusWrapper.getDuration(mockStatusObject2)).thenReturn(promotionDuration);
 

@@ -23,12 +23,10 @@ import java.util.Date;
 
 public final class TimestampFormat {
 
-    private static final DateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
     private TimestampFormat() {
     }
 
     public static String formatTimestamp(long timestamp) {
-        return DATE_TIME_FORMAT.format(new Date(timestamp));
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new Date(timestamp));
     }
 }

@@ -34,8 +34,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import hudson.model.AbstractBuild;
 import hudson.model.Api;
 import hudson.model.FreeStyleProject;
@@ -59,6 +57,8 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
 import org.junit.ComparisonFailure;
 import org.junit.Ignore;
 import org.junit.Rule;

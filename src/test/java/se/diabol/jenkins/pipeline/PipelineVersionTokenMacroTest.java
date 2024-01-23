@@ -47,7 +47,7 @@ public class PipelineVersionTokenMacroTest {
 
         a.getPublishersList().add(new BuildTrigger("b", false));
         a.getBuildWrappersList().add(new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
-        b.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
+        b.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION", null, null));
 
 
         jenkins.getInstance().rebuildDependencyGraph();

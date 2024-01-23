@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 
@@ -257,9 +258,9 @@ public class Stage extends AbstractItem {
         List<List<Stage>> allPaths = findAllRunnablePaths(findStageForJob(firstProject.getRelativeNameFrom(
                 Jenkins.getInstance()), stages), graph);
         allPaths.sort((stages1, stages2) -> stages2.size() - stages1.size());
-        
+
         //for keeping track of which row has an available column
-        final Map<Integer,Integer> columnRowMap = Maps.newHashMap();
+        final Map<Integer, Integer> columnRowMap = Maps.newHashMap();
         final List<Stage> processedStages = Lists.newArrayList();
 
         for (List<Stage> path : allPaths) {
@@ -397,14 +398,20 @@ public class Stage extends AbstractItem {
     private AbstractBuild getFirstUpstreamBuild(AbstractProject<?, ?> project, AbstractProject<?, ?> first,
                                                 Result minResult) {
         RunList<? extends AbstractBuild> builds = project.getBuilds();
-        for (AbstractBuild build : builds) {
-            if (minResult != null && (build.isBuilding() || build.getResult().isWorseThan(minResult))) {
-                continue;
-            }
+        if (Objects.nonNull(builds)) {
+            for (AbstractBuild build : builds) {
+                if (build != null) {
+                    if (minResult != null
+                            && (build.isBuilding()
+                            || (build.getResult() != null && build.getResult().isWorseThan(minResult)))) {
+                        continue;
+                    }
 
-            AbstractBuild upstream = BuildUtil.getFirstUpstreamBuild(build, first);
-            if (upstream != null && upstream.getProject().equals(first)) {
-                return upstream;
+                    AbstractBuild upstream = BuildUtil.getFirstUpstreamBuild(build, first);
+                    if (upstream != null && upstream.getProject().equals(first)) {
+                        return upstream;
+                    }
+                }
             }
         }
         return null;

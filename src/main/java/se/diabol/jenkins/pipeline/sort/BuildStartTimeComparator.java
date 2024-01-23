@@ -19,9 +19,12 @@ package se.diabol.jenkins.pipeline.sort;
 
 import hudson.model.AbstractBuild;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public final class BuildStartTimeComparator implements Comparator<AbstractBuild> {
+public final class BuildStartTimeComparator implements Comparator<AbstractBuild>, Serializable {
+
+    private static final long serialVersionUID = -4594547197445847342L;
 
     @Override
     public int compare(AbstractBuild build1, AbstractBuild build2) {
