@@ -17,9 +17,6 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
-import static java.util.Collections.singletonList;
-import static se.diabol.jenkins.workflow.util.Util.head;
-
 import com.google.common.collect.ImmutableList;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -33,6 +30,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
+import static se.diabol.jenkins.workflow.util.Util.head;
 
 public class Stage extends AbstractItem {
 
@@ -63,6 +63,10 @@ public class Stage extends AbstractItem {
     @Exported
     public String getVersion() {
         return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     @Exported
