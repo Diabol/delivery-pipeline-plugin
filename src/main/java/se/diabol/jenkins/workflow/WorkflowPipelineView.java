@@ -58,6 +58,8 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
 
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,10 +68,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 
 public class WorkflowPipelineView extends View implements PipelineView {
 
@@ -347,7 +348,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
                     }
                 }
             }
-        } catch (IOException | PipelineException e) {
+        } catch (IOException | PipelineException | InterruptedException | TimeoutException e) {
             LOG.warning("Failed to resolve project to trigger manual/input: " + e);
         }
     }
@@ -526,7 +527,7 @@ public class WorkflowPipelineView extends View implements PipelineView {
         }
 
         @Extension
-        public static class DescriptorImpl extends Descriptor<WorkflowPipelineView.ComponentSpec> {
+        public static class DescriptorImpl extends Descriptor<ComponentSpec> {
 
             @Nonnull
             @Override

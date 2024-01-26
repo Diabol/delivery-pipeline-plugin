@@ -23,18 +23,19 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import javax.annotation.Nullable;
+import java.time.Duration;
 
 public class SeleniumUtil {
     public static WebElement waitForElement(WebDriver driver, String id) {
 
-        return new WebDriverWait(driver, 30).until(
+        return new WebDriverWait(driver, Duration.ofSeconds(30)).until(
                 new com.google.common.base.Function<WebDriver, WebElement>() {
-            @Nullable
-            @Override
-            public WebElement apply(@Nullable WebDriver webDriver) {
-                return webDriver.findElement(By.id(id));
-            }
-        });
+                    @Nullable
+                    @Override
+                    public WebElement apply(@Nullable WebDriver webDriver) {
+                        return webDriver.findElement(By.id(id));
+                    }
+                });
     }
 
 }
