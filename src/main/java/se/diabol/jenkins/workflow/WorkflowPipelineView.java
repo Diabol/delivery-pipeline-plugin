@@ -58,8 +58,6 @@ import se.diabol.jenkins.pipeline.util.ProjectUtil;
 import se.diabol.jenkins.workflow.model.Component;
 import se.diabol.jenkins.workflow.model.Pipeline;
 
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,6 +69,8 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 
 public class WorkflowPipelineView extends View implements PipelineView {
 

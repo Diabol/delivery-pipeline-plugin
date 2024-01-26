@@ -17,6 +17,11 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow.model;
 
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+import static se.diabol.jenkins.workflow.util.Util.getParentNodeWithTaskFinishedAction;
+import static se.diabol.jenkins.workflow.util.Util.getRunById;
+import static se.diabol.jenkins.workflow.util.Util.isAnyParentNodeContainingTaskFinishedAction;
+
 import com.cloudbees.workflow.flownode.FlowNodeUtil;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -41,11 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
-import static se.diabol.jenkins.workflow.util.Util.getParentNodeWithTaskFinishedAction;
-import static se.diabol.jenkins.workflow.util.Util.getRunById;
-import static se.diabol.jenkins.workflow.util.Util.isAnyParentNodeContainingTaskFinishedAction;
 
 public class Task extends AbstractItem {
 

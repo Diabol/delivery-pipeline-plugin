@@ -17,6 +17,8 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.pipeline.util;
 
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
 import hudson.EnvVars;
 import hudson.Util;
 import hudson.model.AbstractBuild;
@@ -32,7 +34,6 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import se.diabol.jenkins.pipeline.RelationshipResolver;
 import se.diabol.jenkins.pipeline.domain.PipelineException;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,8 +45,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import static com.google.common.collect.Maps.newLinkedHashMap;
+import javax.annotation.Nonnull;
 
 public final class ProjectUtil {
 

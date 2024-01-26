@@ -31,10 +31,10 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
