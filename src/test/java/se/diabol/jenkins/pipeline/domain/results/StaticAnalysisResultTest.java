@@ -20,8 +20,13 @@ package se.diabol.jenkins.pipeline.domain.results;
 import hudson.Plugin;
 import hudson.model.AbstractBuild;
 import hudson.model.Action;
+import hudson.plugins.analysis.core.AbstractHealthDescriptor;
 import hudson.plugins.analysis.core.AbstractResultAction;
+import hudson.plugins.analysis.core.BuildHistory;
 import hudson.plugins.analysis.core.BuildResult;
+import hudson.plugins.analysis.core.ParserResult;
+import hudson.plugins.analysis.core.PluginDescriptor;
+import hudson.plugins.analysis.core.ResultAction;
 import jenkins.model.Jenkins;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,8 +59,8 @@ public class StaticAnalysisResultTest {
         PowerMockito.mockStatic(Jenkins.class);
         PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
         PowerMockito.when(jenkins.getPlugin("analysis-core")).thenReturn(plugin);
-        AbstractResultAction findbugs = mock(AbstractResultAction.class);
-        AbstractResultAction owasp = mock(AbstractResultAction.class);
+        AbstractResultAction findbugs = mock(MockedResultAction.class);
+        AbstractResultAction owasp = mock(MockedResultAction.class);
 
         when(findbugs.getDisplayName()).thenReturn("FindBugs Warnings");
         when(owasp.getDisplayName()).thenReturn("Dependency-Check Warnings");
@@ -111,5 +116,4 @@ public class StaticAnalysisResultTest {
         assertNotNull(result);
         assertEquals(0, result.size());
     }
-
 }
