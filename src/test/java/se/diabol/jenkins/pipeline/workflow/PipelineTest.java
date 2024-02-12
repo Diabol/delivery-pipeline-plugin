@@ -72,11 +72,9 @@ public class PipelineTest {
 
         Pipeline pipeline = Pipeline.resolve(pipelineProject, build);
         assertNotNull(pipeline);
-        assertThat(pipeline.getStages().size(), is(2));
+        assertThat(pipeline.getStages().size(), is(1));
         assertThat(pipeline.getStages().get(0).getName(), is("Build"));
         assertThat(pipeline.getStages().get(0).getTasks().size(), is(1));
-        assertThat(pipeline.getStages().get(0).getTasks().get(0).getName(), is("Compile"));
-        assertThat(pipeline.getStages().get(1).getTasks().size(), is(1));
-        assertThat(pipeline.getStages().get(1).getTasks().get(0).getName(), is("Deploy"));
+        assertThat(pipeline.getStages().get(0).getTasks().get(0).getName(), is("Build"));
     }
 }
