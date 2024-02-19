@@ -63,7 +63,7 @@ public class DeliveryPipelinePage {
     public void triggerNewParameterizedPipelineBuild(String no) {
         SeleniumUtil.waitForElement(webDriver,"startpipeline-" + no).sendKeys(Keys.RETURN);
         /* this build requires parameter */
-        SeleniumUtil.waitForElement(webDriver,"yui-gen5-button").click();
+        webDriver.findElement(By.xpath("//button[@class=\"jenkins-button jenkins-button--primary jenkins-!-build-color\"]")).click();
     }
 
     public String getJsPlumbUtilityVariable() {
