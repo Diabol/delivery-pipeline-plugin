@@ -34,6 +34,7 @@ import se.diabol.jenkins.pipeline.util.JenkinsUtil;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
 
@@ -139,7 +140,7 @@ public class PipelineProperty extends JobProperty<AbstractProject<?, ?>> {
         }
 
         @Override
-        public PipelineProperty newInstance(StaplerRequest sr, JSONObject formData) throws FormException {
+        public PipelineProperty newInstance(@Nonnull StaplerRequest sr, JSONObject formData) throws FormException {
             boolean configEnabled = sr.getParameter("enabled") != null;
             if (!configEnabled) {
                 return null;

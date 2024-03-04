@@ -17,6 +17,28 @@ If not, see <http://www.gnu.org/licenses/>.
 */
 package se.diabol.jenkins.workflow;
 
+import hudson.cli.BuildCommand;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.Permission;
+import hudson.util.FormValidation;
+import net.sf.json.JSONObject;
+import org.htmlunit.Page;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.WithoutJenkins;
+import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.Mockito;
+import se.diabol.jenkins.workflow.model.Component;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,31 +51,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
-import org.junit.Rule;
-import org.junit.Test;
-import org.jvnet.hudson.test.Issue;
-import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.WithoutJenkins;
-import org.kohsuke.stapler.StaplerRequest;
-import org.mockito.Mockito;
-
-import com.gargoylesoftware.htmlunit.Page;
-
-import hudson.cli.BuildCommand;
-import hudson.security.GlobalMatrixAuthorizationStrategy;
-import hudson.security.Permission;
-import hudson.util.FormValidation;
-import net.sf.json.JSONObject;
-import se.diabol.jenkins.pipeline.DeliveryPipelineView;
-import se.diabol.jenkins.workflow.model.Component;
 
 public class WorkflowPipelineViewTest {
 

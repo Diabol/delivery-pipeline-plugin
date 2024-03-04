@@ -461,7 +461,7 @@ public class PipelineTest {
         projectB.getPublishersList().add(new BuildTrigger("D", false));
         projectC.getPublishersList().add(new BuildTrigger("D", false));
         projectD.getPublishersList().add(
-                new JoinTrigger(new DescribableList<>(Saveable.NOOP), "", false));
+                new JoinTrigger(new DescribableList<>(Saveable.NOOP), "", Boolean.FALSE.toString()));
         jenkins.getInstance().rebuildDependencyGraph();
         Pipeline prototype = Pipeline.extractPipeline("ForkJoin", projectA);
         assertNotNull(prototype);

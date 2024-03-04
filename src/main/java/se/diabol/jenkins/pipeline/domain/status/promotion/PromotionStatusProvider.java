@@ -39,7 +39,6 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
 
     // Force a classloading error plugin isn't available
     public static final Class<PromotedBuildAction> CLASS = PromotedBuildAction.class;
-    static final String DEFAULT_ICON_SIZE = "16x16";
 
     private PromotionStatusWrapper promotionStatusWrapper = new PromotionStatusWrapper();
     private PromotedBuildActionWrapper promotedBuildActionWrapper = new PromotedBuildActionWrapper();
@@ -60,7 +59,7 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
         if (action != null) {
             for (Object status : promotedBuildActionWrapper.getPromotions(action)) {
                 final List<String> params = new ArrayList<>();
-                for (Promotion promotion : (Collection<Promotion>) promotionStatusWrapper.getPromotionBuilds(status)) {
+                for (Promotion promotion : promotionStatusWrapper.getPromotionBuilds(status)) {
                     populatePromotionParameters(params, promotion);
                     promotionStatusList.add(buildNewPromotionStatus(build, status, params, promotion));
                 }
@@ -79,7 +78,7 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
         final long startTime = promotion.getStartTimeInMillis();
         final long duration = promotion.getTime().getTime() - build.getTimeInMillis();
         final String userName = promotion.getUserName();
-        final String icon = promotionStatusWrapper.getIcon(status, DEFAULT_ICON_SIZE);
+        final String icon = promotionStatusWrapper.getIcon(status);
 
         return new PromotionStatus(name, startTime, duration, userName, icon, params);
     }
@@ -118,15 +117,15 @@ public class PromotionStatusProvider extends AbstractPromotionStatusProvider {
 
     static class PromotionStatusWrapper {
         public Collection<Promotion> getPromotionBuilds(Object status) {
-            return ((hudson.plugins.promoted_builds.Status) status).getPromotionBuilds();
+            return ((Status) status).getPromotionBuilds();
         }
 
         public String getName(Object status) {
-            return ((hudson.plugins.promoted_builds.Status) status).getName();
+            return ((Status) status).getName();
         }
 
-        public String getIcon(Object status, String size) {
-            return ((hudson.plugins.promoted_builds.Status) status).getIcon(size);
+        public String getIcon(Object status) {
+            return ((Status) status).getIcon();
         }
 
         public long getStartTime(Object status) {

@@ -82,15 +82,15 @@ public class ProjectUtilTest {
         jenkins.createFolder("folder1");
         jenkins.createFolder("folder2");
 
-        jenkins.createFreeStyleProject("folder1/project");
-        jenkins.createFreeStyleProject("folder1/otherProject");
-        jenkins.createFreeStyleProject("folder2/project");
-        jenkins.createFreeStyleProject("folder2/otherProject");
+        jenkins.createFreeStyleProject("folder1_project");
+        jenkins.createFreeStyleProject("folder1_otherProject");
+        jenkins.createFreeStyleProject("folder2_project");
+        jenkins.createFreeStyleProject("folder2_otherProject");
 
         Map<String, AbstractProject> result = ProjectUtil.getProjects("^(project)");
         assertEquals(0, result.size());
 
-        Map<String, AbstractProject> result2 = ProjectUtil.getProjects("^(.+)/project");
+        Map<String, AbstractProject> result2 = ProjectUtil.getProjects("^(.+)_project");
         assertEquals(2, result2.size());
     }
 

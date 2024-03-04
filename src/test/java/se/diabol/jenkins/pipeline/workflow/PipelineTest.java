@@ -65,7 +65,7 @@ public class PipelineTest {
         String pipelineName = "Pipeline";
         WorkflowJob pipelineProject = jenkins.jenkins.createProject(WorkflowJob.class, pipelineName);
         pipelineProject.setDefinition(
-                new CpsFlowDefinition("node {\n stage 'Build'\n task 'Compile'\n stage 'CI'\n task 'Deploy'\n}"));
+                new CpsFlowDefinition("node {\n stage 'Build'\n task('Compile'){}\n stage 'CI'\n task('Deploy'){}\n}"));
         WorkflowRun build = pipelineProject.scheduleBuild2(0).get();
 
         WorkflowPipelineView view = new WorkflowPipelineView(pipelineName);

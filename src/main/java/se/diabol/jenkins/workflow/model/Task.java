@@ -44,6 +44,7 @@ import se.diabol.jenkins.workflow.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Task extends AbstractItem {
@@ -136,10 +137,15 @@ public class Task extends AbstractItem {
     private static Task resolveTask(WorkflowRun build, FlowNode stageStartNode, FlowNode taskNode)
             throws PipelineException {
         TaskAction action = taskNode.getAction(TaskAction.class);
-        Status status = resolveTaskStatus(build, stageStartNode, taskNode, action);
-        return new Task(taskNode.getId(), action.getTaskName(), build.getNumber(), status,
-                taskLinkFor(build), null, null,
-                StatusType.PAUSED_PENDING_INPUT.equals(status.getType()));
+        if (action != null) {
+            Status status = resolveTaskStatus(build, stageStartNode, taskNode, action);
+            return new Task(taskNode.getId(),
+                            Objects.isNull(action) ? null : action.getTaskName(),
+                            build.getNumber(), status,
+                            taskLinkFor(build), null, null,
+                            StatusType.PAUSED_PENDING_INPUT.equals(status.getType()));
+        }
+        return null;
     }
 
     private static Task createStageTask(WorkflowRun build, FlowNode stageStartNode, Status stageStatus) {
@@ -197,7 +203,8 @@ public class Task extends AbstractItem {
     }
 
     private static long getTaskStartTime(FlowNode taskNode) {
-        return taskNode.getAction(TimingAction.class).getStartTime();
+        final TimingAction timingAction = taskNode.getAction(TimingAction.class);
+        return Objects.isNull(timingAction) ? 0L : timingAction.getStartTime();
     }
 
     private static Long getTaskFinishedTime(FlowNode taskNode, TaskAction taskAction) {
@@ -205,7 +212,8 @@ public class Task extends AbstractItem {
         if (finishedTime == null && isAnyParentNodeContainingTaskFinishedAction(taskNode)) {
             Optional<FlowNode> parentNode = getParentNodeWithTaskFinishedAction(taskNode);
             if (parentNode.isPresent()) {
-                finishedTime = parentNode.get().getAction(TaskFinishedAction.class).getFinishedTime();
+                final TaskFinishedAction taskFinishedAction = parentNode.get().getAction(TaskFinishedAction.class);
+                finishedTime = Objects.isNull(taskFinishedAction) ? null : taskFinishedAction.getFinishedTime();
             }
         }
         return finishedTime;

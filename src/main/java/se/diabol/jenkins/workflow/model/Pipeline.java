@@ -29,6 +29,7 @@ import se.diabol.jenkins.pipeline.domain.PipelineException;
 import se.diabol.jenkins.pipeline.domain.TriggerCause;
 import se.diabol.jenkins.pipeline.domain.UserInfo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +50,7 @@ public class Pipeline extends GenericPipeline {
 
     private long totalBuildTime;
 
-    private Map<String, Task> allTasks = null;
+    private Map<String, Task> allTasks;
 
     public Pipeline(String name, String version, List<Stage> stages, List<Change> changes,
                     List<TriggerCause> triggeredBy, String timestamp) {
@@ -59,6 +60,7 @@ public class Pipeline extends GenericPipeline {
         this.changes = changes;
         this.triggeredBy = triggeredBy;
         this.timestamp = timestamp;
+        this.allTasks = new HashMap<>();
     }
 
     @Exported
@@ -84,6 +86,14 @@ public class Pipeline extends GenericPipeline {
     @Exported
     public Set<UserInfo> getContributors() {
         return contributors;
+    }
+
+    public Map<String, Task> getAllTasks() {
+        return allTasks;
+    }
+
+    public void setContributors(Set<UserInfo> contributors) {
+        this.contributors = contributors;
     }
 
     @Exported

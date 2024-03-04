@@ -15,23 +15,26 @@ You should have received a copy of the GNU General Public License
 along with Delivery Pipeline Plugin.
 If not, see <http://www.gnu.org/licenses/>.
 */
-package se.diabol.jenkins.pipeline.sort;
+package se.diabol.jenkins.pipeline.domain.results;
 
 import hudson.model.AbstractBuild;
+import hudson.plugins.analysis.core.AbstractHealthDescriptor;
+import hudson.plugins.analysis.core.AbstractResultAction;
+import hudson.plugins.analysis.core.PluginDescriptor;
 
-import java.io.Serializable;
-import java.util.Comparator;
+public class MockedResultAction extends AbstractResultAction<MockedBuildResult>  {
 
-public final class BuildStartTimeComparator implements Comparator<AbstractBuild>, Serializable {
-
-    private static final long serialVersionUID = -4594547197445847342L;
-
-    @Override
-    public int compare(AbstractBuild build1, AbstractBuild build2) {
-        return compare(build2.getStartTimeInMillis(), build1.getStartTimeInMillis());
+    public MockedResultAction(AbstractBuild<?, ?> owner, AbstractHealthDescriptor healthDescriptor, MockedBuildResult result) {
+        super(owner, healthDescriptor, result);
     }
 
-    protected int compare(long first, long second) {
-        return Long.compare(first, second);
+    @Override
+    protected PluginDescriptor getDescriptor() {
+        return null;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return null;
     }
 }

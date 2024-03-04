@@ -33,6 +33,8 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 public class TaskStepExecution extends AbstractStepExecutionImpl {
+    
+    private static final long serialVersionUID = 1661891433860818355L;
 
     private static final Logger LOG = Logger.getLogger(TaskStepExecution.class.getName());
 
@@ -75,6 +77,7 @@ public class TaskStepExecution extends AbstractStepExecutionImpl {
 
     private static final class TaskActionImpl extends InvisibleAction implements TaskAction, Serializable {
 
+        private static final long serialVersionUID = -7007957945134870234L;
         private final transient FlowNode associatedNode;
         private final String taskName;
         private Long finishedTime = null;

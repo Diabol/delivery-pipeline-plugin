@@ -37,15 +37,14 @@ public class DeliveryPipelineViewPortlet extends DashboardPortlet {
 
     private final String initialJob;
     private final String finalJob;
-    private String portletId = null;
+    private String portletId;
 
     @DataBoundConstructor
     public DeliveryPipelineViewPortlet(String name, String initialJob, String finalJob) throws IOException {
         super(name);
         this.initialJob = initialJob;
         this.finalJob = finalJob;
-        this.portletId = (portletId != null && !"".equals(portletId.trim())) ? portletId :
-                Integer.toString(GENERATOR.nextInt(BOUND));
+        this.portletId = Integer.toString(GENERATOR.nextInt(BOUND));
     }
 
     public String getPortletId() {

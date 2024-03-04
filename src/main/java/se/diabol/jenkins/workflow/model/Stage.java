@@ -65,6 +65,10 @@ public class Stage extends AbstractItem {
         return version;
     }
 
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     @Exported
     public int getRow() {
         return row;

@@ -204,7 +204,7 @@ public class PipelineVersionContributorTest {
             firstJob.getPublishersList().add(new BuildTrigger("b", false));
             firstJob.getBuildWrappersList().add(
                     new PipelineVersionContributor(true, "1.0.0.$BUILD_NUMBER"));
-            secondJob.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION"));
+            secondJob.getBuildWrappersList().add(new BuildNameSetter("$PIPELINE_VERSION", null, null));
 
 
             jenkins.getInstance().rebuildDependencyGraph();
